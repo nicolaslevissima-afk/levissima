@@ -1,0 +1,75 @@
+# Gera o app iOS. Sem as credenciais da Apple: só confere que o app compila.
+# Com os segredos APPLE_TEAM_ID e ASC_* (chave da App Store Connect): assina e envia para o TestFlight.
+name: App iOS
+
+on:
+  push:
+    branches: [main]
+    paths: ['www/**', 'assets/**', 'capacitor.config.json', 'package.json', '.github/workflows/ios.yml']
+  workflow_dispatch:
+
+jobs:
+  ios:
+    runs-on: macos-15
+    env:
+      TEM_APPLE: ${{ secrets.ASC_KEY_P8_BASE64 != '' && secrets.APPLE_TEAM_ID != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar o Capacitor
+        run: npm install --no-audit --no-fund
+      - name: Criar o projeto iOS
+        run: npx cap add ios
+      - name: Ícones e tela de abertura
+        continue-on-error: true
+        run: npx capacitor-assets generate --ios --splashBackgroundColor '#F1F4EE' --splashBackgroundColorDark '#121815'
+      - name: Textos das permissões (localização, câmera e fotos)
+        run: |
+          P=ios/App/App/Info.plist
+          set_or_add() { /usr/libexec/PlistBuddy -c "Set :$1 $2" "$P" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :$1 string $2" "$P"; }
+          set_or_add NSLocationWhenInUseUsageDescription "O LEVÍSSIMA usa a localização durante a viagem para o escritório acompanhar as entregas."
+          set_or_add NSCameraUsageDescription "O LEVÍSSIMA usa a câmera para fotografar a nota fiscal, quando você escolhe."
+          set_or_add NSPhotoLibraryUsageDescription "O LEVÍSSIMA abre fotos e arquivos que você escolher, como a nota fiscal."
+          set_or_add CFBundleDisplayName "LEVÍSSIMA"
+      - name: Copiar o app para o projeto
+        run: npx cap sync ios
+      - name: Conferir que compila (sem assinatura)
+        if: env.TEM_APPLE != 'true'
+        run: |
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build | tail -n 30
+      - name: Assinar e enviar para o TestFlight
+        if: env.TEM_APPLE == 'true'
+        env:
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          KEY="$RUNNER_TEMP/AuthKey.p8"
+          echo "$ASC_KEY_P8_BASE64" | base64 -d > "$KEY"
+          AUTH="-allowProvisioningUpdates -authenticationKeyPath $KEY -authenticationKeyID $ASC_KEY_ID -authenticationKeyIssuerID $ASC_ISSUER_ID"
+          xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Release \
+            -destination 'generic/platform=iOS' -archivePath "$RUNNER_TEMP/App.xcarchive" archive \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+            PRODUCT_BUNDLE_IDENTIFIER=br.com.levissima.app \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}" MARKETING_VERSION="1.0.${{ github.run_number }}" \
+            $AUTH | tail -n 30
+          cat > "$RUNNER_TEMP/export.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>$APPLE_TEAM_ID</string>
+            <key>signingStyle</key><string>automatic</string>
+          </dict></plist>
+          PLIST
+          xcodebuild -exportArchive -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist "$RUNNER_TEMP/export.plist" -exportPath "$RUNNER_TEMP/export" $AUTH | tail -n 30

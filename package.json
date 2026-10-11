@@ -1,0 +1,22 @@
+{
+  "name": "levissima",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LEVÍSSIMA — cargas, entregas, paletes e chapatex (site + apps Android e iOS)",
+  "scripts": {
+    "android": "cap add android && cap sync android",
+    "ios": "cap add ios && cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/filesystem": "^8.0.0",
+    "@capacitor/geolocation": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/share": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.0.0"
+  }
+}

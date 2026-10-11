@@ -1,0 +1,14 @@
+{
+  "appId": "br.com.levissima.app",
+  "appName": "LEVÍSSIMA",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "never"
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}

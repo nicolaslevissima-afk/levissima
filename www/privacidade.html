@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light dark" />
+<title>Privacidade · LEVÍSSIMA</title>
+<link rel="icon" type="image/png" href="icons/favicon-32.png" />
+<style>
+  :root { --ink: #1C2A2E; --paper: #F1F4EE; --card: #FFFFFF; --line: #DCE2D8; --muted: #64767A; --teal: #166C60; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #E8EDE9; --paper: #121815; --card: #1B2320; --line: #2C3733; --muted: #8FA09B; --teal: #63C4B2; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.6 -apple-system, "Segoe UI", Inter, Roboto, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; letter-spacing: 0.04em; }
+  h2 { font-size: 1.05rem; margin: 28px 0 6px; }
+  p, li { color: var(--ink); }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  ul { padding-left: 20px; }
+  a { color: var(--teal); }
+  footer { color: var(--muted); font-size: 0.875rem; margin-top: 32px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>LEVÍSSIMA</h1>
+  <p class="sub">Política de privacidade do aplicativo · atualizada em outubro de 2026</p>
+
+  <div class="card">
+    <p>O aplicativo LEVÍSSIMA é uma ferramenta interna da <b>Alceu de Moraes Minerais Ltda.</b> (Levíssima Água Mineral, CNPJ 02.891.171/0001-83, Americana/SP), usada pela equipe, pelos motoristas e, na entrega, pelos clientes, para controlar cargas, entregas, paletes e chapatex. Ele não tem anúncios e não vende nem compartilha dados com terceiros para fins comerciais.</p>
+  </div>
+
+  <h2>Quais dados o app guarda</h2>
+  <ul>
+    <li><b>Cargas e entregas:</b> clientes (nome, CNPJ/CPF), pedidos e notas fiscais, produtos, quantidades, paletes e chapatex entregues e devolvidos.</li>
+    <li><b>Assinaturas e nomes</b> de quem recebeu a entrega e do motorista, para o comprovante.</li>
+    <li><b>Localização do celular do motorista durante a viagem</b>: só depois que o motorista toca em “Saí para entrega”, só enquanto o app está aberto na tela e até a última entrega da viagem. O motorista pode pausar quando quiser. Também ficam registrados a hora e o local da saída, da chegada e da entrega em cada cliente.</li>
+    <li><b>Cadastros da equipe e dos motoristas:</b> nome e celular (para abrir a conversa no WhatsApp). As senhas de acesso ficam só no servidor, guardadas de forma cifrada (hash), e nunca são exibidas.</li>
+    <li><b>Pesquisas de satisfação (opcionais):</b> respostas e sugestões de motoristas e clientes, gravadas criptografadas; só a diretoria da empresa, com a senha mestre, consegue lê-las.</li>
+  </ul>
+
+  <h2>Para que os dados são usados</h2>
+  <p>Para organizar o carregamento, acompanhar as entregas, emitir a ordem de carregamento e o comprovante de entrega, controlar o saldo de paletes e chapatex de cada cliente e melhorar o atendimento. A base legal é a execução de contrato e o legítimo interesse da empresa na sua operação logística (Lei 13.709/2018 — LGPD).</p>
+
+  <h2>Onde os dados ficam</h2>
+  <p>Em servidores de banco de dados contratados pela empresa (Supabase), com conexão criptografada. Só entra no app quem tem uma senha definida pela empresa: a senha é conferida no servidor e o próprio banco de dados bloqueia qualquer acesso sem login. Cada pessoa vê apenas o que a função dela permite (diretoria, equipe do escritório ou motorista). Os arquivos gerados (PDF e imagens) ficam no aparelho de quem os gerou ou com quem eles forem enviados.</p>
+
+  <h2>Com quem os dados são compartilhados</h2>
+  <p>Somente com as pessoas da empresa que usam o app e, no caso do comprovante, com o próprio cliente. Ao tocar em “Enviar pelo WhatsApp” ou abrir um local no mapa, o texto ou o endereço é aberto no WhatsApp ou no Google Maps do próprio aparelho, por escolha de quem tocou.</p>
+
+  <h2>Por quanto tempo</h2>
+  <p>Pelo tempo necessário para o controle de entregas e saldos e para cumprir obrigações legais e fiscais. O trajeto das viagens pode ser apagado pela empresa quando não for mais necessário.</p>
+
+  <h2>Seus direitos</h2>
+  <p>Você pode pedir acesso, correção ou exclusão dos seus dados, ou tirar dúvidas, falando com a Levíssima pelos canais de atendimento da empresa ou pelo e-mail de contato informado na página do app na loja.</p>
+
+  <footer>Alceu de Moraes Minerais Ltda. · Levíssima Água Mineral · Americana/SP</footer>
+</main>
+</body>
+</html>
