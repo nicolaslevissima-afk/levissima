@@ -29,7 +29,7 @@ jobs:
         run: npx cap add android
       - name: Ícones e tela de abertura
         continue-on-error: true
-        run: npx capacitor-assets generate --android --iconBackgroundColor '#166C60' --iconBackgroundColorDark '#166C60' --splashBackgroundColor '#F1F4EE' --splashBackgroundColorDark '#121815'
+        run: npx capacitor-assets generate --android --iconBackgroundColor '#FFFFFF' --iconBackgroundColorDark '#FFFFFF' --splashBackgroundColor '#FFFFFF' --splashBackgroundColorDark '#FFFFFF'
       - name: Permissões e número da versão
         run: python3 scripts/ajustar_android.py
       - name: Copiar o app para o projeto

@@ -27,7 +27,7 @@ jobs:
         run: npx cap add ios
       - name: Ícones e tela de abertura
         continue-on-error: true
-        run: npx capacitor-assets generate --ios --splashBackgroundColor '#F1F4EE' --splashBackgroundColorDark '#121815'
+        run: npx capacitor-assets generate --ios --splashBackgroundColor '#FFFFFF' --splashBackgroundColorDark '#FFFFFF'
       - name: Textos das permissões (localização, câmera e fotos)
         run: |
           P=ios/App/App/Info.plist
