@@ -1,14 +1,18 @@
 // LEVÍSSIMA · função "acesso": confere a senha digitada no app e devolve um login do Supabase.
 // As senhas ficam só no banco (hash bcrypt) e nunca vão para o app. Cada senha (mestre, equipe do
-// escritório, cada motorista) tem um usuário próprio no Supabase Auth; o papel dele vai no token e o
-// banco libera os dados de acordo com o papel (políticas do arquivo 0002_acesso.sql).
+// escritório, cada motorista, cada setor) tem um usuário próprio no Supabase Auth; o papel e os módulos
+// dele vão no token e o banco libera os dados de acordo (políticas de 0002_acesso.sql e 0003_modulos.sql).
 //
 // Ações (POST, JSON):
-//   { acao: 'entrar', senha }                          -> { access_token, refresh_token, papel, nome }
-//   { acao: 'conferir', senha }                         -> { ok, papel }        (precisa estar logado)
-//   { acao: 'definir', ref, nome, senha, senhaAtual? }  -> { ok }               (só a senha mestre)
-//   { acao: 'remover', ref }                            -> { ok }               (só a senha mestre)
-//   { acao: 'lista' }                                   -> { senhas: [...] }    (só a senha mestre)
+//   { acao: 'entrar', senha }                                     -> { access_token, refresh_token, papel, nome, modulos }
+//   { acao: 'conferir', senha }                                    -> { ok, papel }      (precisa estar logado)
+//   { acao: 'definir', ref, nome, senha, senhaAtual?, modulos? }   -> { ok }             (só a senha mestre)
+//   { acao: 'ajustar', ref, nome?, modulos }                       -> { ok }             (só a senha mestre; sem trocar a senha)
+//   { acao: 'remover', ref }                                       -> { ok }             (só a senha mestre)
+//   { acao: 'lista' }                                              -> { senhas: [...] }  (só a senha mestre)
+// Senhas: 'mestre' (tudo), 'equipe' (escritório de cargas + módulos marcados), 'motorista:<id>' (app do motorista)
+// e 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões).
+// Cada módulo pode ser "usado" ('manutencao') ou "gerenciado" ('manutencao:gerir').
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const URL_SB = Deno.env.get('SUPABASE_URL') ?? '';
@@ -27,13 +31,33 @@ function erro(codigo: string, status: number) { return resposta({ erro: codigo }
 
 const admin = createClient(URL_SB, SERVICO, { auth: { persistSession: false, autoRefreshToken: false } });
 
-type Ident = { ref: string; papel: string; nome: string; usuario: string | null };
+type Ident = { ref: string; papel: string; nome: string; usuario: string | null; modulos?: string[] };
+
+const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
 
 function papelDaRef(ref: string): string | null {
   if (ref === 'mestre') return 'mestre';
   if (ref === 'equipe') return 'equipe';
   if (/^motorista:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'motorista';
+  if (/^setor:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'setor';
   return null;
+}
+
+// Lista de módulos válida: só os conhecidos, "usar" ou "gerir", sem repetir (gerir vale mais que usar).
+function limparModulos(v: unknown): string[] {
+  const lista = Array.isArray(v) ? v.map((x) => String(x)) : [];
+  const nivel = new Map<string, string>();
+  for (const item of lista) {
+    const [m, g] = item.split(':');
+    if (!MODULOS.includes(m) || (g !== undefined && g !== 'gerir')) continue;
+    if (g === 'gerir' || !nivel.has(m)) nivel.set(m, g === 'gerir' ? m + ':gerir' : m);
+  }
+  return MODULOS.filter((m) => nivel.has(m)).map((m) => nivel.get(m) as string);
+}
+
+async function modulosDe(ref: string): Promise<string[]> {
+  const { data } = await admin.from('acesso_senhas').select('modulos').eq('ref', ref).maybeSingle();
+  return limparModulos(data && (data as { modulos?: unknown }).modulos);
 }
 function emailDe(ref: string) { return ref.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '@' + DOMINIO; }
 
@@ -60,7 +84,8 @@ async function acharUsuarioPorEmail(email: string): Promise<string | null> {
 async function sessaoPara(id: Ident) {
   const email = emailDe(id.ref);
   const senha = await senhaInterna(id.ref);
-  const meta = { papel: id.papel, nome: id.nome, ref: id.ref };
+  const modulos = id.papel === 'equipe' || id.papel === 'setor' ? await modulosDe(id.ref) : [];
+  const meta = { papel: id.papel, nome: id.nome, ref: id.ref, modulos };
   let uid = id.usuario;
   if (uid) {
     const { error } = await admin.auth.admin.updateUserById(uid, { app_metadata: meta });
@@ -86,7 +111,22 @@ async function sessaoPara(id: Ident) {
   }
   const { data, error } = r;
   if (error || !data.session) throw error || new Error('sem sessão');
-  return { access_token: data.session.access_token, refresh_token: data.session.refresh_token, papel: id.papel, nome: id.nome };
+  return { access_token: data.session.access_token, refresh_token: data.session.refresh_token, papel: id.papel, nome: id.nome, modulos };
+}
+
+// Grava os módulos (e o nome) de uma senha e já atualiza o login ligado a ela: vale no próximo acesso
+// e, para quem está com o app aberto, na próxima renovação do login (até 1 hora).
+async function gravarModulos(ref: string, modulos: string[], nome: string | null): Promise<boolean> {
+  const mud: Record<string, unknown> = { modulos };
+  if (nome !== null) mud.nome = nome;
+  const { data, error } = await admin.from('acesso_senhas').update(mud).eq('ref', ref).select('papel, nome, usuario');
+  if (error) throw error;
+  const linha = Array.isArray(data) ? data[0] : null;
+  if (!linha) return false;
+  if (linha.usuario) {
+    await admin.auth.admin.updateUserById(String(linha.usuario), { app_metadata: { papel: linha.papel, nome: linha.nome, ref, modulos } });
+  }
+  return true;
 }
 
 async function conferir(senha: string, origem: string): Promise<Ident | null | 'bloqueado'> {
@@ -139,9 +179,9 @@ Deno.serve(async (req) => {
     if (quem.papel !== 'mestre') return erro('permissao', 403);
 
     if (acao === 'lista') {
-      const { data, error } = await admin.rpc('acesso_lista');
+      const { data, error } = await admin.from('acesso_senhas').select('ref, papel, nome, atualizado_em, modulos').order('ref');
       if (error) throw error;
-      return resposta({ senhas: data || [] });
+      return resposta({ senhas: (data || []).map((l) => ({ ...l, modulos: limparModulos((l as { modulos?: unknown }).modulos) })) });
     }
 
     const ref = String(corpo.ref || '');
@@ -151,7 +191,9 @@ Deno.serve(async (req) => {
     if (acao === 'definir') {
       const senha = String(corpo.senha || '');
       const nome = String(corpo.nome || (papel === 'mestre' ? 'Diretoria' : papel === 'equipe' ? 'Equipe do escritório' : '')).slice(0, 80);
-      if (papel === 'motorista' && !nome) return erro('dados', 400);
+      if ((papel === 'motorista' || papel === 'setor') && !nome) return erro('dados', 400);
+      const modulos = limparModulos(corpo.modulos);
+      if (papel === 'setor' && !modulos.length) return erro('modulos', 400);
       if (papel === 'mestre') {
         const atual = await conferir(String(corpo.senhaAtual || ''), origem);
         if (atual === 'bloqueado') return erro('tentativas', 429);
@@ -164,6 +206,20 @@ Deno.serve(async (req) => {
         if (msg.includes('senha curta')) return erro('senha_curta', 400);
         throw error;
       }
+      if (papel === 'equipe' || papel === 'setor') {
+        if (papel === 'setor' || corpo.modulos !== undefined) await gravarModulos(ref, modulos, null);
+      }
+      return resposta({ ok: true });
+    }
+
+    if (acao === 'ajustar') {
+      if (papel !== 'equipe' && papel !== 'setor') return erro('dados', 400);
+      const modulos = limparModulos(corpo.modulos);
+      if (papel === 'setor' && !modulos.length) return erro('modulos', 400);
+      const nome = papel === 'setor' ? String(corpo.nome || '').slice(0, 80) : null;
+      if (papel === 'setor' && !nome) return erro('dados', 400);
+      const ok = await gravarModulos(ref, modulos, nome);
+      if (!ok) return erro('nao_encontrado', 404);
       return resposta({ ok: true });
     }
 
