@@ -2,6 +2,15 @@
 
 App da Levíssima Água Mineral para **cargas, entregas, paletes e chapatex**: o comercial lança a carga (ou importa a NF), o faturamento dá o ok com a senha de 4 números, a expedição conclui o carregamento com as assinaturas, o motorista acompanha a viagem e conclui cada entrega com a assinatura do cliente, e o escritório vê tudo em tempo real — inclusive o caminhão no mapa.
 
+E os **módulos da fábrica**, no mesmo login:
+
+| Módulo | O que faz |
+|---|---|
+| **Manutenção** | Chamados das máquinas por linha (L1, L2, L3, Copos, 6L e utilidades), prioridades e prazos, preventiva, lubrificação, estoque de peças e ferramentas, relatórios. |
+| **Checklist de empilhadeiras** | Checklist diário (NR-11) de cada máquina, própria ou locada, com assinatura do operador. Item crítico com problema **bloqueia a máquina**; problema em máquina própria abre chamado na Manutenção sozinho; em máquina locada vira ocorrência para avisar a locadora (Santorini, SM) pelo WhatsApp. Histórico, planilha e etiqueta com QR para colar na máquina. |
+| **Uniformes e EPI** | Entregas com assinatura, estoque por tamanho, trocas, CA e treinamentos de NR. |
+| **Estoque de garrafões** | Entradas, saídas, trocas, contagem, lotes e validade (PEPS) e sucata dos garrafões de 20 L, 20 L rosca e 10 L. |
+
 Funciona no navegador (celular, tablet e notebook, e pode ser instalado na tela inicial) e como app de **Android** e **iPhone/iPad**.
 
 ## Como está montado
@@ -9,6 +18,10 @@ Funciona no navegador (celular, tablet e notebook, e pode ser instalado na tela 
 | Parte | Onde fica |
 |---|---|
 | O app (uma página só) | `www/index.html` |
+| Módulos da fábrica | `www/modulos/` — `manutencao.html`, `empilhadeiras.html`, `uniformes.html`, `garrafoes.html` |
+| Ligação dos módulos com o login e o banco | `www/modulos/ponte.js` |
+| Logo | `www/marca/` |
+| Fontes dos módulos (para alterar e gerar de novo) | `fontes/modulos/` |
 | Instalar na tela inicial | `www/manifest.webmanifest`, `www/sw.js`, `www/icons/` |
 | Política de privacidade | `www/privacidade.html` (endereço público exigido pelas lojas) |
 | Banco de dados | Supabase — `supabase/migrations/` |
@@ -21,13 +34,14 @@ Funciona no navegador (celular, tablet e notebook, e pode ser instalado na tela 
 
 - **Ninguém entra sem senha.** A senha digitada é conferida no servidor (função `acesso`); o app recebe só um login do Supabase com o papel da pessoa.
 - **O próprio banco bloqueia o resto.** Sem login, o banco não entrega nem aceita nada (políticas em `0002_acesso.sql`). A chave pública do Supabase que está no app não dá acesso a dados.
-- **Três papéis:**
-  - **Senha mestre** (diretoria): tudo, inclusive Cadastros e Pesquisas.
-  - **Senha da equipe do escritório**: Cargas, Paletes e chapatex e Estoque.
+- **Quatro tipos de senha:**
+  - **Senha mestre** (diretoria): tudo, inclusive Cadastros, Pesquisas e todos os módulos.
+  - **Senha da equipe do escritório**: Cargas, Paletes e chapatex e Estoque (e os módulos que a diretoria marcar).
   - **Motorista**: só as entregas dele.
+  - **Senha de setor** (ex.: Manutenção, Almoxarifado, Operadores de empilhadeira): só os módulos marcados, cada um como **usa** (registra e consulta) ou **gerencia** (também cadastros, configurações e exclusões). O banco confere o módulo em cada leitura e gravação (`0003_modulos.sql`).
 - **Senhas só como hash** (bcrypt) numa tabela que o app não consegue ler. A mesma senha não pode servir para duas pessoas. Mais de 20 tentativas erradas em 10 minutos bloqueiam por um tempo.
 - **Pesquisas de satisfação** são gravadas criptografadas e só a senha mestre abre (o banco também não deixa ninguém além da senha mestre ler).
-- As senhas são trocadas pelo próprio app, em **Cadastros › Acesso ao app** (mestre e equipe) e **Cadastros › Motoristas**.
+- As senhas são trocadas pelo próprio app, em **Cadastros › Acesso ao app** (mestre, equipe e senhas de setor) e **Cadastros › Motoristas**.
 
 ## Publicação
 

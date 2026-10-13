@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
-<meta name="description" content="Cargas, entregas, paletes e chapatex da Levíssima" />
+<meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
 <meta name="theme-color" content="#166C60" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
@@ -76,6 +76,7 @@
   }
   #app { max-width: 980px; margin: 0 auto; padding: 22px 16px 110px; }
   #driver-app { max-width: 640px; margin: 0 auto; padding: 22px 16px 48px; }
+  #setor-app { max-width: 860px; margin: 0 auto; padding: 22px 16px 48px; }
   #driver-app .section-head { margin-top: 18px; }
   .tagline, .hint { max-width: 640px; }
 
@@ -476,6 +477,26 @@
   .drivers-admin { margin: 28px 0 40px; padding-top: 18px; border-top: 1px solid var(--line); }
   .driver-row { display: flex; align-items: center; gap: 14px; padding: 10px 2px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
   .driver-name { flex: 1; font-weight: 600; min-width: 100px; }
+  /* módulos da fábrica (Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões) */
+  .modulos-nav { display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 12px -16px 0; padding: 2px 16px; }
+  .modulos-nav::-webkit-scrollbar { display: none; }
+  .modulos-rot { color: var(--muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  .mod-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink); font-weight: 600; font-size: 0.8125rem; text-decoration: none; white-space: nowrap; }
+  .mod-chip:hover { border-color: var(--teal); }
+  .mod-chip svg, .mod-card svg { width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: var(--teal); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .mod-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin: 18px 0 28px; }
+  .mod-card { display: flex; flex-direction: column; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); color: var(--ink); text-decoration: none; }
+  .mod-card:hover { border-color: var(--teal); }
+  .mod-card svg { width: 30px; height: 30px; margin-bottom: 4px; }
+  .mod-card b { font-size: 1.0625rem; }
+  .mod-card span { color: var(--muted); font-size: 0.8125rem; }
+  .mod-card .mod-nivel-tag { align-self: flex-start; margin-top: 4px; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); }
+  .mod-niveis { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 4px; margin: 0 0 14px; }
+  .mod-niveis legend { font-weight: 600; font-size: 0.875rem; padding: 0 4px; }
+  .mod-nivel { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .mod-nivel:last-of-type { border-bottom: 0; }
+  .mod-nivel select { width: auto; min-width: 140px; }
+  .acesso-sub { margin: 18px 0 6px; font-size: 0.875rem; font-weight: 700; }
   .driver-confirm { padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 0.8125rem; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 </style>
 </head>
@@ -485,7 +506,7 @@
 <div id="lock-screen" class="lock-wrap">
   <div class="lock-card">
     <h1 class="lock-title"><span class="brand brand-lg"><svg class="brand-logo" viewBox="228.6 194.1 384.5 206.4" role="img" aria-label="LEVÍSSIMA — Água Mineral Natural"><use href="#lv-simb"/><use href="#lv-pal"/><use href="#lv-lin"/></svg></span></h1>
-    <p class="lock-sub">Cargas, entregas, paletes e chapatex</p>
+    <p class="lock-sub">Cargas, entregas, manutenção, uniformes e estoque</p>
     <div id="lock-loading" class="hidden"><p class="hint">Carregando…</p></div>
     <form id="lock-setup-form" class="hidden" novalidate>
       <p class="hint">Primeiro acesso: crie a senha mestre (acesso completo — escritório, cadastros e pesquisas).</p>
@@ -499,7 +520,7 @@
       <button type="submit" class="btn btn-primary" id="btn-setup-submit">Criar senha e entrar</button>
     </form>
     <form id="lock-login-form" class="hidden" novalidate>
-      <p class="hint">Digite a sua senha. Motoristas: a senha que a empresa cadastrou para você. Escritório: a senha da equipe ou a senha mestre.</p>
+      <p class="hint">Digite a sua senha. Motoristas: a senha que a empresa cadastrou para você. Escritório: a senha da equipe ou a senha mestre. Setores da fábrica: a senha do seu setor.</p>
       <label>Senha
         <input type="password" id="login-senha" autocomplete="current-password" autofocus />
       </label>
@@ -516,6 +537,7 @@
       <h1 class="brand"><svg class="brand-h" viewBox="356.7 194.1 432.8 99.0" role="img" aria-label="LEVÍSSIMA"><use href="#lv-simb"/><g transform="translate(335.87 -8.16) scale(0.74)"><use href="#lv-pal"/></g></svg></h1>
       <button type="button" class="btn-text" id="btn-logout-admin">Sair</button>
     </div>
+    <nav class="modulos-nav hidden" id="modulos-nav" aria-label="Módulos da fábrica"></nav>
     <nav class="segmented tabs" id="admin-tabs" aria-label="Seções do app">
       <button type="button" class="seg-btn" data-tab="cargas">Cargas</button>
       <button type="button" class="seg-btn" data-tab="paletes">Paletes e chapatex</button>
@@ -621,7 +643,7 @@
 
     <section class="drivers-admin" id="acesso-admin">
       <div class="section-head"><h2 class="section-title">Acesso ao app</h2></div>
-      <p class="hint">A senha mestre é a sua e abre tudo. A senha da equipe do escritório abre Cargas, Paletes e chapatex e Estoque, sem Cadastros e Pesquisas. Cada motorista entra com a própria senha e só vê as entregas dele.</p>
+      <p class="hint">A senha mestre é a sua e abre tudo. A senha da equipe do escritório abre Cargas, Paletes e chapatex e Estoque, sem Cadastros e Pesquisas. Cada motorista entra com a própria senha e só vê as entregas dele. As senhas de setor abrem só os módulos da fábrica que você marcar.</p>
       <div id="acesso-list"></div>
     </section>
 
@@ -638,6 +660,20 @@
 <button class="fab hidden" id="btn-new">+ Novo pedido</button>
 <button class="fab" id="btn-new-carga">+ Nova carga</button>
 <button class="fab hidden" id="btn-new-entrada">+ Entrada de produção</button>
+</div>
+
+<div id="setor-view" class="hidden">
+  <div id="setor-app" class="wrap-setor">
+    <header>
+      <div class="header-row">
+        <h1 class="brand"><svg class="brand-h" viewBox="356.7 194.1 432.8 99.0" role="img" aria-label="LEVÍSSIMA"><use href="#lv-simb"/><g transform="translate(335.87 -8.16) scale(0.74)"><use href="#lv-pal"/></g></svg></h1>
+        <button type="button" class="btn-text" id="btn-logout-setor">Sair</button>
+      </div>
+    </header>
+    <h2 class="section-title" id="setor-titulo" style="font-size:1.25rem;margin-top:18px">Olá</h2>
+    <p class="tagline" style="margin-top:4px">Escolha o que você vai usar agora.</p>
+    <div class="mod-cards" id="setor-modulos"></div>
+  </div>
 </div>
 
 <div id="driver-view" class="hidden">
@@ -1084,6 +1120,36 @@
 </div>
 
 <div class="pq-tip hidden" id="pq-tip" role="tooltip"></div>
+<div class="sheet-overlay hidden" id="setor-sheet-overlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setor-sheet-title">
+    <div class="sheet-header">
+      <h2 id="setor-sheet-title">Nova senha de setor</h2>
+      <button class="icon-btn" id="btn-close-setor" aria-label="Fechar">✕</button>
+    </div>
+    <form id="setor-form" novalidate>
+      <p class="hint" id="setor-form-hint"></p>
+      <label id="setor-nome-label">Nome do setor ou da pessoa <span class="req">*</span>
+        <input type="text" id="f-setor-nome" maxlength="60" autocomplete="off" placeholder="Ex.: Manutenção, Almoxarifado, Operadores de empilhadeira" />
+      </label>
+      <fieldset class="mod-niveis" id="setor-modulos-campos">
+        <legend>O que essa senha abre</legend>
+        <div id="setor-modulos-lista"></div>
+        <p class="field-hint" style="margin:6px 0 8px">Usa: registra e consulta. Gerencia: também cadastros, configurações e exclusões do módulo.</p>
+      </fieldset>
+      <label id="setor-senha-label"><span id="setor-senha-rot">Senha</span>
+        <input type="password" id="f-setor-senha" autocomplete="new-password" />
+      </label>
+      <label id="setor-senha2-label">Confirmar a senha
+        <input type="password" id="f-setor-senha2" autocomplete="new-password" />
+      </label>
+      <p class="form-error hidden" id="setor-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-setor-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-setor-submit">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="sheet-overlay hidden" id="acesso-sheet-overlay">
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="acesso-sheet-title">
     <div class="sheet-header">
@@ -2654,7 +2720,7 @@
   }
 
   // ---------- acesso ao app: senha mestre e senha da equipe do escritório ----------
-  var acessoInfo = null, acessoBuscando = false, confirmRemoverEquipe = false, acessoModo = null;
+  var acessoInfo = null, acessoBuscando = false, confirmRemoverEquipe = false, acessoModo = null, confirmRemoverSetor = null;
   function erroComCodigo(c) { var e = new Error(c); e.codigo = c; return e; }
   function renderAcessoAdmin() {
     var el = document.getElementById('acesso-list');
@@ -2672,15 +2738,40 @@
         '</span></span>' +
         '<button class="btn-text" data-action="acesso-equipe">' + (temEquipe ? 'Trocar' : 'Criar') + '</button>' +
         (temEquipe ? '<button class="btn-text danger" data-action="acesso-equipe-remover">Remover</button>' : '') + '</div>';
-    el.innerHTML = '<div class="driver-row"><span class="driver-name">Senha mestre<span class="est-sub">a sua: abre tudo, inclusive Cadastros e Pesquisas</span></span>' +
-      '<button class="btn-text" data-action="acesso-mestre">Trocar</button></div>' + linhaEquipe;
+    var blocoSetores = '';
+    if (mode === 'db') {
+      if (temEquipe && !confirmRemoverEquipe) {
+        linhaEquipe += '<div class="driver-row"><span class="driver-name">Módulos da fábrica para a equipe<span class="est-sub">' +
+          escapeHtml(resumoModulos(acessoInfo && acessoInfo.equipeModulos) || 'nenhum (só cargas, paletes e estoque)') + '</span></span>' +
+          '<button class="btn-text" data-action="setor-equipe">Escolher</button></div>';
+      }
+      blocoSetores = '<h3 class="acesso-sub">Senhas de setor (módulos da fábrica)</h3>';
+      var setores = (acessoInfo && acessoInfo.setores) || [];
+      if (!carregando && !setores.length) blocoSetores += '<p class="field-hint">Nenhuma ainda. Ex.: uma senha para a Manutenção, uma para os operadores de empilhadeira e uma para o almoxarifado.</p>';
+      setores.forEach(function(x) {
+        blocoSetores += confirmRemoverSetor === x.ref
+          ? '<div class="driver-confirm">Remover a senha de “' + escapeHtml(x.nome) + '”? Quem estiver usando sai do app.' +
+            '<button class="btn-text danger" data-action="setor-remover-confirmar" data-ref="' + escapeHtml(x.ref) + '">Remover</button><button class="btn-text" data-action="setor-remover-cancelar">Cancelar</button></div>'
+          : '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="est-sub">' + escapeHtml(resumoModulos(x.modulos) || '—') + '</span></span>' +
+            '<button class="btn-text" data-action="setor-editar" data-ref="' + escapeHtml(x.ref) + '">Editar</button>' +
+            '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
+      });
+      blocoSetores += '<button type="button" class="btn btn-secondary btn-sm" data-action="setor-novo" style="margin-top:10px">+ Nova senha de setor</button>';
+    }
+    el.innerHTML = '<div class="driver-row"><span class="driver-name">Senha mestre<span class="est-sub">a sua: abre tudo, inclusive Cadastros, Pesquisas e todos os módulos</span></span>' +
+      '<button class="btn-text" data-action="acesso-mestre">Trocar</button></div>' + linhaEquipe + blocoSetores;
     if (carregando && !acessoBuscando) carregarAcessoInfo();
   }
   function carregarAcessoInfo() {
     acessoBuscando = true;
     chamarAcesso({ acao: 'lista' }).then(function(r) {
-      var info = { mestre: null, equipe: null };
-      (r.senhas || []).forEach(function(x) { if (x.ref === 'mestre') info.mestre = x.atualizado_em || true; if (x.ref === 'equipe') info.equipe = x.atualizado_em || true; });
+      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [] };
+      (r.senhas || []).forEach(function(x) {
+        if (x.ref === 'mestre') info.mestre = x.atualizado_em || true;
+        if (x.ref === 'equipe') { info.equipe = x.atualizado_em || true; info.equipeModulos = x.modulos || []; }
+        if (/^setor:/.test(x.ref || '')) info.setores.push({ ref: x.ref, nome: x.nome || '', modulos: x.modulos || [], em: x.atualizado_em });
+      });
+      info.setores.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       acessoInfo = info;
     }).catch(function(e) { console.error('acesso lista', e); acessoInfo = { erro: true }; })
       .then(function() { acessoBuscando = false; renderAcessoAdmin(); });
@@ -2740,6 +2831,17 @@
     else if (a === 'acesso-equipe') openAcessoForm('equipe');
     else if (a === 'acesso-equipe-remover') { confirmRemoverEquipe = true; renderAcessoAdmin(); }
     else if (a === 'acesso-equipe-cancelar') { confirmRemoverEquipe = false; renderAcessoAdmin(); }
+    else if (a === 'setor-novo') openSetorForm('novo', null);
+    else if (a === 'setor-editar') openSetorForm('editar', ((acessoInfo && acessoInfo.setores) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null);
+    else if (a === 'setor-equipe') openSetorForm('equipe', { ref: 'equipe', nome: 'Equipe do escritório', modulos: (acessoInfo && acessoInfo.equipeModulos) || [] });
+    else if (a === 'setor-remover') { confirmRemoverSetor = b.dataset.ref; renderAcessoAdmin(); }
+    else if (a === 'setor-remover-cancelar') { confirmRemoverSetor = null; renderAcessoAdmin(); }
+    else if (a === 'setor-remover-confirmar') {
+      var refR = b.dataset.ref;
+      confirmRemoverSetor = null;
+      chamarAcesso({ acao: 'remover', ref: refR }).then(function() { acessoInfo = null; renderAcessoAdmin(); showToast('Senha removida.'); })
+        .catch(function(err) { console.error('remover setor', err); renderAcessoAdmin(); showToast('Não foi possível remover agora. Tente de novo.'); });
+    }
     else if (a === 'acesso-equipe-confirmar') {
       confirmRemoverEquipe = false;
       removerSenhaEquipe().then(function() { acessoInfo = null; renderAcessoAdmin(); showToast('Senha da equipe removida.'); })
@@ -2779,6 +2881,161 @@
   document.getElementById('acesso-sheet-overlay').addEventListener('click', function(e) {
     if (e.target === document.getElementById('acesso-sheet-overlay')) closeAcessoForm();
   });
+
+  // ---------- senhas de setor: módulos da fábrica que cada senha abre ----------
+  var setorEdit = null; // { modo: 'novo' | 'editar' | 'equipe', ref }
+  function nivelDe(lista, m) {
+    lista = lista || [];
+    if (lista.indexOf(m + ':gerir') >= 0) return 'gerir';
+    if (lista.indexOf(m) >= 0) return 'usar';
+    return '';
+  }
+  function resumoModulos(lista) {
+    return MODULOS_FABRICA.map(function(m) {
+      var n = nivelDe(lista, m.id);
+      return n ? m.curto + (n === 'gerir' ? ' (gerencia)' : '') : '';
+    }).filter(Boolean).join(' · ');
+  }
+  function openSetorForm(modo, x) {
+    setorEdit = { modo: modo, ref: x ? x.ref : null };
+    var novo = modo === 'novo', equipe = modo === 'equipe';
+    document.getElementById('setor-sheet-title').textContent = novo ? 'Nova senha de setor' : equipe ? 'Módulos da equipe do escritório' : 'Editar — ' + (x ? x.nome : '');
+    document.getElementById('setor-form-hint').textContent = equipe
+      ? 'Além de Cargas, Paletes e chapatex e Estoque, a senha da equipe pode abrir módulos da fábrica.'
+      : 'Mínimo de 6 caracteres, diferente das outras senhas. Passe a senha só para quem é do setor.';
+    document.getElementById('setor-nome-label').classList.toggle('hidden', equipe);
+    document.getElementById('setor-senha-label').classList.toggle('hidden', equipe);
+    document.getElementById('setor-senha2-label').classList.toggle('hidden', equipe);
+    document.getElementById('setor-senha-rot').textContent = novo ? 'Senha' : 'Nova senha (deixe em branco para manter a atual)';
+    document.getElementById('f-setor-nome').value = x && !equipe ? x.nome : '';
+    document.getElementById('f-setor-senha').value = '';
+    document.getElementById('f-setor-senha2').value = '';
+    var lista = (x && x.modulos) || [];
+    document.getElementById('setor-modulos-lista').innerHTML = MODULOS_FABRICA.map(function(m) {
+      var n = nivelDe(lista, m.id);
+      return '<div class="mod-nivel"><span>' + escapeHtml(m.nome) + '</span><select data-mod="' + m.id + '" aria-label="' + escapeHtml(m.nome) + '">' +
+        '<option value=""' + (n === '' ? ' selected' : '') + '>Não abre</option>' +
+        '<option value="usar"' + (n === 'usar' ? ' selected' : '') + '>Usa</option>' +
+        '<option value="gerir"' + (n === 'gerir' ? ' selected' : '') + '>Gerencia</option></select></div>';
+    }).join('');
+    document.getElementById('setor-form-error').classList.add('hidden');
+    document.getElementById('setor-sheet-overlay').classList.remove('hidden');
+    document.getElementById(equipe ? 'btn-setor-submit' : 'f-setor-nome').focus();
+  }
+  function closeSetorForm() {
+    document.getElementById('setor-sheet-overlay').classList.add('hidden');
+    document.getElementById('f-setor-senha').value = '';
+    document.getElementById('f-setor-senha2').value = '';
+    setorEdit = null;
+  }
+  function novaRefSetor(nome) {
+    var base = String(nome || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'setor';
+    return 'setor:' + base + '-' + uid().slice(-6).replace(/[^A-Za-z0-9]/g, 'x');
+  }
+  document.getElementById('setor-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!setorEdit) return;
+    var modo = setorEdit.modo, err = document.getElementById('setor-form-error');
+    function mostrar(msg) { err.textContent = msg; err.classList.remove('hidden'); }
+    var nome = document.getElementById('f-setor-nome').value.trim();
+    var senha = document.getElementById('f-setor-senha').value, senha2 = document.getElementById('f-setor-senha2').value;
+    var modulos = [];
+    Array.prototype.forEach.call(document.querySelectorAll('#setor-modulos-lista select'), function(sel) {
+      if (sel.value === 'usar') modulos.push(sel.dataset.mod);
+      if (sel.value === 'gerir') modulos.push(sel.dataset.mod + ':gerir');
+    });
+    if (modo !== 'equipe' && !nome) return mostrar('Digite o nome do setor ou da pessoa.');
+    if (modo !== 'equipe' && !modulos.length) return mostrar('Marque pelo menos um módulo que essa senha abre.');
+    if (modo === 'novo' && !senha) return mostrar('Crie a senha.');
+    if (senha && senha.length < 6) return mostrar('A senha precisa ter pelo menos 6 caracteres.');
+    if (senha !== senha2) return mostrar('As duas senhas não são iguais.');
+    err.classList.add('hidden');
+    var corpo;
+    if (modo === 'equipe') corpo = { acao: 'ajustar', ref: 'equipe', modulos: modulos };
+    else if (modo === 'novo') corpo = { acao: 'definir', ref: novaRefSetor(nome), nome: nome, senha: senha, modulos: modulos };
+    else if (senha) corpo = { acao: 'definir', ref: setorEdit.ref, nome: nome, senha: senha, modulos: modulos };
+    else corpo = { acao: 'ajustar', ref: setorEdit.ref, nome: nome, modulos: modulos };
+    var btn = document.getElementById('btn-setor-submit');
+    btn.disabled = true;
+    chamarAcesso(corpo).then(function() {
+      btn.disabled = false;
+      closeSetorForm();
+      acessoInfo = null;
+      renderAcessoAdmin();
+      showToast(modo === 'novo' ? 'Senha de setor criada.' : 'Acesso salvo. Quem já está no app vê a mudança no próximo login.');
+    }).catch(function(x) {
+      btn.disabled = false;
+      var c = x && x.codigo;
+      mostrar(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.'
+        : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.'
+        : c === 'modulos' ? 'Marque pelo menos um módulo que essa senha abre.'
+        : c === 'nao_encontrado' ? (modo === 'equipe' ? 'Crie primeiro a senha da equipe do escritório.' : 'Essa senha não existe mais.')
+        : 'Não foi possível salvar agora. Tente novamente.');
+    });
+  });
+  document.getElementById('btn-close-setor').addEventListener('click', closeSetorForm);
+  document.getElementById('btn-setor-cancel').addEventListener('click', closeSetorForm);
+  document.getElementById('setor-sheet-overlay').addEventListener('click', function(e) {
+    if (e.target === document.getElementById('setor-sheet-overlay')) closeSetorForm();
+  });
+
+  // ---------- módulos da fábrica: menu do escritório e tela de quem entra com senha de setor ----------
+  var ICONES_MOD = {
+    manutencao: '<path d="M14.7 6.3a4 4 0 0 0-5.3 5.1L4 16.8V20h3.2l5.4-5.4a4 4 0 0 0 5.1-5.3l-2.5 2.5-2.2-.5-.5-2.2z"/>',
+    empilhadeiras: '<path d="M3 17V10h7l2 4v3"/><path d="M5 10V6h4l1 4"/><path d="M16 3v15h5"/><circle cx="6" cy="18" r="2"/><circle cx="11.5" cy="18" r="2"/>',
+    uniformes: '<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-.6 1.4-2 2.4-4 2.4S8.6 5.4 8 4z"/>',
+    garrafoes: '<path d="M10 3h4v2.2c0 1 3 2 3 5V19a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-8.8c0-3 3-4 3-5z"/><path d="M7 13.5c1.6-.8 3.4-.8 5 0s3.4.8 5 0"/>'
+  };
+  var MODULOS_FABRICA = [
+    { id: 'manutencao', nome: 'Manutenção', curto: 'Manutenção', desc: 'Chamados das máquinas, preventivas, lubrificação e peças' },
+    { id: 'empilhadeiras', nome: 'Checklist de empilhadeiras', curto: 'Empilhadeiras', desc: 'Checklist diário, bloqueio e ocorrências das máquinas' },
+    { id: 'uniformes', nome: 'Uniformes e EPI', curto: 'Uniformes e EPI', desc: 'Entregas com assinatura, estoque por tamanho e NRs' },
+    { id: 'garrafoes', nome: 'Estoque de garrafões', curto: 'Garrafões', desc: 'Entradas, saídas, trocas, lotes, validade e sucata' }
+  ];
+  function iconeMod(id) { return '<svg viewBox="0 0 24 24" aria-hidden="true">' + (ICONES_MOD[id] || '') + '</svg>'; }
+  // módulos que a pessoa logada abre: [{ id, nome, nivel }]
+  function modulosDaSessao() {
+    if (mode !== 'db' || !session) return [];
+    if (session.role === 'admin') return MODULOS_FABRICA.map(function(m) { return Object.assign({ nivel: 'gerir' }, m); });
+    if (session.role !== 'equipe' && session.role !== 'setor') return [];
+    return MODULOS_FABRICA.map(function(m) { var n = nivelDe(session.modulos, m.id); return n ? Object.assign({ nivel: n }, m) : null; }).filter(Boolean);
+  }
+  function linkModulo(id) { return 'modulos/' + id + '.html'; }
+  function renderModulosNav() {
+    var nav = document.getElementById('modulos-nav');
+    var mods = modulosDaSessao();
+    nav.classList.toggle('hidden', !mods.length);
+    nav.innerHTML = mods.length ? '<span class="modulos-rot">Fábrica</span>' + mods.map(function(m) {
+      return '<a class="mod-chip" href="' + linkModulo(m.id) + '">' + iconeMod(m.id) + escapeHtml(m.curto) + '</a>';
+    }).join('') : '';
+  }
+  function showSetorView() {
+    document.getElementById('lock-screen').classList.add('hidden');
+    document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('driver-view').classList.add('hidden');
+    document.getElementById('setor-view').classList.remove('hidden');
+    document.getElementById('setor-titulo').textContent = session && session.nome ? 'Olá, ' + session.nome : 'Olá';
+    var mods = modulosDaSessao();
+    document.getElementById('setor-modulos').innerHTML = mods.length ? mods.map(function(m) {
+      return '<a class="mod-card" href="' + linkModulo(m.id) + '">' + iconeMod(m.id) + '<b>' + escapeHtml(m.nome) + '</b><span>' + escapeHtml(m.desc) + '</span>' +
+        (m.nivel === 'gerir' ? '<span class="mod-nivel-tag">Você gerencia</span>' : '') + '</a>';
+    }).join('') : '<p class="empty-state">A sua senha ainda não abre nenhum módulo. Peça à diretoria.</p>';
+  }
+  // depois do login: se a pessoa veio de um módulo (ou do QR de uma máquina), volta para lá
+  function moduloPedido() {
+    var m = /(?:^#|&)ir=([a-z]+)/.exec(location.hash || '');
+    return m ? m[1] : '';
+  }
+  function irParaModuloPedido() {
+    var pedido = moduloPedido();
+    if (!pedido) return false;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    var ok = modulosDaSessao().some(function(m) { return m.id === pedido; });
+    if (!ok) { if (session && session.role !== 'motorista') showToast('A sua senha não abre esse módulo.'); return false; }
+    location.replace(linkModulo(pedido));
+    return true;
+  }
+  document.getElementById('btn-logout-setor').addEventListener('click', function() { logout(); });
 
   // ---------- produtos cadastrados (admin) ----------
   function renderProdutosAdmin() {
@@ -6602,6 +6859,7 @@
     document.getElementById('lock-screen').classList.remove('hidden');
     document.getElementById('admin-view').classList.add('hidden');
     document.getElementById('driver-view').classList.add('hidden');
+    document.getElementById('setor-view').classList.add('hidden');
     if (state === 'login') {
       var f = document.getElementById('login-senha');
       f.value = '';
@@ -6612,12 +6870,15 @@
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('admin-view').classList.remove('hidden');
     document.getElementById('driver-view').classList.add('hidden');
+    document.getElementById('setor-view').classList.add('hidden');
+    renderModulosNav();
     applyTab();
     render();
   }
   function showDriverView() {
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('setor-view').classList.add('hidden');
     document.getElementById('driver-view').classList.remove('hidden');
     render();
   }
@@ -7246,9 +7507,11 @@
   // Quem é a pessoa logada: o papel vem do token do Supabase (gravado pela função de acesso).
   function identidadeDoUsuario(u) {
     var m = (u && u.app_metadata) || {};
+    var mods = Array.isArray(m.modulos) ? m.modulos.slice(0, 20) : [];
     if (m.papel === 'mestre') return { role: 'admin', nome: m.nome || '' };
-    if (m.papel === 'equipe') return { role: 'equipe', nome: m.nome || '' };
+    if (m.papel === 'equipe') return { role: 'equipe', nome: m.nome || '', modulos: mods };
     if (m.papel === 'motorista' && m.nome) return { role: 'motorista', nome: m.nome };
+    if (m.papel === 'setor') return { role: 'setor', nome: m.nome || '', modulos: mods };
     return null;
   }
   var dadosLigados = false;
@@ -7272,6 +7535,8 @@
     if (mode === 'db') {
       // o tempo real também precisa do login (o banco só manda as mudanças para quem entrou)
       if (token && sbCliente.realtime && sbCliente.realtime.setAuth) sbCliente.realtime.setAuth(token);
+      if (irParaModuloPedido()) return;
+      if (s.role === 'setor') { showSetorView(); return; } // senha de setor: só os módulos da fábrica
       ligarDados();
     }
     if (s.role === 'motorista') showDriverView(); else showAdminView();

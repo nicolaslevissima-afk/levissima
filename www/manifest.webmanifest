@@ -1,14 +1,14 @@
 {
   "name": "LEVÍSSIMA",
   "short_name": "LEVÍSSIMA",
-  "description": "Cargas, entregas, paletes e chapatex da Levíssima",
+  "description": "Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima",
   "lang": "pt-BR",
   "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#F1F4EE",
+  "background_color": "#FFFFFF",
   "theme_color": "#166C60",
   "categories": ["business", "productivity"],
   "icons": [

@@ -23,7 +23,7 @@ O app já é gerado sozinho pelo GitHub a cada atualização (aba **Actions** do
 2. **Chave de assinatura do app** (uma vez só): os 4 segredos `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS` e `ANDROID_KEY_PASSWORD` em *GitHub › Settings › Secrets and variables › Actions*. Guarde uma cópia da chave e da senha em lugar seguro.
 3. **Gerar o app da loja:** aba *Actions › App Android › Run workflow*. Ao terminar, baixe o arquivo `.aab` em *Artifacts*.
 4. **Criar o app no Play Console:** nome **LEVÍSSIMA**, idioma Português (Brasil), app, gratuito.
-5. **Preencher a ficha** com os textos abaixo, o ícone `loja/icone-512.png`, a imagem de destaque `loja/play-destaque-1024x500.png` e as capturas de `loja/capturas/android/`.
+5. **Preencher a ficha** com os textos abaixo, o ícone `loja/icone-512.png`, a imagem de destaque `loja/play-destaque-1024x500.png` e as 9 capturas de `loja/capturas/android/` (cargas, entregas e os módulos da fábrica).
 6. **Questionários do Play Console:**
    - *Classificação do conteúdo:* app de trabalho, sem violência, sem conteúdo adulto → Livre.
    - *Público-alvo:* 18 anos ou mais.
@@ -53,9 +53,9 @@ O app já é gerado sozinho pelo GitHub a cada atualização (aba **Actions** do
 
 **Nome:** LEVÍSSIMA
 
-**Subtítulo (App Store, até 30 caracteres):** Cargas, entregas e paletes
+**Subtítulo (App Store, até 30 caracteres):** Cargas, fábrica e estoque
 
-**Descrição curta (Google Play, até 80 caracteres):** Cargas, entregas, paletes e chapatex da Levíssima, com rastreio e comprovante.
+**Descrição curta (Google Play, até 80 caracteres):** Cargas, entregas, manutenção, empilhadeiras, EPI e estoque da Levíssima.
 
 **Descrição completa:**
 
@@ -70,15 +70,21 @@ O app já é gerado sozinho pelo GitHub a cada atualização (aba **Actions** do
 > • Saldo de paletes e chapatex de cada cliente e lembrete do que recolher.
 > • Pesquisas de satisfação opcionais, vistas só pela diretoria.
 >
-> Acesso só com senha cadastrada pela empresa.
+> Módulos da fábrica, no mesmo app:
+> • Manutenção: chamados das máquinas por linha, prioridades, preventiva, lubrificação e estoque de peças.
+> • Checklist de empilhadeiras: checklist diário com assinatura do operador; item crítico com problema bloqueia a máquina e abre chamado na manutenção ou avisa a locadora.
+> • Uniformes e EPI: entregas com assinatura, estoque por tamanho e treinamentos de NR.
+> • Estoque de garrafões: entradas, saídas, trocas, lotes, validade e sucata.
+>
+> Acesso só com senha cadastrada pela empresa; cada setor vê apenas os módulos liberados para ele.
 
-**Palavras-chave (App Store, até 100 caracteres):** cargas,entregas,paletes,chapatex,logística,motorista,comprovante,rastreio,expedição,água mineral
+**Palavras-chave (App Store, até 100 caracteres):** cargas,entregas,paletes,manutenção,empilhadeira,checklist,EPI,uniforme,estoque,garrafão
 
 **Categoria:** Empresa (Business). Secundária: Produtividade.
 
 **Classificação:** Livre / 4+.
 
-**Novidades desta versão:** Primeira versão do app LEVÍSSIMA.
+**Novidades desta versão:** Primeira versão do app LEVÍSSIMA: cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões.
 
 ---
 
@@ -92,6 +98,7 @@ O app já é gerado sozinho pelo GitHub a cada atualização (aba **Actions** do
 | Fotos e arquivos | Sim, quando a pessoa escolhe | Importar a nota fiscal | Não | O arquivo é lido no aparelho. |
 | Assinaturas | Sim | Comprovante de entrega e ordem de carregamento | Não | — |
 | Respostas das pesquisas | Sim, opcional | Melhorar o atendimento | Não | Criptografadas; só a diretoria lê. |
+| Dados de funcionários (módulos) | Sim | Funcionalidade do app | Não | Nome, função, tamanhos de uniforme, entregas de EPI e treinamentos; nome e assinatura de quem faz checklist ou abre chamado. Só o setor com acesso ao módulo vê. |
 
 - Dados criptografados em trânsito: **sim**.
 - A pessoa pode pedir a exclusão dos dados: **sim**, pela empresa (o motorista removido perde o acesso na hora).

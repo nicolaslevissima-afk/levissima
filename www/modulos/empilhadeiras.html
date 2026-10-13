@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Checklist de empilhadeiras · LEVÍSSIMA</title>
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="ponte.js" data-modulo="empilhadeiras"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Checklist de empilhadeiras — mesma família visual dos módulos da fábrica: aço frio, azul Levíssima,
+   e as três cores de segurança para a situação da máquina (liberada, pendência, bloqueada). */
+:root{
+  --bg:#edf1f5; --surface:#ffffff; --surface-2:#f6f8fa; --sunken:#e4eaf0;
+  --ink:#0f1a24; --ink-2:#41505d; --muted:#5d6b78; --line:#d5dde5; --line-2:#b7c3ce;
+  --accent:#125A9E; --accent-ink:#ffffff; --accent-soft:#e1ecf8;
+  --ok:#11804a; --ok-ink:#ffffff; --ok-soft:#dcf2e5;
+  --warn:#a86400; --warn-ink:#ffffff; --warn-soft:#fcefd2;
+  --crit:#c2352b; --crit-ink:#ffffff; --crit-soft:#fbe0dd;
+  --idle:#6b7785; --idle-soft:#e8edf2;
+  --shadow:0 1px 2px rgba(15,26,36,.06),0 4px 14px rgba(15,26,36,.06);
+  --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:12px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b1218; --surface:#121b24; --surface-2:#17222d; --sunken:#0e161d;
+    --ink:#e6edf4; --ink-2:#a9b7c4; --muted:#8b99a6; --line:#233140; --line-2:#34475a;
+    --accent:#4d9bef; --accent-ink:#06121f; --accent-soft:#132a42;
+    --ok:#4cc38a; --ok-ink:#06170e; --ok-soft:#10301f;
+    --warn:#f0b54a; --warn-ink:#231600; --warn-soft:#33260c;
+    --crit:#f07a6e; --crit-ink:#2a0805; --crit-soft:#3a1714;
+    --idle:#8b99a6; --idle-soft:#1a2531;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 var(--f-body);-webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+[hidden]{display:none!important}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;margin:0}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 56px}
+.topo{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+.topo h1{font-size:30px;line-height:1.05}
+.topo .sub{color:var(--muted);font-size:15px;margin-top:2px}
+.abas{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);margin:0 -16px 16px;padding:0 16px}
+.abas::-webkit-scrollbar{display:none}
+.aba{border:0;background:none;padding:10px 12px 9px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+.aba[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.nb{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;font-size:12px;line-height:20px;text-align:center;font-weight:700;background:var(--crit);color:var(--crit-ink)}
+.nb.warn{background:var(--warn);color:var(--warn-ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:10px;padding:10px 16px;min-height:44px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink);text-decoration:none}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn.sec{background:var(--surface);color:var(--ink);border-color:var(--line-2)}
+.btn.ghost{background:none;color:var(--accent);border-color:transparent;padding-inline:8px}
+.btn.crit{background:var(--crit);color:var(--crit-ink)}
+.btn.ok{background:var(--ok);color:var(--ok-ink)}
+.btn.grande{min-height:52px;font-size:17px;padding-inline:22px}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.resumo{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.kpi{padding:12px 14px}
+.kpi b{display:block;font:700 30px/1 var(--f-display)}
+.kpi span{color:var(--muted);font-size:14px}
+.kpi.crit b{color:var(--crit)} .kpi.warn b{color:var(--warn)} .kpi.ok b{color:var(--ok)}
+.barra-acao{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.maq{padding:14px;display:flex;flex-direction:column;gap:10px;border-left:6px solid var(--idle)}
+.maq.ok{border-left-color:var(--ok)} .maq.warn{border-left-color:var(--warn)} .maq.crit{border-left-color:var(--crit)}
+.maq-topo{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.maq-cod{font:600 13px/1 var(--f-mono);color:var(--muted);letter-spacing:.04em}
+.maq-nome{font:700 22px/1.1 var(--f-display);margin-top:3px}
+.maq-det{color:var(--muted);font-size:14px}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
+.tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.crit{background:var(--crit-soft);color:var(--crit)} .tag.idle{background:var(--idle-soft);color:var(--ink-2)}
+.tag.loc{background:var(--accent-soft);color:var(--accent)}
+.estado{font:700 18px/1.2 var(--f-display);letter-spacing:.02em}
+.estado.ok{color:var(--ok)} .estado.warn{color:var(--warn)} .estado.crit{color:var(--crit)} .estado.idle{color:var(--ink-2)}
+.turnos{display:flex;flex-wrap:wrap;gap:6px}
+.vazio{padding:28px 18px;text-align:center;color:var(--muted)}
+.vazio b{display:block;color:var(--ink);font:700 20px/1.2 var(--f-display);margin-bottom:6px}
+.aviso{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;margin-bottom:14px;font-size:15px}
+.aviso.crit{background:var(--crit-soft);color:var(--crit)} .aviso.warn{background:var(--warn-soft);color:var(--warn)}
+.aviso.info{background:var(--accent-soft);color:var(--accent)} .aviso.ok{background:var(--ok-soft);color:var(--ok)}
+.aviso b{font-weight:700}
+/* formulário */
+.form{padding:16px}
+.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px 14px}
+label.f{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14px}
+label.f .dica{font-weight:400;color:var(--muted);font-size:13px}
+input.i,select.i,textarea.i{border:1px solid var(--line-2);background:var(--surface);border-radius:10px;padding:10px 12px;min-height:44px;width:100%;min-width:0}
+textarea.i{min-height:64px;resize:vertical}
+.largo{grid-column:1/-1}
+.grupo{margin-top:18px}
+.grupo h3{font-size:19px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.grupo h3 small{font:500 13px var(--f-body);color:var(--muted)}
+.item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);margin-bottom:8px}
+.item.nok{border-color:var(--crit);background:var(--crit-soft)}
+.item.nok.leve{border-color:var(--warn);background:var(--warn-soft)}
+.item-linha{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.item-nome{font-weight:600;flex:1 1 220px;min-width:0}
+.item-nome .crit-marca{display:inline-block;margin-left:6px;font:700 11px/1 var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--crit);border:1px solid currentColor;border-radius:4px;padding:2px 4px;vertical-align:2px}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:10px;overflow:hidden;flex:none}
+.seg button{border:0;background:var(--surface);padding:0 14px;min-height:42px;min-width:62px;font-weight:700;cursor:pointer;color:var(--ink-2)}
+.seg button+button{border-left:1px solid var(--line-2)}
+.seg button[aria-pressed="true"][data-v="ok"]{background:var(--ok);color:var(--ok-ink)}
+.seg button[aria-pressed="true"][data-v="nok"]{background:var(--crit);color:var(--crit-ink)}
+.seg button[aria-pressed="true"][data-v="na"]{background:var(--idle);color:#fff}
+.item .obs{margin-top:8px}
+.progresso{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 10px;display:flex;align-items:center;gap:12px}
+.progresso .trilho{flex:1;height:8px;border-radius:99px;background:var(--sunken);overflow:hidden}
+.progresso .trilho i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.progresso span{font:600 14px var(--f-mono);color:var(--muted);white-space:nowrap}
+.res-previa{margin-top:18px;padding:14px;border-radius:12px;border:2px solid var(--line)}
+.res-previa.ok{border-color:var(--ok);background:var(--ok-soft)} .res-previa.warn{border-color:var(--warn);background:var(--warn-soft)} .res-previa.crit{border-color:var(--crit);background:var(--crit-soft)}
+.assin{margin-top:16px}
+.assin canvas{display:block;width:100%;height:170px;border:1.5px dashed var(--line-2);border-radius:10px;background:var(--surface-2);touch-action:none;cursor:crosshair}
+.assin-topo{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px;margin-bottom:6px}
+.acoes-form{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+.erro{color:var(--crit);font-weight:600}
+/* resultado do checklist */
+.resultado{padding:26px 20px;text-align:center}
+.resultado .grande-estado{font:700 40px/1.05 var(--f-display);margin:6px 0 10px}
+.resultado.ok .grande-estado{color:var(--ok)} .resultado.warn .grande-estado{color:var(--warn)} .resultado.crit .grande-estado{color:var(--crit)}
+.resultado p{max-width:560px;margin:8px auto;color:var(--ink-2)}
+/* listas */
+.lista{display:flex;flex-direction:column;gap:10px}
+.oc{padding:14px;display:flex;flex-direction:column;gap:8px;border-left:6px solid var(--warn)}
+.oc.crit{border-left-color:var(--crit)} .oc.fechada{border-left-color:var(--line-2);opacity:.85}
+.oc-topo{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.oc ul{margin:0;padding-left:20px}
+.oc .meta{color:var(--muted);font-size:14px}
+.tbl-box{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2);white-space:nowrap}
+tr.clic{cursor:pointer} tr.clic:hover td{background:var(--surface-2)}
+.filtros{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;align-items:flex-end}
+.filtros label.f{flex:1 1 160px;max-width:240px}
+.det-itens{display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin:8px 0}
+.det-itens .r-ok{color:var(--ok);font-weight:700} .det-itens .r-nok{color:var(--crit);font-weight:700} .det-itens .r-na{color:var(--muted);font-weight:600}
+.assin-img{max-width:320px;height:auto;border:1px solid var(--line);border-radius:8px;background:#fff;color:#111;padding:4px}
+.mono{font-family:var(--f-mono)}
+.muted{color:var(--muted)}
+.linha-ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.escolha{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.escolha button{text-align:left;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);cursor:pointer;display:flex;flex-direction:column;gap:4px;box-shadow:var(--shadow)}
+.escolha button:hover{border-color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:12px;font-weight:600;z-index:100;max-width:92vw;box-shadow:var(--shadow)}
+dialog{border:0;border-radius:16px;padding:0;max-width:min(560px,94vw);width:100%;background:var(--surface);color:var(--ink);box-shadow:0 18px 50px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(9,16,23,.5)}
+.dlg{padding:18px}
+.dlg h2{font-size:24px;margin-bottom:10px}
+@media (max-width:640px){
+  .resumo{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topo h1{font-size:26px}
+  .seg button{min-width:56px;padding:0 10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topo">
+    <div>
+      <h1>Checklist de empilhadeiras</h1>
+      <div class="sub" id="sub-data"></div>
+    </div>
+    <button class="btn grande" type="button" data-acao="novo" id="btn-novo">Fazer checklist</button>
+  </div>
+  <nav class="abas" role="tablist" aria-label="Seções">
+    <button class="aba" role="tab" data-view="hoje" aria-selected="true">Hoje</button>
+    <button class="aba" role="tab" data-view="ocorrencias" aria-selected="false">Ocorrências <span id="nb-oc"></span></button>
+    <button class="aba" role="tab" data-view="historico" aria-selected="false">Histórico</button>
+    <button class="aba" role="tab" data-view="maquinas" aria-selected="false">Máquinas</button>
+    <button class="aba" role="tab" data-view="config" aria-selected="false" id="aba-config" hidden>Configurações</button>
+  </nav>
+  <main id="tela" aria-live="polite"></main>
+</div>
+<dialog id="dlg"><div class="dlg" id="dlg-corpo"></div></dialog>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ===================== domínio ===================== */
+  var TIPOS_MAQ = {
+    eletrica: 'Empilhadeira elétrica',
+    glp: 'Empilhadeira a gás (GLP)',
+    diesel: 'Empilhadeira a diesel',
+    paleteira: 'Transpaleteira / rebocador elétrico'
+  };
+  var GRUPOS = [
+    { id: 'visual', nome: 'Inspeção visual', dica: 'máquina desligada' },
+    { id: 'energia', nome: 'Energia e fluidos', dica: '' },
+    { id: 'funcionamento', nome: 'Teste de funcionamento', dica: 'máquina ligada, sem carga' }
+  ];
+  // Itens do checklist diário (pré-uso), conforme a NR-11 e os manuais dos fabricantes.
+  // critico: com problema, a máquina fica bloqueada (não pode operar). tipos: em que máquinas o item aparece.
+  var ITENS_PADRAO = [
+    { id: 'garfos', grupo: 'visual', nome: 'Garfos e travas dos garfos (trincas, desgaste, pinos)', critico: true, falha: 'Mecânica' },
+    { id: 'correntes', grupo: 'visual', nome: 'Correntes e mastro (folga, desgaste, lubrificação)', critico: true, falha: 'Mecânica', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'hidraulico', grupo: 'visual', nome: 'Mangueiras e cilindros hidráulicos sem vazamento', critico: true, falha: 'Hidráulica' },
+    { id: 'vazamentos', grupo: 'visual', nome: 'Chão sob a máquina sem manchas de óleo, água ou combustível', critico: false, falha: 'Vazamento' },
+    { id: 'pneus', grupo: 'visual', nome: 'Pneus e rodas (cortes, desgaste, porcas)', critico: true, falha: 'Mecânica' },
+    { id: 'protecao', grupo: 'visual', nome: 'Protetor do operador (teto) e grade de proteção da carga', critico: true, falha: 'Segurança', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'assento', grupo: 'visual', nome: 'Assento e cinto de segurança', critico: true, falha: 'Segurança', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'retrovisores', grupo: 'visual', nome: 'Retrovisores', critico: false, falha: 'Segurança', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'extintor', grupo: 'visual', nome: 'Extintor (lacre, carga e validade)', critico: false, falha: 'Segurança', tipos: ['glp', 'diesel'] },
+    { id: 'identificacao', grupo: 'visual', nome: 'Placa de capacidade de carga legível', critico: false, falha: 'Segurança' },
+    { id: 'bateria', grupo: 'energia', nome: 'Bateria: carga, cabos, conectores e tampa', critico: false, falha: 'Elétrica', tipos: ['eletrica', 'paleteira'] },
+    { id: 'glp', grupo: 'energia', nome: 'Cilindro de gás: fixação, válvula, mangueira, sem cheiro de gás', critico: true, falha: 'Segurança', tipos: ['glp'] },
+    { id: 'oleo_motor', grupo: 'energia', nome: 'Nível do óleo do motor', critico: false, falha: 'Lubrificação', tipos: ['glp', 'diesel'] },
+    { id: 'radiador', grupo: 'energia', nome: 'Nível da água do radiador', critico: false, falha: 'Mecânica', tipos: ['glp', 'diesel'] },
+    { id: 'oleo_hidraulico', grupo: 'energia', nome: 'Nível do óleo hidráulico', critico: false, falha: 'Hidráulica', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'combustivel', grupo: 'energia', nome: 'Combustível suficiente para o turno', critico: false, falha: 'Outro', tipos: ['diesel'] },
+    { id: 'freio', grupo: 'funcionamento', nome: 'Freio de serviço', critico: true, falha: 'Mecânica' },
+    { id: 'freio_estac', grupo: 'funcionamento', nome: 'Freio de estacionamento', critico: true, falha: 'Mecânica', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'direcao', grupo: 'funcionamento', nome: 'Direção (ou timão)', critico: true, falha: 'Mecânica' },
+    { id: 'comandos', grupo: 'funcionamento', nome: 'Comandos de elevação, descida e inclinação', critico: true, falha: 'Hidráulica' },
+    { id: 'buzina', grupo: 'funcionamento', nome: 'Buzina', critico: true, falha: 'Elétrica' },
+    { id: 're', grupo: 'funcionamento', nome: 'Alarme sonoro e luz de ré', critico: true, falha: 'Elétrica', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'giroflex', grupo: 'funcionamento', nome: 'Giroflex / luz de advertência', critico: false, falha: 'Elétrica', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'farois', grupo: 'funcionamento', nome: 'Faróis e luzes', critico: false, falha: 'Elétrica', tipos: ['eletrica', 'glp', 'diesel'] },
+    { id: 'emergencia', grupo: 'funcionamento', nome: 'Botão de emergência / corta-corrente', critico: true, falha: 'Segurança', tipos: ['eletrica', 'paleteira'] },
+    { id: 'painel', grupo: 'funcionamento', nome: 'Painel sem alarme ou código de falha', critico: false, falha: 'Elétrica' },
+    { id: 'ruidos', grupo: 'funcionamento', nome: 'Sem ruído, vibração ou cheiro anormal', critico: false, falha: 'Mecânica' }
+  ];
+  var RESULT = {
+    liberada: { nome: 'Liberada', cls: 'ok', longo: 'Liberada para uso' },
+    restricao: { nome: 'Pendência', cls: 'warn', longo: 'Liberada com pendência' },
+    bloqueada: { nome: 'Bloqueada', cls: 'crit', longo: 'Bloqueada — não operar' }
+  };
+  var ST_OC = {
+    aberta: { nome: 'Aberta', cls: 'warn' },
+    acionada: { nome: 'Locadora acionada', cls: 'loc' },
+    resolvida: { nome: 'Resolvida', cls: 'ok' },
+    cancelada: { nome: 'Cancelada', cls: 'idle' }
+  };
+  var LOCADORAS_PADRAO = [
+    { id: 'santorini', nome: 'Santorini', marca: 'Linde', whatsapp: '', contato: '' },
+    { id: 'sm', nome: 'SM', marca: 'Toyota', whatsapp: '', contato: '' }
+  ];
+  var TURNOS_PADRAO = ['1º turno', '2º turno', '3º turno'];
+  var URL_PUBLICA = 'https://nicolasmoraes1.github.io/levissima/modulos/empilhadeiras.html';
+
+  /* ===================== utilidades ===================== */
+  function $(s, el) { return (el || document).querySelector(s); }
+  function $$(s, el) { return Array.prototype.slice.call((el || document).querySelectorAll(s)); }
+  function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function isoDia(d) { d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function hoje() { return isoDia(new Date()); }
+  function mesDe(iso) { return String(iso || '').slice(0, 7); }
+  function mesAnterior(ym) { var p = ym.split('-').map(Number); var d = new Date(p[0], p[1] - 2, 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function dataBR(iso) { var p = String(iso || '').split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : (p.length === 2 ? p[1] + '/' + p[0] : ''); }
+  function horaDe(ms) { if (!ms) return ''; var d = new Date(ms); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function dataHora(ms) { if (!ms) return '—'; var d = new Date(ms); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear() + ' ' + horaDe(ms); }
+  function uid(pref) { var r = crypto.getRandomValues(new Uint8Array(6)); return (pref || '') + Date.now().toString(36) + Array.prototype.map.call(r, function (x) { return (x % 36).toString(36); }).join(''); }
+  function fmtNum(n) { return n == null || n === '' || isNaN(n) ? '—' : Number(n).toLocaleString('pt-BR'); }
+  function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function soDigitos(s) { return String(s || '').replace(/\D+/g, ''); }
+  function ls(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('emp.' + k) || 'null'); localStorage.setItem('emp.' + k, JSON.stringify(v)); } catch (e) { return null; } }
+  var toastT = null;
+  function toast(t) {
+    var el = $('#toast');
+    if (!el) { el = document.createElement('div'); el.id = 'toast'; el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+    el.textContent = t; el.hidden = false;
+    clearTimeout(toastT); toastT = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+  function msgErro(e) {
+    var c = e && e.code;
+    if (c === 'unavailable') return 'Sem conexão com o banco agora. Verifique a internet e tente de novo.';
+    if (c === 'not_granted') return 'A sua senha não permite gravar neste módulo.';
+    if (c === 'not_found') return 'Registro não encontrado (pode ter sido excluído).';
+    return 'Não foi possível gravar agora. Tente de novo.';
+  }
+
+  /* ===================== estado ===================== */
+  var S = {
+    db: null, nivel: '', nomeAcesso: '', pronto: false, erro: null,
+    maquinas: {}, ocorrencias: {}, config: null, checklists: {}, // checklists: mes -> {id: doc}
+    mesesCarregando: {}, chamados: {}, // chamados: id -> {n, status, tecnico}
+    view: 'hoje', params: {}, form: null
+  };
+  function gerir() { return S.nivel === 'gerir'; }
+  function cfg() {
+    var c = S.config || {};
+    return {
+      locadoras: Array.isArray(c.locadoras) && c.locadoras.length ? c.locadoras : LOCADORAS_PADRAO,
+      turnos: Array.isArray(c.turnos) && c.turnos.length ? c.turnos : TURNOS_PADRAO,
+      itensExtras: Array.isArray(c.itensExtras) ? c.itensExtras : [],
+      itensDesligados: Array.isArray(c.itensDesligados) ? c.itensDesligados : []
+    };
+  }
+  function locadoraDe(m) {
+    if (!m || m.propriedade !== 'locada') return null;
+    var l = cfg().locadoras.find(function (x) { return x.id === m.locadora; });
+    return l || { id: m.locadora || 'outra', nome: m.locadoraNome || 'Locadora', marca: '', whatsapp: '', contato: '' };
+  }
+  function maquinasAtivas() {
+    return Object.keys(S.maquinas).map(function (id) { return Object.assign({ id: id }, S.maquinas[id]); })
+      .filter(function (m) { return m.ativa !== false; })
+      .sort(function (a, b) { return String(a.codigo || '').localeCompare(String(b.codigo || ''), 'pt-BR', { numeric: true }); });
+  }
+  function todasMaquinas() {
+    return Object.keys(S.maquinas).map(function (id) { return Object.assign({ id: id }, S.maquinas[id]); })
+      .sort(function (a, b) { return String(a.codigo || '').localeCompare(String(b.codigo || ''), 'pt-BR', { numeric: true }); });
+  }
+  function itensDaMaquina(m) {
+    var c = cfg();
+    var lista = ITENS_PADRAO.filter(function (it) { return c.itensDesligados.indexOf(it.id) < 0; })
+      .concat(c.itensExtras.map(function (x) { return Object.assign({ falha: 'Outro', grupo: 'visual' }, x, { extra: true }); }));
+    return lista.filter(function (it) { return !it.tipos || !it.tipos.length || it.tipos.indexOf(m.tipo || 'eletrica') >= 0; });
+  }
+  function checklistsDoMes(ym) { var m = S.checklists[ym] || {}; return Object.keys(m).map(function (id) { return Object.assign({ id: id }, m[id]); }); }
+  function checklistsDeHoje() { var h = hoje(); return checklistsDoMes(mesDe(h)).filter(function (c) { return c.data === h; }); }
+  function ocorrenciasLista() { return Object.keys(S.ocorrencias).map(function (id) { return Object.assign({ id: id }, S.ocorrencias[id]); }); }
+  function ocorrenciasAbertas() { return ocorrenciasLista().filter(function (o) { return o.status === 'aberta' || o.status === 'acionada'; }); }
+  function ocorrenciaAbertaDa(maqId) { return ocorrenciasAbertas().filter(function (o) { return o.maquinaId === maqId; }).sort(function (a, b) { return (b.abertaEm || 0) - (a.abertaEm || 0); })[0] || null; }
+
+  // situação da máquina: último checklist de hoje + ocorrência aberta
+  function situacao(m) {
+    var doDia = checklistsDeHoje().filter(function (c) { return c.maquinaId === m.id; }).sort(function (a, b) { return (b.em || 0) - (a.em || 0); });
+    var ult = doDia[0] || null;
+    var oc = ocorrenciaAbertaDa(m.id);
+    var ocCrit = oc && oc.critica;
+    var cls = 'idle', txt = 'Sem checklist hoje';
+    if (ult) { cls = RESULT[ult.resultado] ? RESULT[ult.resultado].cls : 'idle'; txt = RESULT[ult.resultado] ? RESULT[ult.resultado].longo : '—'; }
+    if (ocCrit && (!ult || ult.em <= (oc.atualizadaEm || oc.abertaEm || 0))) { cls = 'crit'; txt = 'Bloqueada — não operar'; }
+    return { cls: cls, txt: txt, ult: ult, doDia: doDia, oc: oc };
+  }
+
+  /* ===================== dados ===================== */
+  function assinarMes(ym) {
+    if (S.mesesCarregando[ym]) return;
+    S.mesesCarregando[ym] = true;
+    S.db.collection('checklists-' + ym).onSnapshot(function (snap) {
+      var m = {};
+      snap.docs.forEach(function (d) { m[d.id] = d.data(); });
+      S.checklists[ym] = m;
+      agendar();
+    }, function (e) { console.warn('checklists', e); S.checklists[ym] = S.checklists[ym] || {}; agendar(); });
+  }
+  function iniciarDados() {
+    S.db.collection('maquinas').onSnapshot(function (snap) {
+      var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.maquinas = m; S.carregouMaq = true; agendar();
+    }, function (e) { S.erro = e; agendar(); });
+    S.db.collection('ocorrencias').onSnapshot(function (snap) {
+      var m = {}; snap.docs.forEach(function (d) { m[d.id] = d.data(); }); S.ocorrencias = m; S.carregouOc = true; agendar(); atualizarChamados();
+    }, function (e) { S.erro = e; agendar(); });
+    S.db.doc('config/geral').onSnapshot(function (s) { S.config = s.exists ? s.data() : {}; S.carregouCfg = true; agendar(); }, function () { S.config = {}; agendar(); });
+    assinarMes(mesDe(hoje()));
+    setInterval(atualizarChamados, 60000);
+    setInterval(function () { var ym = mesDe(hoje()); if (!S.mesesCarregando[ym]) assinarMes(ym); agendar(); }, 60000);
+  }
+  // situação dos chamados que o checklist abriu na Manutenção (máquinas próprias)
+  var chamandoChamados = false;
+  function atualizarChamados() {
+    if (!S.db || chamandoChamados) return;
+    var ids = [];
+    ocorrenciasLista().forEach(function (o) { (o.chamados || []).forEach(function (c) { if (c && c.id && (o.status === 'aberta' || o.status === 'acionada')) ids.push(c.id); }); });
+    if (!ids.length) return;
+    chamandoChamados = true;
+    S.db.rpc('empilhadeira_chamados', { p_ids: ids.slice(0, 200) }).then(function (lin) {
+      (lin || []).forEach(function (l) { S.chamados[l.chamado_id] = { n: l.n, status: l.status, tecnico: l.tecnico, fechadoEm: l.fechado_em }; });
+      fecharOcorrenciasConcluidas();
+      agendar();
+    }).catch(function (e) { console.warn('chamados', e); }).then(function () { chamandoChamados = false; });
+  }
+  // quando a Manutenção concluiu todos os chamados de uma ocorrência, ela é resolvida sozinha
+  function fecharOcorrenciasConcluidas() {
+    ocorrenciasAbertas().forEach(function (o) {
+      var ch = o.chamados || [];
+      if (!ch.length || o.destino !== 'manutencao') return;
+      var todos = ch.every(function (c) { var s = S.chamados[c.id]; return s && (s.status === 'concluido' || s.status === 'cancelado'); });
+      if (!todos) return;
+      var tec = ch.map(function (c) { var s = S.chamados[c.id]; return s && s.tecnico; }).filter(Boolean).join(', ');
+      var texto = 'Chamado' + (ch.length > 1 ? 's' : '') + ' ' + ch.map(function (c) { return '#' + pad4(c.n); }).join(', ') + ' concluído' + (ch.length > 1 ? 's' : '') + ' na Manutenção' + (tec ? ' (' + tec + ')' : '') + '.';
+      S.db.doc('ocorrencias/' + o.id).update({
+        status: 'resolvida', resolvidaEm: Date.now(), resolvidaPor: 'Manutenção', solucao: texto, atualizadaEm: Date.now(),
+        eventos: (o.eventos || []).concat([{ t: Date.now(), texto: texto }]).slice(-40)
+      }).catch(function () {});
+    });
+  }
+  function pad4(n) { return n == null ? '—' : String(n).padStart(4, '0'); }
+
+  /* ===================== renderização ===================== */
+  var agendado = false;
+  function agendar() { if (agendado) return; agendado = true; requestAnimationFrame(function () { agendado = false; render(); }); }
+  function render() {
+    $('#sub-data').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }) + (S.nomeAcesso ? ' · ' + S.nomeAcesso : '');
+    $('#aba-config').hidden = !gerir();
+    var nAb = ocorrenciasAbertas().length, nCrit = ocorrenciasAbertas().filter(function (o) { return o.critica; }).length;
+    $('#nb-oc').innerHTML = nAb ? '<span class="nb' + (nCrit ? '' : ' warn') + '">' + nAb + '</span>' : '';
+    $$('.aba').forEach(function (b) { b.setAttribute('aria-selected', String(b.dataset.view === S.view || (S.view === 'form' && b.dataset.view === 'hoje') || (S.view === 'escolher' && b.dataset.view === 'hoje') || (S.view === 'resultado' && b.dataset.view === 'hoje'))); });
+    $('#btn-novo').hidden = S.view === 'form' || S.view === 'escolher';
+    var tela = $('#tela');
+    if (S.erro && !S.carregouMaq) { tela.innerHTML = '<div class="card vazio"><b>Não foi possível abrir os dados</b>' + esc(msgErro(S.erro)) + '</div>'; return; }
+    if (!S.pronto || !S.carregouMaq || !S.carregouCfg) { tela.innerHTML = '<div class="card vazio">Carregando…</div>'; return; }
+    if (S.view === 'form') return; // o formulário é montado uma vez e não é redesenhado a cada mudança
+    if (S.view === 'config' && $('#form-cfg') && !S.redesenharCfg) return; // não apaga o que está sendo digitado
+    S.redesenharCfg = false;
+    var html = '';
+    if (S.view === 'hoje') html = telaHoje();
+    else if (S.view === 'escolher') html = telaEscolher();
+    else if (S.view === 'resultado') html = telaResultado();
+    else if (S.view === 'ocorrencias') html = telaOcorrencias();
+    else if (S.view === 'historico') html = telaHistorico();
+    else if (S.view === 'maquinas') html = telaMaquinas();
+    else if (S.view === 'config') html = gerir() ? telaConfig() : telaHoje();
+    var foco = document.activeElement && document.activeElement.id;
+    tela.innerHTML = html;
+    var el = foco && document.getElementById(foco);
+    if (el && /^(f-|cfg-)/.test(foco)) {
+      el.focus();
+      if (el.tagName === 'INPUT' && el.type === 'text' || el.type === 'search') { try { el.setSelectionRange(el.value.length, el.value.length); } catch (e) {} }
+    }
+  }
+  function ir(view, params) {
+    S.view = view; S.params = params || {};
+    if (view !== 'form') S.form = null;
+    if (view === 'config') S.redesenharCfg = true;
+    window.scrollTo(0, 0);
+    if (view === 'form') montarForm(); else render();
+  }
+
+  // ---------- Hoje ----------
+  function telaHoje() {
+    var maqs = maquinasAtivas();
+    if (!maqs.length) {
+      return '<div class="card vazio"><b>Nenhuma empilhadeira cadastrada</b>' +
+        (gerir() ? 'Cadastre as máquinas (próprias e locadas) para começar os checklists.<div style="margin-top:14px"><button class="btn" data-acao="nova-maquina">Cadastrar máquina</button></div>'
+          : 'Peça a quem gerencia este módulo para cadastrar as máquinas.') + '</div>';
+    }
+    var sits = maqs.map(function (m) { return { m: m, s: situacao(m) }; });
+    var feitos = sits.filter(function (x) { return x.s.ult; }).length;
+    var bloq = sits.filter(function (x) { return x.s.cls === 'crit'; }).length;
+    var pend = sits.filter(function (x) { return x.s.cls === 'warn'; }).length;
+    var h = '<div class="resumo">' +
+      '<div class="card kpi' + (feitos === maqs.length ? ' ok' : '') + '"><b>' + feitos + '/' + maqs.length + '</b><span>com checklist hoje</span></div>' +
+      '<div class="card kpi' + (bloq ? ' crit' : '') + '"><b>' + bloq + '</b><span>bloqueada' + (bloq === 1 ? '' : 's') + '</span></div>' +
+      '<div class="card kpi' + (pend ? ' warn' : '') + '"><b>' + pend + '</b><span>com pendência</span></div>' +
+      '<div class="card kpi"><b>' + ocorrenciasAbertas().length + '</b><span>ocorrência' + (ocorrenciasAbertas().length === 1 ? '' : 's') + ' aberta' + (ocorrenciasAbertas().length === 1 ? '' : 's') + '</span></div></div>';
+    var sem = maqs.length - feitos;
+    if (sem > 0 && new Date().getHours() >= 9) h += '<div class="aviso warn" role="note"><span>⚠</span><span><b>' + sem + ' máquina' + (sem > 1 ? 's' : '') + ' sem checklist hoje.</b> Todas as máquinas, próprias e locadas, precisam do checklist diário antes do uso.</span></div>';
+    h += '<div class="grade">';
+    sits.forEach(function (x) {
+      var m = x.m, s = x.s, loc = locadoraDe(m);
+      h += '<article class="card maq ' + s.cls + '">' +
+        '<div class="maq-topo"><div><div class="maq-cod">' + esc(m.codigo || '') + '</div><div class="maq-nome">' + esc(m.nome || 'Empilhadeira') + '</div>' +
+        '<div class="maq-det">' + esc([m.marca, m.modelo].filter(Boolean).join(' ') || TIPOS_MAQ[m.tipo] || '') + '</div></div>' +
+        (loc ? '<span class="tag loc">Locada · ' + esc(loc.nome) + '</span>' : '<span class="tag idle">Própria</span>') + '</div>' +
+        '<div class="estado ' + s.cls + '">' + esc(s.txt) + '</div>';
+      if (s.doDia.length) {
+        h += '<div class="turnos">' + s.doDia.slice().reverse().map(function (c) {
+          return '<button type="button" class="tag ' + (RESULT[c.resultado] || {}).cls + '" data-acao="ver-checklist" data-id="' + esc(c.id) + '" data-mes="' + esc(mesDe(c.data)) + '" style="border:0;cursor:pointer">' +
+            esc(horaDe(c.em)) + ' · ' + esc(c.operador || '') + (c.turno ? ' · ' + esc(c.turno) : '') + '</button>';
+        }).join('') + '</div>';
+      }
+      if (s.oc) {
+        h += '<div class="maq-det">Ocorrência: ' + esc((s.oc.itens || []).map(function (i) { return i.nome; }).slice(0, 2).join('; ')) + ((s.oc.itens || []).length > 2 ? '…' : '') +
+          ' <button type="button" class="btn ghost sm" data-acao="ir" data-view="ocorrencias">ver</button></div>';
+      }
+      h += '<div class="linha-ctl"><button class="btn' + (s.ult ? ' sec' : '') + '" data-acao="checklist" data-id="' + esc(m.id) + '">' + (s.ult ? 'Novo checklist' : 'Fazer checklist') + '</button></div></article>';
+    });
+    return h + '</div>';
+  }
+  function telaEscolher() {
+    var maqs = maquinasAtivas();
+    if (!maqs.length) return telaHoje();
+    return '<h2 style="font-size:24px;margin-bottom:12px">Qual máquina?</h2><div class="escolha">' + maqs.map(function (m) {
+      var s = situacao(m), loc = locadoraDe(m);
+      return '<button type="button" data-acao="checklist" data-id="' + esc(m.id) + '"><span class="maq-cod">' + esc(m.codigo || '') + '</span>' +
+        '<span class="maq-nome" style="font-size:20px">' + esc(m.nome || '') + '</span><span class="maq-det">' + esc([m.marca, m.modelo].filter(Boolean).join(' ')) +
+        (loc ? ' · locada (' + esc(loc.nome) + ')' : ' · própria') + '</span><span class="tag ' + s.cls + '" style="align-self:flex-start;margin-top:4px">' + esc(s.ult ? 'Feito hoje ' + horaDe(s.ult.em) : 'Sem checklist hoje') + '</span></button>';
+    }).join('') + '</div><div class="acoes-form"><button class="btn sec" data-acao="ir" data-view="hoje">Voltar</button></div>';
+  }
+
+  // ---------- formulário do checklist ----------
+  function montarForm() {
+    var m = Object.assign({ id: S.params.id }, S.maquinas[S.params.id] || {});
+    if (!S.maquinas[S.params.id]) { ir('hoje'); toast('Máquina não encontrada.'); return; }
+    var itens = itensDaMaquina(m);
+    var c = cfg(), loc = locadoraDe(m);
+    var ultOp = ls('operador') || '';
+    var operadores = {};
+    Object.keys(S.checklists).forEach(function (ym) { checklistsDoMes(ym).forEach(function (x) { if (x.operador) operadores[x.operador] = 1; }); });
+    S.form = { maquinaId: m.id, itens: itens, resp: {}, obs: {}, assinatura: null };
+    var h = '<form id="form-ck" class="card form" novalidate autocomplete="off">' +
+      '<div class="maq-topo"><div><div class="maq-cod">' + esc(m.codigo || '') + '</div><h2 style="font-size:28px">' + esc(m.nome || 'Empilhadeira') + '</h2>' +
+      '<div class="maq-det">' + esc([TIPOS_MAQ[m.tipo] || '', [m.marca, m.modelo].filter(Boolean).join(' ')].filter(Boolean).join(' · ')) + '</div></div>' +
+      (loc ? '<span class="tag loc">Locada · ' + esc(loc.nome) + '</span>' : '<span class="tag idle">Própria</span>') + '</div>' +
+      '<div class="campos" style="margin-top:14px">' +
+      '<label class="f">Operador<input class="i" id="f-operador" name="operador" list="lista-operadores" value="' + esc(ultOp) + '" required maxlength="60"></label>' +
+      '<datalist id="lista-operadores">' + Object.keys(operadores).sort().map(function (o) { return '<option value="' + esc(o) + '">'; }).join('') + '</datalist>' +
+      '<label class="f">Turno<select class="i" id="f-turno" name="turno"><option value="">—</option>' + c.turnos.map(function (t) { return '<option' + (ls('turno') === t ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Horímetro <span class="dica">' + (m.horimetro ? 'último: ' + fmtNum(m.horimetro) + ' h' : 'horas no painel') + '</span><input class="i" id="f-horimetro" name="horimetro" inputmode="decimal" placeholder="opcional"></label>' +
+      '</div>' +
+      '<div class="progresso" aria-hidden="true"><div class="trilho"><i id="prog"></i></div><span id="prog-txt">0/' + itens.length + '</span></div>';
+    GRUPOS.forEach(function (g) {
+      var doGrupo = itens.filter(function (it) { return it.grupo === g.id; });
+      if (!doGrupo.length) return;
+      h += '<section class="grupo"><h3>' + esc(g.nome) + (g.dica ? ' <small>' + esc(g.dica) + '</small>' : '') + '</h3>';
+      doGrupo.forEach(function (it) {
+        h += '<div class="item" data-item="' + esc(it.id) + '"><div class="item-linha"><span class="item-nome" id="lbl-' + esc(it.id) + '">' + esc(it.nome) +
+          (it.critico ? '<span class="crit-marca" title="Com problema, a máquina fica bloqueada">crítico</span>' : '') + '</span>' +
+          '<span class="seg" role="group" aria-labelledby="lbl-' + esc(it.id) + '">' +
+          '<button type="button" data-v="ok" aria-pressed="false">OK</button>' +
+          '<button type="button" data-v="nok" aria-pressed="false">Não OK</button>' +
+          (it.critico ? '' : '<button type="button" data-v="na" aria-pressed="false" title="Não se aplica">N/A</button>') +
+          '</span></div><div class="obs" hidden><textarea class="i" maxlength="300" rows="2" placeholder="O que está errado? (ajuda a manutenção)"></textarea></div></div>';
+      });
+      h += '</section>';
+    });
+    h += '<label class="f largo" style="margin-top:14px">Observações <span class="dica">opcional</span><textarea class="i" id="f-obs" maxlength="500" rows="2"></textarea></label>' +
+      '<div class="res-previa" id="res-previa"></div>' +
+      '<div class="assin"><div class="assin-topo"><span>Assinatura do operador</span><button type="button" class="btn ghost sm" id="limpar-assin">Limpar</button></div>' +
+      '<canvas id="pad" aria-label="Área para assinar com o dedo"></canvas><div class="muted" style="font-size:13px;margin-top:4px">Assine com o dedo dentro do quadro.</div></div>' +
+      '<p class="erro" id="f-erro" role="alert"></p>' +
+      '<div class="acoes-form"><button type="submit" class="btn grande" id="f-enviar">Concluir checklist</button><button type="button" class="btn sec" data-acao="ir" data-view="hoje">Cancelar</button></div>' +
+      '</form>';
+    $('#tela').innerHTML = h;
+    $('#btn-novo').hidden = true;
+    var f = $('#form-ck');
+    f.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.seg button');
+      if (!b) return;
+      var item = b.closest('.item'), id = item.dataset.item, v = b.dataset.v;
+      S.form.resp[id] = v;
+      $$('button', b.parentNode).forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      var it = S.form.itens.find(function (x) { return x.id === id; });
+      item.classList.toggle('nok', v === 'nok');
+      item.classList.toggle('leve', v === 'nok' && !(it && it.critico));
+      var obs = $('.obs', item);
+      obs.hidden = v !== 'nok';
+      if (v === 'nok') $('textarea', obs).focus();
+      atualizarPrevia();
+    });
+    f.addEventListener('input', function (ev) {
+      var ta = ev.target.closest('.item textarea');
+      if (ta) S.form.obs[ta.closest('.item').dataset.item] = ta.value;
+    });
+    f.addEventListener('submit', enviarChecklist);
+    iniciarPad();
+    atualizarPrevia();
+  }
+  function resultadoDe(itens, resp) {
+    var crit = false, leve = false;
+    itens.forEach(function (it) { if (resp[it.id] === 'nok') { if (it.critico) crit = true; else leve = true; } });
+    return crit ? 'bloqueada' : leve ? 'restricao' : 'liberada';
+  }
+  function atualizarPrevia() {
+    var F = S.form, tot = F.itens.length, feitos = F.itens.filter(function (it) { return F.resp[it.id]; }).length;
+    $('#prog').style.width = (tot ? feitos / tot * 100 : 0) + '%';
+    $('#prog-txt').textContent = feitos + '/' + tot;
+    var r = resultadoDe(F.itens, F.resp), R = RESULT[r], p = $('#res-previa');
+    p.className = 'res-previa ' + R.cls;
+    var falta = tot - feitos;
+    p.innerHTML = '<div class="estado ' + R.cls + '">' + esc(R.longo) + '</div><div class="muted" style="font-size:14px;margin-top:2px">' +
+      (falta ? 'Faltam ' + falta + ' ite' + (falta > 1 ? 'ns' : 'm') + ' para responder.' :
+        r === 'bloqueada' ? 'Há item crítico com problema: a máquina não pode ser usada até o conserto.' :
+          r === 'restricao' ? 'Há item com problema que não impede o uso. Vai virar ocorrência para conserto.' : 'Tudo certo.') + '</div>';
+  }
+  function iniciarPad() {
+    var c = $('#pad'); if (!c) return;
+    var r = c.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    var W = Math.round(r.width) || 300, H = Math.round(r.height) || 170;
+    c.width = W * dpr; c.height = H * dpr;
+    var ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = getComputedStyle(document.body).color;
+    var tracos = [], atual = null, ux = 0, uy = 0;
+    function pos(e) { var b = c.getBoundingClientRect(); return [Math.round((e.clientX - b.left) * W / b.width), Math.round((e.clientY - b.top) * H / b.height)]; }
+    c.addEventListener('pointerdown', function (e) {
+      e.preventDefault(); try { c.setPointerCapture(e.pointerId); } catch (x) {}
+      var p = pos(e); ux = p[0]; uy = p[1]; atual = 'M' + ux + ' ' + uy + 'L' + ux + ' ' + uy; tracos.push(atual);
+      ctx.beginPath(); ctx.moveTo(ux, uy); ctx.lineTo(ux + 0.1, uy); ctx.stroke();
+    });
+    c.addEventListener('pointermove', function (e) {
+      if (atual === null) return; e.preventDefault();
+      var p = pos(e); if (Math.abs(p[0] - ux) + Math.abs(p[1] - uy) < 2) return;
+      ctx.beginPath(); ctx.moveTo(ux, uy); ctx.lineTo(p[0], p[1]); ctx.stroke();
+      atual += 'L' + p[0] + ' ' + p[1]; tracos[tracos.length - 1] = atual; ux = p[0]; uy = p[1];
+    });
+    function fim() { if (atual === null) return; atual = null; if (S.form) S.form.assinatura = { w: W, h: H, d: tracos.join('') }; }
+    c.addEventListener('pointerup', fim); c.addEventListener('pointercancel', fim); c.addEventListener('pointerleave', fim);
+    $('#limpar-assin').addEventListener('click', function () { tracos = []; atual = null; if (S.form) S.form.assinatura = null; ctx.clearRect(0, 0, W, H); });
+  }
+  var ASS_OK = /^[ML0-9 .\-]{1,60000}$/;
+  function svgAssinatura(a, alt) {
+    if (!a || !a.d || !ASS_OK.test(a.d)) return '';
+    var w = Number(a.w) || 300, h = Number(a.h) || 150;
+    return '<svg class="assin-img" viewBox="0 0 ' + w + ' ' + h + '" style="height:' + alt + 'px;width:auto" role="img" aria-label="Assinatura"><path d="' + a.d + '" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  function enviarChecklist(ev) {
+    ev.preventDefault();
+    var F = S.form, m = Object.assign({ id: F.maquinaId }, S.maquinas[F.maquinaId] || {});
+    var erro = $('#f-erro'); erro.textContent = '';
+    var operador = $('#f-operador').value.trim(), turno = $('#f-turno').value, horTxt = $('#f-horimetro').value.trim();
+    var falta = F.itens.filter(function (it) { return !F.resp[it.id]; });
+    if (!operador) { erro.textContent = 'Informe o nome do operador.'; $('#f-operador').focus(); return; }
+    if (falta.length) {
+      erro.textContent = 'Responda todos os itens (faltam ' + falta.length + ').';
+      var el = $('.item[data-item="' + falta[0].id + '"]'); if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
+    var semObs = F.itens.filter(function (it) { return F.resp[it.id] === 'nok' && !String(F.obs[it.id] || '').trim(); });
+    if (semObs.length) {
+      erro.textContent = 'Descreva o problema dos itens marcados como "Não OK".';
+      var el2 = $('.item[data-item="' + semObs[0].id + '"] textarea'); if (el2) el2.focus();
+      return;
+    }
+    var hor = null;
+    if (horTxt) {
+      hor = Number(horTxt.replace(/\./g, '').replace(',', '.'));
+      if (!isFinite(hor) || hor < 0 || hor > 999999) { erro.textContent = 'Horímetro inválido.'; $('#f-horimetro').focus(); return; }
+    }
+    if (!F.assinatura || !F.assinatura.d) { erro.textContent = 'Falta a assinatura do operador.'; $('#pad').scrollIntoView({ block: 'center' }); return; }
+    var agora = Date.now(), data = hoje(), ym = mesDe(data);
+    var resultado = resultadoDe(F.itens, F.resp);
+    var falhas = F.itens.filter(function (it) { return F.resp[it.id] === 'nok'; })
+      .map(function (it) { return { id: it.id, nome: it.nome, critico: !!it.critico, falha: it.falha || 'Outro', obs: String(F.obs[it.id] || '').trim().slice(0, 300) }; });
+    var loc = locadoraDe(m);
+    var id = 'ck-' + data.replace(/-/g, '') + '-' + uid().slice(-8);
+    var respostas = {}; F.itens.forEach(function (it) { respostas[it.id] = F.resp[it.id]; });
+    var doc = {
+      maquinaId: m.id, maquinaCodigo: m.codigo || '', maquinaNome: m.nome || '', tipo: m.tipo || '',
+      propriedade: m.propriedade || 'propria', locadora: loc ? loc.nome : '',
+      data: data, em: agora, turno: turno, operador: operador.slice(0, 60), horimetro: hor,
+      itens: F.itens.map(function (it) { return { id: it.id, nome: it.nome, critico: !!it.critico }; }),
+      respostas: respostas, falhas: falhas, obsGeral: $('#f-obs').value.trim().slice(0, 500),
+      resultado: resultado, registradoPor: S.nomeAcesso || '', temAssinatura: true
+    };
+    var btn = $('#f-enviar'); btn.disabled = true; btn.textContent = 'Gravando…';
+    ls('operador', operador); ls('turno', turno);
+    S.db.doc('checklists-' + ym + '/' + id).set(doc).then(function () {
+      // assinatura fica num registro à parte (a lista do mês carrega mais rápido)
+      return S.db.doc('assinaturas/' + id).set({ assinatura: F.assinatura, em: agora }).catch(function (e) { console.warn('assinatura', e); });
+    }).then(function () {
+      var patch = { ultimo: { checklistId: id, data: data, em: agora, resultado: resultado, operador: operador, turno: turno }, atualizadoEm: agora };
+      if (hor != null && (!m.horimetro || hor >= m.horimetro)) patch.horimetro = hor;
+      return S.db.doc('maquinas/' + m.id).update(patch).catch(function (e) { console.warn('máquina', e); });
+    }).then(function () {
+      return falhas.length ? registrarOcorrencia(m, doc, id, falhas) : null;
+    }).then(function (oc) {
+      S.ultimoResultado = { id: id, ym: ym, doc: doc, oc: oc };
+      S.form = null;
+      ir('resultado');
+    }).catch(function (e) {
+      console.error(e);
+      btn.disabled = false; btn.textContent = 'Concluir checklist';
+      erro.textContent = msgErro(e) + ' Nada foi perdido: confira a internet e toque em "Concluir checklist" de novo.';
+    });
+  }
+
+  // problemas do checklist → ocorrência (e chamado na Manutenção, se a máquina é própria)
+  function registrarOcorrencia(m, ck, ckId, falhas) {
+    var agora = Date.now(), loc = locadoraDe(m);
+    var aberta = ocorrenciaAbertaDa(m.id);
+    var critica = falhas.some(function (f) { return f.critico; });
+    var novos = aberta ? falhas.filter(function (f) { return !(aberta.itens || []).some(function (i) { return i.id === f.id; }); }) : falhas;
+    var destino = loc ? 'locadora' : 'manutencao';
+    var abrirChamado = destino === 'manutencao' && novos.length
+      ? S.db.rpc('empilhadeira_abrir_chamado', { p: {
+        descricao: 'Checklist diário da empilhadeira ' + (m.codigo || '') + ' (' + (m.nome || '') + ') em ' + dataBR(ck.data) + ' ' + horaDe(ck.em) + ', operador ' + ck.operador + ':\n' +
+          novos.map(function (f) { return '• ' + f.nome + (f.critico ? ' [CRÍTICO — máquina bloqueada]' : '') + (f.obs ? ': ' + f.obs : ''); }).join('\n') +
+          (ck.horimetro != null ? '\nHorímetro: ' + ck.horimetro + ' h' : ''),
+        prioridade: novos.some(function (f) { return f.critico; }) ? 2 : 3,
+        tipo: (novos.find(function (f) { return f.critico; }) || novos[0]).falha || 'Segurança',
+        nome: ck.operador, maquina: (m.codigo ? m.codigo + ' · ' : '') + (m.nome || 'Empilhadeira') + ([m.marca, m.modelo].filter(Boolean).length ? ' (' + [m.marca, m.modelo].filter(Boolean).join(' ') + ')' : ''),
+        tag: m.codigo || '', checklistId: ckId
+      } }).then(function (r) { return r && r.id ? { id: r.id, n: r.n, em: agora } : null; }, function (e) { console.warn('chamado', e); return { erro: true }; })
+      : Promise.resolve(null);
+    return abrirChamado.then(function (ch) {
+      var itensNovos = novos.map(function (f) { return { id: f.id, nome: f.nome, critico: f.critico, obs: f.obs, checklistId: ckId }; });
+      if (aberta) {
+        var ev = { t: agora, texto: 'Checklist de ' + dataBR(ck.data) + ' ' + horaDe(ck.em) + ' (' + ck.operador + ') ' + (novos.length ? 'encontrou mais: ' + novos.map(function (f) { return f.nome; }).join('; ') : 'repetiu o problema') + (ch && ch.n ? ' — chamado #' + pad4(ch.n) : '') };
+        var patch = { atualizadaEm: agora, critica: aberta.critica || critica, eventos: (aberta.eventos || []).concat([ev]).slice(-40), checklists: (aberta.checklists || []).concat([ckId]).slice(-60) };
+        if (itensNovos.length) patch.itens = (aberta.itens || []).concat(itensNovos);
+        if (ch && ch.id) patch.chamados = (aberta.chamados || []).concat([ch]);
+        if (ch && ch.erro) patch.chamadoPendente = true;
+        return S.db.doc('ocorrencias/' + aberta.id).update(patch).then(function () { return Object.assign({ id: aberta.id }, aberta, patch); });
+      }
+      var oid = 'oc-' + uid();
+      var doc = {
+        maquinaId: m.id, maquinaCodigo: m.codigo || '', maquinaNome: m.nome || '', propriedade: m.propriedade || 'propria',
+        locadoraId: loc ? loc.id : '', locadora: loc ? loc.nome : '', destino: destino, critica: critica,
+        itens: itensNovos, checklists: [ckId], status: 'aberta', abertaEm: agora, abertaPor: ck.operador, atualizadaEm: agora,
+        chamados: ch && ch.id ? [ch] : [], chamadoPendente: !!(ch && ch.erro),
+        eventos: [{ t: agora, texto: 'Aberta pelo checklist de ' + dataBR(ck.data) + ' ' + horaDe(ck.em) + ' (' + ck.operador + ')' + (ch && ch.n ? ' — chamado #' + pad4(ch.n) + ' na Manutenção' : loc ? ' — máquina locada: acionar a ' + loc.nome : '') }]
+      };
+      return S.db.doc('ocorrencias/' + oid).set(doc).then(function () { return Object.assign({ id: oid }, doc); });
+    });
+  }
+
+  function telaResultado() {
+    var u = S.ultimoResultado; if (!u) return telaHoje();
+    var d = u.doc, R = RESULT[d.resultado], oc = u.oc, m = S.maquinas[d.maquinaId] || {}, loc = locadoraDe(Object.assign({}, m));
+    var h = '<div class="card resultado ' + R.cls + '"><div class="maq-cod">' + esc(d.maquinaCodigo) + ' · ' + esc(d.maquinaNome) + '</div>' +
+      '<div class="grande-estado">' + esc(R.longo) + '</div>';
+    if (d.resultado === 'liberada') h += '<p>Checklist registrado às ' + esc(horaDe(d.em)) + '. Bom trabalho e operação segura.</p>';
+    else {
+      h += '<p>' + (d.resultado === 'bloqueada' ? '<b>Não use esta máquina.</b> Deixe-a parada e sinalizada e avise o líder do turno.' : 'A máquina pode ser usada, mas o problema precisa de conserto.') + '</p>';
+      if (oc && oc.destino === 'manutencao') {
+        var ch = (oc.chamados || []).slice(-1)[0];
+        h += '<p>' + (ch && ch.n ? 'Chamado <b>#' + pad4(ch.n) + '</b> aberto na Manutenção.' : oc.chamadoPendente ? 'A ocorrência foi registrada, mas o chamado na Manutenção não abriu agora. Quem gerencia o módulo pode abrir de novo em Ocorrências.' : 'Ocorrência atualizada.') + '</p>';
+      } else if (oc && oc.destino === 'locadora') {
+        h += '<p>Máquina locada: a ocorrência foi registrada para a gestão acionar a <b>' + esc(oc.locadora || 'locadora') + '</b>.</p>';
+        if (gerir()) h += botaoWhats(oc, loc);
+      }
+    }
+    return h + '<div class="acoes-form" style="justify-content:center"><button class="btn" data-acao="ir" data-view="hoje">Voltar ao painel</button>' +
+      '<button class="btn sec" data-acao="ver-checklist" data-id="' + esc(u.id) + '" data-mes="' + esc(u.ym) + '">Ver checklist</button></div></div>';
+  }
+
+  // ---------- ocorrências ----------
+  function textoWhats(oc) {
+    var m = S.maquinas[oc.maquinaId] || {};
+    return 'Olá! Aqui é da Levíssima Água Mineral (Americana/SP).\n' +
+      'A empilhadeira ' + [m.codigo, m.nome].filter(Boolean).join(' – ') + (m.marca || m.modelo ? ' (' + [m.marca, m.modelo].filter(Boolean).join(' ') + ')' : '') + (m.serie ? ', nº de série ' + m.serie : '') +
+      ', locada com vocês, apresentou problema no checklist diário:\n' +
+      (oc.itens || []).map(function (i) { return '• ' + i.nome + (i.obs ? ': ' + i.obs : ''); }).join('\n') +
+      (oc.critica ? '\nA máquina está parada (bloqueada para uso).' : '') +
+      '\nPodem enviar um técnico? Obrigado.';
+  }
+  function botaoWhats(oc, loc) {
+    loc = loc || cfg().locadoras.find(function (x) { return x.id === oc.locadoraId; }) || null;
+    var num = loc && soDigitos(loc.whatsapp);
+    if (!num) return '<p class="muted" style="font-size:14px">Cadastre o WhatsApp da locadora em Configurações para avisar direto daqui.</p>';
+    if (num.length <= 11) num = '55' + num;
+    return '<div class="acoes-form" style="justify-content:center"><a class="btn ok" target="_blank" rel="noopener" data-acao="whats" data-id="' + esc(oc.id) + '" href="https://wa.me/' + esc(num) + '?text=' + encodeURIComponent(textoWhats(oc)) + '">Avisar a ' + esc(loc.nome) + ' pelo WhatsApp</a></div>';
+  }
+  function statusChamado(c) {
+    var s = S.chamados[c.id];
+    var nomes = { aberto: 'aberto', atendimento: 'em atendimento', aguardando: 'aguardando', concluido: 'concluído', cancelado: 'cancelado' };
+    return 'Chamado #' + pad4(c.n) + (s ? ' — ' + (nomes[s.status] || s.status) + (s.tecnico ? ' (' + s.tecnico + ')' : '') : '');
+  }
+  function telaOcorrencias() {
+    var lista = ocorrenciasLista().sort(function (a, b) {
+      var aa = a.status === 'aberta' || a.status === 'acionada', bb = b.status === 'aberta' || b.status === 'acionada';
+      if (aa !== bb) return aa ? -1 : 1;
+      if (aa && a.critica !== b.critica) return a.critica ? -1 : 1;
+      return (b.atualizadaEm || b.abertaEm || 0) - (a.atualizadaEm || a.abertaEm || 0);
+    });
+    if (!lista.length) return '<div class="card vazio"><b>Nenhuma ocorrência</b>Os problemas encontrados nos checklists aparecem aqui.</div>';
+    var mostrar = S.params.todas ? lista : lista.filter(function (o, i) { return o.status === 'aberta' || o.status === 'acionada' || i < 30; });
+    var h = '<div class="lista">';
+    mostrar.forEach(function (o) {
+      var aberta = o.status === 'aberta' || o.status === 'acionada', st = ST_OC[o.status] || ST_OC.aberta;
+      h += '<article class="card oc' + (o.critica && aberta ? ' crit' : '') + (aberta ? '' : ' fechada') + '">' +
+        '<div class="oc-topo"><div><div class="maq-cod">' + esc(o.maquinaCodigo) + '</div><div class="maq-nome" style="font-size:20px">' + esc(o.maquinaNome) + '</div></div>' +
+        '<div class="linha-ctl">' + (o.critica && aberta ? '<span class="tag crit">Bloqueada</span>' : '') + '<span class="tag ' + st.cls + '">' + esc(st.nome) + '</span>' +
+        (o.destino === 'locadora' ? '<span class="tag loc">Locadora · ' + esc(o.locadora) + '</span>' : '<span class="tag idle">Manutenção interna</span>') + '</div></div>' +
+        '<ul>' + (o.itens || []).map(function (i) { return '<li><b>' + esc(i.nome) + '</b>' + (i.critico ? ' <span class="tag crit" style="padding:0 6px;font-size:11px">crítico</span>' : '') + (i.obs ? ' — ' + esc(i.obs) : '') + '</li>'; }).join('') + '</ul>' +
+        '<div class="meta">Aberta em ' + esc(dataHora(o.abertaEm)) + ' por ' + esc(o.abertaPor || '—') +
+        ((o.chamados || []).length ? ' · ' + (o.chamados || []).map(function (c) { return esc(statusChamado(c)); }).join(' · ') : '') +
+        (o.acionadaEm ? ' · locadora acionada em ' + esc(dataHora(o.acionadaEm)) + (o.acionadaPor ? ' por ' + esc(o.acionadaPor) : '') : '') +
+        (o.resolvidaEm ? ' · resolvida em ' + esc(dataHora(o.resolvidaEm)) : '') + '</div>' +
+        (o.solucao ? '<div><b>Solução:</b> ' + esc(o.solucao) + '</div>' : '');
+      if (aberta && gerir()) {
+        h += '<div class="linha-ctl">';
+        if (o.destino === 'locadora') {
+          var loc = cfg().locadoras.find(function (x) { return x.id === o.locadoraId; });
+          var num = loc && soDigitos(loc.whatsapp);
+          if (num) h += '<a class="btn ok sm" target="_blank" rel="noopener" data-acao="whats" data-id="' + esc(o.id) + '" href="https://wa.me/' + esc(num.length <= 11 ? '55' + num : num) + '?text=' + encodeURIComponent(textoWhats(o)) + '">Avisar a ' + esc(loc.nome) + ' (WhatsApp)</a>';
+          if (o.status === 'aberta') h += '<button class="btn sec sm" data-acao="acionada" data-id="' + esc(o.id) + '">Marcar locadora acionada</button>';
+        }
+        if (o.destino === 'manutencao' && (o.chamadoPendente || !(o.chamados || []).length)) h += '<button class="btn sec sm" data-acao="reabrir-chamado" data-id="' + esc(o.id) + '">Abrir chamado na Manutenção</button>';
+        h += '<button class="btn sm" data-acao="resolver" data-id="' + esc(o.id) + '">Resolvida</button>' +
+          '<button class="btn ghost sm" data-acao="cancelar-oc" data-id="' + esc(o.id) + '">Cancelar</button></div>';
+      }
+      h += '</article>';
+    });
+    h += '</div>';
+    if (!S.params.todas && mostrar.length < lista.length) h += '<div class="acoes-form"><button class="btn sec" data-acao="ir" data-view="ocorrencias" data-todas="1">Mostrar todas (' + lista.length + ')</button></div>';
+    return h;
+  }
+
+  // ---------- histórico ----------
+  function telaHistorico() {
+    var ym = S.params.mes || mesDe(hoje());
+    assinarMes(ym);
+    var carregado = !!S.checklists[ym];
+    var maq = S.params.maquina || '', op = S.params.operador || '', res = S.params.resultado || '';
+    var lista = checklistsDoMes(ym).filter(function (c) {
+      return (!maq || c.maquinaId === maq) && (!op || norm(c.operador).indexOf(norm(op)) >= 0) && (!res || c.resultado === res);
+    }).sort(function (a, b) { return (b.em || 0) - (a.em || 0); });
+    var h = '<div class="filtros">' +
+      '<label class="f">Mês<input class="i" type="month" id="f-h-mes" value="' + esc(ym) + '"></label>' +
+      '<label class="f">Máquina<select class="i" id="f-h-maq"><option value="">Todas</option>' + todasMaquinas().map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === maq ? ' selected' : '') + '>' + esc((m.codigo ? m.codigo + ' · ' : '') + (m.nome || '')) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Resultado<select class="i" id="f-h-res"><option value="">Todos</option>' + Object.keys(RESULT).map(function (k) { return '<option value="' + k + '"' + (k === res ? ' selected' : '') + '>' + esc(RESULT[k].nome) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Operador<input class="i" id="f-h-op" value="' + esc(op) + '" placeholder="nome"></label>' +
+      '<button class="btn sec" data-acao="csv" ' + (lista.length ? '' : 'disabled') + '>Baixar planilha (.csv)</button></div>';
+    if (!carregado) return h + '<div class="card vazio">Carregando…</div>';
+    if (!lista.length) return h + '<div class="card vazio"><b>Nenhum checklist</b>Nada encontrado em ' + esc(dataBR(ym)) + ' com esses filtros.</div>';
+    h += '<div class="card tbl-box"><table><thead><tr><th>Data</th><th>Máquina</th><th>Operador</th><th>Turno</th><th>Horímetro</th><th>Resultado</th><th>Problemas</th></tr></thead><tbody>';
+    lista.slice(0, 500).forEach(function (c) {
+      var R = RESULT[c.resultado] || { cls: 'idle', nome: c.resultado };
+      h += '<tr class="clic" data-acao="ver-checklist" data-id="' + esc(c.id) + '" data-mes="' + esc(ym) + '" tabindex="0"><td class="mono">' + esc(dataBR(c.data)) + ' ' + esc(horaDe(c.em)) + '</td><td>' + esc(c.maquinaCodigo) + ' · ' + esc(c.maquinaNome) + '</td><td>' + esc(c.operador) + '</td><td>' + esc(c.turno || '—') + '</td><td class="mono">' + esc(c.horimetro != null ? fmtNum(c.horimetro) : '—') +
+        '</td><td><span class="tag ' + R.cls + '">' + esc(R.nome) + '</span></td><td>' + esc((c.falhas || []).map(function (f) { return f.nome; }).join('; ') || '—') + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    if (lista.length > 500) h += '<p class="muted">Mostrando 500 de ' + lista.length + '. Use os filtros ou a planilha.</p>';
+    return h;
+  }
+  function verChecklist(id, ym) {
+    var c = (S.checklists[ym] || {})[id];
+    var mostrar = function (doc, ass) {
+      var R = RESULT[doc.resultado] || { cls: 'idle', longo: doc.resultado };
+      var resp = doc.respostas || {};
+      var h = '<h2>' + esc(doc.maquinaCodigo) + ' · ' + esc(doc.maquinaNome) + '</h2>' +
+        '<div class="estado ' + R.cls + '" style="margin-bottom:6px">' + esc(R.longo) + '</div>' +
+        '<div class="muted">' + esc(dataBR(doc.data)) + ' às ' + esc(horaDe(doc.em)) + ' · ' + esc(doc.operador) + (doc.turno ? ' · ' + esc(doc.turno) : '') + (doc.horimetro != null ? ' · horímetro ' + esc(fmtNum(doc.horimetro)) + ' h' : '') + '</div>' +
+        '<div class="det-itens">' + (doc.itens || []).map(function (it) {
+          var v = resp[it.id], f = (doc.falhas || []).find(function (x) { return x.id === it.id; });
+          return '<span>' + esc(it.nome) + (f && f.obs ? '<br><span class="muted" style="font-size:14px">' + esc(f.obs) + '</span>' : '') + '</span><span class="r-' + esc(v || 'na') + '">' + (v === 'ok' ? 'OK' : v === 'nok' ? 'Não OK' : 'N/A') + '</span>';
+        }).join('') + '</div>' +
+        (doc.obsGeral ? '<p><b>Observações:</b> ' + esc(doc.obsGeral) + '</p>' : '') +
+        (ass ? '<div style="margin-top:10px"><div class="muted" style="font-size:13px">Assinatura do operador</div>' + svgAssinatura(ass, 90) + '</div>' : '') +
+        '<div class="acoes-form"><button class="btn sec" data-acao="fechar-dlg">Fechar</button></div>';
+      abrirDialogo(h);
+    };
+    var obter = c ? Promise.resolve(c) : S.db.doc('checklists-' + ym + '/' + id).get().then(function (s) { return s.exists ? s.data() : null; });
+    obter.then(function (doc) {
+      if (!doc) { toast('Checklist não encontrado.'); return; }
+      mostrar(doc, null);
+      S.db.doc('assinaturas/' + id).get().then(function (s) { if (s.exists && $('#dlg').open) mostrar(doc, (s.data() || {}).assinatura); }).catch(function () {});
+    }).catch(function (e) { toast(msgErro(e)); });
+  }
+  function baixarCSV() {
+    var ym = S.params.mes || mesDe(hoje());
+    var maq = S.params.maquina || '', op = S.params.operador || '', res = S.params.resultado || '';
+    var lista = checklistsDoMes(ym).filter(function (c) { return (!maq || c.maquinaId === maq) && (!op || norm(c.operador).indexOf(norm(op)) >= 0) && (!res || c.resultado === res); })
+      .sort(function (a, b) { return (a.em || 0) - (b.em || 0); });
+    var q = function (v) { return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"'; };
+    var linhas = [['Data', 'Hora', 'Código', 'Máquina', 'Propriedade', 'Locadora', 'Operador', 'Turno', 'Horímetro', 'Resultado', 'Itens com problema', 'Observações', 'Registrado por']]
+      .concat(lista.map(function (c) {
+        return [dataBR(c.data), horaDe(c.em), c.maquinaCodigo, c.maquinaNome, c.propriedade === 'locada' ? 'Locada' : 'Própria', c.locadora || '', c.operador, c.turno || '', c.horimetro != null ? String(c.horimetro).replace('.', ',') : '',
+          (RESULT[c.resultado] || {}).longo || c.resultado, (c.falhas || []).map(function (f) { return f.nome + (f.obs ? ' (' + f.obs + ')' : ''); }).join('; '), c.obsGeral || '', c.registradoPor || ''];
+      }));
+    var csv = '﻿' + linhas.map(function (l) { return l.map(q).join(';'); }).join('\r\n');
+    window.claude.use('downloads').then(function (dl) {
+      if (!dl) throw { code: 'unavailable' };
+      return dl.save({ filename: 'checklist-empilhadeiras-' + ym + '.csv', data: csv });
+    }).then(function () { toast('Planilha pronta.'); }, function (e) { if (!e || e.code !== 'declined') toast('Não foi possível gerar a planilha.'); });
+  }
+
+  // ---------- máquinas ----------
+  function telaMaquinas() {
+    var maqs = todasMaquinas();
+    var h = gerir() ? '<div class="barra-acao"><button class="btn" data-acao="nova-maquina">Cadastrar máquina</button><span class="muted">O código (ex.: EMP-01) aparece na etiqueta da máquina.</span></div>' : '';
+    if (!maqs.length) return h + '<div class="card vazio"><b>Nenhuma máquina cadastrada</b></div>';
+    h += '<div class="card tbl-box"><table><thead><tr><th>Código</th><th>Máquina</th><th>Tipo</th><th>Propriedade</th><th>Horímetro</th><th>Situação</th><th></th></tr></thead><tbody>';
+    maqs.forEach(function (m) {
+      var loc = locadoraDe(m), s = situacao(m);
+      h += '<tr><td class="mono">' + esc(m.codigo || '') + '</td><td><b>' + esc(m.nome || '') + '</b><br><span class="muted">' + esc([m.marca, m.modelo].filter(Boolean).join(' ')) + (m.serie ? ' · série ' + esc(m.serie) : '') + '</span></td>' +
+        '<td>' + esc(TIPOS_MAQ[m.tipo] || '—') + '</td><td>' + (loc ? 'Locada · ' + esc(loc.nome) : 'Própria') + '</td><td class="mono">' + esc(m.horimetro ? fmtNum(m.horimetro) + ' h' : '—') + '</td>' +
+        '<td>' + (m.ativa === false ? '<span class="tag idle">Desativada</span>' : '<span class="tag ' + s.cls + '">' + esc(s.ult ? RESULT[s.ult.resultado].nome : 'Sem checklist hoje') + '</span>') + '</td>' +
+        '<td><div class="linha-ctl">' + (gerir() ? '<button class="btn ghost sm" data-acao="editar-maquina" data-id="' + esc(m.id) + '">Editar</button>' : '') +
+        '<button class="btn ghost sm" data-acao="etiqueta" data-id="' + esc(m.id) + '">Etiqueta QR</button></div></td></tr>';
+    });
+    return h + '</tbody></table></div>';
+  }
+  function formMaquina(id) {
+    if (!gerir()) return;
+    var m = id ? Object.assign({ id: id }, S.maquinas[id] || {}) : { tipo: 'eletrica', propriedade: 'propria', ativa: true };
+    var c = cfg();
+    var h = '<h2>' + (id ? 'Editar máquina' : 'Cadastrar máquina') + '</h2><form id="form-maq" novalidate><div class="campos">' +
+      '<label class="f">Código<input class="i" name="codigo" value="' + esc(m.codigo || '') + '" required maxlength="20" placeholder="EMP-01"></label>' +
+      '<label class="f">Nome<input class="i" name="nome" value="' + esc(m.nome || '') + '" required maxlength="60" placeholder="Empilhadeira da expedição"></label>' +
+      '<label class="f">Tipo<select class="i" name="tipo">' + Object.keys(TIPOS_MAQ).map(function (k) { return '<option value="' + k + '"' + (m.tipo === k ? ' selected' : '') + '>' + esc(TIPOS_MAQ[k]) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Marca<input class="i" name="marca" value="' + esc(m.marca || '') + '" maxlength="30" placeholder="Linde, Toyota…"></label>' +
+      '<label class="f">Modelo<input class="i" name="modelo" value="' + esc(m.modelo || '') + '" maxlength="30"></label>' +
+      '<label class="f">Nº de série<input class="i" name="serie" value="' + esc(m.serie || '') + '" maxlength="40"></label>' +
+      '<label class="f">Propriedade<select class="i" name="propriedade"><option value="propria"' + (m.propriedade !== 'locada' ? ' selected' : '') + '>Própria (conserto pela Manutenção)</option><option value="locada"' + (m.propriedade === 'locada' ? ' selected' : '') + '>Locada (conserto pela locadora)</option></select></label>' +
+      '<label class="f" id="campo-locadora"' + (m.propriedade === 'locada' ? '' : ' hidden') + '>Locadora<select class="i" name="locadora">' + c.locadoras.map(function (l) { return '<option value="' + esc(l.id) + '"' + (m.locadora === l.id ? ' selected' : '') + '>' + esc(l.nome + (l.marca ? ' (' + l.marca + ')' : '')) + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Capacidade<input class="i" name="capacidade" value="' + esc(m.capacidade || '') + '" maxlength="20" placeholder="2.500 kg"></label>' +
+      '<label class="f largo">Observações<textarea class="i" name="obs" maxlength="300" rows="2">' + esc(m.obs || '') + '</textarea></label>' +
+      (id ? '<label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" name="ativa"' + (m.ativa !== false ? ' checked' : '') + '> Máquina em uso (desmarque se saiu da empresa)</label>' : '') +
+      '</div><p class="erro" id="maq-erro" role="alert"></p><div class="acoes-form"><button class="btn" type="submit">Salvar</button><button class="btn sec" type="button" data-acao="fechar-dlg">Cancelar</button></div></form>';
+    abrirDialogo(h);
+    var f = $('#form-maq');
+    f.propriedade.addEventListener('change', function () { $('#campo-locadora').hidden = f.propriedade.value !== 'locada'; });
+    f.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var codigo = f.codigo.value.trim().toUpperCase(), nome = f.nome.value.trim();
+      var err = $('#maq-erro');
+      if (!codigo || !nome) { err.textContent = 'Informe o código e o nome.'; return; }
+      var dup = todasMaquinas().find(function (x) { return x.id !== id && String(x.codigo || '').toUpperCase() === codigo; });
+      if (dup) { err.textContent = 'Já existe uma máquina com o código ' + codigo + '.'; return; }
+      var doc = {
+        codigo: codigo, nome: nome, tipo: f.tipo.value, marca: f.marca.value.trim(), modelo: f.modelo.value.trim(), serie: f.serie.value.trim(),
+        propriedade: f.propriedade.value, locadora: f.propriedade.value === 'locada' ? f.locadora.value : '', capacidade: f.capacidade.value.trim(),
+        obs: f.obs.value.trim(), ativa: id ? !!f.ativa.checked : true, atualizadoEm: Date.now()
+      };
+      var btn = f.querySelector('[type=submit]'); btn.disabled = true;
+      var p = id ? S.db.doc('maquinas/' + id).update(doc) : S.db.doc('maquinas/' + uid('m')).set(Object.assign(doc, { criadoEm: Date.now() }));
+      p.then(function () { fecharDialogo(); toast('Máquina salva.'); }, function (e) { btn.disabled = false; err.textContent = msgErro(e); });
+    });
+  }
+
+  // ---------- etiqueta com QR (abre o checklist da máquina direto) ----------
+  var qrP = null;
+  function carregarQR() {
+    if (window.qrcode) return Promise.resolve(window.qrcode);
+    if (!qrP) qrP = new Promise(function (ok, falha) {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+      s.onload = function () { window.qrcode ? ok(window.qrcode) : falha(new Error('qr')); };
+      s.onerror = function () { qrP = null; falha(new Error('qr')); };
+      document.head.appendChild(s);
+    });
+    return qrP;
+  }
+  function linkChecklist(m) {
+    var base = /^https?:$/.test(location.protocol) && !/^(localhost|127\.|10\.|192\.168\.)/.test(location.hostname) ? location.origin + location.pathname : URL_PUBLICA;
+    return base + '#checklist=' + encodeURIComponent(m.id);
+  }
+  function etiqueta(id) {
+    var m = Object.assign({ id: id }, S.maquinas[id] || {});
+    carregarQR().then(function (qrcode) {
+      var qr = qrcode(0, 'M'); qr.addData(linkChecklist(m)); qr.make();
+      var n = qr.getModuleCount(), W = 900, H = 1200, cel = Math.floor(620 / n), tam = cel * n, x0 = (W - tam) / 2, y0 = 330;
+      var c = document.createElement('canvas'); c.width = W; c.height = H;
+      var g = c.getContext('2d');
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+      g.fillStyle = '#122657'; g.fillRect(0, 0, W, 16);
+      g.textAlign = 'center'; g.fillStyle = '#122657';
+      g.font = '700 46px Barlow, Arial, sans-serif'; g.fillText('CHECKLIST DIÁRIO OBRIGATÓRIO', W / 2, 96);
+      g.font = '600 120px "IBM Plex Mono", Menlo, monospace'; g.fillText(m.codigo || '', W / 2, 228);
+      g.font = '500 40px Barlow, Arial, sans-serif'; g.fillStyle = '#41505d'; g.fillText(String(m.nome || '').slice(0, 40), W / 2, 288);
+      g.fillStyle = '#000000';
+      for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (qr.isDark(r, k)) g.fillRect(x0 + k * cel, y0 + r * cel, cel, cel);
+      g.fillStyle = '#122657'; g.font = '600 38px Barlow, Arial, sans-serif';
+      g.fillText('Aponte a câmera e faça o checklist antes de usar', W / 2, y0 + tam + 80);
+      g.fillStyle = '#5d6b78'; g.font = '500 30px Barlow, Arial, sans-serif';
+      g.fillText('Item crítico com problema: máquina bloqueada, não operar.', W / 2, y0 + tam + 130);
+      g.fillStyle = '#59C251'; g.font = '700 40px Barlow, Arial, sans-serif'; g.fillText('LEVÍSSIMA', W / 2, H - 50);
+      var url = c.toDataURL('image/png');
+      abrirDialogo('<h2>Etiqueta da ' + esc(m.codigo || 'máquina') + '</h2><p class="muted" style="margin-top:0">Imprima e cole na máquina. O QR abre o checklist desta máquina (é preciso entrar com a senha).</p>' +
+        '<img src="' + url + '" alt="Etiqueta com QR" style="width:100%;max-width:360px;display:block;margin:0 auto;border:1px solid var(--line);border-radius:8px">' +
+        '<div class="acoes-form"><button class="btn" data-acao="baixar-etiqueta" data-id="' + esc(id) + '">Baixar imagem</button><button class="btn sec" data-acao="fechar-dlg">Fechar</button></div>');
+      S.etiquetaAtual = { nome: 'etiqueta-' + (m.codigo || 'maquina').toLowerCase() + '.png', canvas: c };
+    }).catch(function () { toast('Não foi possível gerar o QR agora (sem internet?).'); });
+  }
+  function baixarEtiqueta() {
+    var e = S.etiquetaAtual; if (!e) return;
+    e.canvas.toBlob(function (blob) {
+      window.claude.use('downloads').then(function (dl) { return dl.save({ filename: e.nome, data: blob }); })
+        .then(function () { toast('Etiqueta pronta.'); }, function (x) { if (!x || x.code !== 'declined') toast('Não foi possível salvar a imagem.'); });
+    }, 'image/png');
+  }
+
+  // ---------- configurações (quem gerencia o módulo) ----------
+  function telaConfig() {
+    var c = cfg();
+    var h = '<form id="form-cfg" class="card form" novalidate><h2 style="font-size:24px">Locadoras</h2>' +
+      '<p class="muted" style="margin-top:4px">O WhatsApp da locadora aparece no botão "Avisar a locadora" das ocorrências de máquinas locadas.</p>';
+    h += '<div id="cfg-locs">' + c.locadoras.map(blocoLocadora).join('') + '</div>';
+    h += '<div class="acoes-form"><button type="button" class="btn sec sm" data-acao="nova-locadora">+ Locadora</button></div>' +
+      '<h2 style="font-size:24px;margin-top:22px">Turnos</h2><label class="f largo">Um por linha<textarea class="i" id="cfg-turnos" rows="4">' + esc(c.turnos.join('\n')) + '</textarea></label>' +
+      '<h2 style="font-size:24px;margin-top:22px">Itens do checklist</h2><p class="muted" style="margin-top:4px">Desmarque o que não existe nas suas máquinas. Itens críticos com problema bloqueiam a máquina.</p>';
+    GRUPOS.forEach(function (g) {
+      h += '<h3 style="font-size:18px;margin:12px 0 6px">' + esc(g.nome) + '</h3>';
+      ITENS_PADRAO.filter(function (it) { return it.grupo === g.id; }).forEach(function (it) {
+        h += '<label style="display:flex;gap:10px;align-items:flex-start;padding:6px 0"><input type="checkbox" data-item-ativo="' + esc(it.id) + '"' + (c.itensDesligados.indexOf(it.id) < 0 ? ' checked' : '') + ' style="margin-top:4px">' +
+          '<span>' + esc(it.nome) + (it.critico ? ' <span class="tag crit" style="padding:0 6px;font-size:11px">crítico</span>' : '') +
+          (it.tipos ? ' <span class="muted" style="font-size:13px">(' + esc(it.tipos.map(function (t) { return { eletrica: 'elétrica', glp: 'GLP', diesel: 'diesel', paleteira: 'transpaleteira' }[t]; }).join(', ')) + ')</span>' : '') + '</span></label>';
+      });
+    });
+    h += '<h3 style="font-size:18px;margin:14px 0 6px">Itens a mais (um por linha; comece com * para crítico)</h3><textarea class="i" id="cfg-extras" rows="3" placeholder="*Trava do engate&#10;Adesivos de segurança">' +
+      esc(c.itensExtras.map(function (x) { return (x.critico ? '*' : '') + x.nome; }).join('\n')) + '</textarea>' +
+      '<p class="erro" id="cfg-erro" role="alert"></p><div class="acoes-form"><button class="btn" type="submit">Salvar configurações</button></div></form>';
+    return h;
+  }
+  function blocoLocadora(l, i) {
+    return '<div class="campos" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)" data-loc="' + i + '" data-loc-id="' + esc(l.id || '') + '">' +
+      '<label class="f">Locadora<input class="i" id="cfg-loc-nome-' + i + '" value="' + esc(l.nome) + '" maxlength="40"></label>' +
+      '<label class="f">Marca das máquinas<input class="i" id="cfg-loc-marca-' + i + '" value="' + esc(l.marca || '') + '" maxlength="30"></label>' +
+      '<label class="f">WhatsApp<input class="i" id="cfg-loc-whats-' + i + '" value="' + esc(l.whatsapp || '') + '" inputmode="tel" placeholder="(19) 99999-0000"></label>' +
+      '<label class="f">Contato<input class="i" id="cfg-loc-contato-' + i + '" value="' + esc(l.contato || '') + '" maxlength="60" placeholder="nome de quem atende"></label></div>';
+  }
+  function salvarConfig(ev) {
+    ev.preventDefault();
+    var c = cfg(), locs = [];
+    $$('[data-loc]').forEach(function (el) {
+      var i = el.dataset.loc, nome = $('#cfg-loc-nome-' + i).value.trim();
+      if (!nome) return;
+      locs.push({ id: el.dataset.locId || norm(nome).replace(/[^a-z0-9]+/g, '-') || uid('l'), nome: nome, marca: $('#cfg-loc-marca-' + i).value.trim(), whatsapp: $('#cfg-loc-whats-' + i).value.trim(), contato: $('#cfg-loc-contato-' + i).value.trim() });
+    });
+    var turnos = $('#cfg-turnos').value.split('\n').map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 8);
+    var desl = $$('[data-item-ativo]').filter(function (x) { return !x.checked; }).map(function (x) { return x.dataset.itemAtivo; });
+    var extras = $('#cfg-extras').value.split('\n').map(function (t) { return t.trim(); }).filter(Boolean).slice(0, 20).map(function (t, i) {
+      var crit = t.charAt(0) === '*'; var nome = t.replace(/^\*\s*/, '').slice(0, 80);
+      return { id: 'extra-' + (norm(nome).replace(/[^a-z0-9]+/g, '-').slice(0, 30) || i), nome: nome, critico: crit, grupo: 'visual', falha: crit ? 'Segurança' : 'Outro' };
+    });
+    var btn = ev.target.querySelector('[type=submit]'); btn.disabled = true;
+    S.db.doc('config/geral').set({ locadoras: locs, turnos: turnos.length ? turnos : TURNOS_PADRAO, itensDesligados: desl, itensExtras: extras, atualizadoEm: Date.now() }, { merge: true })
+      .then(function () { btn.disabled = false; toast('Configurações salvas.'); }, function (e) { btn.disabled = false; $('#cfg-erro').textContent = msgErro(e); });
+  }
+
+  /* ===================== diálogo ===================== */
+  function abrirDialogo(html) {
+    var d = $('#dlg'); $('#dlg-corpo').innerHTML = html;
+    if (!d.open) { if (d.showModal) d.showModal(); else d.setAttribute('open', ''); }
+  }
+  function fecharDialogo() { var d = $('#dlg'); if (d.open) { if (d.close) d.close(); else d.removeAttribute('open'); } }
+  function pedirTexto(titulo, rotulo, cb) {
+    abrirDialogo('<h2>' + esc(titulo) + '</h2><form id="form-texto"><label class="f">' + esc(rotulo) + '<textarea class="i" id="txt-resp" rows="3" maxlength="400" required></textarea></label>' +
+      '<p class="erro" id="txt-erro"></p><div class="acoes-form"><button class="btn" type="submit">Confirmar</button><button class="btn sec" type="button" data-acao="fechar-dlg">Voltar</button></div></form>');
+    $('#txt-resp').focus();
+    $('#form-texto').addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var v = $('#txt-resp').value.trim();
+      if (!v) { $('#txt-erro').textContent = 'Escreva uma frase curta.'; return; }
+      cb(v);
+    });
+  }
+
+  /* ===================== ações ===================== */
+  function acaoOcorrencia(id, patch, texto) {
+    var o = S.ocorrencias[id]; if (!o) return;
+    patch.atualizadaEm = Date.now();
+    patch.eventos = (o.eventos || []).concat([{ t: Date.now(), texto: texto }]).slice(-40);
+    S.db.doc('ocorrencias/' + id).update(patch).then(function () { fecharDialogo(); toast('Ocorrência atualizada.'); }, function (e) { toast(msgErro(e)); });
+  }
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('[data-acao]'); if (!b) return;
+    var a = b.dataset.acao, id = b.dataset.id;
+    if (a === 'whats') {
+      var o = S.ocorrencias[id];
+      if (o && o.status === 'aberta') acaoOcorrencia(id, { status: 'acionada', acionadaEm: Date.now(), acionadaPor: S.nomeAcesso || '' }, 'Locadora avisada pelo WhatsApp por ' + (S.nomeAcesso || '—'));
+      return; // o link abre o WhatsApp
+    }
+    ev.preventDefault();
+    if (a === 'ir') { fecharDialogo(); ir(b.dataset.view, b.dataset.todas ? { todas: true } : {}); }
+    else if (a === 'novo') { var ms = maquinasAtivas(); if (ms.length === 1) ir('form', { id: ms[0].id }); else ir('escolher'); }
+    else if (a === 'checklist') ir('form', { id: id });
+    else if (a === 'ver-checklist') verChecklist(id, b.dataset.mes);
+    else if (a === 'fechar-dlg') fecharDialogo();
+    else if (a === 'nova-maquina') formMaquina(null);
+    else if (a === 'editar-maquina') formMaquina(id);
+    else if (a === 'etiqueta') etiqueta(id);
+    else if (a === 'baixar-etiqueta') baixarEtiqueta();
+    else if (a === 'csv') baixarCSV();
+    else if (a === 'acionada') acaoOcorrencia(id, { status: 'acionada', acionadaEm: Date.now(), acionadaPor: S.nomeAcesso || '' }, 'Locadora acionada (registrado por ' + (S.nomeAcesso || '—') + ')');
+    else if (a === 'resolver') pedirTexto('Ocorrência resolvida', 'O que foi feito?', function (t) { acaoOcorrencia(id, { status: 'resolvida', resolvidaEm: Date.now(), resolvidaPor: S.nomeAcesso || '', solucao: t }, 'Resolvida: ' + t); });
+    else if (a === 'cancelar-oc') pedirTexto('Cancelar ocorrência', 'Motivo', function (t) { acaoOcorrencia(id, { status: 'cancelada', resolvidaEm: Date.now(), resolvidaPor: S.nomeAcesso || '', solucao: 'Cancelada: ' + t }, 'Cancelada: ' + t); });
+    else if (a === 'reabrir-chamado') reabrirChamado(id);
+    else if (a === 'nova-locadora') {
+      var box = $('#cfg-locs'), n = $$('[data-loc]', box).length;
+      box.insertAdjacentHTML('beforeend', blocoLocadora({ id: uid('l'), nome: '', marca: '', whatsapp: '', contato: '' }, n));
+      $('#cfg-loc-nome-' + n).focus();
+    }
+  });
+  function reabrirChamado(id) {
+    var o = Object.assign({ id: id }, S.ocorrencias[id] || {}), m = Object.assign({ id: o.maquinaId }, S.maquinas[o.maquinaId] || {});
+    S.db.rpc('empilhadeira_abrir_chamado', { p: {
+      descricao: 'Ocorrência do checklist da empilhadeira ' + (o.maquinaCodigo || '') + ' (' + (o.maquinaNome || '') + '):\n' + (o.itens || []).map(function (f) { return '• ' + f.nome + (f.critico ? ' [CRÍTICO]' : '') + (f.obs ? ': ' + f.obs : ''); }).join('\n'),
+      prioridade: o.critica ? 2 : 3, tipo: 'Segurança', nome: o.abertaPor || S.nomeAcesso || '', maquina: (m.codigo ? m.codigo + ' · ' : '') + (m.nome || 'Empilhadeira'), tag: m.codigo || '', checklistId: (o.checklists || [])[0] || ''
+    } }).then(function (r) {
+      acaoOcorrencia(id, { chamados: (o.chamados || []).concat([{ id: r.id, n: r.n, em: Date.now() }]), chamadoPendente: false }, 'Chamado #' + pad4(r.n) + ' aberto na Manutenção');
+    }, function (e) { toast(msgErro(e)); });
+  }
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && ev.target.matches && ev.target.matches('tr.clic')) { ev.target.click(); }
+  });
+  document.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t.id === 'f-h-mes') { S.params.mes = t.value || mesDe(hoje()); render(); }
+    else if (t.id === 'f-h-maq') { S.params.maquina = t.value; render(); }
+    else if (t.id === 'f-h-res') { S.params.resultado = t.value; render(); }
+  });
+  var opT = null;
+  document.addEventListener('input', function (ev) {
+    if (ev.target.id === 'f-h-op') { clearTimeout(opT); var v = ev.target.value; opT = setTimeout(function () { S.params.operador = v; render(); }, 300); }
+  });
+  document.addEventListener('submit', function (ev) { if (ev.target.id === 'form-cfg') salvarConfig(ev); });
+  $$('.aba').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (S.view === 'form' && S.form && Object.keys(S.form.resp).length && !confirm('Sair sem concluir o checklist?')) return;
+      ir(b.dataset.view);
+    });
+  });
+
+  /* ===================== início ===================== */
+  function abrirPeloLink() {
+    var m = /checklist=([^&]+)/.exec(location.hash || '');
+    if (!m) return;
+    var id = decodeURIComponent(m[1]);
+    history.replaceState(null, '', location.pathname + location.search);
+    var tentar = function () {
+      if (S.carregouMaq && S.carregouCfg) { if (S.maquinas[id]) ir('form', { id: id }); else toast('Máquina do QR não encontrada.'); }
+      else setTimeout(tentar, 150);
+    };
+    tentar();
+  }
+  render();
+  Promise.all([window.claude.use('db'), window.claude.use('user')]).then(function (r) {
+    S.db = r[0];
+    var u = r[1];
+    if (!S.db || !u) throw { code: 'not_granted' };
+    return Promise.all([u.nivel ? u.nivel() : u.canEdit().then(function (x) { return x ? 'gerir' : 'usar'; }), u.nome ? u.nome() : u.me().then(function (x) { return x.name; })]);
+  }).then(function (r) {
+    S.nivel = r[0] || 'usar'; S.nomeAcesso = r[1] || ''; S.pronto = true;
+    iniciarDados();
+    render();
+    abrirPeloLink();
+  }).catch(function (e) { S.erro = e || { code: 'unavailable' }; render(); });
+})();
+</script>
+</body>
+</html>
