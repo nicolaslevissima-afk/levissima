@@ -14,7 +14,7 @@ Etapas:
   disparar  roda os fluxos do site e do Android
   situacao  lista as últimas execuções do Actions
 
-Variáveis opcionais: LEVISSIMA_DONO (padrão nicolasMoraes1), LEVISSIMA_REPO (padrão levissima).
+Variáveis opcionais: LEVISSIMA_DONO (padrão nicolaslevissima-afk), LEVISSIMA_REPO (padrão levissima).
 """
 import base64
 import json
@@ -27,7 +27,7 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 
 PASTA = os.path.dirname(AQUI)
-DONO = os.environ.get('LEVISSIMA_DONO', 'nicolasMoraes1')
+DONO = os.environ.get('LEVISSIMA_DONO', 'nicolaslevissima-afk')
 REPO = os.environ.get('LEVISSIMA_REPO', 'levissima')
 R = f'repos/{DONO}/{REPO}'
 CHAVE = os.environ.get('LEVISSIMA_CHAVE_ANDROID', os.path.join(PASTA, 'chave-android'))

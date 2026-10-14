@@ -11,8 +11,8 @@ O app já é gerado sozinho pelo GitHub a cada atualização (aba **Actions** do
 1. **Conta em nome da empresa.** Nas duas lojas, cadastre como **organização** (Alceu de Moraes Minerais Ltda.). Precisa do **número D-U-N-S** da empresa (grátis, pedido em dnb.com; a Apple também tem um formulário próprio). Na Google Play, conta de organização dispensa o teste fechado obrigatório de 12 testadores por 14 dias que as contas pessoais novas têm.
 2. **Login para os revisores.** As lojas testam o app antes de aprovar. Crie em **Cadastros › Motoristas** um motorista chamado "Revisão das lojas", com uma senha só para isso, e informe essa senha no formulário de revisão. Depois da aprovação, remova esse motorista.
 3. **Endereços que as lojas pedem:**
-   - Política de privacidade: `https://nicolasmoraes1.github.io/levissima/privacidade.html`
-   - Site / suporte: `https://nicolasmoraes1.github.io/levissima/`
+   - Política de privacidade: `https://nicolaslevissima-afk.github.io/levissima/privacidade.html`
+   - Site / suporte: `https://nicolaslevissima-afk.github.io/levissima/`
    - E-mail de contato: um e-mail da empresa.
 
 ---

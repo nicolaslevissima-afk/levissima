@@ -11,7 +11,8 @@ Pacote completo do app LEVÍSSIMA, situação em **14/10/2026**. Tem tudo o que 
 | Logo novo | Aplicado no app, nos ícones, na abertura e nos documentos |
 | Banco de dados (Supabase) | No ar e configurado, com os dados dos módulos já copiados |
 | Senha mestre | Criada no banco, guardada só como código (hash), nunca em texto |
-| Site, módulos e app Android no ar | **Falta** — o repositório `levissima` no GitHub ainda não existe |
+| Site e módulos no ar | Feito em 14/10/2026: `https://nicolaslevissima-afk.github.io/levissima/` (repositório `nicolaslevissima-afk/levissima`) |
+| App Android | APK de teste gerado pelo GitHub. Para o APK/AAB assinados da Google Play faltam os 4 segredos `ANDROID_*` (ver "Para pôr no ar") |
 | Google Play e App Store | Falta — roteiro em `loja/PUBLICAR-NAS-LOJAS.md` |
 
 ## Passo a passo para o Nicolas (no outro login)
@@ -59,7 +60,11 @@ Os módulos são páginas separadas (`www/modulos/*.html`). Por isso só funcion
 
 ### Para pôr no ar
 
-1. Confira que o repositório `nicolasMoraes1/levissima` existe e que o GitHub está liberado para você enviar código.
+> **Conta do GitHub:** desde 14/10/2026 o projeto está na conta **nicolaslevissima-afk** (repositório `nicolaslevissima-afk/levissima`, público), por escolha do Nicolas. Os passos acima, que falam de `nicolasMoraes1`, ficaram só como histórico. O `publicar.py` já usa a conta nova.
+>
+> **Segredos da chave Android:** a API de segredos do GitHub fica bloqueada no ambiente do Claude e o Claude não digita senhas em formulários. Por isso, quem grava os 4 segredos é o Nicolas, em *Settings › Secrets and variables › Actions › New repository secret*: `ANDROID_KEYSTORE_BASE64` (o arquivo `levissima-upload.jks` em base64), `ANDROID_KEYSTORE_PASSWORD` e `ANDROID_KEY_PASSWORD` (a senha de `senha-da-chave.txt`) e `ANDROID_KEY_ALIAS` (`levissima`). Depois, é só rodar de novo o fluxo *App Android*.
+
+1. Confira que o repositório `nicolaslevissima-afk/levissima` existe e que o GitHub está liberado para você enviar código.
 2. Descompacte `chave-android-levissima.zip` numa pasta `chave-android/` dentro do projeto. Essa pasta já está no `.gitignore` e não vai para o GitHub.
 3. Rode `python3 ferramentas/publicar.py`. Ele faz cinco coisas:
    - envia o código;
@@ -67,7 +72,7 @@ Os módulos são páginas separadas (`www/modulos/*.html`). Por isso só funcion
    - grava os 4 segredos da chave Android (precisa do `libsodium`);
    - roda o site e o Android;
    - lista as execuções.
-4. Acompanhe a aba Actions. Depois confira `https://nicolasmoraes1.github.io/levissima/` e mande ao Nicolas o endereço e o APK (artefato do fluxo *App Android*).
+4. Acompanhe a aba Actions. Depois confira `https://nicolaslevissima-afk.github.io/levissima/` e mande ao Nicolas o endereço e o APK (artefato do fluxo *App Android*).
 
 Se o `gh` do seu ambiente não puder gravar segredos ou ligar o Pages, faça só o envio do código e mostre ao Nicolas onde clicar. O roteiro dessa parte está no `README.md`, em Publicação.
 
