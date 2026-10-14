@@ -11,6 +11,8 @@ on:
 jobs:
   android:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # para publicar o APK em "Releases" (link fixo para baixar no celular)
     env:
       TEM_CHAVE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
       TEM_PLAY: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON != '' }}
@@ -62,6 +64,24 @@ jobs:
             android/app/build/outputs/apk/release/*.apk
             android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+      - name: Publicar o APK para baixar no celular
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSAO="1.0.${{ github.run_number }}"
+          APK=$(ls android/app/build/outputs/apk/release/*.apk 2>/dev/null | grep -v unsigned | head -1 || true)
+          if [ -n "$APK" ]; then
+            TIPO="assinado com a chave da Levíssima"
+          else
+            APK=$(ls android/app/build/outputs/apk/debug/*.apk | head -1)
+            TIPO="de teste (ainda sem a chave de assinatura da Google Play)"
+          fi
+          cp "$APK" "$RUNNER_TEMP/levissima.apk"
+          printf 'Aplicativo LEVÍSSIMA para Android, versão %s, %s.\n\nPara instalar: abra este link no celular, baixe o arquivo levissima.apk e toque nele. Se o Android pedir, permita instalar apps desta fonte.\n' "$VERSAO" "$TIPO" > "$RUNNER_TEMP/notas.md"
+          gh release create "v$VERSAO" "$RUNNER_TEMP/levissima.apk" \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "LEVÍSSIMA $VERSAO" --notes-file "$RUNNER_TEMP/notas.md" --latest
       - name: Enviar para a Google Play (teste interno, rascunho)
         if: env.TEM_CHAVE == 'true' && env.TEM_PLAY == 'true'
         uses: r0adkll/upload-google-play@v1
