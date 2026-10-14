@@ -1199,6 +1199,7 @@
   var LOCAL_TAB_KEY = 'controle-paletes-chapatex-aba-v1';
   var LOCAL_PRODUTOS_SEED_KEY = 'controle-paletes-chapatex-produtos-padrao-v1';
   var LOCAL_PRODUTOS_V2_KEY = 'controle-paletes-chapatex-produtos-padrao-v2';
+  var LOCAL_PRODUTOS_V3_KEY = 'controle-paletes-chapatex-produtos-marcas-v3';
   var LOCAL_EQUIPE_SEED_KEY = 'controle-paletes-chapatex-equipe-padrao-v1';
   var SEED = [
     { data: '2026-09-18', cliente: 'Adega Adequada', tipo: 'entrega', paletes: 8, chapatex: 0, motorista: 'Rinaldo', responsavel: 'Denilson', qualidade: '', obs: 'Chapatex também assinalado no vale original. Lançado a partir do vale de papel original — sem assinatura digital retroativa.' },
@@ -1531,6 +1532,7 @@
     loadLocalProdutos();
     seedProdutosLocal();
     migrarProdutosLocal();
+    migrarProdutosV3Local();
     loadLocalCargas();
     loadLocalEquipe();
     seedEquipeLocal();
@@ -2040,7 +2042,72 @@
       });
       batch.set(marker, { em: new Date().toISOString() });
       return batch.commit();
-    }).then(migrarProdutosDb).catch(function(e) { console.error('seed produtos error', e); });
+    }).then(migrarProdutosDb).then(migrarProdutosV3Db).catch(function(e) { console.error('seed produtos error', e); });
+  }
+  // Outras marcas que a Levíssima envasa (v3): entram uma vez, depois dos produtos da Levíssima, agrupadas
+  // por marca. A paletização é a do produto equivalente da Levíssima, como estiver no cadastro na hora,
+  // salvo as exceções de cada marca (ex.: o 1,5L natural da Bulnez tem palete de 108 fardos, 27 por fileira).
+  var BASE_MARCAS_V3 = {
+    '510ml-natural': { id: 'padrao-05-510ml-natural', nome: '510ml natural' },
+    '510ml-gas': { id: 'padrao-06-510ml-gas', nome: '510ml com gás' },
+    '1500ml-natural': { id: 'padrao-07-1500ml-natural', nome: '1,5L natural' },
+    '1500ml-gas': { id: 'padrao-07b-1500ml-gas', nome: '1,5L com gás' },
+    '6l': { id: 'padrao-08-6l', nome: '6L' }
+  };
+  var MARCAS_V3 = [
+    { marca: 'Casa de Mãe', slug: 'casa-de-mae', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'] },
+    { marca: 'Colina Azul', slug: 'colina-azul', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'] },
+    { marca: 'Betel', slug: 'betel', itens: ['510ml-natural', '1500ml-natural'] },
+    { marca: 'New Mania', slug: 'new-mania', itens: ['510ml-natural'] },
+    { marca: 'Bulnez', slug: 'bulnez', itens: ['510ml-natural', '1500ml-natural'],
+      palete: { '1500ml-natural': { unidade: 'fardos', unidadesPorPalete: 108, tipoChapatex: 'fileira', unidadesPorFileira: 27 } } }
+  ];
+  function planoProdutosV3(atuais) {
+    var nomes = atuais.map(function(x) { return normNome(x.nome); });
+    var maxOrdem = atuais.reduce(function(m, x) { return ordemDe(x) < 9999 ? Math.max(m, ordemDe(x)) : m; }, 0);
+    var add = [];
+    MARCAS_V3.forEach(function(m) {
+      m.itens.forEach(function(k) {
+        var b = BASE_MARCAS_V3[k];
+        var id = 'marca-' + m.slug + '-' + k, nome = m.marca + ' ' + b.nome;
+        if (atuais.some(function(x) { return x.id === id; }) || nomes.indexOf(normNome(nome)) !== -1) return;
+        var ref = atuais.find(function(x) { return x.id === b.id || normNome(x.nome) === normNome(b.nome); }) ||
+                  PRODUTOS_PADRAO.find(function(p) { return p.id === b.id; });
+        var p = { id: id, nome: nome, ordem: ++maxOrdem, unidade: unidadeDe(ref),
+                  unidadesPorPalete: Number(ref.unidadesPorPalete) || 0,
+                  tipoChapatex: ref.tipoChapatex || 'fileira', unidadesPorFileira: Number(ref.unidadesPorFileira) || 0 };
+        if (ref.chapatexPorPalete !== undefined && !ref.tipoChapatex) p.chapatexPorPalete = ref.chapatexPorPalete;
+        Object.assign(p, (m.palete || {})[k] || {});
+        add.push(p);
+      });
+    });
+    return add;
+  }
+  function migrarProdutosV3Local() {
+    if (loadPref(LOCAL_PRODUTOS_V3_KEY, '')) return;
+    planoProdutosV3(produtos).forEach(function(p) { produtos.push(p); });
+    saveLocalProdutos();
+    savePref(LOCAL_PRODUTOS_V3_KEY, new Date().toISOString());
+  }
+  function migrarProdutosV3Db() {
+    var marker = db.doc('meta/produtos-marcas-v3');
+    return marker.get().then(function(snap) {
+      if (snap.exists) return null;
+      return db.collection('produtos').get().then(function(qs) {
+        var atuais = qs.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        var batch = db.batch();
+        planoProdutosV3(atuais).forEach(function(p) { var data = Object.assign({}, p); delete data.id; batch.set(db.collection('produtos').doc(p.id), data); });
+        batch.set(marker, { em: new Date().toISOString() });
+        return batch.commit();
+      });
+    }).catch(function(e) { console.error('migração marcas error', e); });
+  }
+  // Marca de um produto do catálogo ou de uma descrição da nota: a primeira das outras marcas que aparece
+  // no texto; sem nenhuma delas, é Levíssima.
+  function marcaDoTexto(texto) {
+    var t = normNome(texto);
+    var m = MARCAS_V3.find(function(x) { return t.indexOf(normNome(x.marca)) !== -1; });
+    return m ? m.slug : 'levissima';
   }
   var produtosSeedChecked = false;
   function subscribeProdutos() {
@@ -5350,6 +5417,12 @@
       var b = assinaturaProduto(p.nome, true);
       return b.vol && Math.abs(b.vol - a.vol) <= 1 && a.copo === b.copo && (a.gas === true) === (b.gas === true);
     });
+    // Mesmo tamanho em várias marcas: fica a da marca escrita na nota (sem outra marca, Levíssima).
+    if (cands.length > 1) {
+      var marca = marcaDoTexto(descricao);
+      var daMarca = cands.filter(function(p) { return marcaDoTexto(p.nome) === marca; });
+      if (daMarca.length) cands = daMarca;
+    }
     return cands.length === 1 ? cands[0] : null;
   }
   // Itens da nota já com o produto do app (pelo de-para); os sem de-para ficam de fora.
