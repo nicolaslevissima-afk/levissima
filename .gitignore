@@ -5,3 +5,5 @@ ios/
 *.keystore
 *.p8
 .DS_Store
+chave-android/
+__pycache__/

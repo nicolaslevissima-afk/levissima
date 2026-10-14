@@ -1,5 +1,7 @@
 # LEVÍSSIMA
 
+> Continuando em outro login ou com outra pessoa? Leia primeiro o [COMO-CONTINUAR.md](COMO-CONTINUAR.md).
+
 App da Levíssima Água Mineral para **cargas, entregas, paletes e chapatex**: o comercial lança a carga (ou importa a NF), o faturamento dá o ok com a senha de 4 números, a expedição conclui o carregamento com as assinaturas, o motorista acompanha a viagem e conclui cada entrega com a assinatura do cliente, e o escritório vê tudo em tempo real — inclusive o caminhão no mapa.
 
 E os **módulos da fábrica**, no mesmo login:
@@ -21,7 +23,9 @@ Funciona no navegador (celular, tablet e notebook, e pode ser instalado na tela 
 | Módulos da fábrica | `www/modulos/` — `manutencao.html`, `empilhadeiras.html`, `uniformes.html`, `garrafoes.html` |
 | Ligação dos módulos com o login e o banco | `www/modulos/ponte.js` |
 | Logo | `www/marca/` |
+| Fonte do app principal | `fontes/app/levissima.html` |
 | Fontes dos módulos (para alterar e gerar de novo) | `fontes/modulos/` |
+| Gerar o `www/` a partir dos fontes / pôr no ar | `ferramentas/construir.py --modulos` / `ferramentas/publicar.py` |
 | Instalar na tela inicial | `www/manifest.webmanifest`, `www/sw.js`, `www/icons/` |
 | Política de privacidade | `www/privacidade.html` (endereço público exigido pelas lojas) |
 | Banco de dados | Supabase — `supabase/migrations/` |
