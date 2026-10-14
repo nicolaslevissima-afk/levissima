@@ -9,7 +9,8 @@ Etapas:
   codigo    envia o código para a branch main
   pages     liga o GitHub Pages publicado pelo Actions (site.yml)
   segredos  grava a chave de assinatura do Android nos segredos do repositório
-            (pasta com levissima-upload.jks e senha.txt em LEVISSIMA_CHAVE_ANDROID, ou ./chave-android)
+            (o conteúdo de chave-android-levissima.zip — levissima-upload.jks e senha-da-chave.txt —
+            na pasta ./chave-android, ou na pasta indicada em LEVISSIMA_CHAVE_ANDROID)
   disparar  roda os fluxos do site e do Android
   situacao  lista as últimas execuções do Actions
 
@@ -84,7 +85,8 @@ def gravar_segredos():
         print('  pulei: não achei', jks_path)
         return
     pub = gh(f'{R}/actions/secrets/public-key')
-    senha = open(os.path.join(CHAVE, 'senha.txt')).read().strip()
+    arq_senha = next(p for p in (os.path.join(CHAVE, n) for n in ('senha-da-chave.txt', 'senha.txt')) if os.path.exists(p))
+    senha = open(arq_senha).read().strip()
     jks = base64.b64encode(open(jks_path, 'rb').read()).decode()
     segredos = {
         'ANDROID_KEYSTORE_BASE64': jks,
