@@ -358,6 +358,55 @@
   .conf-tab td.conf-dif { color: var(--danger); font-weight: 700; }
   .check-row { display: flex; gap: 8px; align-items: flex-start; font-size: 0.875rem; }
   .check-row input { width: auto; margin-top: 3px; }
+  @media (max-width: 559px) {
+    #admin-tabs.tabs-grade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); }
+    #admin-tabs.tabs-grade .seg-btn { min-height: 44px; }
+  }
+  /* ---- agenda dos retornáveis ---- */
+  .ag-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .ag-periodo { text-align: center; display: flex; flex-direction: column; }
+  .ag-periodo b { font-size: 1.0625rem; }
+  .ag-periodo span { font-size: 0.75rem; color: var(--muted); }
+  .ag-ferramentas { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+  .ag-ferramentas input { flex: 1; min-width: 160px; }
+  .ag-vazia { border: 1px dashed var(--teal); border-radius: 10px; padding: 12px; margin-bottom: 14px; background: var(--card); }
+  .ag-vazia p { margin: 0 0 8px; font-size: 0.875rem; }
+  .ag-linha .ag-chip { white-space: nowrap; }
+  .ag-tab .ag-chip { overflow-wrap: anywhere; }
+  .ag-chip.bloq { color: #C0261B; font-style: italic; font-weight: 600; }
+  .ag-chip.achou { background: #FFE58A; color: #1C2A2E; border-radius: 4px; padding: 0 3px; }
+  .ag-fer { background: #FFE600; color: #1C2A2E; font-weight: 700; border-radius: 4px; padding: 0 4px; font-size: 0.75rem; }
+  .ag-dias-nav { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 8px; }
+  .ag-diatab { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 6px 0; font-size: 0.6875rem; color: var(--muted); display: flex; flex-direction: column; align-items: center; cursor: pointer; font-family: var(--font-display); }
+  .ag-diatab b { font-size: 1rem; color: var(--ink); }
+  .ag-diatab span { font-size: 0.625rem; }
+  .ag-diatab.hoje { border-color: var(--teal); }
+  .ag-diatab.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .ag-diatab.active b { color: var(--paper); }
+  .ag-diatab.fer { background: #FFF6A8; }
+  .ag-dia-topo { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin: 4px 0 6px; }
+  .ag-dia-acoes { margin-left: auto; display: flex; gap: 14px; }
+  .ag-linha { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 8px; width: 100%; text-align: left; background: var(--card); border: 0; border-bottom: 1px solid var(--line); padding: 9px 6px; cursor: pointer; font: inherit; color: var(--ink); }
+  .ag-linha .ag-h { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--muted); }
+  .ag-linha .ag-quem { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 0.875rem; font-weight: 600; }
+  .ag-linha.bloq { background: rgba(192, 38, 27, 0.06); }
+  .ag-livre { color: var(--muted); font-weight: 400; font-size: 0.8125rem; }
+  .ag-semana { display: none; overflow-x: auto; margin-bottom: 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+  .ag-tab { border-collapse: collapse; width: 100%; min-width: 860px; table-layout: fixed; font-size: 0.75rem; }
+  .ag-tab th, .ag-tab td { border: 1px solid var(--line); padding: 4px 6px; vertical-align: top; }
+  .ag-tab thead th { background: var(--paper); position: sticky; top: 0; z-index: 1; }
+  .ag-tab .ag-hora { width: 52px; font-family: var(--font-mono); color: var(--muted); font-weight: 400; text-align: left; }
+  .ag-tab td { cursor: pointer; height: 26px; font-style: italic; }
+  .ag-tab td:hover { background: rgba(var(--teal-rgb), 0.06); }
+  .ag-tab td.hoje, .ag-tab th.hoje { background: rgba(var(--teal-rgb), 0.07); }
+  .ag-tab td.fer, .ag-tab th.fer { background: #FFF6A8; }
+  .ag-dia-btn { border: 0; background: none; font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; display: flex; flex-direction: column; align-items: flex-start; padding: 0; width: 100%; text-transform: uppercase; font-size: 0.75rem; }
+  .ag-dia-btn span { font-weight: 400; color: var(--muted); text-transform: none; }
+  .ag-sep { color: var(--muted); }
+  @media (min-width: 760px) {
+    .ag-semana { display: block; }
+    .ag-dias-nav, .ag-dia { display: none; }
+  }
   .tab-alerta { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px; }
   .est-form-head, .est-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 96px; gap: 8px; align-items: center; }
   .est-form-head { font-size: 0.6875rem; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
@@ -650,6 +699,7 @@
       <button type="button" class="seg-btn" data-tab="cargas">Cargas</button>
       <button type="button" class="seg-btn" data-tab="paletes">Paletes e chapatex</button>
       <button type="button" class="seg-btn" data-tab="estoque">Estoque</button>
+      <button type="button" class="seg-btn" data-tab="agenda">Agenda</button>
       <button type="button" class="seg-btn" data-tab="cadastros">Cadastros</button>
       <button type="button" class="seg-btn" data-tab="fretes">Fretes</button>
       <button type="button" class="seg-btn" data-tab="pesquisas">Pesquisas</button>
@@ -722,6 +772,31 @@
       <div class="section-head"><h2 class="section-title">Saída por produto</h2></div>
       <p class="hint">Soma de todas as cargas já carregadas.</p>
       <div id="produtos-resumo-list"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel hidden" id="tab-agenda">
+    <p class="tagline">Agenda da linha dos <b>retornáveis (garrafões 10L e 20L)</b>: quem vem buscar em cada horário. Toque no horário para agendar ou tirar; os fixos se repetem toda semana.</p>
+    <div class="ag-topo">
+      <button type="button" class="btn-text" data-ag="semana-ant">◀ Anterior</button>
+      <div class="ag-periodo"><b id="ag-periodo"></b><span id="ag-resumo"></span></div>
+      <button type="button" class="btn-text" data-ag="semana-prox">Próxima ▶</button>
+    </div>
+    <div class="ag-ferramentas">
+      <button type="button" class="btn btn-secondary btn-sm hidden" id="btn-ag-hoje" data-ag="hoje">Voltar para esta semana</button>
+      <input type="search" id="f-ag-busca" placeholder="Buscar cliente na semana" autocomplete="off" aria-label="Buscar cliente" />
+    </div>
+    <div class="ag-vazia hidden" id="ag-vazia">
+      <p>A agenda está vazia. Quer começar com a <b>agenda fixa tirada das planilhas</b> (quem vem toda semana, almoço e carros pequenos)? Depois é só ajustar.</p>
+      <button type="button" class="btn btn-primary btn-sm" data-ag="sugerida">Carregar a agenda fixa sugerida</button>
+    </div>
+    <div class="ag-dias-nav" id="ag-dias-nav"></div>
+    <div class="ag-dia" id="ag-dia"></div>
+    <div class="ag-semana" id="ag-semana"></div>
+    <section class="drivers-admin" aria-label="Observações da semana">
+      <div class="section-head"><h2 class="section-title">Observações da semana</h2></div>
+      <textarea id="f-ag-obs" rows="3" maxlength="1000" placeholder="Ex.: Fuji vai buscar 200 garrafões na quinta"></textarea>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-ag-obs" style="margin-top:8px">Salvar observações</button>
     </section>
   </div>
 
@@ -1261,6 +1336,31 @@
         <button type="button" class="btn btn-primary" id="btn-conf-finalizar">Finalizar a conferência</button>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="ag-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="ag-sheet-title"></h2>
+      <button class="icon-btn" id="btn-close-ag-sheet" aria-label="Fechar">✕</button>
+    </div>
+    <div id="ag-slot-lista"></div>
+    <form id="ag-slot-form" novalidate>
+      <div class="section-head"><h2 class="section-title">Agendar neste horário</h2></div>
+      <label>Cliente <span class="req">*</span><input type="text" id="f-ag-cliente" list="ag-clientes-list" autocomplete="off" maxlength="60" /></label>
+      <datalist id="ag-clientes-list"></datalist>
+      <div class="row-2">
+        <label>Repetir<select id="f-ag-repetir"><option value="nao">Só neste dia</option><option value="semana">Toda semana</option><option value="uteis">Toda semana, de segunda a sexta</option><option value="todos">Todos os dias</option></select></label>
+        <label>Observação <span class="opt">(opcional)</span><input type="text" id="f-ag-obs-item" maxlength="120" /></label>
+      </div>
+      <p class="hint">Bloquear o horário: <button type="button" class="btn-text" data-agslot="bloq" data-nome="ALMOÇO">Almoço</button> · <button type="button" class="btn-text" data-agslot="bloq" data-nome="CARROS PEQUENOS">Carros pequenos</button></p>
+      <p class="form-error hidden" id="ag-slot-erro"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-ag-cancel">Fechar</button>
+        <button type="submit" class="btn btn-primary">Agendar</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -1915,6 +2015,7 @@
     loadLocalNfMapa();
     loadLocalDiretoria();
     loadLocalFretes();
+    loadLocalAgenda();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -2874,6 +2975,7 @@
     renderAcessoAdmin();
     renderPagersAdmin();
     renderEstoque();
+    renderAgenda();
     renderPesquisasTab();
   }
 
@@ -4580,15 +4682,16 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['cargas', 'paletes', 'estoque', 'cadastros', 'fretes', 'pesquisas'];
+  var TABS = ['cargas', 'paletes', 'estoque', 'agenda', 'cadastros', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório; Cadastros, Fretes e Pesquisas só com a senha mestre.
-  function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque'] : TABS; }
+  function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque', 'agenda'] : TABS; }
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
     document.querySelectorAll('#admin-tabs .seg-btn').forEach(function(b) { b.classList.toggle('hidden', permitidas.indexOf(b.dataset.tab) < 0); });
     document.getElementById('admin-tabs').classList.toggle('tabs-3', permitidas.length === 3);
+    document.getElementById('admin-tabs').classList.toggle('tabs-grade', permitidas.length > 6);
     TABS.forEach(function(t) { document.getElementById('tab-' + t).classList.toggle('hidden', ui.tab !== t); });
     document.querySelectorAll('#admin-tabs .seg-btn').forEach(function(b) {
       var on = b.dataset.tab === ui.tab;
@@ -9742,6 +9845,270 @@
     }
   });
 
+  // ---------- Agenda da linha dos retornáveis (garrafões 10L e 20L) ----------
+  // Semana de segunda a domingo, das 4h às 18h, de 30 em 30 minutos (como a planilha AGENDA 2026).
+  // agenda-fixos: quem vem toda semana { cliente, hora, dias: [1..7] (1 = segunda), tipo: 'cliente' | 'bloqueio',
+  //   desde, ate, pulos: [datas em que não vem] }; agenda-itens: agendamento de um dia só { data, hora, cliente, tipo };
+  // agenda-dias/<data>: { feriado, nome }; agenda-semanas/<segunda>: { obs }.
+  var AG_COL = { fixos: 'agenda-fixos', itens: 'agenda-itens', dias: 'agenda-dias', semanas: 'agenda-semanas' };
+  var agenda = { fixos: [], itens: [], dias: [], semanas: [] };
+  var AG_HORAS = (function() {
+    var h = [];
+    for (var m = 4 * 60; m <= 18 * 60; m += 30) h.push(String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'));
+    return h;
+  })();
+  var AG_DIAS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+  var AG_DIAS_CURTO = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+  var AG_UTEIS = [1, 2, 3, 4, 5];
+  // Agenda fixa tirada das planilhas de set./out. de 2026 (o que se repete toda semana). Só entra se alguém tocar
+  // em "Carregar a agenda fixa sugerida"; depois é ajustada no próprio app.
+  var AGENDA_SUGERIDA = [
+    ['05:00', [1], 'GAS DE PRATA'], ['05:30', [1], 'EQS'], ['06:00', [1], 'CASA DAS ÁGUAS'], ['06:30', [1], 'CASA DAS ÁGUAS'],
+    ['08:00', [1], 'FABIO FERREIRA'], ['10:30', [1], 'KATIA ARARAS'],
+    ['05:00', [2], 'NENÊ GÁS'], ['06:00', [2], 'CASA DAS ÁGUAS'], ['06:30', [2], 'DAVES'], ['08:00', [2], 'SUPER20'], ['15:00', [2], 'M.M.K'],
+    ['08:00', [3], 'JEBERSON RIO CLARO'], ['13:00', [3], 'VERSSAGNAZI'],
+    ['08:00', [4], 'AUTEMAR'], ['13:00', [4], 'MARIM'],
+    ['07:00', AG_UTEIS, 'BEBA+'], ['07:00', AG_UTEIS, 'VAZ'], ['07:00', AG_UTEIS, 'JJCM'], ['07:00', AG_UTEIS, 'NELSON'],
+    ['07:30', AG_UTEIS, 'ROSSI'], ['07:30', AG_UTEIS, 'MAIA'],
+    ['08:30', AG_UTEIS, 'CARROS PEQUENOS', 'bloqueio'],
+    ['09:00', AG_UTEIS, 'SANDAGUA'], ['09:30', AG_UTEIS, 'PIEMONTE'],
+    ['11:00', AG_UTEIS, 'ALMOÇO', 'bloqueio'], ['11:30', AG_UTEIS, 'ALMOÇO', 'bloqueio'],
+    ['12:00', AG_UTEIS, 'VAZ'], ['12:00', AG_UTEIS, 'JUSTO'],
+    ['12:30', AG_UTEIS, 'CARROS PEQUENOS', 'bloqueio'],
+    ['13:30', [2, 3, 4, 5], 'MAIA'],
+    ['14:00', AG_UTEIS, 'BRAZ'], ['14:30', AG_UTEIS, 'BRAZ'],
+    ['16:00', AG_UTEIS, 'FUJI'],
+    ['17:30', AG_UTEIS, 'DOUGLAS'], ['18:00', AG_UTEIS, 'DOUGLAS'], ['18:00', AG_UTEIS, 'JJCM']
+  ];
+  function agIso(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function agMaisDias(iso, n) { var d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n); return agIso(d); }
+  function agIdx(iso) { return (new Date(iso + 'T12:00:00').getDay() + 6) % 7; } // 0 = segunda
+  function agSegunda(iso) { return agMaisDias(iso, -agIdx(iso)); }
+  function agDiaCurto(iso) { return AG_DIAS_CURTO[agIdx(iso)] + ' ' + formatDateBR(iso).slice(0, 5); }
+  var agUi = { semana: agSegunda(todayIso()), dia: agIdx(todayIso()), busca: '', confirmar: null };
+
+  // ----- gravação -----
+  function agChaveLocal(k) { return 'levissima-agenda-' + k + '-v1'; }
+  function loadLocalAgenda() {
+    Object.keys(AG_COL).forEach(function(k) { try { agenda[k] = JSON.parse(localStorage.getItem(agChaveLocal(k)) || '[]') || []; } catch (e) { agenda[k] = []; } });
+  }
+  function agGravar(ops) {
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      ops.forEach(function(o) {
+        var ref = o.id ? db.collection(o.col).doc(o.id) : db.collection(o.col).doc();
+        if (o.op === 'delete') b.delete(ref); else if (o.op === 'update') b.update(ref, o.data); else b.set(ref, o.data);
+      });
+      return b.commit();
+    }
+    ops.forEach(function(o) {
+      var k = null;
+      Object.keys(AG_COL).forEach(function(x) { if (AG_COL[x] === o.col) k = x; });
+      if (!k) return;
+      var id = o.id || ('local-' + uid()), i = agenda[k].findIndex(function(x) { return x.id === id; });
+      if (o.op === 'delete') { if (i >= 0) agenda[k].splice(i, 1); }
+      else if (o.op === 'update') { if (i >= 0) agenda[k][i] = Object.assign({}, agenda[k][i], o.data); }
+      else { var novo = Object.assign({ id: id }, o.data); if (i >= 0) agenda[k][i] = novo; else agenda[k].push(novo); }
+      try { localStorage.setItem(agChaveLocal(k), JSON.stringify(agenda[k])); } catch (e) {}
+    });
+    renderAgenda();
+    return Promise.resolve();
+  }
+  function subscribeAgenda() {
+    Object.keys(AG_COL).forEach(function(k) {
+      db.collection(AG_COL[k]).onSnapshot(function(snap) {
+        agenda[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        if (session) { renderAgenda(); renderAgSlot(); }
+      }, function(err) { console.error(AG_COL[k], err); });
+    });
+  }
+
+  // ----- cálculo -----
+  function agFeriado(iso) { var d = agenda.dias.find(function(x) { return x.id === iso; }); return d && d.feriado ? d : null; }
+  // Quem está marcado em cada dia: fixos da semana (menos os pulos e fora do período) + os agendamentos do dia.
+  function agEntradasDoDia(iso) {
+    var wd = agIdx(iso) + 1, out = [], fer = agFeriado(iso);
+    if (!fer) agenda.fixos.forEach(function(f) {
+      if ((f.dias || []).indexOf(wd) < 0 || (f.desde && iso < f.desde) || (f.ate && iso > f.ate) || (f.pulos || []).indexOf(iso) >= 0) return;
+      out.push({ id: f.id, fixo: true, hora: f.hora, cliente: f.cliente, tipo: f.tipo || 'cliente', obs: f.obs || '', dias: f.dias });
+    });
+    agenda.itens.forEach(function(it) { if (it.data === iso) out.push({ id: it.id, fixo: false, hora: it.hora, cliente: it.cliente, tipo: it.tipo || 'cliente', obs: it.obs || '' }); });
+    return out.sort(function(a, b) { return a.hora.localeCompare(b.hora) || ((a.tipo === 'bloqueio') ? -1 : 0) - ((b.tipo === 'bloqueio') ? -1 : 0) || a.cliente.localeCompare(b.cliente, 'pt-BR'); });
+  }
+  function agPorHora(iso) {
+    var m = {};
+    agEntradasDoDia(iso).forEach(function(e) { (m[e.hora] = m[e.hora] || []).push(e); });
+    return m;
+  }
+  function agClientesConhecidos() {
+    var s = {};
+    agenda.fixos.concat(agenda.itens).forEach(function(x) { if (x.cliente && (x.tipo || 'cliente') === 'cliente') s[x.cliente] = 1; });
+    return Object.keys(s).sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); });
+  }
+  function agChipHtml(e) {
+    var achou = agUi.busca && normNome(e.cliente).indexOf(normNome(agUi.busca)) >= 0;
+    return '<span class="ag-chip' + (e.tipo === 'bloqueio' ? ' bloq' : '') + (achou ? ' achou' : '') + '"' + (e.obs ? ' title="' + escapeHtml(e.obs) + '"' : '') + '>' + escapeHtml(e.cliente) + '</span>';
+  }
+
+  // ----- tela -----
+  function renderAgenda() {
+    var box = document.getElementById('ag-semana');
+    if (!box || !session || !ehEscritorio()) return;
+    var seg = agUi.semana, hoje = todayIso(), dias = [];
+    for (var i = 0; i < 7; i++) dias.push(agMaisDias(seg, i));
+    document.getElementById('ag-periodo').textContent = formatDateBR(seg).slice(0, 5) + ' a ' + formatDateBR(dias[6]);
+    document.getElementById('btn-ag-hoje').classList.toggle('hidden', seg === agSegunda(hoje));
+    var porDia = dias.map(agPorHora);
+    var total = 0;
+    porDia.forEach(function(m) { Object.keys(m).forEach(function(h) { total += m[h].filter(function(e) { return e.tipo !== 'bloqueio'; }).length; }); });
+    document.getElementById('ag-resumo').textContent = total + (total === 1 ? ' cliente agendado na semana' : ' clientes agendados na semana');
+    // semana inteira (tela larga)
+    box.innerHTML = '<table class="ag-tab"><thead><tr><th scope="col" class="ag-hora">Hora</th>' + dias.map(function(d, i) {
+      var fer = agFeriado(d);
+      return '<th scope="col" class="' + (d === hoje ? 'hoje' : '') + (fer ? ' fer' : '') + '"><button type="button" class="ag-dia-btn" data-ag="dia" data-data="' + d + '">' +
+        AG_DIAS[i] + '<span>' + formatDateBR(d).slice(0, 5) + (fer ? ' · ' + escapeHtml(fer.nome || 'Feriado') : '') + '</span></button></th>';
+    }).join('') + '</tr></thead><tbody>' + AG_HORAS.map(function(h) {
+      return '<tr><th scope="row" class="ag-hora">' + h + '</th>' + dias.map(function(d, i) {
+        var es = porDia[i][h] || [], fer = agFeriado(d);
+        return '<td class="' + (d === hoje ? 'hoje' : '') + (fer ? ' fer' : '') + (es.some(function(e) { return e.tipo === 'bloqueio'; }) ? ' bloq' : '') + '" data-ag="slot" data-data="' + d + '" data-hora="' + h + '">' +
+          (fer && !es.length ? '<span class="ag-fer">FERIADO</span>' : es.map(agChipHtml).join('<span class="ag-sep"> / </span>')) + '</td>';
+      }).join('') + '</tr>';
+    }).join('') + '</tbody></table>';
+    // um dia por vez (celular)
+    var di = agUi.dia, d0 = dias[di], fer0 = agFeriado(d0), m0 = porDia[di];
+    document.getElementById('ag-dias-nav').innerHTML = dias.map(function(d, i) {
+      var n = Object.keys(porDia[i]).reduce(function(s, h) { return s + porDia[i][h].filter(function(e) { return e.tipo !== 'bloqueio'; }).length; }, 0);
+      return '<button type="button" class="ag-diatab' + (i === di ? ' active' : '') + (d === hoje ? ' hoje' : '') + (agFeriado(d) ? ' fer' : '') + '" data-ag="escolher-dia" data-i="' + i + '">' +
+        AG_DIAS_CURTO[i] + '<b>' + formatDateBR(d).slice(0, 2) + '</b><span>' + (agFeriado(d) ? 'feriado' : n || '—') + '</span></button>';
+    }).join('');
+    document.getElementById('ag-dia').innerHTML =
+      '<div class="ag-dia-topo"><b>' + AG_DIAS[di] + ', ' + formatDateBR(d0) + '</b>' + (fer0 ? ' <span class="ag-fer">' + escapeHtml(fer0.nome || 'FERIADO') + '</span>' : '') +
+        '<span class="ag-dia-acoes"><button type="button" class="btn-text" data-ag="dia" data-data="' + d0 + '">' + (fer0 ? 'Tirar feriado' : 'Marcar feriado') + '</button>' +
+        '<a class="btn-text" target="_blank" rel="noopener" href="' + escapeHtml('https://wa.me/?text=' + encodeURIComponent(agTextoDoDia(d0))) + '">Mandar no WhatsApp</a></span></div>' +
+      AG_HORAS.map(function(h) {
+        var es = m0[h] || [];
+        return '<button type="button" class="ag-linha' + (es.some(function(e) { return e.tipo === 'bloqueio'; }) ? ' bloq' : '') + (es.length ? '' : ' livre') + '" data-ag="slot" data-data="' + d0 + '" data-hora="' + h + '">' +
+          '<span class="ag-h">' + h + '</span><span class="ag-quem">' + (es.length ? es.map(agChipHtml).join(' ') : (fer0 ? '<span class="ag-fer">FERIADO</span>' : '<span class="ag-livre">livre</span>')) + '</span></button>';
+      }).join('');
+    // observações da semana
+    var ob = document.getElementById('f-ag-obs'), sem = agenda.semanas.find(function(x) { return x.id === seg; });
+    if (document.activeElement !== ob) ob.value = (sem && sem.obs) || '';
+    document.getElementById('ag-vazia').classList.toggle('hidden', agenda.fixos.length > 0 || agenda.itens.length > 0);
+  }
+  function agTextoDoDia(iso) {
+    var m = agPorHora(iso), fer = agFeriado(iso);
+    var linhas = ['Agenda dos retornáveis — ' + AG_DIAS[agIdx(iso)] + ', ' + formatDateBR(iso)];
+    if (fer) linhas.push('FERIADO' + (fer.nome && fer.nome !== 'Feriado' ? ' (' + fer.nome + ')' : ''));
+    AG_HORAS.forEach(function(h) { if (m[h]) linhas.push(h + ' ' + m[h].map(function(e) { return e.cliente; }).join(' / ')); });
+    return linhas.join('\n');
+  }
+  document.getElementById('tab-agenda').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-ag]');
+    if (!b) return;
+    var a = b.dataset.ag;
+    if (a === 'semana-ant') { agUi.semana = agMaisDias(agUi.semana, -7); renderAgenda(); }
+    else if (a === 'semana-prox') { agUi.semana = agMaisDias(agUi.semana, 7); renderAgenda(); }
+    else if (a === 'hoje') { agUi.semana = agSegunda(todayIso()); agUi.dia = agIdx(todayIso()); renderAgenda(); }
+    else if (a === 'escolher-dia') { agUi.dia = Number(b.dataset.i); renderAgenda(); }
+    else if (a === 'slot') abrirAgSlot(b.dataset.data, b.dataset.hora);
+    else if (a === 'dia') abrirAgDia(b.dataset.data);
+    else if (a === 'sugerida') carregarAgendaSugerida();
+  });
+  document.getElementById('f-ag-busca').addEventListener('input', function(e) { agUi.busca = e.target.value.trim(); renderAgenda(); });
+  document.getElementById('btn-ag-obs').addEventListener('click', function() {
+    var v = document.getElementById('f-ag-obs').value.trim();
+    agGravar([{ op: 'set', col: AG_COL.semanas, id: agUi.semana, data: { obs: v, atualizadoEm: new Date().toISOString() } }])
+      .then(function() { showToast('Observações da semana salvas.'); }).catch(function(x) { console.error(x); showToast('Não foi possível salvar agora.'); });
+  });
+  function carregarAgendaSugerida() {
+    if (agenda.fixos.length) return;
+    var desde = agUi.semana, agora = new Date().toISOString();
+    agGravar(AGENDA_SUGERIDA.map(function(x) {
+      return { op: 'set', col: AG_COL.fixos, id: null, data: { cliente: x[2], hora: x[0], dias: x[1].slice(), tipo: x[3] || 'cliente', desde: desde, ate: '', pulos: [], criadoEm: agora } };
+    })).then(function() { showToast('Agenda fixa carregada: ' + AGENDA_SUGERIDA.length + ' horários. Ajuste o que mudou tocando no horário.'); })
+      .catch(function(x) { console.error(x); showToast('Não foi possível carregar agora.'); });
+  }
+
+  // ----- folha do horário: quem está marcado e agendar -----
+  var agSlot = null;
+  function abrirAgSlot(data, hora) {
+    agSlot = { data: data, hora: hora };
+    agUi.confirmar = null;
+    document.getElementById('ag-sheet-overlay').classList.remove('hidden');
+    renderAgSlot(true);
+  }
+  function fecharAgSlot() { document.getElementById('ag-sheet-overlay').classList.add('hidden'); agSlot = null; }
+  function renderAgSlot(novo) {
+    if (!agSlot) return;
+    var es = agEntradasDoDia(agSlot.data).filter(function(e) { return e.hora === agSlot.hora; });
+    var wd = agIdx(agSlot.data);
+    document.getElementById('ag-sheet-title').textContent = AG_DIAS[wd] + ', ' + formatDateBR(agSlot.data) + ' · ' + agSlot.hora;
+    document.getElementById('ag-slot-lista').innerHTML = es.length ? es.map(function(e) {
+      var id = escapeHtml(e.id);
+      var quando = e.fixo ? 'toda semana: ' + (e.dias || []).map(function(n) { return AG_DIAS_CURTO[n - 1]; }).join(', ') : 'só neste dia';
+      var acoes = agUi.confirmar === e.id
+        ? (e.fixo
+          ? '<button class="btn-text danger" data-agslot="pular" data-id="' + id + '">Só nesta semana</button><button class="btn-text danger" data-agslot="encerrar" data-id="' + id + '">Desta semana em diante</button><button class="btn-text" data-agslot="manter">Manter</button>'
+          : '<button class="btn-text danger" data-agslot="apagar" data-id="' + id + '">Tirar</button><button class="btn-text" data-agslot="manter">Manter</button>')
+        : '<button class="btn-text danger" data-agslot="tirar" data-id="' + id + '">Tirar</button>';
+      return '<div class="driver-row"><span class="driver-name">' + agChipHtml(e) + '<span class="driver-sub">' + escapeHtml(quando + (e.obs ? ' · ' + e.obs : '')) + '</span></span>' + acoes + '</div>';
+    }).join('') : '<p class="empty-state">Horário livre.</p>';
+    if (novo) {
+      setVal('f-ag-cliente', ''); setVal('f-ag-obs-item', '');
+      document.getElementById('f-ag-repetir').value = 'nao';
+      document.getElementById('ag-slot-erro').classList.add('hidden');
+      document.getElementById('ag-clientes-list').innerHTML = agClientesConhecidos().map(function(c) { return '<option value="' + escapeHtml(c) + '">'; }).join('');
+      document.getElementById('f-ag-repetir').querySelector('option[value="semana"]').textContent = 'Toda semana, ' + AG_DIAS[wd].toLowerCase();
+    }
+  }
+  function agSalvar(cliente, tipo) {
+    var er = document.getElementById('ag-slot-erro');
+    cliente = String(cliente || '').replace(/\s+/g, ' ').trim();
+    if (!cliente) { er.textContent = 'Informe o cliente.'; er.classList.remove('hidden'); return; }
+    er.classList.add('hidden');
+    var rep = document.getElementById('f-ag-repetir').value, obs = document.getElementById('f-ag-obs-item').value.trim(), agora = new Date().toISOString();
+    var wd = agIdx(agSlot.data) + 1;
+    var ja = agEntradasDoDia(agSlot.data).some(function(e) { return e.hora === agSlot.hora && normNome(e.cliente) === normNome(cliente); });
+    if (ja) { er.textContent = cliente + ' já está neste horário.'; er.classList.remove('hidden'); return; }
+    var op = rep === 'nao'
+      ? { op: 'set', col: AG_COL.itens, id: null, data: { data: agSlot.data, hora: agSlot.hora, cliente: cliente, tipo: tipo, obs: obs, criadoEm: agora } }
+      : { op: 'set', col: AG_COL.fixos, id: null, data: { cliente: cliente, hora: agSlot.hora, dias: rep === 'semana' ? [wd] : rep === 'uteis' ? AG_UTEIS.slice() : [1, 2, 3, 4, 5, 6, 7],
+          tipo: tipo, obs: obs, desde: agSlot.data, ate: '', pulos: [], criadoEm: agora } };
+    agGravar([op]).then(function() { showToast(cliente + ' agendado' + (rep === 'nao' ? '.' : ' (toda semana).')); setVal('f-ag-cliente', ''); renderAgSlot(false); })
+      .catch(function(x) { console.error(x); er.textContent = 'Não foi possível salvar agora.'; er.classList.remove('hidden'); });
+  }
+  document.getElementById('ag-slot-form').addEventListener('submit', function(e) { e.preventDefault(); agSalvar(document.getElementById('f-ag-cliente').value, 'cliente'); });
+  document.getElementById('ag-sheet-overlay').addEventListener('click', function(e) {
+    if (e.target === this) { fecharAgSlot(); return; }
+    var b = e.target.closest('[data-agslot]');
+    if (!b || !agSlot) return;
+    var a = b.dataset.agslot, id = b.dataset.id;
+    var f = id ? agenda.fixos.find(function(x) { return x.id === id; }) : null;
+    if (a === 'tirar') { agUi.confirmar = id; renderAgSlot(false); }
+    else if (a === 'manter') { agUi.confirmar = null; renderAgSlot(false); }
+    else if (a === 'bloq') agSalvar(b.dataset.nome, 'bloqueio');
+    else if (a === 'apagar') { agUi.confirmar = null; agGravar([{ op: 'delete', col: AG_COL.itens, id: id }]); }
+    else if (a === 'pular' && f) { agUi.confirmar = null; agGravar([{ op: 'update', col: AG_COL.fixos, id: id, data: { pulos: (f.pulos || []).concat([agSlot.data]) } }]).then(function() { showToast(f.cliente + ' tirado só deste dia.'); }); }
+    else if (a === 'encerrar' && f) {
+      agUi.confirmar = null;
+      var ate = agMaisDias(agSlot.data, -1);
+      agGravar([(f.desde && ate < f.desde) ? { op: 'delete', col: AG_COL.fixos, id: id } : { op: 'update', col: AG_COL.fixos, id: id, data: { ate: ate } }])
+        .then(function() { showToast(f.cliente + ' tirado da agenda fixa a partir de ' + formatDateBR(agSlot.data) + '.'); });
+    }
+  });
+  document.getElementById('btn-close-ag-sheet').addEventListener('click', fecharAgSlot);
+  document.getElementById('btn-ag-cancel').addEventListener('click', fecharAgSlot);
+  // feriado
+  function abrirAgDia(data) {
+    var fer = agFeriado(data);
+    if (fer) {
+      agGravar([{ op: 'delete', col: AG_COL.dias, id: data }]).then(function() { showToast('Feriado tirado de ' + formatDateBR(data) + '.'); });
+      return;
+    }
+    agGravar([{ op: 'set', col: AG_COL.dias, id: data, data: { feriado: true, nome: 'Feriado', criadoEm: new Date().toISOString() } }])
+      .then(function() { showToast(AG_DIAS[agIdx(data)] + ', ' + formatDateBR(data) + ': marcado como feriado. A agenda fixa não aparece neste dia.'); });
+  }
+
   // ---------- pagers: faixa de números (Cadastros) ----------
   document.getElementById('f-exigir-dupla').addEventListener('change', function(e) {
     var v = e.target.checked;
@@ -10127,6 +10494,7 @@
     subscribeDiretoria();
     subscribeFretes();
     subscribeForcaVendas();
+    subscribeAgenda();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
