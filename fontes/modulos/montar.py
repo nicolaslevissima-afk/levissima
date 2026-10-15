@@ -45,6 +45,9 @@ MODULOS = {
              '"Para que alguém registre entregas, a diretoria cria uma senha de setor com o módulo Uniformes e EPI (LEVÍSSIMA › Cadastros › Acesso ao app)."'),
             ('Abra pelo link do Claude com sua conta.', 'Verifique a internet e entre de novo pelo LEVÍSSIMA.'),
             ('peça acesso de colaborador a quem administra o app.', 'peça acesso à diretoria.'),
+            # o cadastro de funcionários é o mesmo da aba RH do LEVÍSSIMA: guarda o campo "rh" ao salvar por aqui
+            ('nrsExtras: Array.isArray(f.nrsExtras) ? f.nrsExtras.filter(Boolean) : [],',
+             'nrsExtras: Array.isArray(f.nrsExtras) ? f.nrsExtras.filter(Boolean) : [],\n        rh: f.rh && typeof f.rh === "object" ? f.rh : null,'),
         ],
     },
     'garrafoes': {

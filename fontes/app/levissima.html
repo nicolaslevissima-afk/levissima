@@ -407,6 +407,25 @@
     .ag-semana { display: block; }
     .ag-dias-nav, .ag-dia { display: none; }
   }
+  /* ---- RH ---- */
+  .rh-grupo { margin-bottom: 14px; }
+  .rh-grupo-t { display: flex; align-items: center; gap: 8px; padding: 10px 0 4px; border-bottom: 2px solid var(--ink); font-size: 0.9375rem; }
+  .rh-grupo-sub { font-size: 0.75rem; color: var(--muted); margin: 4px 0 2px; }
+  .rh-linha { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; width: 100%; text-align: left; background: none; border: 0; border-bottom: 1px solid var(--line); padding: 9px 2px; cursor: pointer; font: inherit; color: var(--ink); }
+  .rh-linha:hover { background: rgba(var(--teal-rgb), 0.05); }
+  .rh-nome { font-weight: 600; font-size: 0.9375rem; }
+  .rh-sub { font-size: 0.75rem; color: var(--muted); }
+  .rh-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .rh-chips:empty { display: none; }
+  .rh-chip { font-size: 0.6875rem; font-weight: 700; border-radius: 999px; padding: 1px 8px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+  .rh-chip.lider { background: #FFF3A0; border-color: #E8D200; color: #4A4000; }
+  .rh-chip.exp { background: rgba(67, 176, 42, 0.14); border-color: transparent; color: var(--verde-texto); }
+  .rh-chip.exp.alerta, .rh-chip.aviso, .rh-chip.nr { background: rgba(255, 106, 19, 0.14); border-color: transparent; color: var(--laranja-texto); }
+  .rh-chip.info { background: rgba(0, 176, 240, 0.14); border-color: transparent; color: #00678C; }
+  .rh-chip.neg, .rh-chip.nr.neg { background: rgba(var(--danger-rgb), 0.12); border-color: transparent; color: var(--danger); }
+  .rh-treino { flex-wrap: wrap; margin-top: 8px; }
+  .rh-treino select { flex: 1; min-width: 180px; }
+  #rh-sheet-extra { margin-top: 6px; }
   .tab-alerta { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px; }
   .est-form-head, .est-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 96px; gap: 8px; align-items: center; }
   .est-form-head { font-size: 0.6875rem; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
@@ -701,6 +720,7 @@
       <button type="button" class="seg-btn" data-tab="estoque">Estoque</button>
       <button type="button" class="seg-btn" data-tab="agenda">Agenda</button>
       <button type="button" class="seg-btn" data-tab="cadastros">Cadastros</button>
+      <button type="button" class="seg-btn" data-tab="rh">RH</button>
       <button type="button" class="seg-btn" data-tab="fretes">Fretes</button>
       <button type="button" class="seg-btn" data-tab="pesquisas">Pesquisas</button>
     </nav>
@@ -797,6 +817,27 @@
       <div class="section-head"><h2 class="section-title">Observações da semana</h2></div>
       <textarea id="f-ag-obs" rows="3" maxlength="1000" placeholder="Ex.: Fuji vai buscar 200 garrafões na quinta"></textarea>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-ag-obs" style="margin-top:8px">Salvar observações</button>
+    </section>
+  </div>
+
+  <div class="tab-panel hidden" id="tab-rh">
+    <p class="tagline">Funcionários por <b>função</b>, <b>turno</b> e <b>situação</b>, com os prazos do contrato de experiência e as NRs. Só a senha mestre vê esta aba. O cadastro é o mesmo do módulo Uniformes e EPI.</p>
+    <div class="est-cards" id="rh-cards"></div>
+    <div class="est-alertas hidden" id="rh-alertas" role="status"></div>
+    <nav class="segmented" id="rh-visao" aria-label="Agrupar funcionários">
+      <button type="button" class="seg-btn" data-visao="funcao">Por função</button>
+      <button type="button" class="seg-btn" data-visao="turno">Por turno</button>
+      <button type="button" class="seg-btn" data-visao="situacao">Por situação</button>
+    </nav>
+    <div class="ag-ferramentas">
+      <input type="search" id="f-rh-busca" placeholder="Buscar nome, função ou setor" autocomplete="off" aria-label="Buscar funcionário" />
+      <button type="button" class="btn-text" data-rh="desligados">Ver desligados</button>
+      <button type="button" class="btn-text" data-rh="atualizar">Atualizar</button>
+    </div>
+    <div id="rh-lista"></div>
+    <section class="drivers-admin" aria-label="Turnos">
+      <div class="section-head"><h2 class="section-title">Turnos</h2></div>
+      <div id="rh-turnos"></div>
     </section>
   </div>
 
@@ -1361,6 +1402,45 @@
         <button type="submit" class="btn btn-primary">Agendar</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="rh-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="rh-sheet-title"></h2>
+      <button class="icon-btn" id="btn-close-rh-sheet" aria-label="Fechar">✕</button>
+    </div>
+    <form id="rh-form" novalidate>
+      <label>Nome <span class="req">*</span><input type="text" id="f-rh-nome" autocomplete="off" maxlength="80" /></label>
+      <div class="row-2">
+        <label>Setor<input type="text" id="f-rh-setor" list="rh-setores-list" autocomplete="off" maxlength="40" /></label>
+        <label>Função<input type="text" id="f-rh-funcao" list="rh-funcoes-list" autocomplete="off" maxlength="60" /></label>
+      </div>
+      <datalist id="rh-setores-list"></datalist><datalist id="rh-funcoes-list"></datalist>
+      <div class="row-2">
+        <label>Turno<select id="f-rh-turno"><option value="desc1">Desc 1 (6x1)</option><option value="desc2">Desc 2 (6x1)</option><option value="desc3">Desc 3 (5x2)</option><option value="galao-dia">Galão · turno dia</option><option value="galao-noite">Galão · turno noite</option><option value="adm">Administrativo</option><option value="especial">Horário especial</option><option value="">Não informado</option></select></label>
+        <label>Horário especial <span class="opt">(opcional)</span><input type="text" id="f-rh-horario" maxlength="60" placeholder="Ex.: seg. a qui. 12:30 às 22:30" /></label>
+      </div>
+      <label class="check-row"><input type="checkbox" id="f-rh-lider" /> Líder</label>
+      <div class="row-2">
+        <label>Situação<select id="f-rh-situacao"><option value="ativo">Ativo</option><option value="experiencia">Contrato de experiência</option><option value="ferias">Férias</option><option value="atestado">Atestado</option><option value="afastado">Afastado</option><option value="aviso">Aviso prévio</option><option value="faltando">Não está vindo trabalhar</option><option value="dispensar">Dispensar</option><option value="iniciar">Iniciar</option></select></label>
+        <label>Matrícula <span class="opt">(opcional)</span><input type="text" id="f-rh-matricula" maxlength="20" autocomplete="off" /></label>
+      </div>
+      <div id="rh-campo-exp" class="hidden"><label>Início do contrato de experiência<input type="date" id="f-rh-inicio-exp" /></label></div>
+      <div id="rh-campo-ferias" class="row-2 hidden"><label>Férias de<input type="date" id="f-rh-ferias-de" /></label><label>até<input type="date" id="f-rh-ferias-ate" /></label></div>
+      <div id="rh-campo-retorno" class="hidden"><label>Volta em <span class="opt">(opcional)</span><input type="date" id="f-rh-retorno" /></label></div>
+      <div class="row-2">
+        <label>Admissão<input type="date" id="f-rh-admissao" /></label>
+        <label>Observações<input type="text" id="f-rh-obs" maxlength="200" /></label>
+      </div>
+      <p class="form-error hidden" id="rh-sheet-erro"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-rh-cancel">Fechar</button>
+        <button type="submit" class="btn btn-primary" id="btn-rh-salvar">Salvar</button>
+      </div>
+    </form>
+    <div id="rh-sheet-extra"></div>
   </div>
 </div>
 
@@ -2976,6 +3056,7 @@
     renderPagersAdmin();
     renderEstoque();
     renderAgenda();
+    renderRH();
     renderPesquisasTab();
   }
 
@@ -4682,7 +4763,7 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['cargas', 'paletes', 'estoque', 'agenda', 'cadastros', 'fretes', 'pesquisas'];
+  var TABS = ['cargas', 'paletes', 'estoque', 'agenda', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório; Cadastros, Fretes e Pesquisas só com a senha mestre.
   function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque', 'agenda'] : TABS; }
@@ -4702,6 +4783,7 @@
     document.getElementById('btn-new-carga').classList.toggle('hidden', ui.tab !== 'cargas');
     document.getElementById('btn-new-entrada').classList.toggle('hidden', ui.tab !== 'estoque');
     if (ui.tab === 'pesquisas') renderPesquisasTab();
+    if (ui.tab === 'rh' && !rhDados.carregado && !rhDados.carregando) rhCarregar();
     if (ui.tab === 'cargas') setTimeout(function() {
       if (boardMapa && document.getElementById('viagem-mapa').offsetWidth) boardMapa.map.invalidateSize();
       else if (ultimaViagemLista.length) renderMapaViagens(ultimaViagemLista);
@@ -10108,6 +10190,341 @@
     agGravar([{ op: 'set', col: AG_COL.dias, id: data, data: { feriado: true, nome: 'Feriado', criadoEm: new Date().toISOString() } }])
       .then(function() { showToast(AG_DIAS[agIdx(data)] + ', ' + formatDateBR(data) + ': marcado como feriado. A agenda fixa não aparece neste dia.'); });
   }
+
+  // ---------- RH: funcionários por função, turno e situação (só a senha mestre) ----------
+  // Usa o mesmo cadastro de funcionários e treinamentos (NRs) do módulo Uniformes e EPI (modulo_docs, módulo
+  // "uniformes", caminhos funcionarios, treinamentos e nrTipos): um cadastro só para o RH e para o EPI.
+  // O que é só do RH fica no campo "rh" do funcionário: { turno, lider, situacao, inicioExperiencia, ferias: { de, ate },
+  // retorno, horario, efetivadoEm }. Os dados pessoais ficam só no banco (nunca no código).
+  var RH_TURNOS = [
+    { id: 'desc1', nome: 'Desc 1 (6x1)', horario: 'Seg 03:06–13:15 (refeição 07:00–08:00) · Ter a Sáb 05:20–13:15 (refeição 10:00–11:00)' },
+    { id: 'desc2', nome: 'Desc 2 (6x1)', horario: 'Seg a Sex 12:10–21:00 (refeição 18:00–19:00) · Sáb 13:10–18:00' },
+    { id: 'desc3', nome: 'Desc 3 (5x2)', horario: 'Seg a Qui 20:55–05:20 · Sex 18:42–05:20 (refeição 01:00–02:00)' },
+    { id: 'galao-dia', nome: 'Galão · turno dia', horario: '' },
+    { id: 'galao-noite', nome: 'Galão · turno noite', horario: '' },
+    { id: 'adm', nome: 'Administrativo', horario: '' },
+    { id: 'especial', nome: 'Horário especial', horario: 'cada um com o seu horário' },
+    { id: '', nome: 'Turno não informado', horario: '' }
+  ];
+  var RH_SIT = {
+    faltando: { nome: 'Não está vindo trabalhar', cls: 'neg' },
+    dispensar: { nome: 'Dispensar', cls: 'neg' },
+    aviso: { nome: 'Aviso prévio', cls: 'aviso' },
+    afastado: { nome: 'Afastado', cls: 'aviso' },
+    atestado: { nome: 'Atestado', cls: 'aviso' },
+    ferias: { nome: 'Férias', cls: 'info' },
+    iniciar: { nome: 'Iniciar', cls: 'info' },
+    experiencia: { nome: 'Contrato de experiência', cls: 'exp' },
+    ativo: { nome: 'Ativo', cls: '' }
+  };
+  var RH_EXPERIENCIA = [30, 60]; // marcos do contrato de experiência, em dias (como na planilha: início, 30 dias, 60 dias)
+  var rhDados = { funcionarios: [], treinamentos: [], nrTipos: [], cfg: {}, carregado: false, carregando: false, erro: '' };
+  var rhUi = { visao: 'funcao', busca: '', desligados: false, editando: null, confirmar: null };
+  function rhLer(caminho) {
+    return sbCliente.from('modulo_docs').select('id, dados').eq('modulo', 'uniformes').eq('caminho', caminho).then(function(r) {
+      if (r.error) throw r.error;
+      return (r.data || []).map(function(x) { return Object.assign({ id: x.id }, x.dados || {}); });
+    });
+  }
+  function rhCarregar() {
+    if (mode !== 'db' || !sbCliente || rhDados.carregando || !ehMestreRH()) return;
+    rhDados.carregando = true;
+    renderRH();
+    Promise.all([rhLer('funcionarios'), rhLer('treinamentos'), rhLer('nrTipos'), rhLer('config')]).then(function(res) {
+      rhDados.funcionarios = res[0]; rhDados.treinamentos = res[1]; rhDados.nrTipos = res[2];
+      rhDados.cfg = res[3].find(function(x) { return x.id === 'geral'; }) || {};
+      rhDados.carregado = true; rhDados.erro = '';
+    }).catch(function(e) { console.error('RH', e); rhDados.erro = 'Não foi possível carregar o cadastro agora. Confira a internet e toque em Atualizar.'; })
+      .then(function() { rhDados.carregando = false; renderRH(); renderRhSheet(); });
+  }
+  function rhGravar(caminho, id, dados, mesclar) {
+    return sbCliente.rpc('modulo_gravar', { p_modulo: 'uniformes', p_caminho: caminho, p_id: id, p_dados: dados, p_mesclar: !!mesclar })
+      .then(function(r) { if (r && r.error) throw r.error; return r ? r.data : null; });
+  }
+  function ehMestreRH() { return !!session && session.role === 'admin'; }
+  function rhId(prefixo) { return prefixo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  function rhDiasEntre(a, b) { return Math.round((Date.parse(b + 'T12:00:00') - Date.parse(a + 'T12:00:00')) / 86400000); }
+  function rhMaisMeses(iso, n) {
+    var d = new Date(iso + 'T12:00:00'), dia = d.getDate();
+    d.setDate(1); d.setMonth(d.getMonth() + n);
+    d.setDate(Math.min(dia, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+    return agIso(d);
+  }
+  function rhTurno(id) { return RH_TURNOS.find(function(t) { return t.id === (id || ''); }) || RH_TURNOS[RH_TURNOS.length - 1]; }
+  function rhInfo(f) { return f.rh || {}; }
+  function rhExperiencia(f) {
+    var r = rhInfo(f);
+    if (r.situacao !== 'experiencia' || !r.inicioExperiencia) return null;
+    var hoje = todayIso();
+    var marcos = RH_EXPERIENCIA.map(function(n) { return { dias: n, data: agMaisDias(r.inicioExperiencia, n - 1) }; });
+    var prox = marcos.find(function(m) { return m.data >= hoje; }) || null, fim = marcos[marcos.length - 1];
+    var faltam = prox ? rhDiasEntre(hoje, prox.data) : null;
+    return { marcos: marcos, prox: prox, fim: fim, passou: fim.data < hoje, faltam: faltam, alerta: fim.data < hoje || (faltam !== null && faltam <= 7) };
+  }
+  function rhNrExigido(f, t) {
+    if (!t || t.ativo === false) return false;
+    if (t.todos) return true;
+    if ((f.nrsExtras || []).indexOf(t.id) >= 0) return true;
+    var fn = normNome(f.funcao);
+    return !!fn && (t.funcoes || []).some(function(x) { return normNome(x) === fn; });
+  }
+  function rhNrStatus(f, t) {
+    var regs = rhDados.treinamentos.filter(function(r) { return r.funcionarioId === f.id && r.tipoId === t.id; })
+      .sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')); });
+    var ult = regs[0], exig = rhNrExigido(f, t);
+    if (!ult) return exig ? { estado: 'pendente' } : null;
+    var venc = ult.vencimento || (Number(t.validadeMeses) > 0 ? rhMaisMeses(ult.data, Number(t.validadeMeses)) : '');
+    var hoje = todayIso();
+    if (!venc) return { estado: 'ok', data: ult.data };
+    if (venc < hoje) return { estado: 'vencido', venc: venc, data: ult.data };
+    if (venc <= rhMaisMeses(hoje, Number(rhDados.cfg.alertaNRMeses) || 2)) return { estado: 'vencendo', venc: venc, data: ult.data };
+    return { estado: 'ok', venc: venc, data: ult.data };
+  }
+  function rhNrs(f) {
+    return rhDados.nrTipos.filter(function(t) { return t.ativo !== false; })
+      .map(function(t) { return { t: t, s: rhNrStatus(f, t) }; }).filter(function(x) { return x.s; })
+      .sort(function(a, b) { return String(a.t.codigo).localeCompare(String(b.t.codigo), 'pt-BR', { numeric: true }); });
+  }
+  function rhNrProblemas(f) { return rhNrs(f).filter(function(x) { return x.s.estado !== 'ok'; }); }
+  function rhAtivos() { return rhDados.funcionarios.filter(function(f) { return f.ativo !== false; }); }
+  function rhFeriasPassou(f) { var r = rhInfo(f); return r.situacao === 'ferias' && r.ferias && r.ferias.ate && r.ferias.ate < todayIso(); }
+  function rhChips(f) {
+    var r = rhInfo(f), c = [], sit = RH_SIT[r.situacao || 'ativo'] || RH_SIT.ativo;
+    if (f.ativo === false) return '<span class="rh-chip neg">Desligado' + (f.desligamento ? ' em ' + escapeHtml(formatDateBR(f.desligamento)) : '') + '</span>';
+    if (r.lider) c.push('<span class="rh-chip lider">Líder</span>');
+    if (r.situacao && r.situacao !== 'ativo' && r.situacao !== 'experiencia') {
+      var txt = sit.nome;
+      if (r.situacao === 'ferias' && r.ferias && r.ferias.ate) txt += rhFeriasPassou(f) ? ' (terminou em ' + formatDateBR(r.ferias.ate).slice(0, 5) + ')' : ' até ' + formatDateBR(r.ferias.ate).slice(0, 5);
+      else if (r.retorno) txt += ' · volta ' + formatDateBR(r.retorno).slice(0, 5);
+      c.push('<span class="rh-chip ' + sit.cls + '">' + escapeHtml(txt) + '</span>');
+    }
+    var e = rhExperiencia(f);
+    if (e) c.push('<span class="rh-chip exp' + (e.alerta ? ' alerta' : '') + '">' + escapeHtml(e.passou ? 'Experiência: ' + RH_EXPERIENCIA[RH_EXPERIENCIA.length - 1] + ' dias em ' + formatDateBR(e.fim.data).slice(0, 5) + ' (passou)' : 'Experiência: ' + e.prox.dias + ' dias em ' + formatDateBR(e.prox.data).slice(0, 5)) + '</span>');
+    else if (r.situacao === 'experiencia') c.push('<span class="rh-chip exp">Experiência (sem data de início)</span>');
+    var nr = rhNrProblemas(f);
+    if (nr.length) c.push('<span class="rh-chip nr' + (nr.some(function(x) { return x.s.estado === 'vencido'; }) ? ' neg' : '') + '">' + escapeHtml(nr.map(function(x) { return x.t.codigo; }).filter(function(v, i, a) { return a.indexOf(v) === i; }).join(', ')) + ' ' + (nr.some(function(x) { return x.s.estado === 'vencido'; }) ? 'vencida' : 'pendente') + '</span>');
+    return c.join('');
+  }
+  function rhLinha(f, comSetor) {
+    var r = rhInfo(f), t = rhTurno(r.turno);
+    var sub = [comSetor ? f.setor : '', f.funcao, comSetor ? '' : t.nome, r.horario || ''].filter(Boolean).join(' · ');
+    return '<button type="button" class="rh-linha" data-rh="abrir" data-id="' + escapeHtml(f.id) + '"><span class="rh-nome">' + escapeHtml(f.nome || '—') + '</span>' +
+      '<span class="rh-sub">' + escapeHtml(sub) + '</span><span class="rh-chips">' + rhChips(f) + '</span></button>';
+  }
+  function renderRH() {
+    var sec = document.getElementById('rh-lista');
+    if (!sec || !session) return;
+    if (!ehMestreRH()) return;
+    if (mode !== 'db') { sec.innerHTML = '<p class="empty-state">O RH precisa do banco do LEVÍSSIMA (Supabase).</p>'; return; }
+    if (!rhDados.carregado) {
+      sec.innerHTML = '<p class="empty-state">' + (rhDados.erro ? escapeHtml(rhDados.erro) : 'Carregando o cadastro…') + '</p>';
+      document.getElementById('rh-cards').innerHTML = ''; document.getElementById('rh-alertas').classList.add('hidden');
+      return;
+    }
+    var hoje = todayIso(), ativos = rhAtivos();
+    var exp = ativos.filter(function(f) { return rhInfo(f).situacao === 'experiencia'; });
+    var expAlerta = ativos.filter(function(f) { var e = rhExperiencia(f); return e && e.alerta; });
+    var ausentes = ativos.filter(function(f) { return ['ferias', 'atestado', 'afastado', 'faltando'].indexOf(rhInfo(f).situacao) >= 0 && !rhFeriasPassou(f); });
+    var nrPend = {};
+    ativos.forEach(function(f) { rhNrProblemas(f).forEach(function(x) { var k = x.t.codigo + ' · ' + x.t.nome; nrPend[k] = nrPend[k] || { pend: 0, venc: 0 }; nrPend[k][x.s.estado === 'vencido' ? 'venc' : 'pend']++; }); });
+    var setores = {};
+    ativos.forEach(function(f) { setores[f.setor || 'Sem setor'] = (setores[f.setor || 'Sem setor'] || 0) + 1; });
+    var nNr = Object.keys(nrPend).reduce(function(s, k) { return s + nrPend[k].pend + nrPend[k].venc; }, 0);
+    document.getElementById('rh-cards').innerHTML =
+      '<div class="est-card c-entrada"><span class="est-card-k">Funcionários ativos</span><span class="est-card-v">' + ativos.length + '</span><span class="est-card-s">' +
+        escapeHtml(Object.keys(setores).sort(function(a, b) { return setores[b] - setores[a]; }).map(function(k) { return k + ' ' + setores[k]; }).join(' · ')) + '</span>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-rh="novo">+ Funcionário</button></div>' +
+      '<div class="est-card c-saldo' + (expAlerta.length ? ' alerta' : '') + '"><span class="est-card-k">Contrato de experiência</span><span class="est-card-v">' + exp.length + '</span>' +
+        '<span class="est-card-s">' + (expAlerta.length ? expAlerta.length + ' com prazo vencendo ou vencido' : 'nenhum prazo nos próximos 7 dias') + '</span></div>' +
+      '<div class="est-card c-futuro' + (nNr ? ' alerta' : '') + '"><span class="est-card-k">Ausentes e NRs</span><span class="est-card-v">' + ausentes.length + '</span>' +
+        '<span class="est-card-s">' + 'férias, atestado, afastados e faltando' + (nNr ? ' · ' + nNr + ' NRs pendentes ou vencidas' : '') + '</span></div>';
+    // avisos
+    var av = [];
+    expAlerta.sort(function(a, b) { return rhExperiencia(a).fim.data.localeCompare(rhExperiencia(b).fim.data); }).forEach(function(f) {
+      var e = rhExperiencia(f);
+      av.push({ cls: e.passou ? 'neg' : '', html: '<b>' + escapeHtml(f.nome) + '</b> (' + escapeHtml(f.setor || '') + '): ' + escapeHtml(e.passou
+        ? 'experiência passou dos ' + e.fim.dias + ' dias em ' + formatDateBR(e.fim.data) + ' — efetivar ou encerrar'
+        : 'fecha ' + e.prox.dias + ' dias de experiência em ' + formatDateBR(e.prox.data) + (e.faltam === 0 ? ' (hoje)' : ' (faltam ' + e.faltam + (e.faltam === 1 ? ' dia)' : ' dias)'))) });
+    });
+    var falt = ativos.filter(function(f) { return rhInfo(f).situacao === 'faltando'; });
+    if (falt.length) av.unshift({ cls: 'neg', html: '<b>Não estão vindo trabalhar:</b> ' + escapeHtml(falt.map(function(f) { return f.nome; }).join(', ')) });
+    var disp = ativos.filter(function(f) { return rhInfo(f).situacao === 'dispensar'; });
+    if (disp.length) av.unshift({ cls: 'neg', html: '<b>Para dispensar:</b> ' + escapeHtml(disp.map(function(f) { return f.nome; }).join(', ')) });
+    ativos.filter(rhFeriasPassou).forEach(function(f) { av.push({ cls: '', html: '<b>' + escapeHtml(f.nome) + '</b>: férias terminaram em ' + escapeHtml(formatDateBR(rhInfo(f).ferias.ate)) + '. Já voltou? Atualize a situação.' }); });
+    ativos.filter(function(f) { var r = rhInfo(f); return r.retorno && r.retorno < hoje && ['afastado', 'atestado'].indexOf(r.situacao) >= 0; })
+      .forEach(function(f) { av.push({ cls: '', html: '<b>' + escapeHtml(f.nome) + '</b>: ' + escapeHtml(RH_SIT[rhInfo(f).situacao].nome.toLowerCase()) + ' até ' + escapeHtml(formatDateBR(rhInfo(f).retorno)) + '. Já voltou?' }); });
+    Object.keys(nrPend).sort().forEach(function(k) { var n = nrPend[k]; av.push({ cls: n.venc ? 'neg' : '', html: '<b>' + escapeHtml(k) + ':</b> ' + [n.pend ? n.pend + ' sem treinamento registrado' : '', n.venc ? n.venc + ' vencidas' : ''].filter(Boolean).join(', ') }); });
+    var al = document.getElementById('rh-alertas');
+    var mostrarAv = rhUi.todosAvisos ? av : av.slice(0, 6);
+    al.innerHTML = av.length ? '<p class="est-alertas-t">⚠ Para resolver (' + av.length + ')</p><ul>' + mostrarAv.map(function(a) { return '<li class="' + a.cls + '">' + a.html + '</li>'; }).join('') + '</ul>' +
+      (av.length > 6 ? '<button type="button" class="btn-text" data-rh="avisos">' + (rhUi.todosAvisos ? 'Mostrar menos' : 'Ver todos os ' + av.length + ' avisos') + '</button>' : '') : '';
+    al.classList.toggle('hidden', !av.length);
+    // lista
+    document.querySelectorAll('#rh-visao .seg-btn').forEach(function(b) { var on = b.dataset.visao === rhUi.visao; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    var base = rhUi.desligados ? rhDados.funcionarios.filter(function(f) { return f.ativo === false; }) : ativos;
+    var q = normNome(rhUi.busca);
+    if (q) base = base.filter(function(f) { return normNome([f.nome, f.funcao, f.setor, f.matricula].join(' ')).indexOf(q) >= 0; });
+    var grupos = {}, ordem = [];
+    function poe(chave, titulo, sub, f) { if (!grupos[chave]) { grupos[chave] = { titulo: titulo, sub: sub, lista: [] }; ordem.push(chave); } grupos[chave].lista.push(f); }
+    var porNome = function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); };
+    if (rhUi.visao === 'turno') {
+      RH_TURNOS.forEach(function(t) { base.filter(function(f) { return (rhInfo(f).turno || '') === t.id; }).sort(porNome).forEach(function(f) { poe(t.id || 'sem', t.nome, t.horario, f); }); });
+    } else if (rhUi.visao === 'situacao') {
+      Object.keys(RH_SIT).forEach(function(s) { base.filter(function(f) { return (rhInfo(f).situacao || 'ativo') === s; }).sort(porNome).forEach(function(f) { poe(s, RH_SIT[s].nome, '', f); }); });
+    } else {
+      var sets = {};
+      base.forEach(function(f) { sets[f.setor || 'Sem setor'] = 1; });
+      Object.keys(sets).sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }).forEach(function(s) {
+        base.filter(function(f) { return (f.setor || 'Sem setor') === s; })
+          .sort(function(a, b) { return String(a.funcao).localeCompare(String(b.funcao), 'pt-BR') || RH_TURNOS.indexOf(rhTurno(rhInfo(a).turno)) - RH_TURNOS.indexOf(rhTurno(rhInfo(b).turno)) || porNome(a, b); })
+          .forEach(function(f) { poe(s, s, '', f); });
+      });
+    }
+    sec.innerHTML = ordem.length ? ordem.map(function(k) {
+      var g = grupos[k];
+      return '<section class="rh-grupo"><div class="rh-grupo-t"><b>' + escapeHtml(g.titulo) + '</b><span class="count-chip">' + g.lista.length + '</span></div>' +
+        (g.sub ? '<p class="rh-grupo-sub">' + escapeHtml(g.sub) + '</p>' : '') +
+        g.lista.map(function(f) { return rhLinha(f, rhUi.visao !== 'funcao'); }).join('') + '</section>';
+    }).join('') : '<p class="empty-state">' + (rhUi.desligados ? 'Nenhum funcionário desligado.' : q ? 'Ninguém encontrado.' : 'Nenhum funcionário cadastrado.') + '</p>';
+    document.getElementById('rh-turnos').innerHTML = RH_TURNOS.filter(function(t) { return t.id && t.id !== 'especial'; }).map(function(t) {
+      var n = ativos.filter(function(f) { return (rhInfo(f).turno || '') === t.id; }).length;
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(t.nome) + '<span class="driver-sub">' + escapeHtml(t.horario || 'horário a definir') + '</span></span><span class="count-chip">' + n + '</span></div>';
+    }).join('');
+  }
+  document.getElementById('tab-rh').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-rh], [data-visao]');
+    if (!b) return;
+    if (b.dataset.visao) { rhUi.visao = b.dataset.visao; renderRH(); return; }
+    var a = b.dataset.rh;
+    if (a === 'abrir') abrirRhSheet(b.dataset.id);
+    else if (a === 'novo') abrirRhSheet(null);
+    else if (a === 'atualizar') rhCarregar();
+    else if (a === 'avisos') { rhUi.todosAvisos = !rhUi.todosAvisos; renderRH(); }
+    else if (a === 'desligados') { rhUi.desligados = !rhUi.desligados; b.textContent = rhUi.desligados ? 'Ver ativos' : 'Ver desligados'; renderRH(); }
+  });
+  document.getElementById('f-rh-busca').addEventListener('input', function(e) { rhUi.busca = e.target.value; renderRH(); });
+
+  // ----- ficha do funcionário -----
+  function rhListaOpcoes(campo) {
+    var s = {};
+    rhDados.funcionarios.forEach(function(f) { if (f[campo]) s[f[campo]] = 1; });
+    return Object.keys(s).sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }).map(function(v) { return '<option value="' + escapeHtml(v) + '">'; }).join('');
+  }
+  function abrirRhSheet(id) {
+    var f = id ? rhDados.funcionarios.find(function(x) { return x.id === id; }) : null;
+    rhUi.editando = id || null; rhUi.confirmar = null;
+    var r = f ? rhInfo(f) : {};
+    document.getElementById('rh-sheet-title').textContent = f ? f.nome : 'Novo funcionário';
+    setVal('f-rh-nome', f ? f.nome || '' : ''); setVal('f-rh-matricula', f ? f.matricula || '' : '');
+    setVal('f-rh-setor', f ? f.setor || '' : ''); setVal('f-rh-funcao', f ? f.funcao || '' : '');
+    setVal('f-rh-turno', r.turno || ''); setVal('f-rh-horario', r.horario || '');
+    document.getElementById('f-rh-lider').checked = !!r.lider;
+    setVal('f-rh-situacao', r.situacao || 'ativo');
+    setVal('f-rh-admissao', f ? f.admissao || '' : ''); setVal('f-rh-inicio-exp', r.inicioExperiencia || '');
+    setVal('f-rh-ferias-de', (r.ferias && r.ferias.de) || ''); setVal('f-rh-ferias-ate', (r.ferias && r.ferias.ate) || '');
+    setVal('f-rh-retorno', r.retorno || ''); setVal('f-rh-obs', f ? f.obs || '' : '');
+    document.getElementById('rh-setores-list').innerHTML = rhListaOpcoes('setor');
+    document.getElementById('rh-funcoes-list').innerHTML = rhListaOpcoes('funcao');
+    document.getElementById('rh-sheet-erro').classList.add('hidden');
+    document.getElementById('rh-sheet-overlay').classList.remove('hidden');
+    rhCamposSituacao();
+    renderRhSheet();
+  }
+  function rhCamposSituacao() {
+    var s = document.getElementById('f-rh-situacao').value;
+    document.getElementById('rh-campo-exp').classList.toggle('hidden', s !== 'experiencia');
+    document.getElementById('rh-campo-ferias').classList.toggle('hidden', s !== 'ferias');
+    document.getElementById('rh-campo-retorno').classList.toggle('hidden', ['afastado', 'atestado', 'aviso'].indexOf(s) < 0);
+  }
+  document.getElementById('f-rh-situacao').addEventListener('change', rhCamposSituacao);
+  function renderRhSheet() {
+    var box = document.getElementById('rh-sheet-extra');
+    if (!box || document.getElementById('rh-sheet-overlay').classList.contains('hidden')) return;
+    var f = rhUi.editando ? rhDados.funcionarios.find(function(x) { return x.id === rhUi.editando; }) : null;
+    if (!f) { box.innerHTML = ''; return; }
+    var e = rhExperiencia(f), nrs = rhNrs(f), hoje = todayIso();
+    var h = '';
+    if (e) h += '<div class="resumo-row"><span class="resumo-k">Experiência</span><span class="resumo-v">' + e.marcos.map(function(m) { return m.dias + ' dias: ' + formatDateBR(m.data); }).join(' · ') + '</span></div>';
+    h += '<div class="section-head"><h2 class="section-title">NRs e treinamentos</h2></div>' +
+      (nrs.length ? nrs.map(function(x) {
+        var s = x.s, txt = s.estado === 'pendente' ? 'pendente (sem registro)' : s.estado === 'vencido' ? 'vencida em ' + formatDateBR(s.venc) : s.estado === 'vencendo' ? 'vence em ' + formatDateBR(s.venc) : 'ok' + (s.data ? ', feito em ' + formatDateBR(s.data) : '') + (s.venc ? ', vale até ' + formatDateBR(s.venc) : '');
+        return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.t.codigo + ' · ' + x.t.nome) + '<span class="driver-sub ' + (s.estado === 'ok' ? '' : 'alerta') + '">' + escapeHtml(txt) + '</span></span></div>';
+      }).join('') : '<p class="field-hint">Nenhuma NR exigida para a função e nenhum treinamento registrado.</p>') +
+      '<div class="inline-form rh-treino"><select id="f-rh-nr"><option value="">Registrar treinamento…</option>' + rhDados.nrTipos.filter(function(t) { return t.ativo !== false; })
+        .sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); })
+        .map(function(t) { return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.codigo + ' · ' + t.nome) + '</option>'; }).join('') + '</select>' +
+      '<input type="date" id="f-rh-nr-data" value="' + hoje + '" max="' + hoje + '" aria-label="Data do treinamento" /><button type="button" class="btn-text" data-rhs="treino">Registrar</button></div>' +
+      '<p class="hint">Os treinamentos ficam também no módulo Uniformes e EPI (aba NRs), com a validade de cada NR.</p>';
+    h += '<div class="section-head"><h2 class="section-title">Contrato</h2></div><div class="frete-acoes">' +
+      (rhInfo(f).situacao === 'experiencia' ? '<button type="button" class="btn-text" data-rhs="efetivar">Efetivar (fim da experiência)</button>' : '') +
+      (f.ativo === false ? '<button type="button" class="btn-text" data-rhs="reativar">Reativar</button>'
+        : rhUi.confirmar === 'desligar' ? '<span>Desligar em</span><input type="date" id="f-rh-deslig" value="' + hoje + '" /><button type="button" class="btn-text danger" data-rhs="desligar-ok">Confirmar desligamento</button><button type="button" class="btn-text" data-rhs="desligar-nao">Cancelar</button>'
+        : '<button type="button" class="btn-text danger" data-rhs="desligar">Desligar</button>') + '</div>';
+    box.innerHTML = h;
+  }
+  function fecharRhSheet() { document.getElementById('rh-sheet-overlay').classList.add('hidden'); rhUi.editando = null; }
+  document.getElementById('btn-close-rh-sheet').addEventListener('click', fecharRhSheet);
+  document.getElementById('btn-rh-cancel').addEventListener('click', fecharRhSheet);
+  function rhAplicarLocal(id, dados) {
+    var i = rhDados.funcionarios.findIndex(function(x) { return x.id === id; });
+    if (i >= 0) rhDados.funcionarios[i] = Object.assign({}, rhDados.funcionarios[i], dados, { rh: Object.assign({}, rhDados.funcionarios[i].rh || {}, dados.rh || {}) });
+    else rhDados.funcionarios.push(Object.assign({ id: id }, dados));
+    renderRH();
+  }
+  document.getElementById('rh-sheet-overlay').addEventListener('click', function(e) {
+    if (e.target === this) { fecharRhSheet(); return; }
+    var b = e.target.closest('[data-rhs]');
+    if (!b || !rhUi.editando) return;
+    var id = rhUi.editando, f = rhDados.funcionarios.find(function(x) { return x.id === id; }), a = b.dataset.rhs, agora = Date.now();
+    if (!f) return;
+    function salvar(dados, msg) {
+      rhGravar('funcionarios', id, Object.assign({ atualizadoEm: agora }, dados), true).then(function() { rhAplicarLocal(id, dados); renderRhSheet(); showToast(msg); })
+        .catch(function(x) { console.error('RH', x); showToast('Não foi possível salvar agora.'); });
+    }
+    if (a === 'efetivar') salvar({ rh: Object.assign({}, rhInfo(f), { situacao: 'ativo', efetivadoEm: todayIso() }) }, f.nome + ' efetivado.');
+    else if (a === 'desligar') { rhUi.confirmar = 'desligar'; renderRhSheet(); }
+    else if (a === 'desligar-nao') { rhUi.confirmar = null; renderRhSheet(); }
+    else if (a === 'desligar-ok') { rhUi.confirmar = null; salvar({ ativo: false, desligamento: document.getElementById('f-rh-deslig').value || todayIso() }, f.nome + ' desligado.'); }
+    else if (a === 'reativar') salvar({ ativo: true, desligamento: '' }, f.nome + ' reativado.');
+    else if (a === 'treino') {
+      var tipo = document.getElementById('f-rh-nr').value, data = document.getElementById('f-rh-nr-data').value;
+      if (!tipo || !data) { showToast('Escolha a NR e a data do treinamento.'); return; }
+      var reg = { funcionarioId: id, tipoId: tipo, data: data, vencimento: '', cargaHoraria: '', instrutor: '', certificado: '', obs: 'registrado pelo RH', criadoEm: agora, criadoPor: null, atualizadoEm: agora };
+      var tid = rhId('t');
+      rhGravar('treinamentos', tid, reg, false).then(function() { rhDados.treinamentos.push(Object.assign({ id: tid }, reg)); renderRH(); renderRhSheet(); showToast('Treinamento registrado.'); })
+        .catch(function(x) { console.error('RH', x); showToast('Não foi possível registrar agora.'); });
+    }
+  });
+  document.getElementById('rh-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var er = document.getElementById('rh-sheet-erro');
+    function falha(m) { er.textContent = m; er.classList.remove('hidden'); }
+    var nome = document.getElementById('f-rh-nome').value.replace(/\s+/g, ' ').trim();
+    if (!nome) return falha('Informe o nome.');
+    var id = rhUi.editando, sit = document.getElementById('f-rh-situacao').value;
+    var mat = document.getElementById('f-rh-matricula').value.trim();
+    if (mat && rhDados.funcionarios.some(function(x) { return x.id !== id && x.matricula && x.matricula.trim() === mat; })) return falha('Essa matrícula já é de outra pessoa.');
+    var f0 = id ? rhDados.funcionarios.find(function(x) { return x.id === id; }) : null;
+    var rhNovo = Object.assign({}, f0 ? rhInfo(f0) : {}, {
+      turno: document.getElementById('f-rh-turno').value, horario: document.getElementById('f-rh-horario').value.trim(),
+      lider: document.getElementById('f-rh-lider').checked, situacao: sit,
+      inicioExperiencia: sit === 'experiencia' ? document.getElementById('f-rh-inicio-exp').value : (f0 ? rhInfo(f0).inicioExperiencia || '' : ''),
+      ferias: sit === 'ferias' ? { de: document.getElementById('f-rh-ferias-de').value, ate: document.getElementById('f-rh-ferias-ate').value } : null,
+      retorno: ['afastado', 'atestado', 'aviso'].indexOf(sit) >= 0 ? document.getElementById('f-rh-retorno').value : ''
+    });
+    if (sit === 'experiencia' && !rhNovo.inicioExperiencia) return falha('Informe o início do contrato de experiência.');
+    var agora = Date.now();
+    var dados = { nome: nome, matricula: mat, setor: document.getElementById('f-rh-setor').value.trim(), funcao: document.getElementById('f-rh-funcao').value.trim(),
+      admissao: document.getElementById('f-rh-admissao').value || (sit === 'experiencia' ? rhNovo.inicioExperiencia : ''), obs: document.getElementById('f-rh-obs').value.trim(), rh: rhNovo, atualizadoEm: agora };
+    var novo = !id;
+    if (novo) { id = rhId('f'); Object.assign(dados, { ativo: true, desligamento: '', tamanhos: { vestuario: '', calca: '', calcado: '', luva: '' }, nrsExtras: [], criadoEm: agora, criadoPor: null }); }
+    var btn = document.getElementById('btn-rh-salvar'); btn.disabled = true;
+    rhGravar('funcionarios', id, dados, !novo).then(function() {
+      btn.disabled = false;
+      if (novo) rhDados.funcionarios.push(Object.assign({ id: id }, dados)); else rhAplicarLocal(id, dados);
+      renderRH(); fecharRhSheet(); showToast(novo ? nome + ' cadastrado.' : 'Cadastro de ' + nome + ' salvo.');
+    }).catch(function(x) { btn.disabled = false; console.error('RH', x); falha('Não foi possível salvar agora.'); });
+  });
 
   // ---------- pagers: faixa de números (Cadastros) ----------
   document.getElementById('f-exigir-dupla').addEventListener('change', function(e) {

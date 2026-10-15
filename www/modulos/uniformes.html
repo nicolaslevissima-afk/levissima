@@ -3309,6 +3309,7 @@ if (!window.React || !window.ReactDOM) { var m = document.getElementById('sem-sc
         ativo: f.ativo !== false,
         tamanhos: { vestuario: t.vestuario || "", calca: t.calca || "", calcado: t.calcado || "", luva: t.luva || "" },
         nrsExtras: Array.isArray(f.nrsExtras) ? f.nrsExtras.filter(Boolean) : [],
+        rh: f.rh && typeof f.rh === "object" ? f.rh : null,
         obs: txt(f.obs),
         ...meta(f)
       };
