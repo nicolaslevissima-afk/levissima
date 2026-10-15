@@ -426,6 +426,33 @@
   .rh-treino { flex-wrap: wrap; margin-top: 8px; }
   .rh-treino select { flex: 1; min-width: 180px; }
   #rh-sheet-extra { margin-top: 6px; }
+  .mp-resumo { padding: 8px 10px; border-radius: 8px; font-weight: 700; font-size: 0.875rem; margin: 4px 0 8px; }
+  .mp-resumo.ok { background: rgba(67, 176, 42, 0.14); color: var(--verde-texto); }
+  .mp-resumo.falta { background: rgba(var(--danger-rgb), 0.12); color: var(--danger); }
+  .mp-resumo.aviso { background: rgba(255, 106, 19, 0.13); color: var(--laranja-texto); }
+  .mp-tab td { font-size: 0.8125rem; }
+  .mp-tab td:first-child { font-weight: 600; }
+  .mp-sit { font-family: var(--font-display); font-weight: 700; font-size: 0.75rem; }
+  .mp-sit.ok { color: var(--verde-texto); }
+  .mp-sit.falta { color: var(--danger); }
+  .mp-sit.aviso { color: var(--laranja-texto); }
+  .frete-item.est-falta { border-left-color: var(--danger); }
+  .chip-est.falta { background: rgb(var(--danger-rgb)); color: #FFFFFF; }
+  .op-mat { margin-top: 8px; }
+  .mp-grupo { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 14px 0 2px; }
+  .mp-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .mp-row input { padding: 7px 6px; text-align: right; font-family: var(--font-mono); }
+  .mp-rows { margin-bottom: 14px; }
+  .mpf-row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 118px 36px; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .mpf-row.sem-base { grid-template-columns: minmax(0, 1fr) 96px 36px; }
+  .mpf-row select, .mpf-row input { min-width: 0; }
+  .mpf-row input { text-align: right; font-family: var(--font-mono); }
+  @media (max-width: 559px) {
+    .mpf-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 36px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    .mpf-row .mpf-ins { grid-column: 1 / -1; }
+    .mpf-row.sem-base { grid-template-columns: minmax(0, 1fr) 36px; }
+  }
+  .driver-sub.alerta, .pt-unid.alerta, b.alerta { color: var(--laranja-texto); }
   .tab-alerta { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px; }
   .est-form-head, .est-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 96px; gap: 8px; align-items: center; }
   .est-form-head { font-size: 0.6875rem; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
@@ -718,6 +745,8 @@
       <button type="button" class="seg-btn" data-tab="cargas">Cargas</button>
       <button type="button" class="seg-btn" data-tab="paletes">Paletes e chapatex</button>
       <button type="button" class="seg-btn" data-tab="estoque">Estoque</button>
+      <button type="button" class="seg-btn" data-tab="producao">Produção</button>
+      <button type="button" class="seg-btn" data-tab="materia">Matéria-prima</button>
       <button type="button" class="seg-btn" data-tab="agenda">Agenda</button>
       <button type="button" class="seg-btn" data-tab="cadastros">Cadastros</button>
       <button type="button" class="seg-btn" data-tab="rh">RH</button>
@@ -771,7 +800,7 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-estoque">
-    <p class="tagline">A <b>entrada de produção</b> soma no estoque, as cargas carregadas tiram e a <b>contagem</b> acerta o saldo. O <b>saldo futuro</b> é o que sobra depois das cargas programadas, dia a dia.</p>
+    <p class="tagline">A <b>entrada de produção</b> (ou a ordem de produção concluída) soma no estoque, as cargas carregadas tiram e a <b>contagem</b> acerta o saldo. O <b>saldo futuro</b> é o que sobra depois das cargas programadas, dia a dia.</p>
     <div class="est-cards" id="estoque-cards"></div>
     <div class="est-alertas hidden" id="estoque-alertas" role="status"></div>
     <section class="drivers-admin" aria-label="Saldo por produto">
@@ -838,6 +867,55 @@
     <section class="drivers-admin" aria-label="Turnos">
       <div class="section-head"><h2 class="section-title">Turnos</h2></div>
       <div id="rh-turnos"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel hidden" id="tab-producao">
+    <p class="tagline">Lance a <b>ordem de produção</b> com a quantidade de cada produto: o app mostra a matéria-prima que vai ser usada e confere o estoque. Ao concluir, a produção entra no estoque de produtos e a matéria-prima sai do estoque.</p>
+    <div class="est-cards" id="op-cards"></div>
+    <div class="est-alertas hidden" id="op-alertas" role="status"></div>
+    <section class="drivers-admin" aria-label="Ordens abertas">
+      <div class="section-head"><h2 class="section-title">Ordens abertas</h2><span class="count-chip" id="op-abertas-n"></span></div>
+      <p class="hint">A matéria-prima é reservada na ordem da fila (data de produção, depois número da OP).</p>
+      <div id="op-abertas"></div>
+    </section>
+    <section class="drivers-admin" aria-label="Ordens concluídas">
+      <div class="section-head"><h2 class="section-title">Concluídas</h2></div>
+      <div id="op-concluidas"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel hidden" id="tab-materia">
+    <nav class="segmented" id="mp-area-tabs" aria-label="Área da matéria-prima">
+      <button type="button" class="seg-btn" data-area="producao">Produção</button>
+      <button type="button" class="seg-btn" data-area="garrafoes">Garrafões 10L e 20L</button>
+    </nav>
+    <p class="tagline" id="mp-tagline"></p>
+    <div class="est-cards" id="mp-cards"></div>
+    <div class="est-alertas hidden" id="mp-alertas" role="status"></div>
+    <section class="drivers-admin" aria-label="Saldo da matéria-prima">
+      <div class="section-head"><h2 class="section-title">Saldo dos insumos</h2></div>
+      <p class="hint" id="mp-saldo-hint"></p>
+      <div id="mp-tabela"></div>
+    </section>
+    <section class="drivers-admin hidden" id="gf-sec" aria-label="Fechamentos do dia">
+      <div class="section-head"><h2 class="section-title">Fechamentos do dia</h2></div>
+      <div id="gf-lista"></div>
+    </section>
+    <section class="drivers-admin" aria-label="Últimos lançamentos da matéria-prima">
+      <div class="section-head"><h2 class="section-title">Últimos lançamentos</h2><button type="button" class="btn-text" data-mp="mov-perda">Lançar perda ou avaria</button></div>
+      <div id="mp-movs"></div>
+    </section>
+    <section class="drivers-admin hidden" id="mp-fichas-sec" aria-label="Ficha técnica">
+      <div class="section-head"><h2 class="section-title">Ficha técnica</h2></div>
+      <p class="hint" id="mp-fichas-hint"></p>
+      <div id="mp-fichas-list"></div>
+    </section>
+    <section class="drivers-admin hidden" id="mp-cad" aria-label="Insumos cadastrados">
+      <div class="section-head"><h2 class="section-title">Insumos cadastrados</h2></div>
+      <p class="hint">Só a senha mestre cadastra insumos e monta as fichas técnicas.</p>
+      <div id="mp-insumos-list"></div>
+      <button type="button" class="btn btn-secondary btn-sm" data-mp="ins-novo">+ Adicionar insumo</button>
     </section>
   </div>
 
@@ -1441,6 +1519,23 @@
       </div>
     </form>
     <div id="rh-sheet-extra"></div>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="mp-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="mp-sheet-title"></h2>
+      <button class="icon-btn" id="btn-close-mp-sheet" aria-label="Fechar">✕</button>
+    </div>
+    <form id="mp-form" novalidate>
+      <div id="mp-form-body"></div>
+      <p class="form-error hidden" id="mp-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-mp-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-mp-submit">Salvar</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -2096,6 +2191,7 @@
     loadLocalDiretoria();
     loadLocalFretes();
     loadLocalAgenda();
+    loadLocalMp();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -3055,6 +3151,8 @@
     renderAcessoAdmin();
     renderPagersAdmin();
     renderEstoque();
+    renderProducao();
+    renderMateria();
     renderAgenda();
     renderRH();
     renderPesquisasTab();
@@ -4763,10 +4861,10 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['cargas', 'paletes', 'estoque', 'agenda', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
-  // A senha da equipe abre o dia a dia do escritório; Cadastros, Fretes e Pesquisas só com a senha mestre.
-  function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque', 'agenda'] : TABS; }
+  // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
+  function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda'] : TABS; }
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
@@ -10526,6 +10624,834 @@
     }).catch(function(x) { btn.disabled = false; console.error('RH', x); falha('Não foi possível salvar agora.'); });
   });
 
+  // ---------- produção: ordens de produção, matéria-prima e garrafões 10L/20L ----------
+  // Ordem de produção (producao-ordens): quantidade de cada produto. A matéria-prima sai da ficha técnica
+  // (mp-fichas: por fardo/caixa/galão ou por palete) e é conferida no estoque de matéria-prima. Ao concluir, a
+  // produção entra no estoque de produtos (coleção estoque, tipo entrada, com opId) e o consumo fica gravado na ordem.
+  // Estoque de matéria-prima (mp-insumos, mp-movs): última contagem + recebimentos − perdas − consumo das ordens
+  // concluídas − consumo dos fechamentos dos garrafões. As ordens abertas reservam a matéria-prima na ordem da fila.
+  // Garrafões 10L e 20L (área própria): sem ordem de produção; o fechamento do dia (garrafoes-fechamentos/<data>)
+  // lança o que foi vendido e baixa os insumos pela ficha de cada garrafão.
+  var MP_COL = { insumos: 'mp-insumos', fichas: 'mp-fichas', movs: 'mp-movs', ordens: 'producao-ordens', fechamentos: 'garrafoes-fechamentos', config: 'mp-config' };
+  var mp = { insumos: [], fichas: [], movs: [], ordens: [], fechamentos: [], config: [] };
+  var GARRAFOES_PADRAO = [
+    { id: 'g20-levissima', nome: 'Garrafão 20L Levíssima', tamanho: '20L', marca: 'Levíssima' },
+    { id: 'g20-americana', nome: 'Garrafão 20L Americana', tamanho: '20L', marca: 'Americana' },
+    { id: 'g20-colina-azul', nome: 'Garrafão 20L Colina Azul', tamanho: '20L', marca: 'Colina Azul' },
+    { id: 'g10-levissima', nome: 'Garrafão 10L Levíssima', tamanho: '10L', marca: 'Levíssima' },
+    { id: 'g10-americana', nome: 'Garrafão 10L Americana', tamanho: '10L', marca: 'Americana' },
+    { id: 'g10-colina-azul', nome: 'Garrafão 10L Colina Azul', tamanho: '10L', marca: 'Colina Azul' }
+  ];
+  var GRUPOS_MP = ['Pré-formas', 'Tampas', 'Lacres', 'Rótulos', 'Copos', 'Embalagem', 'Gás carbônico', 'Higienização'];
+  var UNIDADES_MP = ['un', 'kg', 'L', 'm', 'rolo', 'cx', 'pct', 'bobina'];
+  var TIPOS_MOV_MP = { entrada: 'recebimento', contagem: 'contagem', perda: 'perda ou avaria' };
+
+  // ----- gravação -----
+  function mpChaveLocal(k) { return 'levissima-mp-' + k + '-v1'; }
+  function loadLocalMp() {
+    Object.keys(MP_COL).forEach(function(k) { try { mp[k] = JSON.parse(localStorage.getItem(mpChaveLocal(k)) || '[]') || []; } catch (e) { mp[k] = []; } });
+  }
+  function saveLocalMp(k) { try { localStorage.setItem(mpChaveLocal(k), JSON.stringify(mp[k])); } catch (e) {} }
+  function mpChaveDa(col) { var r = null; Object.keys(MP_COL).forEach(function(k) { if (MP_COL[k] === col) r = k; }); return r; }
+  // ops: [{ op: 'set' | 'update' | 'delete', col, id (sem id = novo), data }] — no banco, tudo num lote só
+  function mpGravar(ops) {
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      ops.forEach(function(o) {
+        var ref = o.id ? db.collection(o.col).doc(o.id) : db.collection(o.col).doc();
+        if (o.op === 'delete') b.delete(ref); else if (o.op === 'update') b.update(ref, o.data); else b.set(ref, o.data);
+      });
+      return b.commit();
+    }
+    ops.forEach(function(o) {
+      var id = o.id || ('local-' + uid());
+      if (o.col === 'estoque') {
+        if (o.op === 'delete') estoqueMovs = estoqueMovs.filter(function(m) { return m.id !== id; });
+        else estoqueMovs.push(Object.assign({ id: id }, o.data));
+        saveLocalEstoque();
+        return;
+      }
+      var k = mpChaveDa(o.col);
+      if (!k) return;
+      var i = mp[k].findIndex(function(x) { return x.id === id; });
+      if (o.op === 'delete') { if (i >= 0) mp[k].splice(i, 1); }
+      else if (o.op === 'update') { if (i >= 0) mp[k][i] = Object.assign({}, mp[k][i], o.data); }
+      else { var novo = Object.assign({ id: id }, o.data); if (i >= 0) mp[k][i] = novo; else mp[k].push(novo); }
+      saveLocalMp(k);
+    });
+    render();
+    return Promise.resolve();
+  }
+  function subscribeMateria() {
+    Object.keys(MP_COL).forEach(function(k) {
+      db.collection(MP_COL[k]).onSnapshot(function(snap) {
+        mp[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        if (session) { renderProducao(); renderMateria(); atualizarMpSheet(); }
+      }, function(err) { console.error(MP_COL[k], err); });
+    });
+  }
+
+  // ----- cálculo -----
+  function arred3(n) { return Math.round((Number(n) || 0) * 1000) / 1000; }
+  function fmtMp(q, u) {
+    var n = Number(q) || 0, inteiro = Math.abs(n - Math.round(n)) < 0.0005;
+    return (inteiro ? fmtInt(Math.round(n)) : n.toLocaleString('pt-BR', { maximumFractionDigits: 2 })) + (u ? ' ' + u : '');
+  }
+  function isoLocal(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function insumoPorId(id) { for (var i = 0; i < mp.insumos.length; i++) if (mp.insumos[i].id === id) return mp.insumos[i]; return null; }
+  function areaDe(i) { return (i && i.area) || 'producao'; }
+  function ordemGrupo(g) { var i = GRUPOS_MP.indexOf(g); return i < 0 ? 99 : i; }
+  function compararInsumos(a, b) {
+    return (ordemGrupo(a.grupo) - ordemGrupo(b.grupo)) || String(a.grupo || '').localeCompare(String(b.grupo || ''), 'pt-BR') ||
+      String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR', { numeric: true });
+  }
+  function insumosDaArea(area) { return mp.insumos.filter(function(i) { return areaDe(i) === area; }).sort(compararInsumos); }
+  function fichaDe(chave) { for (var i = 0; i < mp.fichas.length; i++) if (mp.fichas[i].id === chave) return mp.fichas[i].itens || []; return []; }
+  function chaveGarrafao(itemId) { return 'garrafao-' + itemId; }
+  function garrafoesItens() {
+    var c = mp.config.find(function(x) { return x.id === 'garrafoes'; });
+    return c && c.itens && c.itens.length ? c.itens : GARRAFOES_PADRAO;
+  }
+  function unidadeSingularDe(p) { var u = unidadeDe(p); return UNIDADE_SINGULAR[u] || u; }
+  // Matéria-prima de uma lista de itens pela ficha técnica.
+  // itens: [{ produtoId, quantidade }] (produção) ou [{ itemId, quantidade }] (garrafões)
+  function materiaisDe(itens, garrafoes) {
+    var tot = {}, semFicha = [];
+    (itens || []).forEach(function(it) {
+      var q = Number(it.quantidade) || 0;
+      if (q <= 0) return;
+      var chave = garrafoes ? chaveGarrafao(it.itemId) : it.produtoId;
+      var ficha = fichaDe(chave);
+      if (!ficha.length) { semFicha.push(it.nome || it.produtoNome || chave); return; }
+      var p = garrafoes ? null : findProduto(it.produtoId);
+      var upp = p ? Number(p.unidadesPorPalete) || 0 : 0;
+      ficha.forEach(function(l) {
+        var f = l.base === 'palete' ? (upp ? q / upp : 0) : q;
+        tot[l.insumoId] = (tot[l.insumoId] || 0) + (Number(l.qtd) || 0) * f;
+      });
+    });
+    var lista = Object.keys(tot).map(function(id) {
+      var ins = insumoPorId(id) || { nome: '(insumo removido)', unidade: '', grupo: '' };
+      return { insumoId: id, nome: ins.nome, unidade: ins.unidade || '', grupo: ins.grupo || '', qtd: arred3(tot[id]) };
+    }).filter(function(m) { return m.qtd > 0; }).sort(compararInsumos);
+    return { lista: lista, semFicha: semFicha };
+  }
+  function ultimaContagemMp(id) {
+    var c = null;
+    mp.movs.forEach(function(m) { if (m.insumoId === id && m.tipo === 'contagem' && (!c || String(m.em || '') > String(c.em || ''))) c = m; });
+    return c;
+  }
+  // Saldo = última contagem + recebimentos − perdas − consumo (ordens concluídas e fechamentos dos garrafões).
+  // Insumo que nunca teve contagem nem movimento: sem controle (null).
+  function saldoInsumo(id) {
+    var c = ultimaContagemMp(id), desde = c ? String(c.em || '') : '', q = c ? Number(c.quantidade) || 0 : 0, tem = !!c;
+    function depois(em) { return !desde || String(em || '') > desde; }
+    mp.movs.forEach(function(m) {
+      if (m.insumoId !== id || m.tipo === 'contagem' || !depois(m.em)) return;
+      tem = true;
+      q += (m.tipo === 'entrada' ? 1 : -1) * (Number(m.quantidade) || 0);
+    });
+    mp.ordens.forEach(function(o) {
+      if (o.status !== 'concluida' || !depois(o.concluidoEm)) return;
+      (o.consumo || []).forEach(function(x) { if (x.insumoId === id) { tem = true; q -= Number(x.qtd) || 0; } });
+    });
+    mp.fechamentos.forEach(function(f) {
+      if (!depois(f.criadoEm)) return;
+      (f.consumo || []).forEach(function(x) { if (x.insumoId === id) { tem = true; q -= Number(x.qtd) || 0; } });
+    });
+    return tem ? arred3(q) : null;
+  }
+  function ordensAbertas() {
+    return mp.ordens.filter(function(o) { return o.status === 'aberta'; }).sort(function(a, b) {
+      return String(a.data || '').localeCompare(String(b.data || '')) || ((Number(a.numero) || 0) - (Number(b.numero) || 0));
+    });
+  }
+  function materiaisDaOrdem(o) { return materiaisDe(o.itens || [], false); }
+  function chaveFila(o) { return String(o.data || '') + '|' + String(1000000 + (Number(o.numero) || 999999)).slice(-7); }
+  // Matéria-prima reservada pelas ordens abertas que vêm antes na fila (data, depois número). Sem ref: todas.
+  function reservadoAntes(insumoId, ref) {
+    var k = ref ? chaveFila(ref) : null, tot = 0;
+    ordensAbertas().forEach(function(o) {
+      if (ref && (o.id === ref.id || chaveFila(o) >= k)) return;
+      materiaisDaOrdem(o).lista.forEach(function(m) { if (m.insumoId === insumoId) tot += m.qtd; });
+    });
+    return arred3(tot);
+  }
+  // devolver: { insumoId: qtd } que volta ao saldo (ex.: ao editar um fechamento já lançado)
+  function conferirMateriais(lista, ref, semReserva, devolver) {
+    return lista.map(function(m) {
+      var s = saldoInsumo(m.insumoId), r = semReserva ? 0 : reservadoAntes(m.insumoId, ref);
+      if (s !== null && devolver && devolver[m.insumoId]) s = arred3(s + devolver[m.insumoId]);
+      var disp = s === null ? null : arred3(s - r);
+      return Object.assign({}, m, { saldo: s, reservado: r, disponivel: disp, falta: disp === null ? 0 : Math.max(0, arred3(m.qtd - disp)) });
+    });
+  }
+  function materiaisHtml(conf, semFicha, opcoes) {
+    opcoes = opcoes || {};
+    if (!conf.length && !semFicha.length) return '<p class="field-hint">' + escapeHtml(opcoes.vazio || 'Informe as quantidades para ver a matéria-prima.') + '</p>';
+    var faltas = conf.filter(function(c) { return c.falta > 0; }), semSaldo = conf.filter(function(c) { return c.saldo === null; });
+    var h = semFicha.length ? '<p class="field-hint warn">Sem ficha técnica: ' + escapeHtml(semFicha.join(', ')) + '. Cadastre em Matéria-prima › Ficha técnica.</p>' : '';
+    if (!conf.length) return h;
+    h += '<div class="mp-resumo ' + (faltas.length ? 'falta' : semSaldo.length ? 'aviso' : 'ok') + '">' +
+      (faltas.length ? '⚠ Falta matéria-prima: ' + faltas.length + (faltas.length === 1 ? ' insumo' : ' insumos')
+        : semSaldo.length ? 'Sem contagem no estoque: ' + semSaldo.length + (semSaldo.length === 1 ? ' insumo' : ' insumos') + ' (não deu para conferir)'
+        : '✓ Matéria-prima disponível no estoque') + '</div>';
+    return h + '<table class="resumo-table mp-tab"><thead><tr><th scope="col">Insumo</th><th scope="col">' + escapeHtml(opcoes.colPrecisa || 'Precisa') + '</th><th scope="col">Disponível</th><th scope="col">Situação</th></tr></thead><tbody>' +
+      conf.map(function(c) {
+        var sit = c.saldo === null ? '<span class="mp-sit aviso">sem contagem</span>'
+          : c.falta > 0 ? '<span class="mp-sit falta">falta ' + escapeHtml(fmtMp(c.falta, c.unidade)) + '</span>' : '<span class="mp-sit ok">ok</span>';
+        return '<tr><td>' + escapeHtml(c.nome) + '</td><td>' + escapeHtml(fmtMp(c.qtd, c.unidade)) + '</td>' +
+          '<td>' + (c.disponivel === null ? '—' : escapeHtml(fmtMp(c.disponivel, c.unidade))) +
+            (c.reservado ? '<span class="est-sub">' + escapeHtml(fmtMp(c.reservado, '')) + ' para OPs antes</span>' : '') + '</td><td>' + sit + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+  function ehMestre() { return !!session && session.role === 'admin'; }
+  function resumoItensOp(itens) {
+    return (itens || []).filter(function(it) { return Number(it.quantidade) > 0; }).map(function(it) {
+      var p = findProduto(it.produtoId), pal = p ? emPaletes(p, Number(it.quantidade)) : null;
+      return (it.produtoNome || (p && p.nome) || '—') + ': ' + qtdUnidade(it.quantidade, it.unidade || unidadeDe(p)) + (pal !== null ? ' (' + fmtPal(pal) + ' pal)' : '');
+    }).join(' · ');
+  }
+  function paletesOp(itens) {
+    return (itens || []).reduce(function(a, it) { var p = findProduto(it.produtoId), v = p ? emPaletes(p, Number(it.quantidade) || 0) : null; return a + (v || 0); }, 0);
+  }
+
+  // ----- aba Produção -----
+  var opUi = { aberta: null, confirmarExcluir: null, confirmarDesfazer: null, todas: false };
+  function analisarOrdens() {
+    return ordensAbertas().map(function(o) {
+      var mat = materiaisDaOrdem(o), conf = conferirMateriais(mat.lista, o);
+      return { o: o, mat: mat, conf: conf, faltas: conf.filter(function(c) { return c.falta > 0; }), semSaldo: conf.filter(function(c) { return c.saldo === null; }) };
+    });
+  }
+  function situacaoOp(a) {
+    if (a.mat.semFicha.length) return { cls: 'confirmar', txt: 'Produto sem ficha técnica' };
+    if (a.faltas.length) return { cls: 'falta', txt: 'Falta matéria-prima' };
+    if (a.semSaldo.length) return { cls: 'confirmar', txt: 'Matéria-prima sem contagem' };
+    return { cls: 'pago', txt: 'Matéria-prima ok' };
+  }
+  function opCardHtml(a, hoje) {
+    var o = a.o, id = escapeHtml(o.id), sit = situacaoOp(a), aberto = opUi.aberta === o.id;
+    var acoes = opUi.confirmarExcluir === o.id
+      ? '<span>Excluir a OP nº ' + escapeHtml(String(o.numero)) + '?</span><button class="btn-text danger" data-mp="op-excluir-ok" data-id="' + id + '">Excluir</button><button class="btn-text" data-mp="op-excluir-nao">Manter</button>'
+      : '<button class="btn-text" data-mp="op-ver" data-id="' + id + '">' + (aberto ? 'Esconder matéria-prima' : 'Ver matéria-prima') + '</button>' +
+        '<button class="btn-text" data-mp="op-editar" data-id="' + id + '">Editar</button>' +
+        '<button class="btn-text" data-mp="op-concluir" data-id="' + id + '">Concluir</button>' +
+        '<button class="btn-text danger" data-mp="op-excluir" data-id="' + id + '">Excluir</button>';
+    return '<div class="frete-item est-' + sit.cls + '">' +
+      '<div class="frete-top"><span><b>OP nº ' + escapeHtml(String(o.numero || '—')) + '</b> · produzir ' + escapeHtml(rotuloDia(o.data, hoje).replace('Hoje', 'hoje').replace('Amanhã', 'amanhã')) +
+        (o.data < hoje ? ' <span class="alerta">(atrasada)</span>' : '') + '</span><span class="frete-valor">' + escapeHtml(fmtPal(paletesOp(o.itens))) + ' pal</span></div>' +
+      '<div style="margin-top:4px"><span class="chip-est ' + sit.cls + '" style="margin-left:0">' + escapeHtml(sit.txt) + '</span></div>' +
+      '<div class="frete-sub">' + escapeHtml(resumoItensOp(o.itens)) + '</div>' +
+      (o.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(o.obs) + '</div>' : '') +
+      (aberto ? '<div class="op-mat">' + materiaisHtml(a.conf, a.mat.semFicha) + '</div>' : '') +
+      '<div class="frete-acoes">' + acoes + '</div></div>';
+  }
+  function renderProducao() {
+    var lista = document.getElementById('op-abertas');
+    if (!lista || !session || !ehEscritorio()) return;
+    var hoje = todayIso(), analise = analisarOrdens();
+    var comProblema = analise.filter(function(a) { return a.faltas.length || a.mat.semFicha.length; });
+    var concl = mp.ordens.filter(function(o) { return o.status === 'concluida'; }).sort(function(a, b) { return String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); });
+    var conclHoje = concl.filter(function(o) { return isoLocal(o.concluidoEm) === hoje; });
+    var palAbertas = analise.reduce(function(s, a) { return s + paletesOp(a.o.itens); }, 0);
+    var palHoje = conclHoje.reduce(function(s, o) { return s + paletesOp(o.produzido || o.itens); }, 0);
+    document.getElementById('op-cards').innerHTML =
+      '<div class="est-card c-entrada"><span class="est-card-k">Nova ordem</span><span class="est-card-v">' + (conclHoje.length ? fmtPal(palHoje) + ' pal' : '—') + '</span>' +
+        '<span class="est-card-s">' + (conclHoje.length ? 'produzido hoje (' + conclHoje.length + (conclHoje.length === 1 ? ' OP concluída)' : ' OPs concluídas)') : 'nenhuma OP concluída hoje') + '</span>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-mp="op-nova">+ Nova ordem de produção</button></div>' +
+      '<div class="est-card c-saldo"><span class="est-card-k">Ordens abertas</span><span class="est-card-v">' + analise.length + '</span>' +
+        '<span class="est-card-s">' + (analise.length ? fmtPal(palAbertas) + ' paletes a produzir' : 'nenhuma ordem aberta') + '</span></div>' +
+      '<div class="est-card c-futuro' + (comProblema.length ? ' alerta' : '') + '"><span class="est-card-k">Matéria-prima</span>' +
+        '<span class="est-card-v">' + (comProblema.length ? comProblema.length + (comProblema.length === 1 ? ' OP' : ' OPs') : (analise.length ? 'ok' : '—')) + '</span>' +
+        '<span class="est-card-s">' + (comProblema.length ? 'com falta de matéria-prima ou sem ficha' : analise.length ? 'tudo disponível para as ordens abertas' : 'sem ordens para conferir') + '</span>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-mp="ir-materia">Ver estoque</button></div>';
+    var al = document.getElementById('op-alertas');
+    if (!comProblema.length) { al.classList.add('hidden'); al.innerHTML = ''; }
+    else {
+      al.innerHTML = '<p class="est-alertas-t">⚠ Ordens com problema na matéria-prima</p><ul>' + comProblema.map(function(a) {
+        var partes = a.faltas.map(function(c) { return c.nome + ' (falta ' + fmtMp(c.falta, c.unidade) + ')'; });
+        if (a.mat.semFicha.length) partes.push('sem ficha técnica: ' + a.mat.semFicha.join(', '));
+        return '<li class="' + (a.faltas.length ? 'neg' : '') + '"><b>OP nº ' + escapeHtml(String(a.o.numero)) + '</b> (' + escapeHtml(rotuloDia(a.o.data, hoje)) + '): ' + escapeHtml(partes.join('; ')) + '</li>';
+      }).join('') + '</ul>';
+      al.classList.remove('hidden');
+    }
+    document.getElementById('op-abertas-n').textContent = analise.length ? String(analise.length) : '';
+    lista.innerHTML = analise.length ? analise.map(function(a) { return opCardHtml(a, hoje); }).join('')
+      : '<p class="empty-state">Nenhuma ordem aberta. Toque em “+ Nova ordem de produção”.</p>';
+    var mostrar = opUi.todas ? concl : concl.slice(0, 15);
+    document.getElementById('op-concluidas').innerHTML = (mostrar.length ? mostrar.map(function(o) {
+      var id = escapeHtml(o.id);
+      var desf = opUi.confirmarDesfazer === o.id
+        ? '<div class="driver-confirm">Desfazer a conclusão da OP nº ' + escapeHtml(String(o.numero)) + '? A entrada no estoque de produtos e a baixa da matéria-prima são desfeitas e a ordem volta a ficar aberta.' +
+          '<button class="btn-text danger" data-mp="op-desfazer-ok" data-id="' + id + '">Desfazer</button><button class="btn-text" data-mp="op-desfazer-nao">Cancelar</button></div>' : '';
+      return desf || ('<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(o.numero)) + '<span class="driver-sub">' + escapeHtml(resumoItensOp(o.produzido || o.itens)) + '</span>' +
+        '<span class="driver-sub">concluída em ' + escapeHtml(formatDateTimeBR(o.concluidoEm)) + ' · entrou no estoque' + ((o.consumo || []).length ? ' · ' + o.consumo.length + ' insumos baixados' : '') + '</span></span>' +
+        (ehMestre() ? '<button class="btn-text danger" data-mp="op-desfazer" data-id="' + id + '">Desfazer</button>' : '') + '</div>');
+    }).join('') : '<p class="empty-state">Nenhuma ordem concluída ainda.</p>') +
+      (concl.length > 15 ? '<button type="button" class="btn-text" data-mp="op-todas">' + (opUi.todas ? 'Mostrar só as últimas' : 'Mostrar todas (' + concl.length + ')') + '</button>' : '');
+  }
+  function proximoNumeroOp() { return mp.ordens.reduce(function(m, o) { return Math.max(m, Number(o.numero) || 0); }, 0) + 1; }
+  function excluirOrdem(id) {
+    mpGravar([{ op: 'delete', col: MP_COL.ordens, id: id }]).then(function() { showToast('Ordem excluída.'); })
+      .catch(function(e) { console.error('excluir OP', e); showToast('Não foi possível excluir agora.'); });
+  }
+  function desfazerConclusao(o) {
+    var ops = [{ op: 'update', col: MP_COL.ordens, id: o.id, data: { status: 'aberta', concluidoEm: '', produzido: [], consumo: [], dataProducao: '' } }];
+    estoqueMovs.filter(function(m) { return m.opId === o.id; }).forEach(function(m) { ops.push({ op: 'delete', col: 'estoque', id: m.id }); });
+    mpGravar(ops).then(function() { showToast('Conclusão desfeita: a OP nº ' + o.numero + ' voltou a ficar aberta.'); })
+      .catch(function(e) { console.error('desfazer OP', e); showToast('Não foi possível desfazer agora.'); });
+  }
+  document.getElementById('tab-producao').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mp]');
+    if (!b) return;
+    var a = b.dataset.mp, id = b.dataset.id, o = id ? mp.ordens.find(function(x) { return x.id === id; }) : null;
+    if (a === 'op-nova') abrirOpForm(null);
+    else if (a === 'ir-materia') setTab('materia');
+    else if (a === 'op-ver') { opUi.aberta = opUi.aberta === id ? null : id; renderProducao(); }
+    else if (a === 'op-editar' && o) abrirOpForm(o);
+    else if (a === 'op-concluir' && o) abrirOpConcluir(o);
+    else if (a === 'op-excluir') { opUi.confirmarExcluir = id; renderProducao(); }
+    else if (a === 'op-excluir-nao') { opUi.confirmarExcluir = null; renderProducao(); }
+    else if (a === 'op-excluir-ok') { opUi.confirmarExcluir = null; excluirOrdem(id); }
+    else if (a === 'op-desfazer') { opUi.confirmarDesfazer = id; renderProducao(); }
+    else if (a === 'op-desfazer-nao') { opUi.confirmarDesfazer = null; renderProducao(); }
+    else if (a === 'op-desfazer-ok' && o) { opUi.confirmarDesfazer = null; desfazerConclusao(o); }
+    else if (a === 'op-todas') { opUi.todas = !opUi.todas; renderProducao(); }
+  });
+
+  // ----- aba Matéria-prima -----
+  var mpUi = { area: 'producao', confirmarMov: null, confirmarInsumo: null, confirmarFech: null, todosMovs: false };
+  function consumoMedioGarrafoes() {
+    var ult = mp.fechamentos.slice().sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')); }).slice(0, 7), tot = {};
+    ult.forEach(function(f) { (f.consumo || []).forEach(function(c) { tot[c.insumoId] = (tot[c.insumoId] || 0) + (Number(c.qtd) || 0); }); });
+    Object.keys(tot).forEach(function(k) { tot[k] = tot[k] / ult.length; });
+    return tot;
+  }
+  function linhasMateria(area) {
+    var garr = area === 'garrafoes', media = garr ? consumoMedioGarrafoes() : {};
+    return insumosDaArea(area).map(function(i) {
+      var s = saldoInsumo(i.id), r = garr ? 0 : reservadoAntes(i.id, null), disp = s === null ? null : arred3(s - r), min = Number(i.minimo) || 0;
+      var est = s === null ? '' : disp < 0 ? 'neg' : (min && disp < min) ? 'baixo' : '';
+      return { i: i, saldo: s, reservado: r, disp: disp, min: min, est: est, media: media[i.id] || 0 };
+    });
+  }
+  function textoAlertaMp(l, garr) {
+    var u = l.i.unidade;
+    if (l.disp < 0) return garr ? 'saldo negativo (' + fmtMp(l.disp, u) + '): faça a contagem' : 'faltam ' + fmtMp(-l.disp, u) + ' para as ordens abertas';
+    return (garr || !l.reservado ? 'saldo ' : 'sobra ') + fmtMp(l.disp, u) + (garr || !l.reservado ? '' : ' depois das ordens abertas') + ' (mínimo ' + fmtMp(l.min, u) + ')';
+  }
+  function ultimoMovTexto(tipo, area) {
+    var m = null;
+    mp.movs.forEach(function(x) { if (x.tipo === tipo && areaDe(insumoPorId(x.insumoId)) === area && (!m || String(x.em || '') > String(m.em || ''))) m = x; });
+    return m ? formatDateTimeBR(m.em) : '';
+  }
+  function renderMateria() {
+    var tabela = document.getElementById('mp-tabela');
+    if (!tabela || !session || !ehEscritorio()) return;
+    var area = mpUi.area, garr = area === 'garrafoes', hoje = todayIso();
+    document.querySelectorAll('#mp-area-tabs .seg-btn').forEach(function(b) {
+      var on = b.dataset.area === area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    document.getElementById('mp-tagline').innerHTML = garr
+      ? 'Garrafões de <b>10L e 20L</b> (Levíssima, Americana e Colina Azul) são feitos na hora do pedido: não têm ordem de produção. No fim do dia, lance o <b>fechamento</b> com o que foi vendido e os insumos saem do estoque pela ficha de cada garrafão.'
+      : 'Saldo = contagem + <b>recebimentos</b> − perdas − o que as <b>ordens de produção</b> concluídas consumiram. As ordens abertas reservam a matéria-prima.';
+    var linhas = linhasMateria(area), alertas = linhas.filter(function(l) { return l.est; });
+    // cartões
+    var cards;
+    if (garr) {
+      var fh = mp.fechamentos.find(function(f) { return f.id === hoje; });
+      var totHoje = fh ? (fh.vendas || []).reduce(function(s, v) { return s + (Number(v.quantidade) || 0); }, 0) : 0;
+      cards = '<div class="est-card c-entrada' + (fh ? '' : ' alerta') + '"><span class="est-card-k">Fechamento de hoje</span>' +
+          '<span class="est-card-v">' + (fh ? fmtInt(totHoje) : 'pendente') + '</span><span class="est-card-s">' + (fh ? 'garrafões vendidos hoje' : 'lance no fim do dia o que foi vendido') + '</span>' +
+          '<button type="button" class="btn btn-primary btn-sm" data-mp="gf-abrir" data-data="' + hoje + '">' + (fh ? 'Editar fechamento' : 'Lançar fechamento') + '</button></div>';
+    } else {
+      cards = '<div class="est-card c-entrada"><span class="est-card-k">Recebimento</span><span class="est-card-v">+</span>' +
+          '<span class="est-card-s">' + (ultimoMovTexto('entrada', area) ? 'último em ' + escapeHtml(ultimoMovTexto('entrada', area)) : 'nenhum recebimento lançado') + '</span>' +
+          '<button type="button" class="btn btn-primary btn-sm" data-mp="mov" data-tipo="entrada">+ Lançar recebimento</button></div>';
+    }
+    cards += '<div class="est-card c-saldo"><span class="est-card-k">Contagem</span><span class="est-card-v">' + linhas.filter(function(l) { return l.saldo !== null; }).length + '/' + linhas.length + '</span>' +
+        '<span class="est-card-s">insumos com saldo' + (ultimoMovTexto('contagem', area) ? ' · última contagem em ' + escapeHtml(ultimoMovTexto('contagem', area)) : '') + '</span>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-mp="mov" data-tipo="contagem">Contagem (acertar o saldo)</button></div>';
+    cards += garr
+      ? '<div class="est-card c-futuro"><span class="est-card-k">Recebimento</span><span class="est-card-v">+</span>' +
+          '<span class="est-card-s">' + (ultimoMovTexto('entrada', area) ? 'último em ' + escapeHtml(ultimoMovTexto('entrada', area)) : 'nenhum recebimento lançado') + '</span>' +
+          '<button type="button" class="btn btn-secondary btn-sm" data-mp="mov" data-tipo="entrada">+ Lançar recebimento</button></div>'
+      : '<div class="est-card c-futuro' + (alertas.length ? ' alerta' : '') + '"><span class="est-card-k">Abaixo do mínimo</span><span class="est-card-v">' + alertas.length + '</span>' +
+          '<span class="est-card-s">' + ordensAbertas().length + (ordensAbertas().length === 1 ? ' ordem aberta reserva' : ' ordens abertas reservam') + ' matéria-prima</span>' +
+          '<button type="button" class="btn btn-secondary btn-sm" data-mp="ir-producao">Ver ordens</button></div>';
+    document.getElementById('mp-cards').innerHTML = cards;
+    // alertas
+    var al = document.getElementById('mp-alertas');
+    if (!alertas.length) { al.classList.add('hidden'); al.innerHTML = ''; }
+    else {
+      al.innerHTML = '<p class="est-alertas-t">⚠ ' + (alertas.some(function(l) { return l.est === 'neg'; }) ? 'Falta matéria-prima' : 'Abaixo do estoque mínimo') + '</p><ul>' + alertas.map(function(l) {
+        return '<li class="' + (l.est === 'neg' ? 'neg' : '') + '"><b>' + escapeHtml(l.i.nome) + '</b> ' + escapeHtml(textoAlertaMp(l, garr)) + '</li>';
+      }).join('') + '</ul>';
+      al.classList.remove('hidden');
+    }
+    // saldo por insumo
+    document.getElementById('mp-saldo-hint').innerHTML = garr
+      ? 'Gasto por dia: média dos últimos 7 fechamentos. <span class="est-leg baixo">laranja</span> abaixo do mínimo · <span class="est-leg neg">vermelho</span> saldo negativo.'
+      : 'Disponível = saldo − o que as ordens abertas vão usar. <span class="est-leg baixo">laranja</span> abaixo do mínimo · <span class="est-leg neg">vermelho</span> falta para as ordens.';
+    if (!linhas.length) {
+      tabela.innerHTML = '<p class="empty-state">Nenhum insumo cadastrado nesta área.' + (ehMestre() ? ' Cadastre em “Insumos cadastrados”, no fim da página.' : ' Peça à diretoria para cadastrar.') + '</p>';
+    } else {
+      var grupo = null;
+      tabela.innerHTML = '<table class="resumo-table est-table"><thead><tr><th scope="col">Insumo</th><th scope="col">Saldo</th><th scope="col">' + (garr ? 'Gasto por dia' : 'Ordens abertas') + '</th><th scope="col">' + (garr ? 'Dura' : 'Disponível') + '</th></tr></thead><tbody>' +
+        linhas.map(function(l) {
+          var g = '';
+          if ((l.i.grupo || 'Outros') !== grupo) { grupo = l.i.grupo || 'Outros'; g = '<tr class="est-grupo"><td colspan="4">' + escapeHtml(grupo) + '</td></tr>'; }
+          var u = l.i.unidade || '';
+          var nome = '<td>' + escapeHtml(l.i.nome) + '<span class="est-sub">' + escapeHtml((l.min ? 'mínimo ' + fmtMp(l.min, u) : 'sem mínimo') + (l.saldo === null ? ' · sem contagem' : '')) + '</span></td>';
+          var saldo = '<td' + (garr && l.est ? ' class="' + l.est + '"' : '') + '>' + (l.saldo === null ? '—' : escapeHtml(fmtMp(l.saldo, u))) + '</td>';
+          if (garr) {
+            var dias = l.media > 0 && l.saldo !== null ? Math.floor(Math.max(0, l.saldo) / l.media) : null;
+            return g + '<tr>' + nome + saldo + '<td>' + (l.media ? escapeHtml(fmtMp(arred3(l.media), u)) : '—') + '</td><td>' + (dias === null ? '—' : escapeHtml(fmtInt(dias) + (dias === 1 ? ' dia' : ' dias'))) + '</td></tr>';
+          }
+          return g + '<tr>' + nome + saldo + '<td>' + (l.reservado ? '− ' + escapeHtml(fmtMp(l.reservado, u)) : '—') + '</td>' +
+            '<td' + (l.est ? ' class="' + l.est + '"' : '') + '>' + (l.disp === null ? '—' : escapeHtml(fmtMp(l.disp, u))) + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }
+    renderFechamentos(garr);
+    renderMovsMp(area);
+    renderCadastroMp(area);
+  }
+  function renderFechamentos(garr) {
+    var sec = document.getElementById('gf-sec');
+    sec.classList.toggle('hidden', !garr);
+    if (!garr) return;
+    var lista = mp.fechamentos.slice().sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')); }).slice(0, 31);
+    var hoje = todayIso();
+    document.getElementById('gf-lista').innerHTML = lista.length ? lista.map(function(f) {
+      var id = escapeHtml(f.id), tot = (f.vendas || []).reduce(function(s, v) { return s + (Number(v.quantidade) || 0); }, 0);
+      if (mpUi.confirmarFech === f.id) {
+        return '<div class="driver-confirm">Excluir o fechamento de ' + escapeHtml(formatDateBR(f.data)) + '? Os insumos voltam para o saldo.' +
+          '<button class="btn-text danger" data-mp="gf-excluir-ok" data-id="' + id + '">Excluir</button><button class="btn-text" data-mp="gf-excluir-nao">Cancelar</button></div>';
+      }
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(rotuloDia(f.data, hoje)) + (f.data !== hoje ? ' · ' + escapeHtml(formatDateBR(f.data)) : '') + ' · ' + fmtInt(tot) + (tot === 1 ? ' garrafão' : ' garrafões') +
+        '<span class="driver-sub">' + escapeHtml((f.vendas || []).filter(function(v) { return Number(v.quantidade) > 0; }).map(function(v) { return v.nome.replace('Garrafão ', '') + ': ' + fmtInt(v.quantidade); }).join(' · ')) + '</span>' +
+        (f.obs ? '<span class="driver-sub">Obs.: ' + escapeHtml(f.obs) + '</span>' : '') + '</span>' +
+        '<button class="btn-text" data-mp="gf-abrir" data-data="' + escapeHtml(f.data) + '">Editar</button>' +
+        '<button class="btn-text danger" data-mp="gf-excluir" data-id="' + id + '">Excluir</button></div>';
+    }).join('') : '<p class="empty-state">Nenhum fechamento lançado ainda.</p>';
+  }
+  function renderMovsMp(area) {
+    var eventos = mp.movs.filter(function(m) { return areaDe(insumoPorId(m.insumoId)) === area || (!insumoPorId(m.insumoId) && m.area === area); })
+      .map(function(m) { return { em: m.em, m: m }; });
+    if (area === 'producao') mp.ordens.forEach(function(o) { if (o.status === 'concluida' && (o.consumo || []).length) eventos.push({ em: o.concluidoEm, o: o }); });
+    eventos.sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); });
+    var total = eventos.length;
+    if (!mpUi.todosMovs) eventos = eventos.slice(0, 30);
+    document.getElementById('mp-movs').innerHTML = (eventos.length ? eventos.map(function(ev) {
+      if (ev.o) {
+        return '<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(ev.o.numero)) + ' concluída<span class="driver-tel">' + escapeHtml(formatDateTimeBR(ev.o.concluidoEm) + ' · consumo de ' + ev.o.consumo.length + ' insumos') + '</span></span>' +
+          '<span class="mov-qtd">−</span></div>';
+      }
+      var m = ev.m, ins = insumoPorId(m.insumoId), u = m.unidade || (ins && ins.unidade) || '';
+      if (mpUi.confirmarMov === m.id) {
+        return '<div class="driver-confirm">Excluir este lançamento? O saldo é recalculado.' +
+          '<button class="btn-text danger" data-mp="mov-excluir-ok" data-id="' + escapeHtml(m.id) + '">Excluir</button><button class="btn-text" data-mp="mov-excluir-nao">Cancelar</button></div>';
+      }
+      var extra = [m.fornecedor, m.nf ? 'NF ' + m.nf : '', m.obs].filter(Boolean).join(' · ');
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml((ins ? ins.nome : m.insumoNome) || '—') +
+          '<span class="driver-tel">' + escapeHtml(formatDateTimeBR(m.em) + ' · ' + (TIPOS_MOV_MP[m.tipo] || m.tipo) + (extra ? ' · ' + extra : '')) + '</span></span>' +
+        '<span class="mov-qtd' + (m.tipo === 'entrada' ? ' figure-teal' : '') + '">' + (m.tipo === 'contagem' ? '= ' : m.tipo === 'entrada' ? '+ ' : '− ') + escapeHtml(fmtMp(m.quantidade, u)) + '</span>' +
+        '<button class="btn-text danger" data-mp="mov-excluir" data-id="' + escapeHtml(m.id) + '">Excluir</button></div>';
+    }).join('') : '<p class="empty-state">Nenhum lançamento ainda. Comece pela contagem.</p>') +
+      (total > 30 ? '<button type="button" class="btn-text" data-mp="movs-todos">' + (mpUi.todosMovs ? 'Mostrar só os últimos' : 'Mostrar todos (' + total + ')') + '</button>' : '');
+  }
+  function insumoEmUso(id) { return mp.fichas.some(function(f) { return (f.itens || []).some(function(l) { return l.insumoId === id; }); }); }
+  function resumoFicha(chave) {
+    return fichaDe(chave).map(function(l) {
+      var ins = insumoPorId(l.insumoId);
+      return fmtMp(l.qtd, ins ? ins.unidade : '') + ' ' + (ins ? ins.nome : '?') + (l.base === 'palete' ? ' (por palete)' : '');
+    }).join(' · ');
+  }
+  function renderCadastroMp(area) {
+    var mestre = ehMestre(), garr = area === 'garrafoes';
+    document.getElementById('mp-cad').classList.toggle('hidden', !mestre);
+    document.getElementById('mp-fichas-sec').classList.toggle('hidden', !mestre);
+    if (!mestre) return;
+    var ins = insumosDaArea(area);
+    document.getElementById('mp-insumos-list').innerHTML = ins.length ? ins.map(function(i) {
+      var id = escapeHtml(i.id);
+      if (mpUi.confirmarInsumo === i.id) {
+        return '<div class="driver-confirm">Remover ' + escapeHtml(i.nome) + '? Os lançamentos dele continuam no histórico.' +
+          '<button class="btn-text danger" data-mp="ins-remover-ok" data-id="' + id + '">Remover</button><button class="btn-text" data-mp="ins-remover-nao">Cancelar</button></div>';
+      }
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(i.nome) + '<span class="driver-sub">' + escapeHtml([i.grupo || 'Outros', i.unidade || '', i.minimo ? 'mínimo ' + fmtMp(i.minimo, i.unidade) : ''].filter(Boolean).join(' · ')) + '</span></span>' +
+        '<button class="btn-text" data-mp="ins-editar" data-id="' + id + '">Editar</button><button class="btn-text danger" data-mp="ins-remover" data-id="' + id + '">Remover</button></div>';
+    }).join('') : '<p class="empty-state">Nenhum insumo cadastrado nesta área.</p>';
+    var itens = garr ? garrafoesItens().map(function(g) { return { chave: chaveGarrafao(g.id), nome: g.nome, unid: 'garrafão' }; })
+      : produtosOrdenados().map(function(p) { return { chave: p.id, nome: p.nome, unid: unidadeSingularDe(p) }; });
+    document.getElementById('mp-fichas-hint').innerHTML = garr ? 'Quanto de cada insumo vai em <b>1 garrafão</b> vendido.'
+      : 'Quanto de cada insumo vai em <b>1 fardo, caixa ou galão</b> de cada produto (ou em 1 palete, para filme stretch e chapatex).';
+    document.getElementById('mp-fichas-list').innerHTML = itens.map(function(x) {
+      var r = resumoFicha(x.chave);
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="driver-sub' + (r ? '' : ' alerta') + '">' + escapeHtml(r ? 'por ' + x.unid + ': ' + r : 'sem ficha técnica') + '</span></span>' +
+        '<button class="btn-text" data-mp="ficha-editar" data-chave="' + escapeHtml(x.chave) + '">' + (r ? 'Editar' : 'Montar') + '</button></div>';
+    }).join('');
+  }
+  document.getElementById('tab-materia').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mp], [data-area]');
+    if (!b) return;
+    if (b.dataset.area) { mpUi.area = b.dataset.area; mpUi.confirmarMov = mpUi.confirmarInsumo = mpUi.confirmarFech = null; renderMateria(); return; }
+    var a = b.dataset.mp, id = b.dataset.id;
+    if (a === 'mov') abrirMovForm(b.dataset.tipo, mpUi.area);
+    else if (a === 'ir-producao') setTab('producao');
+    else if (a === 'gf-abrir') abrirFechamento(b.dataset.data);
+    else if (a === 'gf-excluir') { mpUi.confirmarFech = id; renderMateria(); }
+    else if (a === 'gf-excluir-nao') { mpUi.confirmarFech = null; renderMateria(); }
+    else if (a === 'gf-excluir-ok') { mpUi.confirmarFech = null; mpGravar([{ op: 'delete', col: MP_COL.fechamentos, id: id }]).then(function() { showToast('Fechamento excluído.'); }).catch(function(x) { console.error(x); showToast('Não foi possível excluir agora.'); }); }
+    else if (a === 'mov-excluir') { mpUi.confirmarMov = id; renderMateria(); }
+    else if (a === 'mov-excluir-nao') { mpUi.confirmarMov = null; renderMateria(); }
+    else if (a === 'mov-excluir-ok') { mpUi.confirmarMov = null; mpGravar([{ op: 'delete', col: MP_COL.movs, id: id }]).catch(function(x) { console.error(x); showToast('Não foi possível excluir agora.'); }); }
+    else if (a === 'movs-todos') { mpUi.todosMovs = !mpUi.todosMovs; renderMateria(); }
+    else if (a === 'mov-perda') abrirMovForm('perda', mpUi.area);
+    else if (a === 'ins-novo') abrirInsumoForm(null, mpUi.area);
+    else if (a === 'ins-editar') abrirInsumoForm(insumoPorId(id), mpUi.area);
+    else if (a === 'ins-remover') {
+      if (insumoEmUso(id)) { showToast('Esse insumo está numa ficha técnica. Tire-o das fichas antes de remover.'); return; }
+      mpUi.confirmarInsumo = id; renderMateria();
+    }
+    else if (a === 'ins-remover-nao') { mpUi.confirmarInsumo = null; renderMateria(); }
+    else if (a === 'ins-remover-ok') { mpUi.confirmarInsumo = null; mpGravar([{ op: 'delete', col: MP_COL.insumos, id: id }]).catch(function(x) { console.error(x); showToast('Não foi possível remover agora.'); }); }
+    else if (a === 'ficha-editar') abrirFichaForm(b.dataset.chave, mpUi.area);
+  });
+
+  // ----- formulário (uma folha só, montada para cada lançamento) -----
+  var mpSheet = null;
+  function abrirMpSheet(cfg) {
+    mpSheet = cfg;
+    document.getElementById('mp-sheet-title').textContent = cfg.titulo;
+    document.getElementById('mp-form-body').innerHTML = cfg.html;
+    document.getElementById('btn-mp-submit').textContent = cfg.botao || 'Salvar';
+    document.getElementById('btn-mp-submit').disabled = false;
+    document.getElementById('mp-form-error').classList.add('hidden');
+    document.getElementById('mp-sheet-overlay').classList.remove('hidden');
+    document.querySelector('#mp-sheet-overlay .sheet').scrollTop = 0;
+    if (cfg.modo === 'ficha') renderFichaLinhas();
+    atualizarMpSheet();
+  }
+  function fecharMpSheet() { document.getElementById('mp-sheet-overlay').classList.add('hidden'); mpSheet = null; }
+  function erroMpSheet(msg) { var el = document.getElementById('mp-form-error'); el.textContent = msg; el.classList.remove('hidden'); }
+  document.getElementById('btn-close-mp-sheet').addEventListener('click', fecharMpSheet);
+  document.getElementById('btn-mp-cancel').addEventListener('click', fecharMpSheet);
+  document.getElementById('mp-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharMpSheet(); });
+  function numCampo(v) { if (v === '' || v == null) return null; var n = Number(String(v).replace(',', '.')); return isNaN(n) ? null : n; }
+  function linhaProdutoHtml(p, q, extra) {
+    var upp = Number(p.unidadesPorPalete) || 0, pal = q && upp && (q % upp === 0) ? String(q / upp) : '';
+    return '<div class="est-row"><span class="pt-nome">' + escapeHtml(p.nome) + '<span class="pt-unid">' + escapeHtml(unidadeDe(p)) + (upp ? ' · palete de ' + fmtInt(upp) : '') + (extra || '') + '</span></span>' +
+      '<input type="number" min="0" step="1" inputmode="numeric" class="mp-pal" data-produto="' + escapeHtml(p.id) + '" placeholder="0" value="' + escapeHtml(pal) + '" aria-label="Paletes de ' + escapeHtml(p.nome) + '"' + (upp ? '' : ' disabled') + ' />' +
+      '<input type="number" min="0" step="1" inputmode="numeric" class="mp-qtd" data-produto="' + escapeHtml(p.id) + '" placeholder="0" value="' + escapeHtml(q ? String(q) : '') + '" aria-label="Quantidade de ' + escapeHtml(p.nome) + '" /></div>';
+  }
+  function itensDoFormProdutos() {
+    var itens = [];
+    document.querySelectorAll('#mp-form-body .mp-qtd').forEach(function(inp) {
+      var q = Math.floor(Number(inp.value) || 0), p = findProduto(inp.dataset.produto);
+      if (q > 0 && p) itens.push({ produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), quantidade: q });
+    });
+    return itens;
+  }
+  // ordem de produção: nova ou editar
+  function abrirOpForm(o) {
+    var prods = produtosOrdenados();
+    if (!prods.length) { showToast('Cadastre os produtos primeiro.'); return; }
+    var qt = {};
+    ((o && o.itens) || []).forEach(function(it) { qt[it.produtoId] = Number(it.quantidade) || 0; });
+    var marca = null;
+    var rows = prods.map(function(p) {
+      var g = '', mk = marcaDoTexto(p.nome);
+      if (mk !== marca) { marca = mk; g = '<p class="mp-grupo">' + escapeHtml(nomeMarca(mk)) + '</p>'; }
+      return g + linhaProdutoHtml(p, qt[p.id] || 0, fichaDe(p.id).length ? '' : ' · <b class="alerta">sem ficha</b>');
+    }).join('');
+    abrirMpSheet({
+      modo: 'op', id: o ? o.id : null, ordem: o || null, titulo: o ? 'Editar OP nº ' + o.numero : 'Nova ordem de produção', botao: o ? 'Salvar ordem' : 'Lançar ordem',
+      html: '<div class="row-2"><label>Produzir em <span class="req">*</span><input type="date" id="mp-op-data" value="' + escapeHtml((o && o.data) || todayIso()) + '" /></label>' +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="mp-op-obs" maxlength="200" value="' + escapeHtml((o && o.obs) || '') + '" /></label></div>' +
+        '<p class="hint">Digite em paletes ou na unidade do produto. A matéria-prima é calculada pela ficha técnica e conferida no estoque, logo abaixo.</p>' +
+        '<div class="est-form-head"><span>Produto</span><span>Paletes</span><span>Quantidade</span></div><div class="est-rows">' + rows + '</div>' +
+        '<div class="section-head"><h2 class="section-title">Matéria-prima desta ordem</h2></div><div id="mp-vivo"></div>'
+    });
+  }
+  function abrirOpConcluir(o) {
+    var rows = (o.itens || []).map(function(it) {
+      var p = findProduto(it.produtoId) || { id: it.produtoId, nome: it.produtoNome, unidade: it.unidade, unidadesPorPalete: 0 };
+      return linhaProdutoHtml(p, Number(it.quantidade) || 0, ' · na ordem: ' + qtdUnidade(it.quantidade, it.unidade || unidadeDe(p)));
+    }).join('');
+    abrirMpSheet({
+      modo: 'op-concluir', id: o.id, ordem: o, titulo: 'Concluir OP nº ' + o.numero, botao: 'Concluir e dar entrada',
+      html: '<p class="hint">Confira o que foi produzido (se saiu diferente da ordem, corrija). Ao concluir, a produção <b>entra no estoque de produtos</b> e a matéria-prima <b>sai do estoque de matéria-prima</b>.</p>' +
+        '<label>Data da produção<input type="date" id="mp-op-dataprod" value="' + escapeHtml(todayIso()) + '" /></label>' +
+        '<div class="est-form-head"><span>Produto</span><span>Paletes</span><span>Produzido</span></div><div class="est-rows">' + rows + '</div>' +
+        '<div class="section-head"><h2 class="section-title">Matéria-prima consumida</h2></div><div id="mp-vivo"></div>'
+    });
+  }
+  // recebimento, contagem ou perda de matéria-prima
+  function abrirMovForm(tipo, area) {
+    var ins = insumosDaArea(area);
+    if (!ins.length) { showToast(ehMestre() ? 'Cadastre os insumos primeiro (Insumos cadastrados, no fim da página).' : 'Nenhum insumo cadastrado. Peça à diretoria.'); return; }
+    var grupo = null;
+    var rows = ins.map(function(i) {
+      var g = '';
+      if ((i.grupo || 'Outros') !== grupo) { grupo = i.grupo || 'Outros'; g = '<p class="mp-grupo">' + escapeHtml(grupo) + '</p>'; }
+      var s = saldoInsumo(i.id);
+      return g + '<div class="mp-row"><span class="pt-nome">' + escapeHtml(i.nome) + '<span class="pt-unid">' + escapeHtml(i.unidade || '') + (s !== null ? ' · saldo ' + escapeHtml(fmtMp(s, '')) : ' · sem contagem') + '</span></span>' +
+        '<input type="number" min="0" step="any" inputmode="decimal" class="mp-ins-qtd" data-insumo="' + escapeHtml(i.id) + '" placeholder="' + (tipo === 'contagem' ? '—' : '0') + '" aria-label="' + escapeHtml(i.nome) + '" /></div>';
+    }).join('');
+    var titulos = { entrada: 'Recebimento de matéria-prima', contagem: 'Contagem da matéria-prima', perda: 'Perda ou avaria' };
+    var dicas = {
+      entrada: 'Informe o que chegou (na unidade de cada insumo). Pode lançar só os insumos da nota.',
+      contagem: 'Informe quanto há agora no estoque, só dos insumos contados. A partir daqui o app soma os recebimentos e desconta o consumo.',
+      perda: 'Informe o que se perdeu (avaria, refugo, vencido). Sai do saldo.'
+    };
+    abrirMpSheet({
+      modo: 'mov', tipo: tipo, area: area, titulo: titulos[tipo] + (area === 'garrafoes' ? ' · garrafões' : ''), botao: tipo === 'contagem' ? 'Salvar contagem' : 'Salvar',
+      html: '<p class="hint">' + escapeHtml(dicas[tipo]) + '</p>' +
+        '<div class="row-2"><label>Data<input type="date" id="mp-mov-data" value="' + escapeHtml(todayIso()) + '" /></label>' +
+        (tipo === 'entrada' ? '<label>Nota fiscal <span class="opt">(opcional)</span><input type="text" id="mp-mov-nf" maxlength="30" /></label></div><label>Fornecedor <span class="opt">(opcional)</span><input type="text" id="mp-mov-forn" maxlength="80" /></label>'
+          : '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mp-mov-obs" maxlength="120" /></label></div>') +
+        '<div class="mp-rows">' + rows + '</div>' +
+        (tipo === 'entrada' ? '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mp-mov-obs" maxlength="120" /></label>' : '')
+    });
+  }
+  // cadastro de insumo (só a senha mestre)
+  function abrirInsumoForm(ins, area) {
+    if (!ehMestre()) return;
+    var grupos = GRUPOS_MP.slice();
+    mp.insumos.forEach(function(i) { if (i.grupo && grupos.indexOf(i.grupo) < 0) grupos.push(i.grupo); });
+    var a = ins ? areaDe(ins) : area;
+    abrirMpSheet({
+      modo: 'insumo', id: ins ? ins.id : null, area: a, titulo: ins ? 'Editar insumo' : 'Adicionar insumo', botao: 'Salvar',
+      html: '<label>Nome do insumo <span class="req">*</span><input type="text" id="mp-ins-nome" maxlength="80" value="' + escapeHtml(ins ? ins.nome : '') + '" placeholder="Ex.: Pré-forma 510ml" /></label>' +
+        '<div class="row-2"><label>Unidade<select id="mp-ins-un">' + UNIDADES_MP.map(function(u) { return '<option' + ((ins ? ins.unidade : 'un') === u ? ' selected' : '') + '>' + u + '</option>'; }).join('') + '</select></label>' +
+        '<label>Grupo<input type="text" id="mp-ins-grupo" list="mp-grupos-list" maxlength="40" value="' + escapeHtml(ins ? ins.grupo || '' : '') + '" /></label></div>' +
+        '<datalist id="mp-grupos-list">' + grupos.map(function(g) { return '<option value="' + escapeHtml(g) + '">'; }).join('') + '</datalist>' +
+        '<div class="row-2"><label>Estoque mínimo <span class="opt">(na unidade; avisa abaixo dele)</span><input type="number" id="mp-ins-min" min="0" step="any" inputmode="decimal" value="' + escapeHtml(ins && ins.minimo ? String(ins.minimo) : '') + '" /></label>' +
+        '<label>Área<select id="mp-ins-area"><option value="producao"' + (a === 'producao' ? ' selected' : '') + '>Produção (ordens)</option><option value="garrafoes"' + (a === 'garrafoes' ? ' selected' : '') + '>Garrafões 10L e 20L</option></select></label></div>'
+    });
+  }
+  // ficha técnica de um produto ou garrafão (só a senha mestre)
+  function abrirFichaForm(chave, area) {
+    if (!ehMestre()) return;
+    var garr = chave.indexOf('garrafao-') === 0;
+    var g = garr ? garrafoesItens().find(function(x) { return chaveGarrafao(x.id) === chave; }) : null;
+    var p = garr ? null : findProduto(chave);
+    var nome = garr ? (g ? g.nome : chave) : (p ? p.nome : chave);
+    var unid = garr ? 'garrafão' : unidadeSingularDe(p);
+    var outras = mp.fichas.filter(function(f) { return f.id !== chave && (f.itens || []).length && (f.id.indexOf('garrafao-') === 0) === garr; });
+    function nomeDaChave(k) {
+      if (k.indexOf('garrafao-') === 0) { var x = garrafoesItens().find(function(y) { return chaveGarrafao(y.id) === k; }); return x ? x.nome : k; }
+      var pp = findProduto(k); return pp ? pp.nome : k;
+    }
+    abrirMpSheet({
+      modo: 'ficha', chave: chave, area: garr ? 'garrafoes' : 'producao', garr: garr, nome: nome, titulo: 'Ficha técnica · ' + nome, botao: 'Salvar ficha',
+      unid: unid, linhas: fichaDe(chave).length ? fichaDe(chave).map(function(l) { return { insumoId: l.insumoId, qtd: l.qtd, base: l.base || 'unidade' }; }) : [{ insumoId: '', qtd: '', base: 'unidade' }],
+      html: '<p class="hint">Quanto de cada insumo vai em <b>1 ' + escapeHtml(unid) + '</b>' + (garr ? '' : ' (ou em 1 palete, para filme stretch e chapatex)') + '.</p>' +
+        (outras.length ? '<label>Copiar de outra ficha <span class="opt">(depois é só trocar o que muda, como o rótulo)</span><select id="mp-ficha-copiar"><option value="">—</option>' +
+          outras.map(function(f) { return '<option value="' + escapeHtml(f.id) + '">' + escapeHtml(nomeDaChave(f.id)) + '</option>'; }).join('') + '</select></label>' : '') +
+        '<div id="mpf-linhas"></div><button type="button" class="btn-text" data-mpf="add">+ Adicionar insumo</button>'
+    });
+  }
+  function renderFichaLinhas() {
+    var box = document.getElementById('mpf-linhas');
+    if (!box || !mpSheet || mpSheet.modo !== 'ficha') return;
+    var ins = insumosDaArea(mpSheet.area), garr = mpSheet.garr;
+    var grupos = [];
+    ins.forEach(function(i) { var gr = i.grupo || 'Outros'; if (grupos.indexOf(gr) < 0) grupos.push(gr); });
+    if (!ins.length) { box.innerHTML = '<p class="field-hint warn">Cadastre os insumos desta área primeiro.</p>'; return; }
+    box.innerHTML = mpSheet.linhas.map(function(l, idx) {
+      var opts = '<option value="">Escolha o insumo</option>' + grupos.map(function(gr) {
+        return '<optgroup label="' + escapeHtml(gr) + '">' + ins.filter(function(i) { return (i.grupo || 'Outros') === gr; }).map(function(i) {
+          return '<option value="' + escapeHtml(i.id) + '"' + (i.id === l.insumoId ? ' selected' : '') + '>' + escapeHtml(i.nome + ' (' + (i.unidade || '') + ')') + '</option>';
+        }).join('') + '</optgroup>';
+      }).join('');
+      return '<div class="mpf-row' + (garr ? ' sem-base' : '') + '" data-i="' + idx + '"><select class="mpf-ins" aria-label="Insumo">' + opts + '</select>' +
+        '<input type="number" class="mpf-qtd" min="0" step="any" inputmode="decimal" placeholder="qtd" value="' + escapeHtml(l.qtd === '' || l.qtd == null ? '' : String(l.qtd)) + '" aria-label="Quantidade" />' +
+        (garr ? '' : '<select class="mpf-base" aria-label="Por"><option value="unidade"' + (l.base !== 'palete' ? ' selected' : '') + '>por ' + escapeHtml(mpSheet.unid || 'unidade') + '</option><option value="palete"' + (l.base === 'palete' ? ' selected' : '') + '>por palete</option></select>') +
+        '<button type="button" class="icon-btn" data-mpf="del" data-i="' + idx + '" aria-label="Tirar da ficha">✕</button></div>';
+    }).join('');
+  }
+  // fechamento do dia dos garrafões
+  function abrirFechamento(data) {
+    data = data || todayIso();
+    var f = mp.fechamentos.find(function(x) { return x.id === data; });
+    var vend = {};
+    ((f && f.vendas) || []).forEach(function(v) { vend[v.itemId] = Number(v.quantidade) || 0; });
+    var rows = garrafoesItens().map(function(g) {
+      return '<div class="est-row"><span class="pt-nome">' + escapeHtml(g.nome) + (fichaDe(chaveGarrafao(g.id)).length ? '' : '<span class="pt-unid alerta">sem ficha técnica</span>') + '</span><span></span>' +
+        '<input type="number" min="0" step="1" inputmode="numeric" class="gf-qtd" data-item="' + escapeHtml(g.id) + '" placeholder="0" value="' + escapeHtml(vend[g.id] ? String(vend[g.id]) : '') + '" aria-label="Vendidos: ' + escapeHtml(g.nome) + '" /></div>';
+    }).join('');
+    abrirMpSheet({
+      modo: 'fechamento', data: data, existente: f || null, titulo: 'Fechamento do dia · garrafões', botao: f ? 'Salvar fechamento' : 'Lançar fechamento',
+      html: '<p class="hint">Quantos garrafões foram vendidos no dia. Os insumos (tampa, lacre, rótulo…) saem do estoque pela ficha de cada garrafão.</p>' +
+        '<div class="row-2"><label>Dia<input type="date" id="gf-data" value="' + escapeHtml(data) + '" /></label>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="gf-obs" maxlength="120" value="' + escapeHtml((f && f.obs) || '') + '" /></label></div>' +
+        (f ? '<p class="field-hint">Este dia já tem fechamento: ao salvar, ele é atualizado.</p>' : '') +
+        '<div class="est-form-head"><span>Garrafão</span><span></span><span>Vendidos</span></div><div class="est-rows">' + rows + '</div>' +
+        '<div class="section-head"><h2 class="section-title">Insumos consumidos</h2></div><div id="mp-vivo"></div>'
+    });
+  }
+  function itensDoFechamento() {
+    var itens = [];
+    document.querySelectorAll('#mp-form-body .gf-qtd').forEach(function(inp) {
+      var q = Math.floor(Number(inp.value) || 0), g = garrafoesItens().find(function(x) { return x.id === inp.dataset.item; });
+      if (q > 0 && g) itens.push({ itemId: g.id, nome: g.nome, quantidade: q });
+    });
+    return itens;
+  }
+  // matéria-prima ao vivo enquanto se preenche
+  function atualizarMpSheet() {
+    if (!mpSheet) return;
+    var box = document.getElementById('mp-vivo');
+    if (!box) return;
+    if (mpSheet.modo === 'op') {
+      var dEl = document.getElementById('mp-op-data');
+      var ref = { id: mpSheet.id, data: dEl ? dEl.value : todayIso(), numero: mpSheet.ordem ? mpSheet.ordem.numero : null };
+      var mat = materiaisDe(itensDoFormProdutos(), false);
+      box.innerHTML = materiaisHtml(conferirMateriais(mat.lista, ref), mat.semFicha);
+    } else if (mpSheet.modo === 'op-concluir') {
+      var mat2 = materiaisDe(itensDoFormProdutos(), false);
+      box.innerHTML = materiaisHtml(conferirMateriais(mat2.lista, null, true), mat2.semFicha, { colPrecisa: 'Consome', vazio: 'Informe o que foi produzido.' });
+    } else if (mpSheet.modo === 'fechamento') {
+      var mat3 = materiaisDe(itensDoFechamento(), true), dev = {};
+      if (mpSheet.existente) (mpSheet.existente.consumo || []).forEach(function(c) { dev[c.insumoId] = (dev[c.insumoId] || 0) + (Number(c.qtd) || 0); });
+      box.innerHTML = materiaisHtml(conferirMateriais(mat3.lista, null, true, dev), mat3.semFicha, { colPrecisa: 'Consome', vazio: 'Informe os garrafões vendidos.' });
+    }
+  }
+  document.getElementById('mp-form-body').addEventListener('input', function(e) {
+    var t = e.target;
+    if (!mpSheet) return;
+    if (t.classList.contains('mp-pal')) {
+      var p = findProduto(t.dataset.produto), q = document.querySelector('#mp-form-body .mp-qtd[data-produto="' + t.dataset.produto + '"]');
+      var pal = parseInt(t.value, 10);
+      if (q) q.value = (!isNaN(pal) && pal >= 0 && p && p.unidadesPorPalete) ? String(pal * p.unidadesPorPalete) : '';
+    } else if (t.classList.contains('mp-qtd')) {
+      var p2 = findProduto(t.dataset.produto), pe = document.querySelector('#mp-form-body .mp-pal[data-produto="' + t.dataset.produto + '"]');
+      var qv = Math.floor(Number(t.value) || 0), upp = p2 ? Number(p2.unidadesPorPalete) || 0 : 0;
+      if (pe) pe.value = qv && upp ? (qv % upp === 0 ? String(qv / upp) : '') : '';
+    } else if (mpSheet.modo === 'ficha') {
+      var row = t.closest('.mpf-row');
+      if (row) {
+        var l = mpSheet.linhas[Number(row.dataset.i)];
+        if (l && t.classList.contains('mpf-qtd')) l.qtd = t.value;
+      }
+    }
+    atualizarMpSheet();
+  });
+  document.getElementById('mp-form-body').addEventListener('change', function(e) {
+    var t = e.target;
+    if (!mpSheet) return;
+    if (t.id === 'gf-data' && mpSheet.modo === 'fechamento') { if (t.value) abrirFechamento(t.value); return; }
+    if (t.id === 'mp-op-data') { atualizarMpSheet(); return; }
+    if (mpSheet.modo !== 'ficha') return;
+    if (t.id === 'mp-ficha-copiar' && t.value) {
+      mpSheet.linhas = fichaDe(t.value).map(function(l) { return { insumoId: l.insumoId, qtd: l.qtd, base: l.base || 'unidade' }; });
+      renderFichaLinhas();
+      return;
+    }
+    var row = t.closest('.mpf-row');
+    if (!row) return;
+    var l = mpSheet.linhas[Number(row.dataset.i)];
+    if (!l) return;
+    if (t.classList.contains('mpf-ins')) l.insumoId = t.value;
+    else if (t.classList.contains('mpf-base')) l.base = t.value;
+    else if (t.classList.contains('mpf-qtd')) l.qtd = t.value;
+  });
+  document.getElementById('mp-form-body').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mpf]');
+    if (!b || !mpSheet || mpSheet.modo !== 'ficha') return;
+    if (b.dataset.mpf === 'add') mpSheet.linhas.push({ insumoId: '', qtd: '', base: 'unidade' });
+    else if (b.dataset.mpf === 'del') mpSheet.linhas.splice(Number(b.dataset.i), 1);
+    renderFichaLinhas();
+  });
+  document.getElementById('mp-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!mpSheet) return;
+    var s = mpSheet, agora = new Date().toISOString(), ops = [], msg = '';
+    document.getElementById('mp-form-error').classList.add('hidden');
+    if (s.modo === 'op') {
+      var itens = itensDoFormProdutos(), data = document.getElementById('mp-op-data').value;
+      if (!data) return erroMpSheet('Informe a data da produção.');
+      if (!itens.length) return erroMpSheet('Informe a quantidade de ao menos um produto.');
+      var mat = materiaisDe(itens, false);
+      var rec = { data: data, obs: document.getElementById('mp-op-obs').value.trim(), itens: itens,
+        materiais: mat.lista.map(function(m) { return { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, qtd: m.qtd }; }), atualizadoEm: agora };
+      if (!s.id) Object.assign(rec, { numero: proximoNumeroOp(), status: 'aberta', criadoEm: agora });
+      ops.push({ op: s.id ? 'update' : 'set', col: MP_COL.ordens, id: s.id, data: rec });
+      var falta = conferirMateriais(mat.lista, { id: s.id, data: data, numero: s.id ? s.ordem.numero : rec.numero }).some(function(c) { return c.falta > 0; });
+      msg = (s.id ? 'OP nº ' + s.ordem.numero + ' atualizada' : 'OP nº ' + rec.numero + ' lançada') + (falta ? ' — atenção: falta matéria-prima.' : '.');
+    } else if (s.modo === 'op-concluir') {
+      var prod = itensDoFormProdutos(), dp = document.getElementById('mp-op-dataprod').value || todayIso();
+      if (!prod.length) return erroMpSheet('Informe o que foi produzido.');
+      var cons = materiaisDe(prod, false).lista.map(function(m) { return { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, qtd: m.qtd }; });
+      ops.push({ op: 'update', col: MP_COL.ordens, id: s.id, data: { status: 'concluida', concluidoEm: agora, dataProducao: dp, produzido: prod, consumo: cons } });
+      prod.forEach(function(it) {
+        ops.push({ op: 'set', col: 'estoque', id: null, data: { tipo: 'entrada', produtoId: it.produtoId, produtoNome: it.produtoNome, unidade: it.unidade, quantidade: it.quantidade,
+          data: dp, em: agora, obs: 'OP nº ' + s.ordem.numero, opId: s.id, criadoEm: agora } });
+      });
+      msg = 'OP nº ' + s.ordem.numero + ' concluída: a produção entrou no estoque.';
+    } else if (s.modo === 'mov') {
+      var dataMov = document.getElementById('mp-mov-data').value || todayIso(), obsEl = document.getElementById('mp-mov-obs');
+      var nfEl = document.getElementById('mp-mov-nf'), fornEl = document.getElementById('mp-mov-forn'), invalido = false;
+      document.querySelectorAll('#mp-form-body .mp-ins-qtd').forEach(function(inp) {
+        if (inp.value === '') return;
+        var q = numCampo(inp.value), ins = insumoPorId(inp.dataset.insumo);
+        if (q === null || q < 0 || !ins) { invalido = true; return; }
+        if (s.tipo !== 'contagem' && q === 0) return;
+        ops.push({ op: 'set', col: MP_COL.movs, id: null, data: { tipo: s.tipo, insumoId: ins.id, insumoNome: ins.nome, unidade: ins.unidade || '', area: areaDe(ins),
+          quantidade: arred3(q), data: dataMov, em: agora, obs: obsEl ? obsEl.value.trim() : '', nf: nfEl ? nfEl.value.trim() : '', fornecedor: fornEl ? fornEl.value.trim() : '', criadoEm: agora } });
+      });
+      if (invalido) return erroMpSheet('Confira as quantidades: use só números.');
+      if (!ops.length) return erroMpSheet(s.tipo === 'contagem' ? 'Informe a quantidade contada de ao menos um insumo.' : 'Informe a quantidade de ao menos um insumo.');
+      msg = (s.tipo === 'contagem' ? 'Contagem salva' : s.tipo === 'entrada' ? 'Recebimento salvo' : 'Perda lançada') + ' (' + ops.length + (ops.length === 1 ? ' insumo).' : ' insumos).');
+    } else if (s.modo === 'insumo') {
+      var nome = document.getElementById('mp-ins-nome').value.replace(/\s+/g, ' ').trim();
+      if (!nome) return erroMpSheet('Informe o nome do insumo.');
+      if (mp.insumos.some(function(i) { return i.id !== s.id && normNome(i.nome) === normNome(nome); })) return erroMpSheet('Já existe um insumo com esse nome.');
+      var min = numCampo(document.getElementById('mp-ins-min').value);
+      var dIns = { nome: nome, unidade: document.getElementById('mp-ins-un').value, grupo: document.getElementById('mp-ins-grupo').value.trim(),
+        minimo: min && min > 0 ? arred3(min) : 0, area: document.getElementById('mp-ins-area').value, atualizadoEm: agora };
+      var idIns = s.id;
+      if (!idIns) { idIns = 'ins-' + (slug(nome) || uid()); if (insumoPorId(idIns)) idIns += '-' + uid().slice(-4); dIns.criadoEm = agora; }
+      ops.push({ op: s.id ? 'update' : 'set', col: MP_COL.insumos, id: idIns, data: dIns });
+      msg = 'Insumo salvo.';
+    } else if (s.modo === 'ficha') {
+      var soma = {}, erroLinha = '';
+      s.linhas.forEach(function(l) {
+        var q = numCampo(l.qtd);
+        if (!l.insumoId && (q === null || q === 0)) return;
+        if (!l.insumoId) { erroLinha = 'Escolha o insumo de todas as linhas (ou tire a linha).'; return; }
+        if (q === null || q <= 0) { erroLinha = 'Informe a quantidade de todos os insumos da ficha.'; return; }
+        var k = l.insumoId + '|' + (s.garr ? 'unidade' : (l.base || 'unidade'));
+        soma[k] = (soma[k] || 0) + q;
+      });
+      if (erroLinha) return erroMpSheet(erroLinha);
+      var itensF = Object.keys(soma).map(function(k) { var p2 = k.split('|'); return { insumoId: p2[0], base: p2[1], qtd: arred3(soma[k]) }; });
+      ops.push({ op: 'set', col: MP_COL.fichas, id: s.chave, data: { nome: s.nome, area: s.area, itens: itensF, atualizadoEm: agora } });
+      msg = itensF.length ? 'Ficha técnica salva.' : 'Ficha técnica esvaziada.';
+    } else if (s.modo === 'fechamento') {
+      var dataF = document.getElementById('gf-data').value;
+      if (!dataF) return erroMpSheet('Informe o dia.');
+      var vendas = itensDoFechamento();
+      if (!vendas.length) return erroMpSheet('Informe quantos garrafões foram vendidos.');
+      var consF = materiaisDe(vendas, true).lista.map(function(m) { return { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, qtd: m.qtd }; });
+      var ex = mp.fechamentos.find(function(x) { return x.id === dataF; });
+      ops.push({ op: 'set', col: MP_COL.fechamentos, id: dataF, data: { data: dataF, vendas: vendas, consumo: consF, obs: document.getElementById('gf-obs').value.trim(),
+        total: vendas.reduce(function(a, v) { return a + v.quantidade; }, 0), criadoEm: (ex && ex.criadoEm) || agora, atualizadoEm: agora } });
+      msg = 'Fechamento de ' + formatDateBR(dataF) + ' salvo.';
+    }
+    var btn = document.getElementById('btn-mp-submit');
+    btn.disabled = true;
+    mpGravar(ops).then(function() { btn.disabled = false; fecharMpSheet(); if (msg) showToast(msg); })
+      .catch(function(err) { btn.disabled = false; console.error('produção/matéria-prima', err); erroMpSheet('Não foi possível salvar agora. Tente novamente.'); });
+  });
+
   // ---------- pagers: faixa de números (Cadastros) ----------
   document.getElementById('f-exigir-dupla').addEventListener('change', function(e) {
     var v = e.target.checked;
@@ -10912,6 +11838,7 @@
     subscribeFretes();
     subscribeForcaVendas();
     subscribeAgenda();
+    subscribeMateria();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
