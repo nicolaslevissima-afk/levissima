@@ -100,10 +100,14 @@
     'background:var(--lb-bg);color:var(--lb-ink);border-bottom:1px solid var(--lb-line);' +
     'font:500 14px/1.2 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;box-sizing:border-box}' +
     '#lev-barra *{box-sizing:border-box}' +
+    // faixa com as quatro cores da marca (verde 361, roxo 2603, azul Reflex Blue, laranja 1645)
+    '#lev-barra::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;pointer-events:none;' +
+    'background:linear-gradient(90deg,#43B02A 0 25%,#702082 25% 50%,#001489 50% 75%,#FF6A13 75% 100%)}' +
+    '#lev-barra{padding-top:10px}' +
     '#lev-barra a,#lev-barra button{font:inherit;color:inherit;text-decoration:none;background:none;border:0;cursor:pointer;' +
     'display:inline-flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;min-height:36px}' +
     '#lev-barra a:hover,#lev-barra button:hover{background:var(--lb-hover)}' +
-    '#lev-barra a:focus-visible,#lev-barra button:focus-visible{outline:2px solid #125A9E;outline-offset:1px}' +
+    '#lev-barra a:focus-visible,#lev-barra button:focus-visible{outline:2px solid #702082;outline-offset:1px}' +
     '#lev-barra .lb-logo{height:24px;width:auto;display:block}' +
     '#lev-barra .lb-logo-esc{display:none}' +
     '#lev-barra .lb-seta{font-size:20px;line-height:1;margin-right:-2px}' +
@@ -117,7 +121,7 @@
     '#lev-barra .lb-logo-cla{display:none}#lev-barra .lb-logo-esc{display:block}}' +
     '#lev-aviso{max-width:560px;margin:48px auto;padding:24px;border:1px solid #dde3ea;border-radius:14px;background:#fff;color:#122657;' +
     'font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-align:center}' +
-    '#lev-aviso a{display:inline-block;margin-top:14px;padding:10px 18px;border-radius:10px;background:#125A9E;color:#fff;text-decoration:none;font-weight:600}' +
+    '#lev-aviso a{display:inline-block;margin-top:14px;padding:10px 18px;border-radius:10px;background:#702082;color:#fff;text-decoration:none;font-weight:600}' +
     '@media (prefers-color-scheme:dark){#lev-aviso{background:#0f1720;color:#e3ebf5;border-color:#23303d}}';
 
   function quandoPronto(fn) {

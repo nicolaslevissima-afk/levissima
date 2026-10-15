@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
-<meta name="theme-color" content="#166C60" />
+<meta name="theme-color" content="#702082" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
@@ -18,50 +18,61 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
+  /* Cores da marca (equivalentes em tela dos Pantone):
+     verde 361 C #43B02A · roxo 2603 C #702082 · azul Reflex Blue C #001489 · laranja 1645 C #FF6A13.
+     --teal = cor principal (roxo: botões, links, chapatex) · --wood = cor de apoio (azul: paletes e destaques).
+     O verde marca o que está concluído e o laranja o que é de hoje / pede atenção. */
   :root {
     --ink: #1C2A2E;
-    --paper: #F1F4EE;
+    --paper: #F3F3F6;
     --card: #FFFFFF;
-    --line: #DCE2D8;
-    --muted: #64767A;
-    --wood-rgb: 140, 95, 49;
-    --teal-rgb: 22, 108, 96;
+    --line: #DDDCE3;
+    --muted: #63677A;
+    --wood-rgb: 0, 20, 137;
+    --teal-rgb: 112, 32, 130;
     --danger-rgb: 168, 65, 46;
     --wood: rgb(var(--wood-rgb));
     --teal: rgb(var(--teal-rgb));
     --danger: rgb(var(--danger-rgb));
+    --verde: #43B02A; --roxo: #702082; --azul: #001489; --laranja: #FF6A13;
+    --verde-texto: #2D7A1C; --laranja-texto: #B5470A;
     --font-display: 'Archivo', -apple-system, sans-serif;
     --font-mono: 'IBM Plex Mono', 'SFMono-Regular', monospace;
     /* status das cargas: a cor só indica situação (fundo da faixa + texto com contraste garantido) */
     --st-late-bg: #A8412E; --st-late-fg: #FFFFFF;
-    --st-today-bg: #E8A838; --st-today-fg: #1C2A2E;
-    --st-sched-bg: #3A6491; --st-sched-fg: #FFFFFF;
-    --st-done-bg: #166C60; --st-done-fg: #FFFFFF;
-    --st-delivered-bg: #5F7176; --st-delivered-fg: #FFFFFF;
+    --st-today-bg: #FF6A13; --st-today-fg: #1C2A2E;
+    --st-sched-bg: #001489; --st-sched-fg: #FFFFFF;
+    --st-done-bg: #43B02A; --st-done-fg: #10200C;
+    --st-delivered-bg: #63677A; --st-delivered-fg: #FFFFFF;
     --lv-s1: #125A9E; --lv-s2: #134785; --lv-s3: #13366D; --lv-s4: #122657; --lv-p: #59C251; --lv-t: #122657;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --ink: #E8EDE9; --paper: #121815; --card: #1B2320; --line: #2C3733; --muted: #8FA09B;
-      --wood-rgb: 216, 166, 108; --teal-rgb: 99, 196, 178; --danger-rgb: 226, 128, 106;
-      --st-late-bg: #E2806A; --st-late-fg: #121815;
-      --st-today-bg: #ECB452; --st-today-fg: #121815;
-      --st-sched-bg: #8DB4E2; --st-sched-fg: #121815;
-      --st-done-bg: #63C4B2; --st-done-fg: #121815;
-      --st-delivered-bg: #8FA09B; --st-delivered-fg: #121815;
+      --ink: #ECEAF0; --paper: #141219; --card: #1D1A24; --line: #322E3B; --muted: #9C98A8;
+      --wood-rgb: 140, 160, 255; --teal-rgb: 205, 150, 226; --danger-rgb: 226, 128, 106;
+      --verde-texto: #7ED46A; --laranja-texto: #FF9A5C;
+      --st-late-bg: #E2806A; --st-late-fg: #141219;
+      --st-today-bg: #FF8A45; --st-today-fg: #141219;
+      --st-sched-bg: #8CA0FF; --st-sched-fg: #141219;
+      --st-done-bg: #6CCB55; --st-done-fg: #141219;
+      --st-delivered-bg: #9C98A8; --st-delivered-fg: #141219;
       --lv-s1: #64AEF0; --lv-s2: #5598E0; --lv-s3: #4A84CE; --lv-s4: #4271BB; --lv-p: #5FCB57; --lv-t: #C9D6E8;
     }
   }
   :root[data-theme="dark"] {
-    --ink: #E8EDE9; --paper: #121815; --card: #1B2320; --line: #2C3733; --muted: #8FA09B;
-    --wood-rgb: 216, 166, 108; --teal-rgb: 99, 196, 178; --danger-rgb: 226, 128, 106;
-    --st-late-bg: #E2806A; --st-late-fg: #121815;
-    --st-today-bg: #ECB452; --st-today-fg: #121815;
-    --st-sched-bg: #8DB4E2; --st-sched-fg: #121815;
-    --st-done-bg: #63C4B2; --st-done-fg: #121815;
-    --st-delivered-bg: #8FA09B; --st-delivered-fg: #121815;
+    --ink: #ECEAF0; --paper: #141219; --card: #1D1A24; --line: #322E3B; --muted: #9C98A8;
+    --wood-rgb: 140, 160, 255; --teal-rgb: 205, 150, 226; --danger-rgb: 226, 128, 106;
+    --verde-texto: #7ED46A; --laranja-texto: #FF9A5C;
+    --st-late-bg: #E2806A; --st-late-fg: #141219;
+    --st-today-bg: #FF8A45; --st-today-fg: #141219;
+    --st-sched-bg: #8CA0FF; --st-sched-fg: #141219;
+    --st-done-bg: #6CCB55; --st-done-fg: #141219;
+    --st-delivered-bg: #9C98A8; --st-delivered-fg: #141219;
     --lv-s1: #64AEF0; --lv-s2: #5598E0; --lv-s3: #4A84CE; --lv-s4: #4271BB; --lv-p: #5FCB57; --lv-t: #C9D6E8;
   }
+  /* faixa com as quatro cores da marca no alto de todas as telas */
+  body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 40; pointer-events: none;
+    background: linear-gradient(90deg, var(--verde) 0 25%, var(--roxo) 25% 50%, var(--azul) 50% 75%, var(--laranja) 75% 100%); }
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
   }
@@ -372,9 +383,9 @@
   .pq-lado.neg .pq-seg:last-child { border-radius: 4px 0 0 4px; }
   .pq-lado.pos .pq-seg:last-child { border-radius: 0 4px 4px 0; }
   .pq-v1 { background: var(--pq-1); } .pq-v2 { background: var(--pq-2); } .pq-v3 { background: var(--pq-3); } .pq-v4 { background: var(--pq-4); }
-  :root { --pq-1: #A8412E; --pq-2: #D9907A; --pq-3: #66AB9E; --pq-4: #166C60; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pq-1: #E2806A; --pq-2: #9A5A4B; --pq-3: #2E7D70; --pq-4: #63C4B2; } }
-  :root[data-theme="dark"] { --pq-1: #E2806A; --pq-2: #9A5A4B; --pq-3: #2E7D70; --pq-4: #63C4B2; }
+  :root { --pq-1: #A8412E; --pq-2: #D9907A; --pq-3: #8FCF7E; --pq-4: #2D7A1C; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pq-1: #E2806A; --pq-2: #9A5A4B; --pq-3: #4E8F3F; --pq-4: #7ED46A; } }
+  :root[data-theme="dark"] { --pq-1: #E2806A; --pq-2: #9A5A4B; --pq-3: #4E8F3F; --pq-4: #7ED46A; }
   @media (max-width: 559px) {
     .pq-linha { grid-template-columns: minmax(0, 1fr) 3.2em; row-gap: 4px; }
     .pq-q { grid-column: 1 / -1; }
@@ -498,6 +509,44 @@
   .mod-nivel select { width: auto; min-width: 140px; }
   .acesso-sub { margin: 18px 0 6px; font-size: 0.875rem; font-weight: 700; }
   .driver-confirm { padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 0.8125rem; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  /* ---- fretes, página do motorista e documentos ---- */
+  .mot-overlay { z-index: 45; } /* as outras folhas (senha, frete, documento, relatório) abrem por cima */
+  .sheet-tall { min-height: 72vh; max-height: 94vh; }
+  #mot-tabs { position: sticky; top: -18px; z-index: 2; }
+  .driver-sub { display: block; font-weight: 400; font-size: 0.75rem; color: var(--muted); margin-top: 2px; font-family: var(--font-display); }
+  .driver-sub .apagar { color: var(--teal); font-weight: 600; }
+  .driver-sub .alerta { color: var(--laranja-texto); font-weight: 600; }
+  .mot-sec { margin: 8px 0 24px; }
+  .mot-sec h3 { font-size: 0.9375rem; margin: 0 0 8px; }
+  .mot-form { margin-top: 6px; }
+  .frete-filtro { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 12px; }
+  .frete-filtro label { flex: 1; min-width: 180px; margin: 0; font-size: 0.8125rem; color: var(--muted); }
+  .frete-filtro select { margin-top: 5px; }
+  .frete-totais { border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; }
+  .frete-item { border: 1px solid var(--line); border-left: 4px solid var(--line); background: var(--card); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+  .frete-item.est-confirmar { border-left-color: var(--laranja); }
+  .frete-item.est-apagar { border-left-color: var(--wood); }
+  .frete-item.est-pago { border-left-color: var(--verde); }
+  .frete-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 0.875rem; }
+  .frete-valor { font-family: var(--font-mono); font-weight: 600; font-size: 1.0625rem; white-space: nowrap; }
+  .frete-sub { font-size: 0.8125rem; color: var(--muted); margin-top: 4px; }
+  .frete-acoes { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .chip-est { display: inline-block; font-size: 0.6875rem; font-weight: 700; border-radius: 999px; padding: 2px 8px; margin-left: 8px; vertical-align: 1px; white-space: nowrap; }
+  .chip-est.confirmar { background: #FF6A13; color: #1C2A2E; }
+  .chip-est.apagar { background: #001489; color: #FFFFFF; }
+  .chip-est.pago { background: #43B02A; color: #10200C; }
+  .frete-sugestao { border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; font-size: 0.8125rem; }
+  .fretes-ctrl > label { font-size: 0.8125rem; color: var(--muted); }
+  .fretes-ctrl input { margin-top: 5px; }
+  .fl-row { display: flex; gap: 12px; align-items: baseline; padding: 8px 2px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .fl-nome { flex: 1; min-width: 150px; font-weight: 600; font-size: 0.875rem; }
+  .fl-vals { font-family: var(--font-mono); font-size: 0.8125rem; white-space: nowrap; }
+  #fretes-tabela-list { max-height: 420px; overflow-y: auto; margin-bottom: 10px; border-top: 1px solid var(--line); }
+  .val-chip { font-weight: 600; }
+  .val-chip.vencido { color: var(--danger); }
+  .val-chip.vence { color: var(--laranja-texto); }
+  @media (max-width: 480px) { .fretes-ctrl { flex-direction: column; gap: 0; } }
 </style>
 </head>
 <body>
@@ -621,8 +670,24 @@
 
     <section class="drivers-admin" id="drivers-admin">
       <div class="section-head"><h2 class="section-title">Motoristas cadastrados</h2></div>
+      <p class="hint">Toque em <b>Abrir</b> para ver a página do motorista: dados e acesso, fretes a pagar e documentos do motorista e do caminhão.</p>
       <div id="drivers-list"></div>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-add-driver">+ Adicionar motorista</button>
+    </section>
+
+    <section class="drivers-admin" id="fretes-admin">
+      <div class="section-head"><h2 class="section-title">Tabela de fretes</h2><span class="count-chip" id="fretes-versao"></span></div>
+      <p class="hint">Valor da viagem por destino para 16 e 18 paletes. Carga com outra quantidade: o app sugere o valor proporcional e pede a sua confirmação. Linhas “COM 175” valem quando a carga tem palete de 175 fardos. Mais de um destino: o mais caro mais o adicional abaixo.</p>
+      <div class="row-2 fretes-ctrl">
+        <label>Buscar destino
+          <input type="search" id="f-fretes-busca" autocomplete="off" placeholder="Ex.: Santos" />
+        </label>
+        <label>Adicional por carga com mais de um destino (R$)
+          <input type="number" id="f-fretes-adicional" min="0" step="0.01" inputmode="decimal" />
+        </label>
+      </div>
+      <div id="fretes-tabela-list"></div>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-add-frete-linha">+ Adicionar destino</button>
     </section>
 
     <section class="drivers-admin" id="pagers-admin">
@@ -816,6 +881,109 @@
     <div class="sheet-actions">
       <button type="button" class="btn btn-secondary" id="btn-doc-close">Fechar</button>
     </div>
+  </div>
+</div>
+
+<datalist id="fretes-destinos-list"></datalist>
+
+<!-- Página de cada motorista (só a senha mestre): dados e acesso, fretes e documentos -->
+<div class="sheet-overlay mot-overlay hidden" id="mot-overlay">
+  <div class="sheet sheet-tall" role="dialog" aria-labelledby="mot-title">
+    <div class="sheet-header">
+      <h2 id="mot-title">Motorista</h2>
+      <button class="icon-btn" id="btn-close-mot" aria-label="Fechar">✕</button>
+    </div>
+    <nav class="segmented" id="mot-tabs" aria-label="Seções do motorista">
+      <button type="button" class="seg-btn" data-mtab="dados">Dados e acesso</button>
+      <button type="button" class="seg-btn" data-mtab="fretes">Fretes</button>
+      <button type="button" class="seg-btn" data-mtab="docs">Documentos</button>
+    </nav>
+    <div id="mot-body"></div>
+  </div>
+</div>
+
+<!-- Frete de uma carga: destino(s) e valor -->
+<div class="sheet-overlay hidden" id="frete-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="frete-sheet-title">Frete da carga</h2>
+      <button class="icon-btn" id="btn-close-frete" aria-label="Fechar">✕</button>
+    </div>
+    <form id="frete-form" novalidate>
+      <p class="hint" id="frete-carga-info"></p>
+      <div id="frete-destinos"></div>
+      <div class="frete-sugestao" id="frete-sugestao"></div>
+      <label>Valor do frete (R$) <span class="req">*</span>
+        <input type="number" id="f-frete-valor" min="0" step="0.01" inputmode="decimal" />
+      </label>
+      <label>Observação <span class="opt">(opcional)</span>
+        <input type="text" id="f-frete-obs" autocomplete="off" maxlength="200" />
+      </label>
+      <p class="form-error hidden" id="frete-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-frete-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Confirmar frete</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Linha da tabela de fretes -->
+<div class="sheet-overlay hidden" id="fl-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="fl-sheet-title">Destino</h2>
+      <button class="icon-btn" id="btn-close-fl" aria-label="Fechar">✕</button>
+    </div>
+    <form id="fl-form" novalidate>
+      <label>Destino <span class="req">*</span>
+        <input type="text" id="f-fl-destino" autocomplete="off" maxlength="80" placeholder="Ex.: SANTOS ou SANTOS - COM 175" />
+      </label>
+      <div class="row-2">
+        <label>Valor para 16 paletes (R$) <span class="req">*</span>
+          <input type="number" id="f-fl-v16" min="0" step="0.01" inputmode="decimal" />
+        </label>
+        <label>Valor para 18 paletes (R$)
+          <input type="number" id="f-fl-v18" min="0" step="0.01" inputmode="decimal" />
+        </label>
+      </div>
+      <p class="hint">Deixe o valor de 18 paletes em branco (ou 0) quando não houver: o app sugere o proporcional e pede confirmação.</p>
+      <p class="form-error hidden" id="fl-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-fl-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Documento do motorista ou do caminhão -->
+<div class="sheet-overlay hidden" id="mdoc-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="mdoc-sheet-title">Adicionar documento</h2>
+      <button class="icon-btn" id="btn-close-mdoc" aria-label="Fechar">✕</button>
+    </div>
+    <form id="mdoc-form" novalidate>
+      <label>Documento <span class="req">*</span>
+        <select id="f-mdoc-tipo"></select>
+      </label>
+      <label>Descrição <span class="opt">(opcional)</span>
+        <input type="text" id="f-mdoc-desc" autocomplete="off" maxlength="80" placeholder="Ex.: frente e verso, placa ABC1D23" />
+      </label>
+      <label>Validade <span class="opt">(opcional: o app avisa 30 dias antes)</span>
+        <input type="date" id="f-mdoc-validade" />
+      </label>
+      <label>Arquivo (foto ou PDF) <span class="req">*</span>
+        <input type="file" id="f-mdoc-arquivo" accept="image/*,application/pdf" />
+      </label>
+      <p class="field-hint" id="mdoc-status"></p>
+      <p class="form-error hidden" id="mdoc-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-mdoc-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-mdoc-submit">Enviar documento</button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -1540,6 +1708,7 @@
     loadLocalEstoque();
     loadLocalNfMapa();
     loadLocalDiretoria();
+    loadLocalFretes();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -1551,7 +1720,7 @@
       motoristas = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
       motoristasLoaded = true;
       maybeDecideAccess();
-      if (session) { renderDriversAdmin(); renderMotoristaSelect(); if (session.role === 'motorista') renderDriverView(); }
+      if (session) { renderDriversAdmin(); renderMotoristaSelect(); if (session.role === 'motorista') renderDriverView(); else renderMotoristaPage(false); }
     }, function(err) {
       console.error('motoristas error', err);
       motoristasLoaded = true;
@@ -1602,6 +1771,7 @@
     if (mode === 'db' && db) {
       // apaga também a senha e o login dele: se estiver com o app aberto, sai
       return chamarAcesso({ acao: 'remover', ref: 'motorista:' + id }).catch(function(e) { console.error('remover senha', e); })
+        .then(function() { return limparDocsDoMotorista(id); })
         .then(function() { return db.collection('motoristas').doc(id).delete(); });
     }
     motoristas = motoristas.filter(function(m) { return m.id !== id; });
@@ -2485,6 +2655,9 @@
     renderClientsDatalist();
     renderDriversAdmin();
     renderMotoristaSelect();
+    renderFretesDatalist();
+    renderTabelaFretesAdmin();
+    renderMotoristaPage(false);
     renderStorageNote();
     renderCargasSection();
     renderProdutosAdmin();
@@ -2779,9 +2952,18 @@
           '<button class="btn-text danger" data-action="confirm-remove-driver" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
           '<button class="btn-text" data-action="cancel-remove-driver">Cancelar</button></div>';
       }
+      var sub = [];
+      if (m.telefone) sub.push(escapeHtml(telMask(m.telefone)));
+      if (session && session.role === 'admin' && fretesTabela) {
+        var rf = resumoFretesMotorista(m);
+        if (rf.nApagar) sub.push('<span class="apagar">' + fmtBRL(rf.apagar) + ' a pagar</span>');
+        if (rf.nConfirmar) sub.push('<span class="alerta">' + rf.nConfirmar + (rf.nConfirmar === 1 ? ' frete a confirmar' : ' fretes a confirmar') + '</span>');
+      }
+      var avisosDoc = alertasDocsMotorista(m);
+      if (avisosDoc.length) sub.push('<span class="alerta">' + escapeHtml(avisosDoc.map(function(x) { return x.nome + ' ' + x.v.texto; }).join(', ')) + '</span>');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) +
-          (m.telefone ? '<span class="driver-tel">' + escapeHtml(telMask(m.telefone)) + '</span>' : '') + '</span>' +
-        '<button class="btn-text" data-action="reset-driver" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
+          (sub.length ? '<span class="driver-sub">' + sub.join(' · ') + '</span>' : '') + '</span>' +
+        '<button class="btn-text" data-action="open-driver" data-id="' + escapeHtml(m.id) + '">Abrir</button>' +
         '<button class="btn-text danger" data-action="remove-driver" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
     }).join('');
   }
@@ -3455,7 +3637,7 @@
 
     html += '<div class="section-head"><h3 class="section-title">Clientes e produtos</h3></div><div class="pedido-resumo">' +
       (c.clientes || []).map(function(cl) {
-        var meta = [cl.numeroDocumento ? docLabel(cl.numeroDocumento) + ' ' + formatDocument(cl.numeroDocumento) : '', cl.pedidoNf ? 'Pedido/NF ' + cl.pedidoNf : ''].filter(Boolean).join(' · ');
+        var meta = [cl.numeroDocumento ? docLabel(cl.numeroDocumento) + ' ' + formatDocument(cl.numeroDocumento) : '', cl.pedidoNf ? 'Pedido/NF ' + cl.pedidoNf : '', cl.destino ? 'Destino ' + cl.destino : ''].filter(Boolean).join(' · ');
         var itens = (cl.itens || []).map(function(it) {
           var av = avisoItem(it);
           return '<span>' + escapeHtml(it.produtoNome || '—') + '</span>' +
@@ -4866,7 +5048,7 @@
 
   // ---------- cargas: lançamento por cliente em lista fixa de produtos (sempre na ordem do catálogo) ----------
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', qtd: {}, pal: {}, fil: {}, nf: null }; }
+  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, pal: {}, fil: {}, nf: null }; }
   // Converte os clientes salvos de uma carga para o editor. Produto que saiu do catálogo continua
   // aparecendo (com a regra gravada na carga), para não perder nada ao editar.
   function editorStateFromCarga(carga) {
@@ -4886,7 +5068,7 @@
           });
         }
       });
-      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', qtd: qtd, pal: pal, fil: fil, nf: cl.nf || null };
+      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, pal: pal, fil: fil, nf: cl.nf || null };
     });
     return { clientes: clientes, extras: extras };
   }
@@ -4991,10 +5173,11 @@
              '<div class="row-2">' +
                '<label>CPF/CNPJ <span class="opt">(opcional)</span><input type="text" class="' + prefix + '-cliente-doc" data-cliente="' + cl.uid + '" value="' + escapeHtml(docMask(cl.numeroDocumento || '')) + '" autocomplete="off" autocapitalize="characters" spellcheck="false" /></label>' +
                '<label>Pedido ou NF <span class="opt">(opcional)</span><input type="text" class="' + prefix + '-cliente-nf" data-cliente="' + cl.uid + '" value="' + escapeHtml(cl.pedidoNf || '') + '" autocomplete="off" /></label>' +
-             '</div>')
+             '</div>' +
+             '<label>Destino do frete <span class="opt">(cidade da tabela de fretes)</span><input type="text" class="' + prefix + '-cliente-destino" list="fretes-destinos-list" data-cliente="' + cl.uid + '" value="' + escapeHtml(cl.destino || '') + '" autocomplete="off" autocapitalize="characters" placeholder="Ex.: SANTOS" /></label>')
           : ('<h3 class="section-title">' + escapeHtml(cl.cliente || ('Cliente ' + (ci + 1))) + '</h3>' + saldoHtml(cl) +
-             ((cl.numeroDocumento || cl.pedidoNf)
-               ? '<p class="hint">' + [cl.numeroDocumento ? docLabel(cl.numeroDocumento) + ' ' + formatDocument(cl.numeroDocumento) : '', cl.pedidoNf ? 'Pedido/NF ' + cl.pedidoNf : ''].filter(Boolean).map(escapeHtml).join(', ') + '</p>'
+             ((cl.numeroDocumento || cl.pedidoNf || cl.destino)
+               ? '<p class="hint">' + [cl.numeroDocumento ? docLabel(cl.numeroDocumento) + ' ' + formatDocument(cl.numeroDocumento) : '', cl.pedidoNf ? 'Pedido/NF ' + cl.pedidoNf : '', cl.destino ? 'Destino ' + cl.destino : ''].filter(Boolean).map(escapeHtml).join(', ') + '</p>'
                : ''));
         var removeClienteBtn = (allowClienteEdit && state.length > 1)
           ? '<div class="header-row"><span></span><button type="button" class="btn-text danger ' + prefix + '-remove-cliente" data-cliente="' + cl.uid + '">Remover cliente</button></div>' : '';
@@ -5057,6 +5240,7 @@
       if (!cl.fil) cl.fil = {};
       if (t.classList.contains(prefix + '-cliente-nome')) { cl.cliente = t.value; refreshSaldo(cl); return; }
       if (t.classList.contains(prefix + '-cliente-nf')) { cl.pedidoNf = t.value; return; }
+      if (t.classList.contains(prefix + '-cliente-destino')) { cl.destino = t.value; return; }
       if (t.classList.contains(prefix + '-cliente-doc')) {
         var before = t.value, masked = docMask(before);
         if (masked !== before) t.value = masked;
@@ -5090,6 +5274,18 @@
           var docInput = container.querySelector('.' + prefix + '-cliente-doc[data-cliente="' + cli + '"]');
           if (docInput) docInput.value = cl.numeroDocumento;
         }
+        var destConhecido = !String(cl.destino || '').trim() ? ultimoDestinoDe(t.value) : '';
+        if (destConhecido) {
+          cl.destino = destConhecido;
+          var destInput = container.querySelector('.' + prefix + '-cliente-destino[data-cliente="' + cli + '"]');
+          if (destInput) destInput.value = destConhecido;
+        }
+        return;
+      }
+      if (t.classList.contains(prefix + '-cliente-destino')) {
+        // escreveu a cidade de outro jeito (sem acento, minúsculas): ajusta para o nome da tabela
+        var oficial = destinoPorCidade(t.value, cl.cliente, true);
+        if (oficial && oficial !== t.value) { t.value = oficial; cl.destino = oficial; }
         return;
       }
       // ao sair do campo de fileiras ou de paletes, mostra o que vale (vazio volta ao padrão)
@@ -5125,6 +5321,7 @@
           };
         });
         var out = { cliente: (cl.cliente || '').trim(), numeroDocumento: docMask(cl.numeroDocumento || ''), pedidoNf: (cl.pedidoNf || '').trim(), itens: itens };
+        if (String(cl.destino || '').trim()) out.destino = String(cl.destino).trim();
         if (cl.nf) out.nf = cl.nf;
         return out;
       });
@@ -5139,6 +5336,7 @@
       if (!String(cl.cliente || '').trim()) cl.cliente = nomeClientePorDoc(d) || nf.destNome || '';
       if (nf.destDoc) cl.numeroDocumento = docMask(nf.destDoc);
       cl.pedidoNf = 'NF ' + nf.numero + (nf.pedido ? ' · Pedido ' + nf.pedido : '');
+      if (!String(cl.destino || '').trim()) cl.destino = destinoPorCidade(nf.destMun, cl.cliente) || destinoNoTexto(nf.destTexto, cl.cliente) || ultimoDestinoDe(cl.cliente) || '';
       cl.qtd = {}; cl.pal = {}; cl.fil = {};
       linhas.forEach(function(l) { cl.qtd[l.produtoId] = String(l.quantidade); });
       cl.nf = { numero: nf.numero, serie: nf.serie || '', chave: nf.chave || '', emitidaEm: nf.emitidaEm || '', pedido: nf.pedido || '', arquivo: nf.arquivo || '', itens: linhas };
@@ -5276,6 +5474,7 @@
       chave: (inf.getAttribute('Id') || '').replace(/^NFe/, '') || val(doc, 'chNFe'),
       emitidaEm: nfDataIso(val(ide, 'dhEmi') || val(ide, 'dEmi')),
       destNome: val(dest, 'xNome'), destDoc: val(dest, 'CNPJ') || val(dest, 'CPF'),
+      destMun: val(first(dest, 'enderDest'), 'xMun'), destUF: val(first(dest, 'enderDest'), 'UF'),
       pedido: ped, itens: itens
     };
   }
@@ -5380,7 +5579,14 @@
     return {
       origem: 'pdf', numero: nfNumero(numM && numM[1]), serie: serieM ? serieM[1] : '',
       chave: chaveM ? chaveM[0].replace(/\s/g, '') : '', emitidaEm: dest.data,
-      destNome: dest.nome, destDoc: dest.doc, pedido: pedM ? pedM[1] : '', itens: produtosNf
+      destNome: dest.nome, destDoc: dest.doc, pedido: pedM ? pedM[1] : '', itens: produtosNf,
+      destTexto: (function() {
+        if (iDest < 0) return '';
+        for (var k = iDest; k < Math.min(linhas.length - 1, iDest + 12); k++) {
+          if (/MUNIC[ÍI]PIO/i.test(linhas[k].texto)) return linhas[k].texto + ' ' + linhas[k + 1].texto;
+        }
+        return '';
+      })()
     };
   }
   function lerArquivoNf(file) {
@@ -6140,6 +6346,8 @@
     if (action === 'reset-driver') {
       var m = motoristas.find(function(x) { return x.id === id; });
       if (m) openDriverForm('reset', m);
+    } else if (action === 'open-driver') {
+      abrirMotoristaPage(id);
     } else if (action === 'remove-driver') {
       confirmDeleteDriver = id; renderDriversAdmin();
     } else if (action === 'cancel-remove-driver') {
@@ -6162,7 +6370,13 @@
   var RM = 84;          // margem
   var SIG_H = 290;      // altura reservada para as assinaturas
   var FOOT_H = 118;     // altura reservada para o rodapé
-  var RC = { ink: '#1C2A2E', muted: '#5F7176', line: '#D5DBD2', wood: '#8C5F31', teal: '#166C60', tint: '#EEF2EA', white: '#FFFFFF' };
+  var RC = { ink: '#1C2A2E', muted: '#5F6375', line: '#DAD8E0', wood: '#001489', teal: '#702082', tint: '#F1EEF4', white: '#FFFFFF',
+             verde: '#43B02A', verdeTexto: '#2D7A1C', laranja: '#FF6A13', laranjaTexto: '#B5470A' };
+  // Faixa com as quatro cores da marca no alto dos documentos.
+  function faixaMarca(ctx, largura, altura) {
+    var cores = [RC.verde, RC.teal, RC.wood, RC.laranja], w = largura / 4;
+    for (var i = 0; i < 4; i++) { ctx.fillStyle = cores[i]; ctx.fillRect(Math.floor(i * w), 0, Math.ceil(w), altura); }
+  }
   var R_DISP = '"Archivo", "Helvetica Neue", Arial, sans-serif';
   var R_MONO = '"IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace';
   var docToken = 0;
@@ -6497,8 +6711,7 @@
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = RC.white;
     ctx.fillRect(0, 0, RW, H);
-    ctx.fillStyle = RC.teal;
-    ctx.fillRect(0, 0, RW, 16);
+    faixaMarca(ctx, RW, 16);
     layoutReceiptTop(ctx, d);
     drawSignatures(ctx, Math.max(top + 30, H - FOOT_H - SIG_H), d, sigs);
     drawFooter(ctx, H, d);
@@ -6670,6 +6883,7 @@
       var meta = [];
       if (cl.numeroDocumento) meta.push(docLabel(cl.numeroDocumento) + ': ' + formatDocument(cl.numeroDocumento));
       if (cl.pedidoNf) meta.push('Pedido/NF: ' + cl.pedidoNf);
+      if (cl.destino) meta.push('Destino: ' + cl.destino);
       if (meta.length) {
         txtFit(ctx, meta.join('      '), L, y + 26, 400, R_DISP, 24, 18, CW, RC.muted, 'left');
         y += 40;
@@ -6771,7 +6985,7 @@
     canvas.width = RW; canvas.height = H;
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = RC.white; ctx.fillRect(0, 0, RW, H);
-    ctx.fillStyle = RC.wood; ctx.fillRect(0, 0, RW, 16);
+    faixaMarca(ctx, RW, 16);
     layoutOrdemTop(ctx, c);
     drawOrdemSignatures(ctx, Math.max(top + 30, H - FOOT_H - SIG_H), c, sigs);
     drawOrdemFooter(ctx, H, c);
@@ -6858,7 +7072,7 @@
     L.push(c.concluidoEm ? 'Carregada em ' + formatDateTimeBR(c.concluidoEm) : 'Para ' + formatDateBR(c.data) + (c.hora ? ' às ' + c.hora : ''));
     (c.clientes || []).forEach(function(cl, i) {
       L.push('');
-      L.push('*' + (i + 1) + '. ' + (cl.cliente || '—') + '*' + (cl.pedidoNf ? ' · ' + cl.pedidoNf : ''));
+      L.push('*' + (i + 1) + '. ' + (cl.cliente || '—') + '*' + (cl.pedidoNf ? ' · ' + cl.pedidoNf : '') + (cl.destino ? ' · ' + cl.destino : ''));
       (cl.itens || []).forEach(function(it) {
         L.push('• ' + (it.produtoNome || '—') + ': ' + qtdUnidade(it.quantidade, it.unidade || '') + ' (' + fmtInt(it.paletes) + palavraPaletes(it.paletes) + ', ' + fmtInt(it.chapatex) + ' chapatex)');
       });
@@ -7121,6 +7335,933 @@
       err.classList.remove('hidden');
     });
   });
+
+  // ---------- fretes dos motoristas, tabela de fretes e documentos (só a senha mestre) ----------
+  // Tabela (fretes-tabela/atual): valor da viagem por destino para 16 e 18 paletes; a linha "X - COM 175" vale
+  // quando a carga tem palete de 175 fardos. Os nomes dos destinos (sem valores) ficam em config/fretes-destinos,
+  // para a equipe escolher ao lançar a carga. O frete de cada carga é calculado pela tabela e só fica gravado
+  // (em "fretes", id = id da carga) quando a senha mestre confirma, ajusta ou marca como pago.
+  // Regras combinadas com o Nicolas: 16 paletes = coluna de 16; 18 = coluna de 18; outra quantidade = proporcional
+  // aos 16, sugerido pelo app e só vale depois de confirmado; mais de um destino = o mais caro + adicional (R$ 300).
+  // O banco só deixa a senha mestre ler e gravar fretes-tabela, fretes e motorista-docs (0004_fretes_documentos.sql).
+  var fretesTabela = null;     // { versao, paletesBase, adicionalDestino, linhas: [{ destino, v16, v18 }], alteradaEm }
+  var fretesCarregado = false; // a tabela já foi lida (mesmo que não exista)
+  var fretesDestinos = [];     // nomes dos destinos, sem valores
+  var fretesCargas = {};       // id da carga -> { destinos, valor, confirmado, confirmadoEm, pagoEm, obs, ... }
+  var motoristaDocs = [];      // documentos (arquivos no Storage): { id, motoristaId, grupo, tipo, descricao, validade, caminho, ... }
+  var motoristaDados = {};     // id do motorista -> { cpf, cnh, cnhCategoria, cnhValidade, placa, placaCarreta, veiculo, rntrc, obs }
+  var LOCAL_FRETES_KEY = 'levissima-fretes-v1';
+  var BUCKET_DOCS = 'motoristas-docs';
+  var RE_COM175 = /\s*-\s*COM\s*175\s*$/i;
+  var TIPOS_DOC = {
+    motorista: ['CNH', 'RG', 'CPF', 'Comprovante de residência', 'Exame toxicológico', 'Curso MOPP', 'Contrato', 'Outro'],
+    caminhao: ['CRLV (documento do veículo)', 'ANTT / RNTRC', 'Seguro', 'Aferição do tacógrafo', 'Contrato de locação', 'Outro']
+  };
+
+  function fmtBRL(v) { return (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+  function arred2(v) { return Math.round((Number(v) || 0) * 100) / 100; }
+  function numBR(v) { // "1.234,56", "1234.56" ou número
+    if (typeof v === 'number') return v;
+    var t = String(v == null ? '' : v).trim();
+    if (!t) return NaN;
+    if (/,/.test(t)) t = t.replace(/\./g, '').replace(',', '.');
+    return Number(t);
+  }
+  function normDestino(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase().replace(/[^A-Z0-9]+/g, ' ').trim(); }
+  function baseDestino(s) { return String(s == null ? '' : s).replace(RE_COM175, '').trim(); }
+  var STOP_DEST = { DO: 1, DA: 1, DE: 1, DOS: 1, DAS: 1, D: 1, E: 1 };
+  var ABREV_DEST = { STA: 'SANTA', STO: 'SANTO', S: 'SAO', PRES: 'PRESIDENTE' };
+  function tokensDestino(s) {
+    return normDestino(s).split(' ').filter(Boolean).map(function(t) { return ABREV_DEST[t] || t; }).filter(function(t) { return !STOP_DEST[t]; });
+  }
+  // partes do nome na tabela: "GUARULHOS - ADEGA MINEIRO" -> base GUARULHOS, variante ADEGA MINEIRO (só para esse cliente);
+  // "CAMPESTRE - MG" -> variante MG (estado: vale para a cidade).
+  function partesDestino(d) {
+    var p = String(d == null ? '' : d).split(/\s+-\s+|\s*\(/);
+    var variante = normDestino(p.slice(1).join(' '));
+    return { base: tokensDestino(p[0]), variante: variante, deCliente: !!variante && !/^[A-Z]{2}$/.test(variante) };
+  }
+  // Nome do destino na tabela para uma cidade (da nota fiscal ou digitada).
+  function destinoPorCidade(cidade, cliente, exato) {
+    var tc = tokensDestino(baseDestino(cidade));
+    if (!tc.length || !fretesDestinos.length) return '';
+    var nomeCli = normDestino(cliente), melhor = '', pontos = 0;
+    fretesDestinos.forEach(function(d) {
+      if (normDestino(d) === normDestino(cidade)) { melhor = d; pontos = 1e6; return; }
+      var pd = partesDestino(d);
+      if (!pd.base.length || !pd.base.every(function(t) { return tc.indexOf(t) >= 0; })) return;
+      if (exato && pd.base.length !== tc.length) return;
+      var p = pd.base.length * 10 - (tc.length - pd.base.length);
+      if (pd.deCliente) { if (nomeCli && nomeCli.indexOf(pd.variante) >= 0) p += 100; else return; }
+      if (p > pontos) { pontos = p; melhor = d; }
+    });
+    return melhor;
+  }
+  // Destino achado num trecho de texto (o campo "Município" do DANFE em PDF).
+  function destinoNoTexto(texto, cliente) {
+    var t = ' ' + tokensDestino(texto).join(' ') + ' ';
+    if (t.length < 4 || !fretesDestinos.length) return '';
+    var nomeCli = normDestino(cliente), melhor = '', tam = 0;
+    fretesDestinos.forEach(function(d) {
+      var pd = partesDestino(d), base = pd.base.join(' ');
+      if (!base || t.indexOf(' ' + base + ' ') < 0) return;
+      if (pd.deCliente && !(nomeCli && nomeCli.indexOf(pd.variante) >= 0)) return;
+      if (base.length > tam) { tam = base.length; melhor = d; }
+    });
+    return melhor;
+  }
+  function ultimoDestinoDe(cliente) {
+    var n = String(cliente || '').trim().toLowerCase(), melhor = null;
+    if (!n) return '';
+    cargas.forEach(function(c) {
+      (c.clientes || []).forEach(function(cl) {
+        if (cl.destino && String(cl.cliente || '').trim().toLowerCase() === n && (!melhor || String(c.data || '') > melhor.data)) melhor = { data: String(c.data || ''), destino: cl.destino };
+      });
+    });
+    return melhor ? melhor.destino : '';
+  }
+  function nomesDestinos(tab) {
+    var vistos = {}, out = [];
+    ((tab && tab.linhas) || []).forEach(function(l) {
+      var b = baseDestino(l.destino), k = normDestino(b);
+      if (b && !vistos[k]) { vistos[k] = 1; out.push(b); }
+    });
+    return out.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); });
+  }
+  var datalistFretesFeito = '';
+  function renderFretesDatalist() {
+    var el = document.getElementById('fretes-destinos-list');
+    var chave = fretesDestinos.join('|');
+    if (!el || chave === datalistFretesFeito) return;
+    datalistFretesFeito = chave;
+    el.innerHTML = fretesDestinos.map(function(d) { return '<option value="' + escapeHtml(d) + '"></option>'; }).join('');
+  }
+
+  // ----- cálculo do frete de uma carga -----
+  function linhaFrete(destino, com175) {
+    var linhas = (fretesTabela && fretesTabela.linhas) || [], n = normDestino(baseDestino(destino)), simples = null, c175 = null;
+    linhas.forEach(function(l) {
+      if (normDestino(baseDestino(l.destino)) !== n) return;
+      if (RE_COM175.test(l.destino)) { if (!c175) c175 = l; } else if (!simples) simples = l;
+    });
+    if (com175 && c175) return { linha: c175, com175: true };
+    if (simples) return { linha: simples, com175: false };
+    if (c175) return { linha: c175, com175: true, so175: !com175 };
+    return null;
+  }
+  // Palete de 175 fardos (510ml com 7 fileiras de 25): vale a linha "COM 175" do destino.
+  function cargaCom175(c) {
+    return (c.clientes || []).some(function(cl) {
+      return (cl.itens || []).some(function(it) {
+        var upf = Number(it.unidadesPorFileira) || 0, fil = Number(it.fileirasPorPalete) || 0;
+        var porPalete = (it.fileirasAjustadas && upf && fil) ? upf * fil : (Number(it.unidadesPorPalete) || 0);
+        return porPalete === 175;
+      });
+    });
+  }
+  function paletesBaseFrete() { return Number(fretesTabela && fretesTabela.paletesBase) || 16; }
+  function adicionalFrete() { var a = fretesTabela && fretesTabela.adicionalDestino; return (a == null || a === '' || isNaN(Number(a))) ? 300 : Number(a); }
+  function valorDoDestino(destino, paletes, com175) {
+    var base = paletesBaseFrete();
+    var r = { destino: destino, linha: '', valor: 0, cheio: 0, regra: '', confirmar: false, proporcional: false, semTabela: false, aviso: '' };
+    var lf = linhaFrete(destino, com175);
+    if (!lf) { r.semTabela = true; r.confirmar = true; r.regra = 'sem valor na tabela'; return r; }
+    var v16 = Number(lf.linha.v16) || 0, v18 = Number(lf.linha.v18) || 0;
+    r.linha = lf.linha.destino; r.cheio = v16;
+    if (lf.so175) { r.confirmar = true; r.aviso = 'a tabela só tem o valor com 175'; }
+    if (!paletes) { r.valor = v16; r.confirmar = true; r.regra = 'carga sem paletes'; return r; }
+    if (paletes === base) { r.valor = v16; r.regra = base + ' paletes'; }
+    else if (paletes === 18 && v18 > 0) { r.valor = v18; r.regra = '18 paletes'; }
+    else {
+      r.valor = arred2(v16 * paletes / base); r.proporcional = true; r.confirmar = true;
+      r.regra = 'proporcional: ' + paletes + ' de ' + base + ' paletes';
+    }
+    return r;
+  }
+  function destinosDaCarga(c) {
+    var vistos = {}, out = [];
+    (c.clientes || []).forEach(function(cl) {
+      var d = String(cl.destino || '').trim(), k = normDestino(d);
+      if (d && !vistos[k]) { vistos[k] = 1; out.push(d); }
+    });
+    return out;
+  }
+  function freteDaCarga(c, destinosTeste) {
+    var reg = fretesCargas[c.id] || null;
+    var destinos = destinosTeste || ((reg && Array.isArray(reg.destinos) && reg.destinos.length) ? reg.destinos.slice() : destinosDaCarga(c));
+    var paletes = Number(c.totalPaletes) || 0, com175 = cargaCom175(c);
+    var partes = destinos.map(function(d) { return valorDoDestino(d, paletes, com175); });
+    var maior = null, cheioMax = 0;
+    partes.forEach(function(p) { if (!maior || p.valor > maior.valor) maior = p; cheioMax = Math.max(cheioMax, p.cheio); });
+    var adicional = partes.length > 1 ? adicionalFrete() : 0;
+    var sugerido = maior ? arred2(maior.valor + adicional) : 0;
+    var precisa = !partes.length || partes.some(function(p) { return p.confirmar; });
+    var temValor = !!reg && reg.valor != null && reg.valor !== '' && !isNaN(Number(reg.valor));
+    var valor = temValor ? arred2(reg.valor) : sugerido;
+    var estado = reg && reg.pagoEm ? 'pago' : ((reg && reg.confirmado) || !precisa) ? 'apagar' : 'confirmar';
+    return {
+      carga: c, reg: reg, destinos: destinos, partes: partes, maior: maior, adicional: adicional, sugerido: sugerido,
+      cheio: arred2(cheioMax + adicional), valor: valor, estado: estado, precisa: precisa, paletes: paletes, com175: com175,
+      ajustado: temValor && arred2(reg.valor) !== sugerido,
+      proporcional: partes.some(function(p) { return p.proporcional; }),
+      semTabela: !partes.length || partes.some(function(p) { return p.semTabela; })
+    };
+  }
+  function composicaoFrete(f) {
+    if (!f.partes.length) return 'sem destino informado na carga';
+    var t = f.partes.map(function(p) {
+      if (p.semTabela) return p.destino + ': sem valor na tabela';
+      return (p.linha || p.destino) + ' · ' + p.regra + ' = ' + fmtBRL(p.valor) + (p.aviso ? ' (' + p.aviso + ')' : '');
+    });
+    if (f.partes.length > 1) t.push(f.partes.length + ' destinos: o mais caro + adicional de ' + fmtBRL(f.adicional));
+    return t.join('; ');
+  }
+  function estadoFreteTexto(e) { return e === 'pago' ? 'Pago' : e === 'apagar' ? 'A pagar' : 'A confirmar'; }
+  function mesmoMotorista(a, b) { return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase(); }
+  function cargasDoMotorista(m) {
+    return cargas.filter(function(c) { return c.status === 'concluida' && mesmoMotorista(c.motorista, m.nome); })
+      .sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')) || String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); });
+  }
+  function resumoFretesMotorista(m) {
+    var r = { apagar: 0, nApagar: 0, nConfirmar: 0, sugConfirmar: 0 };
+    cargasDoMotorista(m).forEach(function(c) {
+      var f = freteDaCarga(c);
+      if (f.estado === 'apagar') { r.apagar += f.valor; r.nApagar++; }
+      else if (f.estado === 'confirmar') { r.nConfirmar++; r.sugConfirmar += f.sugerido; }
+    });
+    return r;
+  }
+
+  // ----- gravação -----
+  function salvarLocalFretes() {
+    try {
+      localStorage.setItem(LOCAL_FRETES_KEY, JSON.stringify({
+        tabela: fretesTabela, destinos: fretesDestinos, cargas: fretesCargas,
+        dados: motoristaDados
+      }));
+    } catch (e) {}
+  }
+  function loadLocalFretes() {
+    var l = {};
+    try { l = JSON.parse(localStorage.getItem(LOCAL_FRETES_KEY) || '{}') || {}; } catch (e) { l = {}; }
+    fretesTabela = l.tabela || null; fretesDestinos = l.destinos || nomesDestinos(fretesTabela);
+    fretesCargas = l.cargas || {}; motoristaDados = l.dados || {}; motoristaDocs = [];
+    fretesCarregado = true;
+  }
+  function subscribeFretes() {
+    if (!session || session.role === 'motorista') return;
+    db.doc('config/fretes-destinos').onSnapshot(function(s) {
+      fretesDestinos = (s.exists && Array.isArray(s.data().nomes)) ? s.data().nomes.slice().sort(function(a, b) { return String(a).localeCompare(String(b), 'pt-BR'); }) : [];
+      renderFretesDatalist();
+    }, function(err) { console.error('destinos de frete', err); });
+    if (session.role !== 'admin') return;
+    db.doc('fretes-tabela/atual').onSnapshot(function(s) {
+      fretesTabela = s.exists ? s.data() : null; fretesCarregado = true; renderFretesTudo();
+    }, function(err) { console.error('tabela de fretes', err); fretesCarregado = true; renderFretesTudo(); });
+    db.collection('fretes').onSnapshot(function(snap) {
+      var m = {}; snap.docs.forEach(function(d) { m[d.id] = d.data(); }); fretesCargas = m; renderFretesTudo();
+    }, function(err) { console.error('fretes', err); });
+    db.collection('motorista-docs').onSnapshot(function(snap) {
+      var docs = [], dados = {};
+      snap.docs.forEach(function(d) {
+        var x = Object.assign({ id: d.id }, d.data());
+        if (x.tipoRegistro === 'dados') dados[x.motoristaId] = x; else if (x.tipoRegistro === 'arquivo') docs.push(x);
+      });
+      motoristaDocs = docs; motoristaDados = dados; renderFretesTudo();
+    }, function(err) { console.error('documentos dos motoristas', err); });
+  }
+  function renderFretesTudo() {
+    if (!session || session.role === 'motorista') return;
+    renderFretesDatalist();
+    if (session.role !== 'admin') return;
+    renderDriversAdmin();
+    renderTabelaFretesAdmin();
+    renderMotoristaPage(false);
+  }
+  function salvarFrete(cargaId, patch) {
+    var c = cargas.find(function(x) { return x.id === cargaId; });
+    var dados = Object.assign({}, fretesCargas[cargaId] || {}, {
+      cargaId: cargaId, motorista: c ? c.motorista || '' : '', data: c ? c.data || '' : '', codigo: c ? cargaCode(c) : ''
+    }, patch, { atualizadoEm: new Date().toISOString() });
+    if (mode === 'db' && db) return db.collection('fretes').doc(cargaId).set(dados);
+    fretesCargas[cargaId] = dados; salvarLocalFretes(); renderFretesTudo();
+    return Promise.resolve();
+  }
+  function registroConfirmado(f, valor, extra) {
+    return Object.assign({
+      destinos: f.destinos.slice(), valor: arred2(valor), sugerido: f.sugerido, regra: composicaoFrete(f), paletes: f.paletes,
+      confirmado: true, confirmadoEm: (f.reg && f.reg.confirmadoEm) || new Date().toISOString()
+    }, extra || {});
+  }
+  function salvarTabelaFretes(tab) {
+    tab = Object.assign({ paletesBase: 16, adicionalDestino: 300, linhas: [] }, tab);
+    var nomes = nomesDestinos(tab);
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      b.set(db.doc('fretes-tabela/atual'), tab);
+      b.set(db.doc('config/fretes-destinos'), { nomes: nomes, versao: tab.versao || '' });
+      return b.commit();
+    }
+    fretesTabela = tab; fretesDestinos = nomes; salvarLocalFretes(); renderFretesTudo();
+    return Promise.resolve();
+  }
+  function salvarDadosMotorista(m, dados) {
+    var reg = Object.assign({}, motoristaDados[m.id] || {}, dados, { tipoRegistro: 'dados', motoristaId: m.id, motorista: m.nome, atualizadoEm: new Date().toISOString() });
+    delete reg.id;
+    if (mode === 'db' && db) return db.collection('motorista-docs').doc('dados-' + m.id).set(reg);
+    motoristaDados[m.id] = reg; salvarLocalFretes(); renderFretesTudo();
+    return Promise.resolve();
+  }
+
+  // ----- documentos (arquivos no Storage, bucket privado) -----
+  var MIME_EXT = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', heic: 'image/heic', heif: 'image/heif' };
+  function tipoDoArquivo(file) {
+    var ext = (String(file.name || '').match(/\.([A-Za-z0-9]{1,5})$/) || [])[1];
+    ext = ext ? ext.toLowerCase() : '';
+    var mime = file.type || MIME_EXT[ext] || '';
+    if (!ext) ext = mime === 'application/pdf' ? 'pdf' : mime === 'image/png' ? 'png' : 'jpg';
+    return { mime: mime, ext: ext };
+  }
+  // Fotos grandes viram JPEG de até 2000 px (continua nítido e fica leve); PDF e fotos pequenas vão como estão.
+  function prepararArquivo(file) {
+    var t = tipoDoArquivo(file);
+    var original = { blob: file, mime: t.mime, ext: t.ext, nome: file.name || ('documento.' + t.ext) };
+    if (!/^image\/(jpeg|png|webp)$/.test(t.mime) || file.size <= 1500000) return Promise.resolve(original);
+    return new Promise(function(resolve) {
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function() {
+        try {
+          var k = Math.min(1, 2000 / Math.max(img.naturalWidth, img.naturalHeight));
+          var cv = document.createElement('canvas');
+          cv.width = Math.round(img.naturalWidth * k); cv.height = Math.round(img.naturalHeight * k);
+          var cx = cv.getContext('2d');
+          cx.fillStyle = '#FFFFFF'; cx.fillRect(0, 0, cv.width, cv.height);
+          cx.drawImage(img, 0, 0, cv.width, cv.height);
+          URL.revokeObjectURL(url);
+          cv.toBlob(function(b) {
+            resolve(b && b.size < file.size ? { blob: b, mime: 'image/jpeg', ext: 'jpg', nome: String(file.name || 'foto').replace(/\.[^.]+$/, '') + '.jpg' } : original);
+          }, 'image/jpeg', 0.85);
+        } catch (e) { URL.revokeObjectURL(url); resolve(original); }
+      };
+      img.onerror = function() { URL.revokeObjectURL(url); resolve(original); };
+      img.src = url;
+    });
+  }
+  function tamanhoTexto(n) {
+    n = Number(n) || 0;
+    if (n >= 1048576) return (n / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' MB';
+    return Math.max(1, Math.round(n / 1024)) + ' KB';
+  }
+  function enviarDocMotorista(m, grupo, tipo, descricao, validade, file) {
+    var id = 'doc' + uid();
+    return prepararArquivo(file).then(function(a) {
+      if (a.blob.size > 15 * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; throw e; }
+      var caminho = m.id + '/' + id + '.' + a.ext;
+      return sbCliente.storage.from(BUCKET_DOCS).upload(caminho, a.blob, { contentType: a.mime || undefined, upsert: false }).then(function(r) {
+        if (r.error) throw r.error;
+        return db.collection('motorista-docs').doc(id).set({
+          tipoRegistro: 'arquivo', motoristaId: m.id, motorista: m.nome, grupo: grupo, tipo: tipo, descricao: descricao || '',
+          validade: validade || '', caminho: caminho, nomeArquivo: a.nome, mime: a.mime, tamanho: a.blob.size,
+          enviadoEm: new Date().toISOString()
+        });
+      });
+    });
+  }
+  function abrirDocMotorista(d) {
+    var nativo = appNativo();
+    var janela = nativo ? null : window.open('', '_blank'); // abre já no toque (senão o navegador bloqueia)
+    sbCliente.storage.from(BUCKET_DOCS).download(d.caminho).then(function(r) {
+      if (r.error) throw r.error;
+      if (nativo) return compartilharArquivoNativo(r.data, d.nomeArquivo || 'documento', d.tipo || 'Documento');
+      var url = URL.createObjectURL(r.data);
+      if (janela) janela.location.href = url; else window.open(url, '_blank');
+      setTimeout(function() { URL.revokeObjectURL(url); }, 120000);
+    }).catch(function(e) {
+      if (janela) janela.close();
+      console.error('abrir documento', e);
+      showToast('Não foi possível abrir o documento agora.');
+    });
+  }
+  function removerDocMotorista(d) {
+    return sbCliente.storage.from(BUCKET_DOCS).remove([d.caminho]).then(function(r) {
+      if (r.error) throw r.error;
+      return db.collection('motorista-docs').doc(d.id).delete();
+    });
+  }
+  // Motorista removido: some também com os documentos e os dados dele (só a senha mestre consegue).
+  function limparDocsDoMotorista(id) {
+    if (mode !== 'db' || !db || !session || session.role !== 'admin') return Promise.resolve();
+    var docs = motoristaDocs.filter(function(d) { return d.motoristaId === id; });
+    var caminhos = docs.map(function(d) { return d.caminho; }).filter(Boolean);
+    var p = caminhos.length ? sbCliente.storage.from(BUCKET_DOCS).remove(caminhos) : Promise.resolve();
+    return p.then(function() {
+      var b = db.batch();
+      docs.forEach(function(d) { b.delete(db.collection('motorista-docs').doc(d.id)); });
+      if (motoristaDados[id]) b.delete(db.collection('motorista-docs').doc('dados-' + id));
+      return b.commit();
+    }).catch(function(e) { console.error('limpar documentos do motorista', e); });
+  }
+  function situacaoValidade(iso) {
+    if (!iso) return null;
+    var dias = Math.round((new Date(iso + 'T00:00:00') - new Date(todayIso() + 'T00:00:00')) / 86400000);
+    if (isNaN(dias)) return null;
+    if (dias < 0) return { cls: 'vencido', texto: 'vencido desde ' + formatDateBR(iso) };
+    if (dias <= 30) return { cls: 'vence', texto: dias === 0 ? 'vence hoje' : 'vence em ' + dias + (dias === 1 ? ' dia' : ' dias') };
+    return { cls: '', texto: 'válido até ' + formatDateBR(iso) };
+  }
+  function alertasDocsMotorista(m) {
+    var lista = motoristaDocs.filter(function(d) { return d.motoristaId === m.id && d.validade; })
+      .map(function(d) { return { nome: d.tipo.split(' (')[0], v: situacaoValidade(d.validade) }; });
+    var dd = motoristaDados[m.id];
+    if (dd && dd.cnhValidade && !lista.some(function(x) { return x.nome === 'CNH'; })) lista.push({ nome: 'CNH', v: situacaoValidade(dd.cnhValidade) });
+    return lista.filter(function(x) { return x.v && x.v.cls; });
+  }
+
+  // ----- Cadastros › Tabela de fretes -----
+  var flEditIndex = null, flConfirmRemover = null;
+  function renderTabelaFretesAdmin() {
+    var sec = document.getElementById('fretes-admin');
+    if (!sec) return;
+    var mestre = !!session && session.role === 'admin';
+    sec.classList.toggle('hidden', !mestre);
+    if (!mestre) return;
+    var list = document.getElementById('fretes-tabela-list'), vers = document.getElementById('fretes-versao');
+    var adic = document.getElementById('f-fretes-adicional');
+    if (document.activeElement !== adic) adic.value = String(adicionalFrete());
+    if (!fretesTabela) {
+      vers.textContent = '';
+      list.innerHTML = '<p class="field-hint">' + (fretesCarregado ? 'Nenhuma tabela ainda: adicione os destinos e os valores.' : 'Carregando a tabela…') + '</p>';
+      return;
+    }
+    vers.textContent = (fretesTabela.versao ? 'tabela de ' + fretesTabela.versao : '') +
+      (fretesTabela.alteradaEm ? ' · alterada em ' + formatDateBR(String(fretesTabela.alteradaEm).slice(0, 10)) : '');
+    var busca = normDestino(document.getElementById('f-fretes-busca').value);
+    var linhas = (fretesTabela.linhas || []).map(function(l, i) { return { l: l, i: i }; })
+      .filter(function(x) { return !busca || normDestino(x.l.destino).indexOf(busca) >= 0; })
+      .sort(function(a, b) { return String(a.l.destino).localeCompare(String(b.l.destino), 'pt-BR'); });
+    list.innerHTML = linhas.length ? linhas.map(function(x) {
+      if (flConfirmRemover === x.i) {
+        return '<div class="driver-confirm">Remover ' + escapeHtml(x.l.destino) + ' da tabela?' +
+          '<button class="btn-text danger" data-action="fl-remover-ok" data-i="' + x.i + '">Remover</button>' +
+          '<button class="btn-text" data-action="fl-remover-cancelar">Cancelar</button></div>';
+      }
+      return '<div class="fl-row"><span class="fl-nome">' + escapeHtml(x.l.destino) + '</span>' +
+        '<span class="fl-vals">16: ' + fmtBRL(x.l.v16) + ' · 18: ' + (Number(x.l.v18) > 0 ? fmtBRL(x.l.v18) : 'proporcional') + '</span>' +
+        '<button class="btn-text" data-action="fl-editar" data-i="' + x.i + '">Editar</button>' +
+        '<button class="btn-text danger" data-action="fl-remover" data-i="' + x.i + '">Remover</button></div>';
+    }).join('') + (busca ? '' : '<p class="field-hint">' + (fretesTabela.linhas || []).length + ' destinos na tabela.</p>')
+      : '<p class="field-hint">Nenhum destino encontrado.</p>';
+  }
+  function abrirLinhaFrete(i) {
+    flEditIndex = i;
+    var l = (i != null && fretesTabela && fretesTabela.linhas[i]) || { destino: '', v16: '', v18: '' };
+    document.getElementById('fl-sheet-title').textContent = i == null ? 'Adicionar destino' : 'Editar — ' + l.destino;
+    setVal('f-fl-destino', l.destino || '');
+    setVal('f-fl-v16', l.v16 !== '' && l.v16 != null ? String(l.v16) : '');
+    setVal('f-fl-v18', Number(l.v18) > 0 ? String(l.v18) : '');
+    document.getElementById('fl-form-error').classList.add('hidden');
+    document.getElementById('fl-sheet-overlay').classList.remove('hidden');
+  }
+  function fecharLinhaFrete() { document.getElementById('fl-sheet-overlay').classList.add('hidden'); flEditIndex = null; }
+  function tabelaParaEditar() {
+    var t = fretesTabela ? JSON.parse(JSON.stringify(fretesTabela)) : { versao: formatDateBR(todayIso()), paletesBase: 16, adicionalDestino: 300, linhas: [] };
+    if (!Array.isArray(t.linhas)) t.linhas = [];
+    t.alteradaEm = new Date().toISOString();
+    return t;
+  }
+  document.getElementById('fl-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var err = document.getElementById('fl-form-error');
+    function erro(msg) { err.textContent = msg; err.classList.remove('hidden'); }
+    var destino = document.getElementById('f-fl-destino').value.replace(/\s+/g, ' ').trim().toUpperCase();
+    var v16 = numBR(document.getElementById('f-fl-v16').value), v18raw = document.getElementById('f-fl-v18').value;
+    var v18 = v18raw === '' ? 0 : numBR(v18raw);
+    if (!destino) return erro('Informe o destino.');
+    if (isNaN(v16) || v16 <= 0) return erro('Informe o valor para 16 paletes.');
+    if (isNaN(v18) || v18 < 0) return erro('O valor para 18 paletes está inválido.');
+    var t = tabelaParaEditar();
+    var dup = t.linhas.some(function(l, i) { return i !== flEditIndex && normDestino(l.destino) === normDestino(destino); });
+    if (dup) return erro('Esse destino já está na tabela.');
+    var linha = { destino: destino, v16: arred2(v16), v18: arred2(v18) };
+    if (flEditIndex == null) t.linhas.push(linha); else t.linhas[flEditIndex] = linha;
+    err.classList.add('hidden');
+    salvarTabelaFretes(t).then(function() { fecharLinhaFrete(); showToast('Tabela de fretes salva.'); })
+      .catch(function(x) { console.error('tabela de fretes', x); erro('Não foi possível salvar agora. Tente novamente.'); });
+  });
+  document.getElementById('btn-close-fl').addEventListener('click', fecharLinhaFrete);
+  document.getElementById('btn-fl-cancel').addEventListener('click', fecharLinhaFrete);
+  document.getElementById('fl-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharLinhaFrete(); });
+  document.getElementById('btn-add-frete-linha').addEventListener('click', function() { abrirLinhaFrete(null); });
+  document.getElementById('f-fretes-busca').addEventListener('input', renderTabelaFretesAdmin);
+  document.getElementById('f-fretes-adicional').addEventListener('change', function(e) {
+    var v = numBR(e.target.value);
+    if (isNaN(v) || v < 0) { e.target.value = String(adicionalFrete()); return; }
+    var t = tabelaParaEditar();
+    t.adicionalDestino = arred2(v);
+    salvarTabelaFretes(t).then(function() { showToast('Adicional salvo: ' + fmtBRL(v) + '.'); })
+      .catch(function(x) { console.error('adicional', x); showToast('Não foi possível salvar agora.'); });
+  });
+  document.getElementById('fretes-tabela-list').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.dataset.action, i = Number(b.dataset.i);
+    if (a === 'fl-editar') abrirLinhaFrete(i);
+    else if (a === 'fl-remover') { flConfirmRemover = i; renderTabelaFretesAdmin(); }
+    else if (a === 'fl-remover-cancelar') { flConfirmRemover = null; renderTabelaFretesAdmin(); }
+    else if (a === 'fl-remover-ok') {
+      flConfirmRemover = null;
+      var t = tabelaParaEditar();
+      t.linhas.splice(i, 1);
+      salvarTabelaFretes(t).then(function() { showToast('Destino removido.'); })
+        .catch(function(x) { console.error('remover destino', x); renderTabelaFretesAdmin(); showToast('Não foi possível remover agora.'); });
+    }
+  });
+
+  // ----- página de cada motorista (abas: dados e acesso, fretes, documentos) -----
+  var motPage = { id: null, tab: 'fretes', filtro: 'apagar', confirmDoc: null, confirmTodos: false, confirmMotorista: false };
+  function motoristaAberto() { return motoristas.find(function(x) { return x.id === motPage.id; }) || null; }
+  function abrirMotoristaPage(id, tab) {
+    motPage = { id: id, tab: tab || 'fretes', filtro: 'apagar', confirmDoc: null, confirmTodos: false, confirmMotorista: false };
+    document.getElementById('mot-overlay').classList.remove('hidden');
+    renderMotoristaPage(true);
+    document.querySelector('#mot-overlay .sheet').scrollTop = 0;
+  }
+  function fecharMotoristaPage() { document.getElementById('mot-overlay').classList.add('hidden'); motPage.id = null; }
+  function renderMotoristaPage(forcar) {
+    var ov = document.getElementById('mot-overlay');
+    if (!ov || ov.classList.contains('hidden') || !motPage.id) return;
+    var m = motoristaAberto();
+    if (!m) { fecharMotoristaPage(); return; }
+    var body = document.getElementById('mot-body');
+    // atualização automática (dados chegando do banco) não apaga o que está sendo digitado
+    if (!forcar && body.contains(document.activeElement) && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    document.getElementById('mot-title').textContent = m.nome;
+    document.querySelectorAll('#mot-tabs .seg-btn').forEach(function(b) {
+      var on = b.dataset.mtab === motPage.tab;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    body.innerHTML = motPage.tab === 'dados' ? htmlDadosMotorista(m) : motPage.tab === 'docs' ? htmlDocsMotorista(m) : htmlFretesMotorista(m);
+  }
+  function htmlDadosMotorista(m) {
+    var dd = motoristaDados[m.id] || {};
+    function campo(nome, rotulo, extra) {
+      return '<label>' + rotulo + '<input type="' + ((extra && extra.type) || 'text') + '" name="' + nome + '" value="' + escapeHtml(dd[nome] || '') + '"' +
+        ((extra && extra.attrs) || '') + ' autocomplete="off" /></label>';
+    }
+    var wa = waNumero(m.telefone);
+    var cnhV = situacaoValidade(dd.cnhValidade);
+    return '<section class="mot-sec"><h3>Acesso ao app</h3>' +
+        '<div class="driver-row"><span class="driver-name">Senha do motorista<span class="est-sub">ele entra com a própria senha e vê só as entregas dele</span></span>' +
+          '<button class="btn-text" data-action="mot-senha">Trocar senha</button></div>' +
+        '<div class="driver-row"><span class="driver-name">Celular (WhatsApp)<span class="est-sub">' + escapeHtml(m.telefone ? telMask(m.telefone) : 'não cadastrado') + '</span></span>' +
+          (wa ? '<a class="btn-text" href="' + escapeHtml(waLink(wa, '')) + '" target="_blank" rel="noopener">Abrir conversa</a>' : '') +
+          '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
+      '</section>' +
+      '<section class="mot-sec"><h3>Dados do motorista e do caminhão</h3><p class="hint">Só a senha mestre vê estes dados.</p>' +
+        '<form class="mot-form" id="mot-dados-form" novalidate>' +
+          '<div class="row-2">' + campo('cpf', 'CPF', { attrs: ' inputmode="numeric" maxlength="14"' }) + campo('cnh', 'CNH (número)', { attrs: ' inputmode="numeric" maxlength="15"' }) + '</div>' +
+          '<div class="row-2">' + campo('cnhCategoria', 'Categoria da CNH', { attrs: ' maxlength="3" autocapitalize="characters"' }) +
+            campo('cnhValidade', 'Validade da CNH' + (cnhV && cnhV.cls ? ' <span class="val-chip ' + cnhV.cls + '">' + escapeHtml(cnhV.texto) + '</span>' : ''), { type: 'date' }) + '</div>' +
+          '<div class="row-2">' + campo('placa', 'Placa do caminhão', { attrs: ' maxlength="8" autocapitalize="characters"' }) + campo('placaCarreta', 'Placa da carreta <span class="opt">(se houver)</span>', { attrs: ' maxlength="8" autocapitalize="characters"' }) + '</div>' +
+          '<div class="row-2">' + campo('veiculo', 'Caminhão <span class="opt">(modelo ou tipo)</span>', { attrs: ' maxlength="60" placeholder="Ex.: truck, carreta"' }) + campo('rntrc', 'RNTRC / ANTT', { attrs: ' maxlength="20"' }) + '</div>' +
+          campo('obs', 'Observações <span class="opt">(opcional)</span>', { attrs: ' maxlength="200"' }) +
+          '<p class="form-error hidden" id="mot-dados-erro"></p>' +
+          '<div class="sheet-actions"><button type="submit" class="btn btn-primary" id="btn-mot-dados">Salvar dados</button></div>' +
+        '</form>' +
+      '</section>' +
+      '<section class="mot-sec"><h3>Remover motorista</h3>' +
+        (motPage.confirmMotorista
+          ? '<div class="driver-confirm">Remover ' + escapeHtml(m.nome) + '? A senha dele deixa de funcionar e os documentos e dados dele são apagados. As cargas já lançadas continuam.' +
+            '<button class="btn-text danger" data-action="mot-remover-ok">Remover</button><button class="btn-text" data-action="mot-remover-cancelar">Cancelar</button></div>'
+          : '<button class="btn-text danger" data-action="mot-remover">Remover ' + escapeHtml(m.nome) + '</button>') +
+      '</section>';
+  }
+  function nomeMes(ym) {
+    var p = String(ym).split('-');
+    var t = new Date(Number(p[0]), Number(p[1]) - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  function fretesFiltrados(m) {
+    var todas = cargasDoMotorista(m).map(function(c) { return freteDaCarga(c); });
+    var f = motPage.filtro, lista;
+    if (f === 'apagar') lista = todas.filter(function(x) { return x.estado !== 'pago'; });
+    else if (f === 'tudo') lista = todas;
+    else lista = todas.filter(function(x) { return String(x.carga.data || '').slice(0, 7) === f; });
+    var meses = [];
+    todas.forEach(function(x) { var ym = String(x.carga.data || '').slice(0, 7); if (ym && meses.indexOf(ym) < 0) meses.push(ym); });
+    meses.sort().reverse();
+    var periodo = f === 'apagar' ? 'Fretes a pagar e a confirmar' : f === 'tudo' ? 'Todas as viagens' : nomeMes(f);
+    return { todas: todas, lista: lista, meses: meses, periodo: periodo };
+  }
+  function totaisFretes(lista) {
+    var t = { apagar: 0, nApagar: 0, confirmar: 0, nConfirmar: 0, pago: 0, nPago: 0 };
+    lista.forEach(function(f) {
+      if (f.estado === 'pago') { t.pago += f.valor; t.nPago++; }
+      else if (f.estado === 'apagar') { t.apagar += f.valor; t.nApagar++; }
+      else { t.confirmar += f.sugerido; t.nConfirmar++; }
+    });
+    return t;
+  }
+  function htmlFretesMotorista(m) {
+    if (mode === 'db' && !fretesCarregado) return '<p class="empty-state">Carregando a tabela de fretes…</p>';
+    var ff = fretesFiltrados(m), t = totaisFretes(ff.lista);
+    function opt(v, rot) { return '<option value="' + escapeHtml(v) + '"' + (motPage.filtro === v ? ' selected' : '') + '>' + escapeHtml(rot) + '</option>'; }
+    var opcoes = opt('apagar', 'A pagar e a confirmar') + ff.meses.map(function(ym) { return opt(ym, nomeMes(ym)); }).join('') + opt('tudo', 'Todas as viagens');
+    var semTabela = !fretesTabela ? '<p class="field-hint warn">Sem tabela de fretes: cadastre os destinos em Cadastros › Tabela de fretes.</p>' : '';
+    var html = semTabela +
+      '<div class="frete-filtro"><label>Mostrar<select id="mot-frete-filtro">' + opcoes + '</select></label>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-action="frete-relatorio"' + (ff.lista.length ? '' : ' disabled') + '>Relatório em PDF</button></div>' +
+      '<div class="frete-totais">' +
+        '<div class="resumo-row"><span class="resumo-k">A pagar</span><span class="resumo-v mono">' + fmtBRL(t.apagar) + ' <span class="opt">(' + t.nApagar + (t.nApagar === 1 ? ' viagem' : ' viagens') + ')</span></span></div>' +
+        (t.nConfirmar ? '<div class="resumo-row ask"><span class="resumo-k">A confirmar</span><span class="resumo-v mono">' + t.nConfirmar + (t.nConfirmar === 1 ? ' viagem' : ' viagens') + ' · sugestão ' + fmtBRL(t.confirmar) + '</span></div>' : '') +
+        (t.nPago ? '<div class="resumo-row ok"><span class="resumo-k">Pago</span><span class="resumo-v mono">' + fmtBRL(t.pago) + '</span></div>' : '') +
+      '</div>';
+    if (t.nApagar) {
+      html += motPage.confirmTodos
+        ? '<div class="driver-confirm">Marcar ' + t.nApagar + (t.nApagar === 1 ? ' frete' : ' fretes') + ' (' + fmtBRL(t.apagar) + ') como pago hoje?' +
+          '<button class="btn-text" data-action="frete-pagar-todos-ok">Marcar como pago</button><button class="btn-text" data-action="frete-pagar-todos-cancelar">Cancelar</button></div>'
+        : '<p><button class="btn-text" data-action="frete-pagar-todos">Marcar os ' + t.nApagar + ' fretes a pagar como pagos</button></p>';
+    }
+    if (!ff.lista.length) return html + '<p class="empty-state">' + (motPage.filtro === 'apagar' ? 'Nenhum frete a pagar. As viagens aparecem aqui quando o carregamento é concluído.' : 'Nenhuma viagem neste período.') + '</p>';
+    html += ff.lista.map(function(f) {
+      var c = f.carga;
+      var clientes = (c.clientes || []).map(function(cl) { return (cl.cliente || '—') + (cl.destino ? ' (' + cl.destino + ')' : ''); }).join(', ');
+      var info = f.ajustado ? 'Valor ajustado; pela tabela: ' + fmtBRL(f.sugerido) + ' — ' + composicaoFrete(f) : composicaoFrete(f);
+      var acoes = '';
+      if (f.estado === 'confirmar') {
+        if (f.semTabela) acoes = '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Informar destino e valor</button>';
+        else {
+          acoes = '<button class="btn-text" data-action="frete-confirmar" data-id="' + escapeHtml(c.id) + '">Confirmar ' + fmtBRL(f.sugerido) + (f.proporcional ? ' (proporcional)' : '') + '</button>';
+          if (f.proporcional && f.cheio !== f.sugerido) acoes += '<button class="btn-text" data-action="frete-cheio" data-id="' + escapeHtml(c.id) + '">Valor cheio ' + fmtBRL(f.cheio) + '</button>';
+          acoes += '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Outro valor</button>';
+        }
+      } else if (f.estado === 'apagar') {
+        acoes = '<button class="btn-text" data-action="frete-pagar" data-id="' + escapeHtml(c.id) + '">Marcar como pago</button>' +
+          '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Ajustar</button>';
+      } else {
+        acoes = '<button class="btn-text" data-action="frete-despagar" data-id="' + escapeHtml(c.id) + '">Desfazer pagamento</button>';
+      }
+      return '<div class="frete-item est-' + f.estado + '">' +
+        '<div class="frete-top"><span><b>' + escapeHtml(formatDateBR(c.data)) + '</b> · carga ' + escapeHtml(cargaCode(c)) +
+          '<span class="chip-est ' + f.estado + '">' + estadoFreteTexto(f.estado) + '</span></span>' +
+          '<span class="frete-valor">' + fmtBRL(f.estado === 'confirmar' ? f.sugerido : f.valor) + '</span></div>' +
+        '<div class="frete-sub">' + escapeHtml(clientes || 'sem clientes') + ' · ' + fmtInt(f.paletes) + palavraPaletes(f.paletes) + (f.com175 ? ' (com palete de 175)' : '') + '</div>' +
+        '<div class="frete-sub">' + escapeHtml(info) + (f.reg && f.reg.obs ? ' · Obs.: ' + escapeHtml(f.reg.obs) : '') +
+          (f.reg && f.reg.pagoEm ? ' · pago em ' + escapeHtml(formatDateTimeBR(f.reg.pagoEm)) : '') + '</div>' +
+        '<div class="frete-acoes">' + acoes + '</div></div>';
+    }).join('');
+    return html;
+  }
+  function htmlDocsMotorista(m) {
+    if (mode !== 'db') return '<p class="empty-state">Os documentos ficam guardados no banco on-line, que não está ligado neste aparelho.</p>';
+    var dd = motoristaDados[m.id] || {};
+    return ['motorista', 'caminhao'].map(function(g) {
+      var docs = motoristaDocs.filter(function(d) { return d.motoristaId === m.id && d.grupo === g; })
+        .sort(function(a, b) { return String(a.tipo).localeCompare(String(b.tipo), 'pt-BR') || String(b.enviadoEm).localeCompare(String(a.enviadoEm)); });
+      var titulo = g === 'motorista' ? 'Documentos do motorista' : 'Documentos do caminhão' + (dd.placa ? ' · placa ' + dd.placa : '');
+      return '<section class="mot-sec"><h3>' + escapeHtml(titulo) + '</h3>' +
+        (docs.length ? docs.map(function(d) {
+          if (motPage.confirmDoc === d.id) {
+            return '<div class="driver-confirm">Apagar ' + escapeHtml(d.tipo) + ' (' + escapeHtml(d.nomeArquivo || '') + ')?' +
+              '<button class="btn-text danger" data-action="doc-remover-ok" data-id="' + escapeHtml(d.id) + '">Apagar</button>' +
+              '<button class="btn-text" data-action="doc-remover-cancelar">Cancelar</button></div>';
+          }
+          var v = situacaoValidade(d.validade);
+          return '<div class="driver-row"><span class="driver-name">' + escapeHtml(d.tipo) + (d.descricao ? ' — ' + escapeHtml(d.descricao) : '') +
+            '<span class="est-sub">' + escapeHtml((d.nomeArquivo || 'arquivo') + ' · ' + tamanhoTexto(d.tamanho) + ' · enviado em ' + formatDateTimeBR(d.enviadoEm)) +
+            (v ? ' · <span class="val-chip ' + v.cls + '">' + escapeHtml(v.texto) + '</span>' : '') + '</span></span>' +
+            '<button class="btn-text" data-action="doc-abrir" data-id="' + escapeHtml(d.id) + '">Abrir</button>' +
+            '<button class="btn-text danger" data-action="doc-remover" data-id="' + escapeHtml(d.id) + '">Apagar</button></div>';
+        }).join('') : '<p class="field-hint">Nenhum documento ainda.</p>') +
+        '<button type="button" class="btn btn-secondary btn-sm" data-action="doc-novo" data-grupo="' + g + '">+ Adicionar documento ' + (g === 'motorista' ? 'do motorista' : 'do caminhão') + '</button>' +
+      '</section>';
+    }).join('') + '<p class="hint">Fotos ou PDF, até 15 MB cada. Os arquivos ficam num armazenamento privado: só a senha mestre abre.</p>';
+  }
+
+  // ações da página do motorista
+  function freteDe(id) { var c = cargas.find(function(x) { return x.id === id; }); return c ? freteDaCarga(c) : null; }
+  function aposSalvar(msg) { return function() { renderMotoristaPage(true); if (msg) showToast(msg); }; }
+  function falhaSalvar(x) { console.error('frete', x); showToast('Não foi possível salvar agora. Tente novamente.'); }
+  document.getElementById('mot-tabs').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mtab]');
+    if (!b) return;
+    motPage.tab = b.dataset.mtab; motPage.confirmDoc = null; motPage.confirmTodos = false; motPage.confirmMotorista = false;
+    renderMotoristaPage(true);
+  });
+  document.getElementById('btn-close-mot').addEventListener('click', fecharMotoristaPage);
+  document.getElementById('mot-overlay').addEventListener('click', function(e) { if (e.target === this) fecharMotoristaPage(); });
+  document.getElementById('mot-body').addEventListener('change', function(e) {
+    if (e.target.id === 'mot-frete-filtro') { motPage.filtro = e.target.value; motPage.confirmTodos = false; renderMotoristaPage(true); }
+  });
+  document.getElementById('mot-body').addEventListener('input', function(e) {
+    if (e.target.name === 'cpf') { var v = docMask(e.target.value); if (v !== e.target.value) e.target.value = v; }
+    if (e.target.name === 'placa' || e.target.name === 'placaCarreta') e.target.value = e.target.value.toUpperCase();
+  });
+  document.getElementById('mot-body').addEventListener('submit', function(e) {
+    if (e.target.id !== 'mot-dados-form') return;
+    e.preventDefault();
+    var m = motoristaAberto(); if (!m) return;
+    var f = e.target, dados = {};
+    ['cpf', 'cnh', 'cnhCategoria', 'cnhValidade', 'placa', 'placaCarreta', 'veiculo', 'rntrc', 'obs'].forEach(function(k) { dados[k] = String(f.elements[k].value || '').trim(); });
+    dados.cnhCategoria = dados.cnhCategoria.toUpperCase();
+    var btn = document.getElementById('btn-mot-dados');
+    btn.disabled = true;
+    salvarDadosMotorista(m, dados).then(function() {
+      btn.disabled = false; if (document.activeElement) document.activeElement.blur(); renderMotoristaPage(true); showToast('Dados salvos.');
+    }).catch(function(x) {
+      btn.disabled = false; console.error('dados do motorista', x);
+      var er = document.getElementById('mot-dados-erro'); er.textContent = 'Não foi possível salvar agora. Tente novamente.'; er.classList.remove('hidden');
+    });
+  });
+  document.getElementById('mot-body').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.dataset.action, id = b.dataset.id, m = motoristaAberto();
+    if (!m) return;
+    var f;
+    if (a === 'mot-senha') openDriverForm('reset', m);
+    else if (a === 'mot-remover') { motPage.confirmMotorista = true; renderMotoristaPage(true); }
+    else if (a === 'mot-remover-cancelar') { motPage.confirmMotorista = false; renderMotoristaPage(true); }
+    else if (a === 'mot-remover-ok') {
+      fecharMotoristaPage();
+      deleteMotorista(m.id).then(function() { showToast(m.nome + ' removido.'); }).catch(function(x) { console.error('remover motorista', x); showToast('Não foi possível remover agora.'); });
+    }
+    else if (a === 'frete-confirmar' && (f = freteDe(id))) salvarFrete(id, registroConfirmado(f, f.sugerido)).then(aposSalvar('Frete confirmado: ' + fmtBRL(f.sugerido) + '.')).catch(falhaSalvar);
+    else if (a === 'frete-cheio' && (f = freteDe(id))) salvarFrete(id, registroConfirmado(f, f.cheio, { obs: 'valor cheio (sem proporcional)' })).then(aposSalvar('Frete confirmado: ' + fmtBRL(f.cheio) + '.')).catch(falhaSalvar);
+    else if (a === 'frete-editar') abrirFreteForm(id);
+    else if (a === 'frete-pagar' && (f = freteDe(id))) salvarFrete(id, registroConfirmado(f, f.valor, { pagoEm: new Date().toISOString() })).then(aposSalvar('Frete marcado como pago.')).catch(falhaSalvar);
+    else if (a === 'frete-despagar') salvarFrete(id, { pagoEm: null }).then(aposSalvar('Pagamento desfeito.')).catch(falhaSalvar);
+    else if (a === 'frete-pagar-todos') { motPage.confirmTodos = true; renderMotoristaPage(true); }
+    else if (a === 'frete-pagar-todos-cancelar') { motPage.confirmTodos = false; renderMotoristaPage(true); }
+    else if (a === 'frete-pagar-todos-ok') {
+      motPage.confirmTodos = false;
+      var agora = new Date().toISOString();
+      var lista = fretesFiltrados(m).lista.filter(function(x) { return x.estado === 'apagar'; });
+      Promise.all(lista.map(function(x) { return salvarFrete(x.carga.id, registroConfirmado(x, x.valor, { pagoEm: agora })); }))
+        .then(aposSalvar(lista.length + (lista.length === 1 ? ' frete marcado' : ' fretes marcados') + ' como pago.')).catch(falhaSalvar);
+    }
+    else if (a === 'frete-relatorio') {
+      var ff = fretesFiltrados(m);
+      openDoc('Relatório de fretes', function() { return renderRelatorioFretes(m, ff.lista, ff.periodo); },
+        { modo: 'arquivo', numero: '', texto: 'Relatório de fretes — ' + m.nome + ' — ' + ff.periodo + '.' });
+    }
+    else if (a === 'doc-novo') abrirDocForm(m, b.dataset.grupo);
+    else if (a === 'doc-abrir') { var d = motoristaDocs.find(function(x) { return x.id === id; }); if (d) abrirDocMotorista(d); }
+    else if (a === 'doc-remover') { motPage.confirmDoc = id; renderMotoristaPage(true); }
+    else if (a === 'doc-remover-cancelar') { motPage.confirmDoc = null; renderMotoristaPage(true); }
+    else if (a === 'doc-remover-ok') {
+      motPage.confirmDoc = null;
+      var dr = motoristaDocs.find(function(x) { return x.id === id; });
+      if (dr) removerDocMotorista(dr).then(aposSalvar('Documento apagado.')).catch(function(x) { console.error('apagar documento', x); renderMotoristaPage(true); showToast('Não foi possível apagar agora.'); });
+    }
+  });
+
+  // ----- frete de uma carga: destinos e valor -----
+  var freteEdit = null; // { cargaId, clientes: [{ nome, destino }] }
+  function destinosDoFormulario() {
+    var vistos = {}, out = [];
+    document.querySelectorAll('#frete-destinos input').forEach(function(inp) {
+      var d = inp.value.replace(/\s+/g, ' ').trim(), k = normDestino(d);
+      if (d && !vistos[k]) { vistos[k] = 1; out.push(d); }
+    });
+    return out;
+  }
+  function atualizarSugestaoFrete(usarNoCampo) {
+    var c = cargas.find(function(x) { return x.id === freteEdit.cargaId; });
+    if (!c) return;
+    var f = freteDaCarga(c, destinosDoFormulario());
+    var el = document.getElementById('frete-sugestao');
+    el.innerHTML = f.partes.length
+      ? 'Pela tabela: <b>' + fmtBRL(f.sugerido) + '</b>' + (f.proporcional && f.cheio !== f.sugerido ? ' (valor cheio: ' + fmtBRL(f.cheio) + ')' : '') +
+        '<br><span class="opt">' + escapeHtml(composicaoFrete(f)) + '</span>' +
+        (f.semTabela ? '' : ' <button type="button" class="btn-text" id="btn-frete-usar">Usar ' + fmtBRL(f.sugerido) + '</button>')
+      : 'Informe o destino de cada cliente para o app calcular pela tabela.';
+    if (usarNoCampo && !f.semTabela && f.partes.length) setVal('f-frete-valor', String(f.sugerido));
+  }
+  function abrirFreteForm(cargaId) {
+    var c = cargas.find(function(x) { return x.id === cargaId; });
+    if (!c) return;
+    var f = freteDaCarga(c), reg = f.reg || {};
+    var porCliente = (c.clientes || []).map(function(cl, i) {
+      var d = (reg.destinos && reg.destinos.length === (c.clientes || []).length) ? reg.destinos[i] : (cl.destino || (reg.destinos && reg.destinos[i]) || '');
+      return { nome: cl.cliente || ('Cliente ' + (i + 1)), destino: d || '' };
+    });
+    if (!porCliente.length) porCliente = [{ nome: 'Destino', destino: (reg.destinos && reg.destinos[0]) || '' }];
+    freteEdit = { cargaId: cargaId };
+    document.getElementById('frete-sheet-title').textContent = 'Frete da carga ' + cargaCode(c);
+    document.getElementById('frete-carga-info').textContent = (c.motorista || '—') + ' · ' + formatDateBR(c.data) + ' · ' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) + (f.com175 ? ' (com palete de 175)' : '');
+    document.getElementById('frete-destinos').innerHTML = porCliente.map(function(x, i) {
+      return '<label>Destino — ' + escapeHtml(x.nome) + '<input type="text" list="fretes-destinos-list" data-i="' + i + '" value="' + escapeHtml(x.destino) + '" autocomplete="off" autocapitalize="characters" /></label>';
+    }).join('');
+    setVal('f-frete-valor', String(f.estado === 'confirmar' ? f.sugerido : f.valor));
+    setVal('f-frete-obs', reg.obs || '');
+    document.getElementById('frete-form-error').classList.add('hidden');
+    atualizarSugestaoFrete(false);
+    document.getElementById('frete-sheet-overlay').classList.remove('hidden');
+  }
+  function fecharFreteForm() { document.getElementById('frete-sheet-overlay').classList.add('hidden'); freteEdit = null; }
+  document.getElementById('frete-destinos').addEventListener('input', function() { if (freteEdit) atualizarSugestaoFrete(false); });
+  document.getElementById('frete-destinos').addEventListener('change', function(e) {
+    var oficial = destinoPorCidade(e.target.value, '', true);
+    if (oficial && oficial !== e.target.value) e.target.value = oficial;
+    if (freteEdit) atualizarSugestaoFrete(true);
+  });
+  document.getElementById('frete-sugestao').addEventListener('click', function(e) { if (e.target.id === 'btn-frete-usar') atualizarSugestaoFrete(true); });
+  document.getElementById('frete-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!freteEdit) return;
+    var err = document.getElementById('frete-form-error');
+    var valor = numBR(document.getElementById('f-frete-valor').value);
+    if (isNaN(valor) || valor < 0) { err.textContent = 'Informe o valor do frete.'; err.classList.remove('hidden'); return; }
+    var c = cargas.find(function(x) { return x.id === freteEdit.cargaId; });
+    if (!c) { fecharFreteForm(); return; }
+    var f = freteDaCarga(c, destinosDoFormulario());
+    var obs = document.getElementById('f-frete-obs').value.trim();
+    err.classList.add('hidden');
+    var cargaId = freteEdit.cargaId;
+    salvarFrete(cargaId, registroConfirmado(f, valor, { obs: obs, confirmadoEm: new Date().toISOString() }))
+      .then(function() { fecharFreteForm(); renderMotoristaPage(true); showToast('Frete confirmado: ' + fmtBRL(valor) + '.'); })
+      .catch(function(x) { console.error('frete', x); err.textContent = 'Não foi possível salvar agora. Tente novamente.'; err.classList.remove('hidden'); });
+  });
+  document.getElementById('btn-close-frete').addEventListener('click', fecharFreteForm);
+  document.getElementById('btn-frete-cancel').addEventListener('click', fecharFreteForm);
+  document.getElementById('frete-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharFreteForm(); });
+
+  // ----- envio de documento -----
+  var docEdit = null; // { motoristaId, grupo }
+  function abrirDocForm(m, grupo) {
+    docEdit = { motoristaId: m.id, grupo: grupo };
+    document.getElementById('mdoc-sheet-title').textContent = 'Documento ' + (grupo === 'motorista' ? 'do motorista' : 'do caminhão') + ' — ' + m.nome;
+    document.getElementById('f-mdoc-tipo').innerHTML = TIPOS_DOC[grupo].map(function(t) { return '<option>' + escapeHtml(t) + '</option>'; }).join('');
+    setVal('f-mdoc-desc', ''); setVal('f-mdoc-validade', ''); setVal('f-mdoc-arquivo', '');
+    document.getElementById('mdoc-status').textContent = '';
+    document.getElementById('mdoc-form-error').classList.add('hidden');
+    document.getElementById('btn-mdoc-submit').disabled = false;
+    document.getElementById('mdoc-sheet-overlay').classList.remove('hidden');
+  }
+  function fecharDocForm() { document.getElementById('mdoc-sheet-overlay').classList.add('hidden'); docEdit = null; }
+  document.getElementById('mdoc-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!docEdit) return;
+    var m = motoristas.find(function(x) { return x.id === docEdit.motoristaId; });
+    var err = document.getElementById('mdoc-form-error'), st = document.getElementById('mdoc-status');
+    var file = (document.getElementById('f-mdoc-arquivo').files || [])[0];
+    function erro(msg) { err.textContent = msg; err.classList.remove('hidden'); }
+    if (!m) { fecharDocForm(); return; }
+    if (!file) return erro('Escolha a foto ou o PDF do documento.');
+    var tipo = tipoDoArquivo(file);
+    if (!/^(image\/|application\/pdf$)/.test(tipo.mime) && !MIME_EXT[tipo.ext]) return erro('Envie uma foto ou um PDF.');
+    err.classList.add('hidden');
+    var btn = document.getElementById('btn-mdoc-submit');
+    btn.disabled = true;
+    st.textContent = 'Enviando…';
+    enviarDocMotorista(m, docEdit.grupo, document.getElementById('f-mdoc-tipo').value, document.getElementById('f-mdoc-desc').value.trim(),
+      document.getElementById('f-mdoc-validade').value, file).then(function() {
+      fecharDocForm(); renderMotoristaPage(true); showToast('Documento guardado.');
+    }).catch(function(x) {
+      console.error('enviar documento', x);
+      btn.disabled = false; st.textContent = '';
+      erro(x && x.codigo === 'grande' ? 'O arquivo passa de 15 MB. Tire uma foto menor ou envie o PDF reduzido.' : 'Não foi possível enviar agora. Confira a internet e tente de novo.');
+    });
+  });
+  document.getElementById('btn-close-mdoc').addEventListener('click', fecharDocForm);
+  document.getElementById('btn-mdoc-cancel').addEventListener('click', fecharDocForm);
+  document.getElementById('mdoc-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharDocForm(); });
+
+  // ----- relatório de fretes (PDF/imagem no mesmo estilo dos outros documentos) -----
+  function corEstadoFrete(e) { return e === 'pago' ? RC.verdeTexto : e === 'apagar' ? RC.wood : RC.laranjaTexto; }
+  function layoutRelatorioFretes(ctx, m, lista, periodo) {
+    var L = RM, R = RW - RM, CW = R - L, y, i;
+    txtFit(ctx, 'Relatório de fretes', L, 146, 800, R_DISP, 62, 40, 760, RC.ink, 'left');
+    var lw = desenharSimbolo(ctx, L, 163, 36);
+    txt(ctx, 'LEVÍSSIMA · Fretes dos motoristas', L + (lw ? lw + 12 : 0), 192, rFont(500, 30, R_DISP), RC.muted, 'left');
+    txt(ctx, 'Período', R, 110, rFont(500, 26, R_DISP), RC.muted, 'right');
+    txtFit(ctx, periodo, R, 154, 600, R_DISP, 32, 20, 380, RC.ink, 'right');
+    ctx.fillStyle = RC.ink; ctx.fillRect(L, 218, CW, 4);
+    y = 288;
+    var dd = motoristaDados[m.id] || {};
+    var colX = [L, L + 520, L + 800], colW = [480, 260, CW - 800];
+    txt(ctx, 'Motorista', colX[0], y, rFont(500, 26, R_DISP), RC.muted, 'left');
+    txt(ctx, 'CPF', colX[1], y, rFont(500, 26, R_DISP), RC.muted, 'left');
+    txt(ctx, 'Caminhão', colX[2], y, rFont(500, 26, R_DISP), RC.muted, 'left');
+    drawValueBlock(ctx, m.nome || '—', colX[0], y + 46, colW[0], RC.ink);
+    txtFit(ctx, dd.cpf || '—', colX[1], y + 46, 600, R_MONO, 30, 20, colW[1], RC.ink, 'left');
+    txtFit(ctx, [dd.placa, dd.veiculo].filter(Boolean).join(' · ') || '—', colX[2], y + 46, 600, R_MONO, 30, 18, colW[2], RC.ink, 'left');
+    y += 46 + 50;
+    ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2);
+    y += 52;
+    var cData = L, cCarga = L + 160, cDest = L + 330, cPal = R - 420, cVal = R - 160, cSit = R;
+    txt(ctx, 'Data', cData, y, rFont(500, 24, R_DISP), RC.muted, 'left');
+    txt(ctx, 'Carga', cCarga, y, rFont(500, 24, R_DISP), RC.muted, 'left');
+    txt(ctx, 'Destino e clientes', cDest, y, rFont(500, 24, R_DISP), RC.muted, 'left');
+    txt(ctx, 'Paletes', cPal, y, rFont(500, 24, R_DISP), RC.muted, 'right');
+    txt(ctx, 'Valor', cVal, y, rFont(500, 24, R_DISP), RC.muted, 'right');
+    txt(ctx, 'Situação', cSit, y, rFont(500, 24, R_DISP), RC.muted, 'right');
+    y += 14; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2); y += 40;
+    lista.forEach(function(f) {
+      var c = f.carga;
+      txt(ctx, formatDateBR(c.data), cData, y, rFont(600, 24, R_MONO), RC.ink, 'left');
+      txt(ctx, cargaCode(c), cCarga, y, rFont(500, 22, R_MONO), RC.muted, 'left');
+      ctx.font = rFont(600, 26, R_DISP);
+      var dl = wrapLines(ctx, f.destinos.length ? f.destinos.join(' + ') : 'sem destino', cPal - cDest - 110, 2);
+      for (i = 0; i < dl.length; i++) txt(ctx, dl[i], cDest, y + i * 32, rFont(600, 26, R_DISP), RC.ink, 'left');
+      txt(ctx, fmtInt(f.paletes), cPal, y, rFont(600, 26, R_MONO), RC.wood, 'right');
+      txt(ctx, fmtBRL(f.estado === 'confirmar' ? f.sugerido : f.valor), cVal, y, rFont(600, 26, R_MONO), RC.ink, 'right');
+      txt(ctx, estadoFreteTexto(f.estado), cSit, y, rFont(700, 22, R_DISP), corEstadoFrete(f.estado), 'right');
+      var yy = y + Math.max(dl.length, 1) * 32;
+      var clientes = (c.clientes || []).map(function(cl) { return cl.cliente; }).filter(Boolean).join(', ');
+      var detalhe = (clientes ? clientes + ' · ' : '') + (f.ajustado ? 'valor ajustado (tabela ' + fmtBRL(f.sugerido) + ')' : composicaoFrete(f)) + (f.reg && f.reg.obs ? ' · ' + f.reg.obs : '');
+      ctx.font = rFont(400, 20, R_DISP);
+      var dt = wrapLines(ctx, detalhe, R - cDest, 2);
+      for (i = 0; i < dt.length; i++) txt(ctx, dt[i], cDest, yy + i * 26, rFont(400, 20, R_DISP), RC.muted, 'left');
+      y = yy + dt.length * 26 + 18;
+      ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 1);
+      y += 40;
+    });
+    var t = totaisFretes(lista);
+    var linhasBox = 1 + (t.nConfirmar ? 1 : 0) + (t.nPago ? 1 : 0);
+    var boxH = 70 + linhasBox * 46;
+    ctx.fillStyle = RC.tint; ctx.fillRect(L, y, CW, boxH);
+    ctx.fillStyle = RC.teal; ctx.fillRect(L, y, 10, boxH);
+    var yb = y + 62;
+    txt(ctx, 'Total a pagar', L + 40, yb, rFont(800, 40, R_DISP), RC.ink, 'left');
+    txt(ctx, fmtBRL(t.apagar), R - 24, yb, rFont(700, 40, R_MONO), RC.teal, 'right');
+    if (t.nConfirmar) { yb += 46; txt(ctx, 'A confirmar: ' + t.nConfirmar + (t.nConfirmar === 1 ? ' viagem' : ' viagens') + ' (sugestão pela tabela)', L + 40, yb, rFont(500, 26, R_DISP), RC.laranjaTexto, 'left'); txt(ctx, fmtBRL(t.confirmar), R - 24, yb, rFont(600, 28, R_MONO), RC.laranjaTexto, 'right'); }
+    if (t.nPago) { yb += 46; txt(ctx, 'Já pago no período', L + 40, yb, rFont(500, 26, R_DISP), RC.verdeTexto, 'left'); txt(ctx, fmtBRL(t.pago), R - 24, yb, rFont(600, 28, R_MONO), RC.verdeTexto, 'right'); }
+    return y + boxH + 44;
+  }
+  function renderRelatorioFretes(m, lista, periodo) {
+    return loadReceiptFonts().then(function() {
+      var top = layoutRelatorioFretes(makeDryCtx(), m, lista, periodo);
+      var ASS = 230, RODAPE = 118;
+      var H = Math.max(RBASE_H, top + 30 + ASS + RODAPE);
+      var canvas = document.createElement('canvas');
+      canvas.width = RW; canvas.height = H;
+      var ctx = canvas.getContext('2d');
+      ctx.fillStyle = RC.white; ctx.fillRect(0, 0, RW, H);
+      faixaMarca(ctx, RW, 16);
+      layoutRelatorioFretes(ctx, m, lista, periodo);
+      var L = RM, R = RW - RM, gap = 60, w = (R - L - gap) / 2, ya = H - RODAPE - 90;
+      [[L, 'Motorista (recebi o valor acima)', m.nome], [L + w + gap, 'Levíssima (pagamento)', '']].forEach(function(a) {
+        ctx.fillStyle = RC.ink; ctx.fillRect(a[0], ya, w, 2);
+        txt(ctx, a[1], a[0], ya + 36, rFont(500, 24, R_DISP), RC.muted, 'left');
+        if (a[2]) txtFit(ctx, a[2], a[0], ya + 72, 600, R_DISP, 28, 18, w, RC.ink, 'left');
+      });
+      var yf = H - 104;
+      ctx.fillStyle = RC.line; ctx.fillRect(L, yf, R - L, 2);
+      txt(ctx, 'Valores pela tabela de fretes' + (fretesTabela && fretesTabela.versao ? ' de ' + fretesTabela.versao : '') + '; proporcionais só depois de confirmados.', L, yf + 42, rFont(500, 24, R_DISP), RC.muted, 'left');
+      txt(ctx, 'Emitido em ' + formatDateTimeBR(new Date().toISOString()), L, yf + 78, rFont(400, 24, R_DISP), RC.muted, 'left');
+      var pngDataUrl = canvas.toDataURL('image/png');
+      var pdfBytes = buildPdfFromJpeg(dataUrlToBytes(canvas.toDataURL('image/jpeg', 0.92)), canvas.width, canvas.height);
+      return {
+        baseName: 'fretes-' + (slug(m.nome) || 'motorista') + '-' + (slug(periodo) || 'periodo') + '-' + todayIso().replace(/-/g, ''),
+        pngDataUrl: pngDataUrl,
+        pngBlob: new Blob([dataUrlToBytes(pngDataUrl)], { type: 'image/png' }),
+        pdfBlob: new Blob([pdfBytes], { type: 'application/pdf' })
+      };
+    });
+  }
 
   // ---------- estoque: tela, entrada de produção e contagem ----------
   function renderEstoque() {
@@ -7601,6 +8742,7 @@
     subscribeNfMapa();
     subscribeRastreio();
     subscribeDiretoria();
+    subscribeFretes();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;

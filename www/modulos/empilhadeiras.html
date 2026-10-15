@@ -18,9 +18,9 @@
 :root{
   --bg:#edf1f5; --surface:#ffffff; --surface-2:#f6f8fa; --sunken:#e4eaf0;
   --ink:#0f1a24; --ink-2:#41505d; --muted:#5d6b78; --line:#d5dde5; --line-2:#b7c3ce;
-  --accent:#125A9E; --accent-ink:#ffffff; --accent-soft:#e1ecf8;
-  --ok:#11804a; --ok-ink:#ffffff; --ok-soft:#dcf2e5;
-  --warn:#a86400; --warn-ink:#ffffff; --warn-soft:#fcefd2;
+  --accent:#702082; --accent-ink:#ffffff; --accent-soft:#f1e4f5;
+  --ok:#2D7A1C; --ok-ink:#ffffff; --ok-soft:#e1f3da;
+  --warn:#B5470A; --warn-ink:#ffffff; --warn-soft:#ffe8d9;
   --crit:#c2352b; --crit-ink:#ffffff; --crit-soft:#fbe0dd;
   --idle:#6b7785; --idle-soft:#e8edf2;
   --shadow:0 1px 2px rgba(15,26,36,.06),0 4px 14px rgba(15,26,36,.06);
@@ -34,9 +34,9 @@
   :root:not([data-theme="light"]){
     --bg:#0b1218; --surface:#121b24; --surface-2:#17222d; --sunken:#0e161d;
     --ink:#e6edf4; --ink-2:#a9b7c4; --muted:#8b99a6; --line:#233140; --line-2:#34475a;
-    --accent:#4d9bef; --accent-ink:#06121f; --accent-soft:#132a42;
-    --ok:#4cc38a; --ok-ink:#06170e; --ok-soft:#10301f;
-    --warn:#f0b54a; --warn-ink:#231600; --warn-soft:#33260c;
+    --accent:#CD96E2; --accent-ink:#141219; --accent-soft:#33203b;
+    --ok:#6CCB55; --ok-ink:#0b1a07; --ok-soft:#18301a;
+    --warn:#FF9A5C; --warn-ink:#231000; --warn-soft:#3a2010;
     --crit:#f07a6e; --crit-ink:#2a0805; --crit-soft:#3a1714;
     --idle:#8b99a6; --idle-soft:#1a2531;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.25);
@@ -255,6 +255,7 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
     { id: 'sm', nome: 'SM', marca: 'Toyota', whatsapp: '', contato: '' }
   ];
   var TURNOS_PADRAO = ['1º turno', '2º turno', '3º turno'];
+  var HORARIO_PADRAO = '12:30'; // checklist pedido todos os dias neste horário (Configurações › Horário do checklist)
   var URL_PUBLICA = 'https://nicolaslevissima-afk.github.io/levissima/modulos/empilhadeiras.html';
 
   /* ===================== utilidades ===================== */
@@ -303,7 +304,8 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
       locadoras: Array.isArray(c.locadoras) && c.locadoras.length ? c.locadoras : LOCADORAS_PADRAO,
       turnos: Array.isArray(c.turnos) && c.turnos.length ? c.turnos : TURNOS_PADRAO,
       itensExtras: Array.isArray(c.itensExtras) ? c.itensExtras : [],
-      itensDesligados: Array.isArray(c.itensDesligados) ? c.itensDesligados : []
+      itensDesligados: Array.isArray(c.itensDesligados) ? c.itensDesligados : [],
+      horarioChecklist: (typeof c.horarioChecklist === 'string' && /^\d{2}:\d{2}$/.test(c.horarioChecklist)) ? c.horarioChecklist : HORARIO_PADRAO
     };
   }
   function locadoraDe(m) {
@@ -343,6 +345,22 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
     if (ocCrit && (!ult || ult.em <= (oc.atualizadaEm || oc.abertaEm || 0))) { cls = 'crit'; txt = 'Bloqueada — não operar'; }
     return { cls: cls, txt: txt, ult: ult, doDia: doDia, oc: oc };
   }
+  // Checklist pedido todo dia no horário configurado (12:30). Vale o feito a partir de 30 minutos antes.
+  function minutosDe(hm) { var p = String(hm || '').split(':'); return (Number(p[0]) || 0) * 60 + (Number(p[1]) || 0); }
+  function inicioJanelaHoje() { var d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime() + Math.max(0, minutosDe(cfg().horarioChecklist) - 30) * 60000; }
+  function passouDoHorario() { var n = new Date(); return n.getHours() * 60 + n.getMinutes() >= minutosDe(cfg().horarioChecklist); }
+  function feitoNoHorario(s) { var ini = inicioJanelaHoje(); return s.doDia.some(function (c) { return (c.em || 0) >= ini; }); }
+  function avisoDoHorario() {
+    if (!S.carregouMaq || !passouDoHorario()) return;
+    var chave = 'aviso-' + hoje();
+    if (ls(chave)) return;
+    ls(chave, 1);
+    var faltam = maquinasAtivas().filter(function (m) { return !feitoNoHorario(situacao(m)); });
+    if (!faltam.length) return;
+    var msg = 'Hora do checklist das ' + cfg().horarioChecklist + ': ' + faltam.length + (faltam.length === 1 ? ' empilhadeira sem checklist.' : ' empilhadeiras sem checklist.');
+    toast(msg);
+    try { if (window.Notification && Notification.permission === 'granted') new Notification('LEVÍSSIMA · Empilhadeiras', { body: msg, tag: 'checklist-' + hoje() }); } catch (e) {}
+  }
 
   /* ===================== dados ===================== */
   function assinarMes(ym) {
@@ -365,7 +383,8 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
     S.db.doc('config/geral').onSnapshot(function (s) { S.config = s.exists ? s.data() : {}; S.carregouCfg = true; agendar(); }, function () { S.config = {}; agendar(); });
     assinarMes(mesDe(hoje()));
     setInterval(atualizarChamados, 60000);
-    setInterval(function () { var ym = mesDe(hoje()); if (!S.mesesCarregando[ym]) assinarMes(ym); agendar(); }, 60000);
+    setInterval(function () { var ym = mesDe(hoje()); if (!S.mesesCarregando[ym]) assinarMes(ym); agendar(); avisoDoHorario(); }, 60000);
+    setTimeout(avisoDoHorario, 4000);
   }
   // situação dos chamados que o checklist abriu na Manutenção (máquinas próprias)
   var chamandoChamados = false;
@@ -456,7 +475,17 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
       '<div class="card kpi' + (pend ? ' warn' : '') + '"><b>' + pend + '</b><span>com pendência</span></div>' +
       '<div class="card kpi"><b>' + ocorrenciasAbertas().length + '</b><span>ocorrência' + (ocorrenciasAbertas().length === 1 ? '' : 's') + ' aberta' + (ocorrenciasAbertas().length === 1 ? '' : 's') + '</span></div></div>';
     var sem = maqs.length - feitos;
-    if (sem > 0 && new Date().getHours() >= 9) h += '<div class="aviso warn" role="note"><span>⚠</span><span><b>' + sem + ' máquina' + (sem > 1 ? 's' : '') + ' sem checklist hoje.</b> Todas as máquinas, próprias e locadas, precisam do checklist diário antes do uso.</span></div>';
+    var hc = cfg().horarioChecklist;
+    if (passouDoHorario()) {
+      var faltam = sits.filter(function (x) { return !feitoNoHorario(x.s); });
+      h += faltam.length
+        ? '<div class="aviso warn" role="note"><span>⚠</span><span><b>Checklist das ' + esc(hc) + ': ' + faltam.length + ' máquina' + (faltam.length > 1 ? 's' : '') + ' sem checklist.</b> Faça agora: ' +
+          esc(faltam.map(function (x) { return x.m.codigo || x.m.nome; }).join(', ')) + '. Todas as máquinas, próprias e locadas.</span></div>'
+        : '<div class="aviso ok" role="note"><span>✓</span><span><b>Checklist das ' + esc(hc) + ' feito em todas as máquinas.</b></span></div>';
+    } else {
+      h += '<div class="aviso info" role="note"><span>⏰</span><span>Checklist diário de todas as máquinas, próprias e locadas: <b>todos os dias às ' + esc(hc) + '</b>.' +
+        (window.Notification && Notification.permission === 'default' ? ' <button type="button" class="btn ghost sm" data-acao="ativar-aviso">Avisar neste aparelho</button>' : '') + '</span></div>';
+    }
     h += '<div class="grade">';
     sits.forEach(function (x) {
       var m = x.m, s = x.s, loc = locadoraDe(m);
@@ -464,7 +493,8 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
         '<div class="maq-topo"><div><div class="maq-cod">' + esc(m.codigo || '') + '</div><div class="maq-nome">' + esc(m.nome || 'Empilhadeira') + '</div>' +
         '<div class="maq-det">' + esc([m.marca, m.modelo].filter(Boolean).join(' ') || TIPOS_MAQ[m.tipo] || '') + '</div></div>' +
         (loc ? '<span class="tag loc">Locada · ' + esc(loc.nome) + '</span>' : '<span class="tag idle">Própria</span>') + '</div>' +
-        '<div class="estado ' + s.cls + '">' + esc(s.txt) + '</div>';
+        '<div class="estado ' + s.cls + '">' + esc(s.txt) + '</div>' +
+        (passouDoHorario() && !feitoNoHorario(s) ? '<div class="maq-det"><span class="tag warn">Falta o checklist das ' + esc(hc) + '</span></div>' : '');
       if (s.doDia.length) {
         h += '<div class="turnos">' + s.doDia.slice().reverse().map(function (c) {
           return '<button type="button" class="tag ' + (RESULT[c.resultado] || {}).cls + '" data-acao="ver-checklist" data-id="' + esc(c.id) + '" data-mes="' + esc(mesDe(c.data)) + '" style="border:0;cursor:pointer">' +
@@ -972,6 +1002,8 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
       '<p class="muted" style="margin-top:4px">O WhatsApp da locadora aparece no botão "Avisar a locadora" das ocorrências de máquinas locadas.</p>';
     h += '<div id="cfg-locs">' + c.locadoras.map(blocoLocadora).join('') + '</div>';
     h += '<div class="acoes-form"><button type="button" class="btn sec sm" data-acao="nova-locadora">+ Locadora</button></div>' +
+      '<h2 style="font-size:24px;margin-top:22px">Horário do checklist</h2><label class="f">Todos os dias às<input class="i" type="time" id="cfg-horario" value="' + esc(c.horarioChecklist) + '"></label>' +
+      '<p class="muted" style="margin-top:4px">A partir desse horário o app pede o checklist das máquinas que ainda não fizeram (vale o checklist feito até 30 minutos antes).</p>' +
       '<h2 style="font-size:24px;margin-top:22px">Turnos</h2><label class="f largo">Um por linha<textarea class="i" id="cfg-turnos" rows="4">' + esc(c.turnos.join('\n')) + '</textarea></label>' +
       '<h2 style="font-size:24px;margin-top:22px">Itens do checklist</h2><p class="muted" style="margin-top:4px">Desmarque o que não existe nas suas máquinas. Itens críticos com problema bloqueiam a máquina.</p>';
     GRUPOS.forEach(function (g) {
@@ -1009,7 +1041,8 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
       return { id: 'extra-' + (norm(nome).replace(/[^a-z0-9]+/g, '-').slice(0, 30) || i), nome: nome, critico: crit, grupo: 'visual', falha: crit ? 'Segurança' : 'Outro' };
     });
     var btn = ev.target.querySelector('[type=submit]'); btn.disabled = true;
-    S.db.doc('config/geral').set({ locadoras: locs, turnos: turnos.length ? turnos : TURNOS_PADRAO, itensDesligados: desl, itensExtras: extras, atualizadoEm: Date.now() }, { merge: true })
+    var horario = /^\d{2}:\d{2}$/.test($('#cfg-horario').value) ? $('#cfg-horario').value : HORARIO_PADRAO;
+    S.db.doc('config/geral').set({ locadoras: locs, turnos: turnos.length ? turnos : TURNOS_PADRAO, itensDesligados: desl, itensExtras: extras, horarioChecklist: horario, atualizadoEm: Date.now() }, { merge: true })
       .then(function () { btn.disabled = false; toast('Configurações salvas.'); }, function (e) { btn.disabled = false; $('#cfg-erro').textContent = msgErro(e); });
   }
 
@@ -1053,6 +1086,7 @@ dialog::backdrop{background:rgba(9,16,23,.5)}
     else if (a === 'ver-checklist') verChecklist(id, b.dataset.mes);
     else if (a === 'fechar-dlg') fecharDialogo();
     else if (a === 'nova-maquina') formMaquina(null);
+    else if (a === 'ativar-aviso') { try { Notification.requestPermission().then(function () { render(); }); } catch (e) {} }
     else if (a === 'editar-maquina') formMaquina(id);
     else if (a === 'etiqueta') etiqueta(id);
     else if (a === 'baixar-etiqueta') baixarEtiqueta();

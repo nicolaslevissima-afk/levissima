@@ -13,6 +13,9 @@ Pacote completo do app LEVÍSSIMA, situação em **14/10/2026**. Tem tudo o que 
 | Senha mestre | Criada no banco, guardada só como código (hash), nunca em texto |
 | Site e módulos no ar | Feito em 14/10/2026: `https://nicolaslevissima-afk.github.io/levissima/` (repositório `nicolaslevissima-afk/levissima`) |
 | App Android | APK de teste gerado pelo GitHub. Para o APK/AAB assinados da Google Play faltam os 4 segredos `ANDROID_*` (ver "Para pôr no ar") |
+| Cores da marca | Verde 361 C, roxo 2603 C, azul Reflex Blue C e laranja 1645 C (equivalentes em tela no início do `<style>` do app) |
+| Fretes dos motoristas | Tabela de fretes 29/09/2026 no banco (Cadastros › Tabela de fretes); destino do frete por cliente na carga (preenchido pela nota fiscal); página de cada motorista com Dados e acesso, Fretes (a pagar, confirmar proporcional, pago, relatório PDF) e Documentos (Storage privado) |
+| Empilhadeiras | 6 máquinas (EMP-01 a EMP-06) e checklist pedido todo dia às 12:30 |
 | Google Play e App Store | Falta — roteiro em `loja/PUBLICAR-NAS-LOJAS.md` |
 
 ## Passo a passo para o Nicolas (no outro login)
@@ -75,6 +78,14 @@ Os módulos são páginas separadas (`www/modulos/*.html`). Por isso só funcion
 4. Acompanhe a aba Actions. Depois confira `https://nicolaslevissima-afk.github.io/levissima/` e mande ao Nicolas o endereço e o APK (artefato do fluxo *App Android*).
 
 Se o `gh` do seu ambiente não puder gravar segredos ou ligar o Pages, faça só o envio do código e mostre ao Nicolas onde clicar. O roteiro dessa parte está no `README.md`, em Publicação.
+
+### Regras do frete (combinadas com o Nicolas em 14/10/2026)
+
+- 16 paletes = coluna de 16; 18 paletes = coluna de 18 (proporcional aos 16).
+- Outra quantidade: o app sugere o proporcional (valor de 16 × paletes ÷ 16) e **só vale depois que a senha mestre confirma** (ou escolhe o valor cheio, ou digita outro).
+- Mais de um destino na mesma carga: o frete mais caro + adicional de R$ 300 (uma vez; o valor fica em Cadastros › Tabela de fretes).
+- Palete de 175 fardos (510ml com 7 fileiras): vale a linha "X - COM 175" do destino, quando existe.
+- Só entram as cargas com carregamento concluído. O frete fica gravado em `fretes/<id da carga>` quando é confirmado, ajustado ou pago.
 
 ### Cuidados
 
