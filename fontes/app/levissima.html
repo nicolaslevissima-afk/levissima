@@ -306,6 +306,40 @@
     .est-table th { font-size: 0.6875rem; }
   }
   .est-neg { color: var(--danger); font-weight: 600; }
+  .est-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .est-card { background: var(--card); border: 1px solid var(--line); border-top: 4px solid var(--verde); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .est-card.c-saldo { border-top-color: var(--roxo); }
+  .est-card.c-futuro { border-top-color: var(--azul); }
+  .est-card.c-futuro.alerta { border-top-color: var(--laranja); }
+  .est-card-k { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+  .est-card-v { font-family: var(--font-mono); font-size: 1.375rem; font-weight: 700; color: var(--ink); }
+  .est-card-s { font-size: 0.75rem; color: var(--muted); flex: 1; }
+  .est-card .btn { margin-top: 8px; align-self: flex-start; }
+  @media (max-width: 559px) {
+    .est-cards { grid-template-columns: 1fr; gap: 8px; }
+    .est-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; padding: 10px 12px; }
+    .est-card-k, .est-card-v, .est-card-s { grid-column: 1; }
+    .est-card .btn { grid-column: 2; grid-row: 1 / span 3; margin: 0; align-self: center; max-width: 150px; white-space: normal; line-height: 1.2; }
+  }
+  .est-alertas { border: 1px solid var(--laranja); border-left: 4px solid var(--laranja); background: var(--card); border-radius: 8px; padding: 10px 12px; margin: 0 0 16px; font-size: 0.875rem; }
+  .est-alertas-t { margin: 0 0 6px; font-weight: 700; color: var(--laranja-texto); }
+  .est-alertas ul { margin: 0; padding-left: 18px; }
+  .est-alertas li { margin: 3px 0; }
+  .est-alertas li.neg b, .est-alertas li.neg { color: var(--danger); }
+  .est-table tr.est-grupo td { font-family: var(--font-display); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding-top: 14px; text-align: left; }
+  .est-table td.baixo, .est-dias td.baixo { background: rgba(255, 106, 19, 0.13); color: var(--laranja-texto); font-weight: 700; }
+  .est-table td.neg, .est-dias td.neg { background: rgba(var(--danger-rgb), 0.12); color: var(--danger); font-weight: 700; }
+  .est-leg { padding: 0 4px; border-radius: 4px; font-weight: 600; }
+  .est-leg.baixo { background: rgba(255, 106, 19, 0.13); color: var(--laranja-texto); }
+  .est-leg.neg { background: rgba(var(--danger-rgb), 0.12); color: var(--danger); }
+  .est-dias-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+  .est-dias { border-collapse: separate; border-spacing: 0; font-size: 0.8125rem; min-width: 100%; }
+  .est-dias th, .est-dias td { padding: 7px 9px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; font-family: var(--font-mono); }
+  .est-dias tr:last-child td { border-bottom: 0; }
+  .est-dias th { font-family: var(--font-display); font-size: 0.75rem; color: var(--ink); font-weight: 700; vertical-align: bottom; }
+  .est-dias th:first-child, .est-dias td:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); text-align: left; font-family: var(--font-display); font-weight: 600; white-space: normal; min-width: 104px; max-width: 132px; box-shadow: 1px 0 0 var(--line); }
+  .est-dias td .est-sub { font-family: var(--font-mono); }
+  .tab-alerta { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px; }
   .est-form-head, .est-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 96px; gap: 8px; align-items: center; }
   .est-form-head { font-size: 0.6875rem; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
   .est-form-head span:not(:first-child) { text-align: right; }
@@ -648,11 +682,19 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-estoque">
-    <p class="tagline">Estoque = última contagem + produção lançada − cargas carregadas. O que está em cargas ainda não carregadas fica reservado.</p>
-    <div class="toolbar">
-      <button type="button" class="btn btn-secondary btn-sm" id="btn-estoque-contagem">Contagem do estoque</button>
-    </div>
-    <div id="estoque-tabela"></div>
+    <p class="tagline">A <b>entrada de produção</b> soma no estoque, as cargas carregadas tiram e a <b>contagem</b> acerta o saldo. O <b>saldo futuro</b> é o que sobra depois das cargas programadas, dia a dia.</p>
+    <div class="est-cards" id="estoque-cards"></div>
+    <div class="est-alertas hidden" id="estoque-alertas" role="status"></div>
+    <section class="drivers-admin" aria-label="Saldo por produto">
+      <div class="section-head"><h2 class="section-title">Saldo por produto</h2></div>
+      <p class="hint">Em paletes (embaixo, na unidade do produto). <span class="est-leg baixo">laranja</span> abaixo do mínimo · <span class="est-leg neg">vermelho</span> falta produto.</p>
+      <div id="estoque-tabela"></div>
+    </section>
+    <section class="drivers-admin hidden" id="estoque-dias-sec" aria-label="Saldo futuro por dia">
+      <div class="section-head"><h2 class="section-title">Saldo futuro por dia</h2></div>
+      <p class="hint">Quanto sobra no fim de cada dia, depois das cargas programadas. Embaixo do saldo, o que sai no dia. Carga atrasada conta como de hoje; pedidos da força de vendas também entram.</p>
+      <div id="estoque-dias"></div>
+    </section>
     <section class="drivers-admin" aria-label="Últimos lançamentos do estoque">
       <div class="section-head"><h2 class="section-title">Últimos lançamentos</h2></div>
       <div id="estoque-movs"></div>
@@ -1161,6 +1203,9 @@
           <input type="number" id="f-produto-ordem" min="1" step="1" inputmode="numeric" />
         </label>
       </div>
+      <label>Estoque mínimo em paletes <span class="opt" id="f-produto-minimo-padrao"></span>
+        <input type="number" id="f-produto-minimo" min="0" step="1" inputmode="numeric" />
+      </label>
       <p class="hint" id="f-produto-regra"></p>
       <p class="form-error hidden" id="produto-form-error"></p>
       <div class="sheet-actions">
@@ -4516,9 +4561,15 @@
       unidadesPorPalete: parseInt(document.getElementById('f-produto-upp').value, 10),
       tipoChapatex: document.getElementById('f-produto-tipo').value,
       unidadesPorFileira: parseInt(document.getElementById('f-produto-upf').value, 10),
-      ordem: parseInt(document.getElementById('f-produto-ordem').value, 10)
+      ordem: parseInt(document.getElementById('f-produto-ordem').value, 10),
+      estoqueMinimo: document.getElementById('f-produto-minimo').value
     };
   }
+  function atualizarMinimoPadrao() {
+    var nome = document.getElementById('f-produto-nome').value.trim(), m = minimoPadrao({ nome: nome });
+    document.getElementById('f-produto-minimo-padrao').textContent = '(em branco: ' + (m !== null ? 'padrão de ' + m + ' paletes' : 'sem alerta') + ')';
+  }
+  document.getElementById('f-produto-nome').addEventListener('input', atualizarMinimoPadrao);
   function quantasDe(u) { return (u === 'caixas' || u === 'unidades') ? 'quantas ' + u : 'quantos ' + u; }
   // Descreve a regra com o palete padrão, enquanto se preenche.
   function updateProdutoFormRegra() {
@@ -4551,6 +4602,8 @@
     document.getElementById('f-produto-upf').value = upf || '';
     var maxOrdem = produtos.reduce(function(m, x) { return ordemDe(x) < 9999 ? Math.max(m, ordemDe(x)) : m; }, 0);
     document.getElementById('f-produto-ordem').value = p ? (ordemDe(p) < 9999 ? ordemDe(p) : '') : maxOrdem + 1;
+    document.getElementById('f-produto-minimo').value = p && p.estoqueMinimo !== undefined && p.estoqueMinimo !== null ? p.estoqueMinimo : '';
+    atualizarMinimoPadrao();
     document.getElementById('produto-form-error').classList.add('hidden');
     updateProdutoFormRegra();
     document.getElementById('produto-sheet-overlay').classList.remove('hidden');
@@ -4579,7 +4632,8 @@
     var patch = {
       nome: v.nome, unidade: v.unidade, unidadesPorPalete: v.unidadesPorPalete, tipoChapatex: v.tipoChapatex,
       unidadesPorFileira: v.tipoChapatex === 'fileira' ? v.unidadesPorFileira : 0,
-      ordem: v.ordem >= 1 ? v.ordem : maxOrdem + 1
+      ordem: v.ordem >= 1 ? v.ordem : maxOrdem + 1,
+      estoqueMinimo: v.estoqueMinimo === '' || isNaN(Number(v.estoqueMinimo)) ? null : Math.max(0, Math.round(Number(v.estoqueMinimo)))
     };
     saveProduto(editingProdutoId, patch).then(function() {
       closeProdutoForm();
@@ -8922,23 +8976,181 @@
   });
 
   // ---------- estoque: tela, entrada de produção e contagem ----------
-  function renderEstoque() {
-    renderProdutosResumo();
-    var el = document.getElementById('estoque-tabela');
-    var prods = produtosOrdenados();
-    if (!prods.length) { el.innerHTML = '<p class="empty-state">Nenhum produto cadastrado.</p>'; }
+  // ---------- estoque: mínimo em paletes e saldo futuro por dia ----------
+  // Saldo em estoque = última contagem + entradas de produção − cargas carregadas (estoqueDe).
+  // Saldo futuro = saldo em estoque − cargas programadas (ainda não carregadas), dia a dia; carga atrasada
+  // conta como de hoje. Alerta quando o saldo (agora ou depois das cargas de um dia) fica abaixo do mínimo.
+  // Mínimos combinados com o Nicolas em 14/10/2026 (paletes); cada produto pode ter o seu em Cadastros › Produtos.
+  var MINIMO_LEVISSIMA = { 'copo-200': 20, 'copo-300': 10, '350-natural': 15, '350-gas': 10, '510-natural': 100, '510-gas': 70,
+    '1500-natural': 100, '1500-gas': 50, '6l': 30, '10l': 12 };
+  var MINIMO_OUTRAS = { '510-natural': 30, '510-gas': 20, '1500-natural': 20, '1500-gas': 12, '6l': 10 };
+  function tipoDoProduto(p) {
+    var t = normNome(p && p.nome); // sem acento, minúsculo e sem espaços: "casademae1,5lcomgas"
+    var gas = t.indexOf('gas') !== -1 ? 'gas' : 'natural';
+    if (t.indexOf('copo') !== -1) return t.indexOf('300') !== -1 ? 'copo-300' : t.indexOf('200') !== -1 ? 'copo-200' : '';
+    if (t.indexOf('350') !== -1) return '350-' + gas;
+    if (t.indexOf('510') !== -1) return '510-' + gas;
+    if (/1[,.]5l|1500/.test(t)) return '1500-' + gas;
+    if (/(^|[^0-9])10l/.test(t)) return '10l';
+    if (/(^|[^0-9,.])6l/.test(t)) return '6l';
+    return '';
+  }
+  function minimoPadrao(p) {
+    var tipo = tipoDoProduto(p);
+    var tab = marcaDoTexto(p && p.nome) === 'levissima' ? MINIMO_LEVISSIMA : MINIMO_OUTRAS;
+    return tipo && tab[tipo] !== undefined ? tab[tipo] : null;
+  }
+  function minimoDe(p) {
+    var v = p ? p.estoqueMinimo : null;
+    if (v !== undefined && v !== null && v !== '' && !isNaN(Number(v))) return Number(v);
+    return minimoPadrao(p);
+  }
+  function emPaletes(p, q) { var upp = Number(p && p.unidadesPorPalete) || 0; return upp ? q / upp : null; }
+  function fmtPal(v) { return (Math.round(v * 10) / 10).toLocaleString('pt-BR', { maximumFractionDigits: 1 }); }
+  // "84 pal" quando o produto tem palete padrão; senão, a quantidade na unidade do produto.
+  function palTexto(p, q) { var v = emPaletes(p, q); return v === null ? qtdUnidade(q, unidadeDe(p)) : fmtPal(v) + ' pal'; }
+  function nomeMarca(slug) { var m = MARCAS_V3.find(function(x) { return x.slug === slug; }); return m ? m.marca : 'Levíssima'; }
+  var DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  function addDiasIso(iso, n) {
+    var d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + n);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function rotuloDia(iso, hoje) {
+    if (iso === hoje) return 'Hoje';
+    if (iso === addDiasIso(hoje, 1)) return 'Amanhã';
+    var d = new Date(iso + 'T12:00:00');
+    return DIAS_SEMANA[d.getDay()] + ' ' + formatDateBR(iso).slice(0, 5);
+  }
+  function planoEstoque() {
+    var hoje = todayIso(), porDia = {};
+    cargas.forEach(function(c) {
+      if (c.status === 'concluida') return;
+      var d = String(c.data || '');
+      if (!d || d < hoje) d = hoje; // atrasada: conta como de hoje
+      (porDia[d] = porDia[d] || []).push(c);
+    });
+    var dias = Object.keys(porDia).sort();
+    var linhas = produtosOrdenados().map(function(p) {
+      var e = estoqueDe(p.id, null), min = minimoDe(p);
+      var saldo = e ? e.estoque : null, programado = 0, alerta = null, falta = null;
+      function abaixo(q) { var v = emPaletes(p, q); return min !== null && v !== null && v < min; }
+      if (e && (e.estoque < 0 || abaixo(e.estoque))) alerta = { dia: null, saldo: e.estoque };
+      if (e && e.estoque < 0) falta = alerta;
+      var cols = dias.map(function(d) {
+        var saida = porDia[d].reduce(function(a, c) { return a + quantidadeNaCarga(c, p.id); }, 0);
+        programado += saida;
+        if (saldo !== null) {
+          saldo -= saida;
+          if (!alerta && saida && (saldo < 0 || abaixo(saldo))) alerta = { dia: d, saldo: saldo };
+          if (!falta && saida && saldo < 0) falta = { dia: d, saldo: saldo };
+        }
+        return { dia: d, saida: saida, saldo: saldo };
+      });
+      if (falta) alerta = falta; // faltar produto para uma carga é mais grave que ficar abaixo do mínimo
+      return { p: p, e: e, min: min, atual: e ? e.estoque : null, programado: programado, futuro: e ? e.estoque - programado : null, cols: cols, alerta: alerta,
+        marca: marcaDoTexto(p.nome), abaixo: abaixo };
+    });
+    return { hoje: hoje, dias: dias, porDia: porDia, linhas: linhas };
+  }
+  function alertasEstoque(plano) { return (plano || planoEstoque()).linhas.filter(function(l) { return !!l.alerta; }); }
+  function classeSaldo(l, q) { return q === null ? '' : q < 0 ? 'neg' : l.abaixo(q) ? 'baixo' : ''; }
+  function celSaldo(l, q, extra, curto) {
+    if (q === null) return '<td>—' + (extra || '') + '</td>';
+    var cls = classeSaldo(l, q), v = emPaletes(l.p, q);
+    return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + escapeHtml(curto && v !== null ? fmtPal(v) : palTexto(l.p, q)) + (extra || '') + '</td>';
+  }
+  function palCurto(p, q) { var v = emPaletes(p, q); return v === null ? qtdUnidade(q, unidadeDe(p)) : fmtPal(v); }
+  function textoAlerta(l, hoje) {
+    var a = l.alerta, q = a.saldo, quando = a.dia ? (a.dia === hoje ? 'depois das cargas de hoje' : 'depois das cargas de ' + rotuloDia(a.dia, hoje).replace('Amanhã', 'amanhã')) : 'agora';
+    if (q < 0) return 'faltam ' + palTexto(l.p, -q) + ' ' + (a.dia ? 'para as cargas de ' + (a.dia === hoje ? 'hoje' : rotuloDia(a.dia, hoje).replace('Amanhã', 'amanhã')) : 'no estoque');
+    return 'fica com ' + palTexto(l.p, q) + ' ' + quando + (l.min !== null ? ' (mínimo ' + fmtInt(l.min) + ' pal)' : '');
+  }
+  function renderEstoqueAbaAlerta(n) {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="estoque"]');
+    if (!b) return;
+    b.innerHTML = 'Estoque' + (n ? ' <span class="tab-alerta" title="' + n + (n === 1 ? ' produto abaixo do mínimo' : ' produtos abaixo do mínimo') + '">' + n + '</span>' : '');
+  }
+  function renderEstoquePainel(plano) {
+    var hoje = plano.hoje, linhas = plano.linhas;
+    var alertas = alertasEstoque(plano).sort(function(a, b) { return String(a.alerta.dia || '').localeCompare(String(b.alerta.dia || '')); });
+    renderEstoqueAbaAlerta(alertas.length);
+    // cartões: entrada de produção, saldo em estoque e saldo futuro
+    var entradasHoje = estoqueMovs.filter(function(m) { return m.tipo === 'entrada' && (m.data || String(m.em || '').slice(0, 10)) === hoje; });
+    var palHoje = entradasHoje.reduce(function(a, m) { var v = emPaletes(findProduto(m.produtoId), Number(m.quantidade) || 0); return a + (v || 0); }, 0);
+    var comSaldo = linhas.filter(function(l) { return l.e; });
+    var palAtual = comSaldo.reduce(function(a, l) { return a + (emPaletes(l.p, l.atual) || 0); }, 0);
+    var palFuturo = comSaldo.reduce(function(a, l) { return a + (emPaletes(l.p, l.futuro) || 0); }, 0);
+    var nCargas = plano.dias.reduce(function(a, d) { return a + plano.porDia[d].length; }, 0);
+    var ultCont = estoqueMovs.filter(function(m) { return m.tipo === 'contagem'; }).sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); })[0];
+    document.getElementById('estoque-cards').innerHTML =
+      '<div class="est-card c-entrada"><span class="est-card-k">1 · Entrada de produção</span>' +
+        '<span class="est-card-v">' + (palHoje ? '+ ' + fmtPal(palHoje) + ' pal' : '—') + '</span>' +
+        '<span class="est-card-s">' + (entradasHoje.length ? 'produzido hoje (' + entradasHoje.length + (entradasHoje.length === 1 ? ' lançamento)' : ' lançamentos)') : 'nada lançado hoje') + '</span>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-est="entrada">+ Lançar produção</button></div>' +
+      '<div class="est-card c-saldo"><span class="est-card-k">2 · Saldo em estoque</span>' +
+        '<span class="est-card-v">' + (comSaldo.length ? fmtPal(palAtual) + ' pal' : '—') + '</span>' +
+        '<span class="est-card-s">' + (ultCont ? 'última contagem em ' + escapeHtml(formatDateTimeBR(ultCont.em)) : 'faça a primeira contagem') + '</span>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-est="contagem">Contagem (acertar o saldo)</button></div>' +
+      '<div class="est-card c-futuro' + (alertas.length ? ' alerta' : '') + '"><span class="est-card-k">3 · Saldo futuro</span>' +
+        '<span class="est-card-v">' + (comSaldo.length ? fmtPal(palFuturo) + ' pal' : '—') + '</span>' +
+        '<span class="est-card-s">' + (nCargas ? 'depois de ' + nCargas + (nCargas === 1 ? ' carga programada' : ' cargas programadas') : 'nenhuma carga programada') +
+          (alertas.length ? ' · <b>' + alertas.length + (alertas.length === 1 ? ' produto abaixo do mínimo' : ' produtos abaixo do mínimo') + '</b>' : '') + '</span>' +
+        (nCargas ? '<button type="button" class="btn btn-secondary btn-sm" data-est="dias">Ver dia a dia</button>' : '') + '</div>';
+    // alertas
+    var al = document.getElementById('estoque-alertas');
+    if (!alertas.length) { al.classList.add('hidden'); al.innerHTML = ''; }
     else {
-      el.innerHTML = '<table class="resumo-table est-table"><thead><tr><th scope="col">Produto</th><th scope="col">Em estoque</th><th scope="col">A carregar</th><th scope="col">Disponível</th></tr></thead><tbody>' +
-        prods.map(function(p) {
-          var u = unidadeDe(p), e = estoqueDe(p.id, null), res = e ? e.reservado : reservadoDe(p.id, null);
-          function cel(q, cls) { return '<td' + (cls ? ' class="' + cls + '"' : '') + '>' + escapeHtml(qtdUnidade(q, u)) + '<span class="est-sub">' + escapeHtml(paletesEquivalentes(p, Math.abs(q))) + '</span></td>'; }
-          if (!e) {
-            return '<tr><td>' + escapeHtml(p.nome) + '<span class="est-sub">sem contagem</span></td><td>—</td>' + (res ? cel(res) : '<td>—</td>') + '<td>—</td></tr>';
-          }
-          return '<tr><td>' + escapeHtml(p.nome) + (e.contagem ? '<span class="est-sub">contado em ' + escapeHtml(formatDateTimeBR(e.contagem.em)) + '</span>' : '') + '</td>' +
-            cel(e.estoque, e.estoque < 0 ? 'est-neg' : '') + cel(e.reservado) + cel(e.disponivel, e.disponivel < 0 ? 'est-neg' : 'figure-teal') + '</tr>';
+      al.innerHTML = '<p class="est-alertas-t">⚠ Abaixo do estoque mínimo</p><ul>' + alertas.map(function(l) {
+        return '<li class="' + (l.alerta.saldo < 0 ? 'neg' : '') + '"><b>' + escapeHtml(l.p.nome) + '</b> ' + escapeHtml(textoAlerta(l, hoje)) + '</li>';
+      }).join('') + '</ul>';
+      al.classList.remove('hidden');
+    }
+    // saldo por produto
+    var el = document.getElementById('estoque-tabela');
+    if (!linhas.length) { el.innerHTML = '<p class="empty-state">Nenhum produto cadastrado.</p>'; }
+    else {
+      var marcaAtual = null;
+      el.innerHTML = '<table class="resumo-table est-table"><thead><tr><th scope="col">Produto</th><th scope="col">Saldo em estoque</th><th scope="col">Cargas programadas</th><th scope="col">Saldo futuro</th></tr></thead><tbody>' +
+        linhas.map(function(l) {
+          var grupo = '';
+          if (l.marca !== marcaAtual) { marcaAtual = l.marca; grupo = '<tr class="est-grupo"><td colspan="4">' + escapeHtml(nomeMarca(l.marca)) + '</td></tr>'; }
+          var u = unidadeDe(l.p);
+          function sub(q) { return emPaletes(l.p, q) === null ? '' : '<span class="est-sub">' + escapeHtml(qtdUnidade(q, u)) + '</span>'; }
+          var nome = '<td>' + escapeHtml(l.p.nome) + '<span class="est-sub">' +
+            escapeHtml((l.min !== null ? 'mínimo ' + fmtInt(l.min) + ' pal' : 'sem mínimo') + (l.e ? '' : ' · sem contagem')) + '</span></td>';
+          var prog = l.programado ? '<td>− ' + escapeHtml(palTexto(l.p, l.programado)) + sub(l.programado) + '</td>' : '<td>—</td>';
+          return grupo + '<tr>' + nome + celSaldo(l, l.atual, l.e ? sub(l.atual) : '') + prog + celSaldo(l, l.futuro, l.e ? sub(l.futuro) : '') + '</tr>';
         }).join('') + '</tbody></table>';
     }
+    // saldo futuro por dia
+    var sec = document.getElementById('estoque-dias-sec'), box = document.getElementById('estoque-dias');
+    var visiveis = linhas.filter(function(l) { return l.e || l.programado; });
+    if (!plano.dias.length || !visiveis.length) { sec.classList.add('hidden'); box.innerHTML = ''; return; }
+    sec.classList.remove('hidden');
+    var MAX_DIAS = 10, dias = plano.dias.slice(0, MAX_DIAS);
+    box.innerHTML = '<div class="est-dias-wrap"><table class="est-dias"><thead><tr><th scope="col">Produto<span class="est-sub">em paletes</span></th><th scope="col">Agora</th>' +
+      dias.map(function(d) { var n = plano.porDia[d].length; return '<th scope="col">' + escapeHtml(rotuloDia(d, plano.hoje)) + '<span class="est-sub">' + n + (n === 1 ? ' carga' : ' cargas') + '</span></th>'; }).join('') +
+      '</tr></thead><tbody>' + visiveis.map(function(l) {
+        var info = [l.min !== null ? 'mínimo ' + fmtInt(l.min) : '', l.e ? '' : 'sem contagem'].filter(Boolean).join(' · ');
+        return '<tr><td>' + escapeHtml(l.p.nome) + (info ? '<span class="est-sub">' + escapeHtml(info) + '</span>' : '') + '</td>' +
+          celSaldo(l, l.atual, '', true) +
+          l.cols.slice(0, MAX_DIAS).map(function(c) {
+            var saida = c.saida ? '<span class="est-sub">− ' + escapeHtml(palCurto(l.p, c.saida)) + '</span>' : '';
+            return celSaldo(l, c.saldo, saida, true);
+          }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div>' +
+      (plano.dias.length > MAX_DIAS ? '<p class="field-hint">Mostrando os próximos ' + MAX_DIAS + ' dias com carga. O saldo futuro da tabela de cima já conta todas as ' + plano.dias.length + ' datas.</p>' : '');
+  }
+  document.getElementById('estoque-cards').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-est]');
+    if (!b) return;
+    if (b.dataset.est === 'entrada') openEstoqueForm('entrada');
+    else if (b.dataset.est === 'contagem') openEstoqueForm('contagem');
+    else if (b.dataset.est === 'dias') { var s = document.getElementById('estoque-dias-sec'); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+  function renderEstoque() {
+    renderProdutosResumo();
+    renderEstoquePainel(planoEstoque());
     var movs = estoqueMovs.slice().sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); }).slice(0, 30);
     document.getElementById('estoque-movs').innerHTML = movs.length ? movs.map(function(m) {
       if (confirmDeleteMov === m.id) {
@@ -8987,7 +9199,6 @@
   }
   function closeEstoqueForm() { document.getElementById('estoque-sheet-overlay').classList.add('hidden'); }
   document.getElementById('btn-new-entrada').addEventListener('click', function() { openEstoqueForm('entrada'); });
-  document.getElementById('btn-estoque-contagem').addEventListener('click', function() { openEstoqueForm('contagem'); });
   document.getElementById('btn-close-estoque-sheet').addEventListener('click', closeEstoqueForm);
   document.getElementById('btn-estoque-cancel').addEventListener('click', closeEstoqueForm);
   document.getElementById('estoque-sheet-overlay').addEventListener('click', function(e) {
