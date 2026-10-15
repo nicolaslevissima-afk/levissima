@@ -3445,9 +3445,40 @@
     var mods = modulosDaSessao();
     nav.classList.toggle('hidden', !mods.length);
     nav.innerHTML = mods.length ? '<span class="modulos-rot">Fábrica</span>' + mods.map(function(m) {
-      return '<a class="mod-chip" href="' + linkModulo(m.id) + '">' + iconeMod(m.id) + escapeHtml(m.curto) + '</a>';
+      var selo = m.id === 'empilhadeiras' && oleoEmp && oleoEmp.length
+        ? '<span class="tab-alerta" title="' + escapeHtml(oleoEmpTexto()) + '">' + oleoEmp.length + '</span>' : '';
+      return '<a class="mod-chip" href="' + linkModulo(m.id) + '">' + iconeMod(m.id) + escapeHtml(m.curto) + selo + '</a>';
     }).join('') : '';
   }
+  // Troca de óleo e filtro das empilhadeiras (mesma regra do módulo: 250 h nas a combustão, ou o intervalo da
+  // máquina; sem troca registrada, conta pelos múltiplos do intervalo). Acende um selo no menu e avisa 1 vez por dia.
+  var oleoEmp = null;
+  function oleoEmpTexto() {
+    return 'Troca de óleo e filtro: ' + (oleoEmp || []).map(function(x) { return x.codigo + (x.faltam <= 0 ? ' vencida há ' + fmtInt(-x.faltam) + ' h' : ' em ' + fmtInt(x.faltam) + ' h'); }).join(', ');
+  }
+  function verificarOleoEmpilhadeiras() {
+    if (mode !== 'db' || !sbCliente || !modulosDaSessao().some(function(m) { return m.id === 'empilhadeiras'; })) return;
+    sbCliente.from('modulo_docs').select('id, dados').eq('modulo', 'empilhadeiras').eq('caminho', 'maquinas').then(function(r) {
+      if (!r || r.error) return;
+      oleoEmp = (r.data || []).map(function(x) {
+        var m = x.dados || {}, hor = Number(m.horimetro);
+        if (m.ativa === false || !(hor > 0) || m.oleoIntervalo === 0) return null;
+        var iv = Number(m.oleoIntervalo) > 0 ? Number(m.oleoIntervalo) : (m.tipo === 'glp' || m.tipo === 'diesel') ? 250 : 0;
+        if (!iv) return null;
+        var base = m.oleoUltimaHoras != null && m.oleoUltimaHoras !== '' && isFinite(Number(m.oleoUltimaHoras));
+        var prox = base ? Number(m.oleoUltimaHoras) + iv : Math.ceil((hor + 0.001) / iv) * iv;
+        var faltam = Math.round((prox - hor) * 10) / 10;
+        return faltam <= Math.min(25, iv / 5) ? { codigo: m.codigo || m.nome || x.id, faltam: faltam } : null;
+      }).filter(Boolean).sort(function(a, b) { return a.faltam - b.faltam; });
+      renderModulosNav();
+      if (!oleoEmp.length) return;
+      var chave = 'levissima-oleo-' + todayIso() + '-' + oleoEmp.map(function(x) { return x.codigo + (x.faltam <= 0 ? 'v' : ''); }).join('.');
+      if (loadPref(chave, '')) return;
+      savePref(chave, '1');
+      showToast('Empilhadeiras · ' + oleoEmpTexto() + '.');
+    }, function() {});
+  }
+  setInterval(verificarOleoEmpilhadeiras, 30 * 60 * 1000);
   function showSetorView() {
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('admin-view').classList.add('hidden');
@@ -7396,6 +7427,7 @@
     document.getElementById('setor-view').classList.add('hidden');
     esconderRepView();
     renderModulosNav();
+    if (!oleoEmp) setTimeout(verificarOleoEmpilhadeiras, 1500);
     applyTab();
     render();
   }
