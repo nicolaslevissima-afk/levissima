@@ -1,4 +1,4 @@
-"""Ajustes do projeto Android gerado pelo Capacitor: permissões de localização e número da versão."""
+"""Ajustes do projeto Android gerado pelo Capacitor: permissões de localização, aviso da viagem e número da versão."""
 import os
 import re
 
@@ -16,6 +16,19 @@ for linha in extras:
     if nome not in m:
         m = m.replace('</manifest>', '    ' + linha + '\n</manifest>')
 open(manifest, 'w', encoding='utf-8').write(m)
+
+# Localização em segundo plano (viagem): nome do canal do aviso fixo que aparece na barra do celular.
+strings = 'android/app/src/main/res/values/strings.xml'
+if os.path.exists(strings):
+    st = open(strings, encoding='utf-8').read()
+    extra = {
+        'capacitor_background_geolocation_notification_channel_name': 'Viagem em andamento',
+        'capacitor_background_geolocation_notification_color': '#702082',
+    }
+    for nome, valor in extra.items():
+        if nome not in st:
+            st = st.replace('</resources>', '    <string name="%s">%s</string>\n</resources>' % (nome, valor))
+    open(strings, 'w', encoding='utf-8').write(st)
 
 gradle = 'android/app/build.gradle'
 g = open(gradle, encoding='utf-8').read()

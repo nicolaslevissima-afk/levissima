@@ -4697,6 +4697,76 @@
   var RASTREIO_INTERVALO_MS = 2 * 60 * 1000;
   var RASTREIO_DISTANCIA_M = 300;
   var rastreioAtual = { cargaId: null, watchId: null, ultimaPos: null, ultimaEnviada: null, wakeLock: null, erro: '', pausado: {} };
+  // App Android: GPS nativo em segundo plano (plugin BackgroundGeolocation, com aviso fixo na barra do celular).
+  // O próprio celular manda cada posição para a função "rastreio" do Supabase, mesmo com a tela desligada ou o
+  // app fechado; a função confere a chave da viagem (só o hash fica no banco) e grava o ponto.
+  var LOCAL_CHAVE_VIAGEM = 'levissima-rastreio-chave-v1';
+  function bgGeo() { return pluginNativo('BackgroundGeolocation'); }
+  function rastreioNativo() { return !!bgGeo() && mode === 'db' && !!supabaseConfig.url && supabaseConfig.url !== 'COLE_AQUI'; }
+  function chaveDaViagem(cargaId, criar) {
+    var todas = {};
+    try { todas = JSON.parse(localStorage.getItem(LOCAL_CHAVE_VIAGEM) || '{}') || {}; } catch (e) { todas = {}; }
+    if (todas[cargaId] || !criar) return todas[cargaId] || '';
+    var b = new Uint8Array(24);
+    (window.crypto || window.msCrypto).getRandomValues(b);
+    todas = {}; // só a viagem atual
+    todas[cargaId] = Array.prototype.map.call(b, function(x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    try { localStorage.setItem(LOCAL_CHAVE_VIAGEM, JSON.stringify(todas)); } catch (e) {}
+    return todas[cargaId];
+  }
+  function iniciarRastreioNativo(cargaId, pedirPermissao) {
+    var BG = bgGeo(), chave = chaveDaViagem(cargaId, true);
+    rastreioAtual.watchId = 'iniciando';
+    return sha256Hex(chave).then(function(hash) {
+      // primeiro grava o hash da chave; só depois o celular começa a mandar
+      return gravarRastreio(cargaId, { cargaId: cargaId, motorista: session ? session.nome : '', ativo: true, chaveHash: hash, nativo: true }, null);
+    }).then(function() {
+      if (rastreioAtual.cargaId !== cargaId) return;
+      return BG.start({
+        backgroundTitle: 'LEVÍSSIMA · viagem em andamento',
+        backgroundMessage: 'Mandando a localização da carga para o escritório até a última entrega.',
+        requestPermissions: pedirPermissao !== false,
+        stale: false,
+        distanceFilter: 0,
+        minIntervalMs: 60000,
+        networkFallback: true,
+        url: supabaseConfig.url.replace(/\/+$/, '') + '/functions/v1/rastreio?c=' + encodeURIComponent(cargaId) + '&t=' + chave,
+        headers: { apikey: supabaseConfig.anonKey }
+      }, function(loc, err) {
+        if (err) {
+          if (err.code === 'ALREADY_STARTED') return;
+          rastreioAtual.erro = err.code === 'NOT_AUTHORIZED'
+            ? 'Localização bloqueada: permita a localização do LEVÍSSIMA nas configurações do celular (Permitir o tempo todo ou Durante o uso).'
+            : 'Sem sinal de localização agora; o celular tenta de novo sozinho.';
+          if (err.code === 'NOT_AUTHORIZED') { rastreioAtual.watchId = null; rastreioAtual.cargaId = null; }
+          atualizarIndicadorRastreio();
+          return;
+        }
+        if (!loc) return;
+        var pt = { lat: Math.round(loc.latitude * 1e6) / 1e6, lng: Math.round(loc.longitude * 1e6) / 1e6, acc: Math.round(loc.accuracy || 0), em: new Date(loc.time || Date.now()).toISOString() };
+        rastreioAtual.ultimaPos = pt;
+        rastreioAtual.ultimaEnviada = pt; // quem manda é o próprio celular (nativo)
+        rastreioAtual.erro = '';
+        atualizarIndicadorRastreio();
+      });
+    }).then(function() {
+      if (rastreioAtual.cargaId === cargaId && rastreioAtual.watchId === 'iniciando') rastreioAtual.watchId = { bg: true };
+      atualizarIndicadorRastreio();
+    }).catch(function(e) {
+      var code = e && (e.code || e.message);
+      if (String(code).indexOf('ALREADY_STARTED') >= 0) { rastreioAtual.watchId = { bg: true }; atualizarIndicadorRastreio(); return; }
+      console.error('rastreio nativo', e);
+      rastreioAtual.watchId = null;
+      rastreioAtual.erro = String(code).indexOf('NOT_AUTHORIZED') >= 0
+        ? 'Localização bloqueada: permita a localização do LEVÍSSIMA nas configurações do celular.'
+        : 'Não foi possível ligar a localização agora. Toque em "Ligar localização" de novo.';
+      atualizarIndicadorRastreio();
+    });
+  }
+  function pararRastreioNativo() {
+    var BG = bgGeo();
+    if (BG && BG.stop) { try { BG.stop().catch(function() {}); } catch (e) {} }
+  }
   function geoOk() { return !!(pluginNativo('Geolocation') || (navigator.geolocation && window.isSecureContext !== false)); }
   // Mesma interface do navigator.geolocation, usando o GPS nativo quando o app é o das lojas.
   var geo = {
@@ -4743,8 +4813,18 @@
   document.addEventListener('visibilitychange', function() {
     if (document.visibilityState === 'visible' && rastreioAtual.watchId != null) manterTelaAcesa();
   });
-  function iniciarRastreio(cargaId) {
+  function iniciarRastreio(cargaId, pedirPermissao) {
     delete rastreioAtual.pausado[cargaId];
+    if (rastreioNativo()) {
+      if (rastreioAtual.watchId != null && rastreioAtual.cargaId === cargaId) return;
+      pararRastreio();
+      rastreioAtual.cargaId = cargaId;
+      rastreioAtual.erro = '';
+      rastreioAtual.ultimaEnviada = null;
+      iniciarRastreioNativo(cargaId, pedirPermissao);
+      atualizarIndicadorRastreio();
+      return;
+    }
     if (!geoOk()) { rastreioAtual.erro = 'Este celular ou navegador não informa a localização.'; atualizarIndicadorRastreio(); return; }
     if (rastreioAtual.watchId != null && rastreioAtual.cargaId === cargaId) return;
     pararRastreio();
@@ -4760,7 +4840,9 @@
     atualizarIndicadorRastreio();
   }
   function pararRastreio() {
-    if (rastreioAtual.watchId != null && rastreioAtual.watchId !== 'iniciando') geo.clear(rastreioAtual.watchId);
+    if (rastreioAtual.watchId && rastreioAtual.watchId.bg) pararRastreioNativo();
+    else if (rastreioAtual.watchId === 'iniciando' && rastreioNativo()) pararRastreioNativo();
+    else if (rastreioAtual.watchId != null && rastreioAtual.watchId !== 'iniciando') geo.clear(rastreioAtual.watchId);
     rastreioAtual.watchId = null;
     rastreioAtual.cargaId = null;
     liberarTela();
@@ -4811,6 +4893,9 @@
     }
     if (rastreioAtual.erro) return { txt: rastreioAtual.erro, cls: 'warn', ligado: true };
     var e = rastreioAtual.ultimaEnviada;
+    if (rastreioAtual.watchId && rastreioAtual.watchId.bg) {
+      return { txt: '● Localização ligada, também com a tela desligada' + (e ? ' · última posição ' + haQuanto(e.em) : ' · procurando o sinal…'), cls: 'ok', ligado: true };
+    }
     return { txt: e ? '● Localização ligada · enviada ' + haQuanto(e.em) : '● Localização ligada · procurando o sinal…', cls: 'ok', ligado: true };
   }
   function atualizarIndicadorRastreio() {
@@ -4827,13 +4912,19 @@
   }
   setInterval(function() { if (session && session.role === 'motorista') atualizarIndicadorRastreio(); }, 30000);
   // Viagem em andamento e o app reaberto: volta a mandar a posição sozinho, se a permissão já foi dada.
+  var nativoConferido = false;
   function retomarRastreioSePreciso(cargasDaViagem) {
     var ativa = cargasDaViagem.find(function(c) { return c.viagem && c.viagem.saidaEm && !c.viagem.fimEm; });
     if (!ativa) {
       if (rastreioAtual.watchId != null && !cargasDaViagem.some(function(c) { return c.id === rastreioAtual.cargaId; })) pararRastreio();
+      // sem viagem em andamento: garante que o GPS em segundo plano não ficou ligado de uma viagem antiga
+      if (!nativoConferido && rastreioNativo() && rastreioAtual.watchId == null) { nativoConferido = true; pararRastreioNativo(); }
       return;
     }
-    if (rastreioAtual.watchId != null || rastreioAtual.pausado[ativa.id] || !geoOk()) return;
+    nativoConferido = true;
+    if (rastreioAtual.watchId != null || rastreioAtual.pausado[ativa.id]) return;
+    if (rastreioNativo()) { if (chaveDaViagem(ativa.id, false)) iniciarRastreio(ativa.id, false); return; }
+    if (!geoOk()) return;
     if (navigator.permissions && navigator.permissions.query) {
       navigator.permissions.query({ name: 'geolocation' }).then(function(st) { if (st.state === 'granted') iniciarRastreio(ativa.id); }).catch(function() {});
     }

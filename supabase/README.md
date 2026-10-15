@@ -13,3 +13,4 @@
 - `functions/acesso`: confere a senha e devolve o login com o papel e os módulos (v3, com o papel `representante`; publicada **sem** verificação de JWT, porque ela mesma faz a conferência). Ações: `entrar`, `conferir`, `definir`, `ajustar` (módulos e nome sem trocar a senha), `remover`, `lista`.
 
 Já aplicado no projeto. Para rodar de novo em outro projeto: aplique as migrações em ordem, publique a função e crie a senha mestre pelo SQL (`select public.acesso_definir('mestre', 'mestre', 'Nome', 'senha');`).
+- `functions/rastreio` (publicada sem verificação de JWT, de propósito): recebe a posição mandada pelo GPS nativo do app Android durante a viagem (`?c=<carga>&t=<chave da viagem>`), confere o hash da chave em `rastreio/<carga>.chaveHash` e grava o ponto enquanto a viagem está ativa.

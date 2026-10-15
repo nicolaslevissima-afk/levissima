@@ -33,7 +33,10 @@ jobs:
           P=ios/App/App/Info.plist
           set_or_add() { /usr/libexec/PlistBuddy -c "Set :$1 $2" "$P" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :$1 string $2" "$P"; }
           set_or_add NSLocationWhenInUseUsageDescription "O LEVÍSSIMA usa a localização durante a viagem para o escritório acompanhar as entregas."
-          set_or_add NSCameraUsageDescription "O LEVÍSSIMA usa a câmera para fotografar a nota fiscal, quando você escolhe."
+          set_or_add NSLocationAlwaysAndWhenInUseUsageDescription "Durante a viagem, o LEVÍSSIMA continua mandando a localização da carga para o escritório mesmo com a tela desligada, até a última entrega."
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$P" >/dev/null 2>&1 || /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes array" "$P"
+          /usr/libexec/PlistBuddy -c "Print :UIBackgroundModes" "$P" | grep -q location || /usr/libexec/PlistBuddy -c "Add :UIBackgroundModes:0 string location" "$P"
+          set_or_add NSCameraUsageDescription "O LEVÍSSIMA usa a câmera para ler o código de barras na conferência do carregamento e para fotografar a nota fiscal, quando você escolhe."
           set_or_add NSPhotoLibraryUsageDescription "O LEVÍSSIMA abre fotos e arquivos que você escolher, como a nota fiscal."
           set_or_add CFBundleDisplayName "LEVÍSSIMA"
       - name: Copiar o app para o projeto
