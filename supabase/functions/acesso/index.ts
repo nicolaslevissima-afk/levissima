@@ -11,7 +11,8 @@
 //   { acao: 'remover', ref }                                       -> { ok }             (só a senha mestre)
 //   { acao: 'lista' }                                              -> { senhas: [...] }  (só a senha mestre)
 // Senhas: 'mestre' (tudo), 'equipe' (escritório de cargas + módulos marcados), 'motorista:<id>' (app do motorista)
-// e 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões).
+// 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões)
+// e 'representante:<id>' (Força de vendas: lança as cargas dos clientes dele; regras em 0005_forca_de_vendas.sql).
 // Cada módulo pode ser "usado" ('manutencao') ou "gerenciado" ('manutencao:gerir').
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
@@ -40,6 +41,7 @@ function papelDaRef(ref: string): string | null {
   if (ref === 'equipe') return 'equipe';
   if (/^motorista:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'motorista';
   if (/^setor:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'setor';
+  if (/^representante:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'representante';
   return null;
 }
 
@@ -191,7 +193,7 @@ Deno.serve(async (req) => {
     if (acao === 'definir') {
       const senha = String(corpo.senha || '');
       const nome = String(corpo.nome || (papel === 'mestre' ? 'Diretoria' : papel === 'equipe' ? 'Equipe do escritório' : '')).slice(0, 80);
-      if ((papel === 'motorista' || papel === 'setor') && !nome) return erro('dados', 400);
+      if ((papel === 'motorista' || papel === 'setor' || papel === 'representante') && !nome) return erro('dados', 400);
       const modulos = limparModulos(corpo.modulos);
       if (papel === 'setor' && !modulos.length) return erro('modulos', 400);
       if (papel === 'mestre') {

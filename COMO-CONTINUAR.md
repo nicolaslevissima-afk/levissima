@@ -14,8 +14,11 @@ Pacote completo do app LEVÍSSIMA, situação em **14/10/2026**. Tem tudo o que 
 | Site e módulos no ar | Feito em 14/10/2026: `https://nicolaslevissima-afk.github.io/levissima/` (repositório `nicolaslevissima-afk/levissima`) |
 | App Android | APK de teste gerado pelo GitHub. Para o APK/AAB assinados da Google Play faltam os 4 segredos `ANDROID_*` (ver "Para pôr no ar") |
 | Cores da marca | Verde 361 C, roxo 2603 C, azul Reflex Blue C e laranja 1645 C (equivalentes em tela no início do `<style>` do app) |
-| Fretes dos motoristas | Tabela de fretes 29/09/2026 no banco (Cadastros › Tabela de fretes); destino do frete por cliente na carga (preenchido pela nota fiscal); página de cada motorista com Dados e acesso, Fretes (a pagar, confirmar proporcional, pago, relatório PDF) e Documentos (Storage privado) |
+| Fretes dos motoristas | Tabela de fretes 29/09/2026 no banco (aba Fretes); destino do frete por cliente na carga (preenchido pela nota fiscal); página de cada motorista com Dados e acesso, Fretes (a pagar, confirmar proporcional, pago, relatório PDF) e Documentos (Storage privado) |
 | Empilhadeiras | 6 máquinas (EMP-01 a EMP-06) e checklist pedido todo dia às 12:30 |
+| Força de vendas | Portal dos representantes (9 cadastrados, sem senha ainda): cada um entra com a própria senha e lança pedidos. Pedido de representante só carrega com o **ok do financeiro** e o **ok da logística** (Equipe com senha, funções novas). Documentos e contratos de cada representante em Cadastros › Força de vendas |
+| Aba Fretes | Aba própria (só senha mestre): a pagar por motorista e a tabela de fretes |
+| Motoristas | Campo **Vínculo** (terceiro contratado a serviço da Levíssima ou próprio). Terceiros cadastrados em 14/10/2026: Renan França, Silvestre Pereira, Sérgio Félix e Guilherme Lourençon (sem senha ainda) |
 | Google Play e App Store | Falta — roteiro em `loja/PUBLICAR-NAS-LOJAS.md` |
 
 ## Passo a passo para o Nicolas (no outro login)
@@ -52,9 +55,9 @@ Os módulos são páginas separadas (`www/modulos/*.html`). Por isso só funcion
 
 - Projeto `levissima`, id **`lzsvtwwpthjncrhznfez`**, região São Paulo. URL `https://lzsvtwwpthjncrhznfez.supabase.co`.
 - Tabelas: `docs` (dados do app de cargas) e `modulo_docs` (dados dos módulos; chave `modulo, caminho, id`, dados em `dados jsonb`).
-- Acesso: a Edge Function **`acesso`** (v2, publicada **sem** verificação de JWT de propósito, porque ela mesma confere a senha) devolve um login do Supabase com `papel` e `modulos` no `app_metadata`. Ações: `entrar`, `conferir`, `definir`, `ajustar`, `remover`, `lista`.
-- Papéis: `mestre` (tudo), `equipe` (cargas e os módulos marcados), `motorista` (só as entregas dele) e `setor` (só os módulos marcados; ref `setor:<id>`). Cada módulo vale como `m` (usa) ou `m:gerir` (gerencia). As regras do banco (RLS, função `pode_modulo`) conferem isso em cada leitura e gravação.
-- Migrações em `supabase/migrations/` (0001, 0002, 0003), **já aplicadas**. Detalhes em `supabase/README.md`.
+- Acesso: a Edge Function **`acesso`** (v3, publicada **sem** verificação de JWT de propósito, porque ela mesma confere a senha) devolve um login do Supabase com `papel` e `modulos` no `app_metadata`. Ações: `entrar`, `conferir`, `definir`, `ajustar`, `remover`, `lista`.
+- Papéis: `mestre` (tudo), `equipe` (cargas e os módulos marcados), `motorista` (só as entregas dele), `setor` (só os módulos marcados; ref `setor:<id>`) e `representante` (Força de vendas: só os pedidos dele; ref `representante:<id>`). Cada módulo vale como `m` (usa) ou `m:gerir` (gerencia). As regras do banco (RLS, função `pode_modulo`) conferem isso em cada leitura e gravação.
+- Migrações em `supabase/migrations/` (0001 a 0005), **já aplicadas**. Detalhes em `supabase/README.md`.
 - Dados copiados em 13/10/2026:
   - Manutenção: 62 equipamentos, 18 elementos e a configuração.
   - Estoque de garrafões: 13 movimentos e a configuração.
@@ -83,9 +86,16 @@ Se o `gh` do seu ambiente não puder gravar segredos ou ligar o Pages, faça só
 
 - 16 paletes = coluna de 16; 18 paletes = coluna de 18 (proporcional aos 16).
 - Outra quantidade: o app sugere o proporcional (valor de 16 × paletes ÷ 16) e **só vale depois que a senha mestre confirma** (ou escolhe o valor cheio, ou digita outro).
-- Mais de um destino na mesma carga: o frete mais caro + adicional de R$ 300 (uma vez; o valor fica em Cadastros › Tabela de fretes).
+- Mais de um destino na mesma carga: o frete mais caro + adicional de R$ 300 (uma vez; o valor fica na aba Fretes).
 - Palete de 175 fardos (510ml com 7 fileiras): vale a linha "X - COM 175" do destino, quando existe.
 - Só entram as cargas com carregamento concluído. O frete fica gravado em `fretes/<id da carga>` quando é confirmado, ajustado ou pago.
+
+### Força de vendas (combinado com o Nicolas em 14/10/2026)
+
+- Cada representante entra com a própria senha (criada pela senha mestre em *Cadastros › Força de vendas › Abrir › Criar senha*) e vê só a tela de pedidos dele.
+- Pedido de representante nasce sem motorista e só fica liberado para carregar com o **ok do financeiro** e o **ok da logística**. As outras cargas continuam sem precisar desses oks.
+- Os oks são dados com a senha de 4 números da *Equipe com senha*: marque "Dá o ok do financeiro" ou "Programa a logística dos caminhões". O Leonardo é o responsável pela logística; quem cadastra o Leonardo e a senha dele é o Nicolas (o Claude não digita senhas).
+- O ok da logística exige motorista escolhido na carga. Depois de qualquer ok, o representante não consegue mais alterar o pedido (regra do banco).
 
 ### Cuidados
 

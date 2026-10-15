@@ -547,6 +547,12 @@
   .val-chip.vencido { color: var(--danger); }
   .val-chip.vence { color: var(--laranja-texto); }
   @media (max-width: 480px) { .fretes-ctrl { flex-direction: column; gap: 0; } }
+
+  /* ---- Força de vendas ---- */
+  #rep-app { max-width: 720px; margin: 0 auto; padding: 22px 16px 110px; }
+  .rep-resumo { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0; margin: 4px 0 18px; }
+  .fv-banner { display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid var(--laranja); border-left: 4px solid var(--laranja); background: var(--card); border-radius: 8px; padding: 10px 12px; margin: 0 0 14px; font-size: 0.875rem; }
+  .fv-tag { font-size: 0.75rem; font-weight: 700; color: var(--teal); }
 </style>
 </head>
 <body>
@@ -592,12 +598,14 @@
       <button type="button" class="seg-btn" data-tab="paletes">Paletes e chapatex</button>
       <button type="button" class="seg-btn" data-tab="estoque">Estoque</button>
       <button type="button" class="seg-btn" data-tab="cadastros">Cadastros</button>
+      <button type="button" class="seg-btn" data-tab="fretes">Fretes</button>
       <button type="button" class="seg-btn" data-tab="pesquisas">Pesquisas</button>
     </nav>
   </header>
 
   <div class="tab-panel" id="tab-cargas">
     <p class="tagline">O comercial lança a carga, o faturamento dá o ok e a expedição conclui o carregamento com as assinaturas.</p>
+    <div class="fv-banner hidden" id="fv-banner"></div>
     <div class="carga-filters" id="carga-filters" role="group" aria-label="Filtrar cargas por situação"></div>
     <p class="filter-note hidden" id="carga-filter-note"></p>
 
@@ -656,6 +664,30 @@
     </section>
   </div>
 
+  <div class="tab-panel hidden" id="tab-fretes">
+    <p class="tagline">Fretes dos motoristas: quanto falta pagar a cada um e a tabela de valores por destino. Só a senha mestre vê esta aba.</p>
+    <section class="drivers-admin" id="fretes-resumo-admin">
+      <div class="section-head"><h2 class="section-title">Fretes a pagar por motorista</h2><span class="count-chip" id="fretes-resumo-total" style="white-space:nowrap"></span></div>
+      <p class="hint">Entram as cargas com carregamento concluído. Toque em <b>Abrir</b> para confirmar, pagar ou tirar o relatório do motorista.</p>
+      <div id="fretes-resumo-list"></div>
+    </section>
+
+    <section class="drivers-admin" id="fretes-admin">
+      <div class="section-head"><h2 class="section-title">Tabela de fretes</h2><span class="count-chip" id="fretes-versao"></span></div>
+      <p class="hint">Valor da viagem por destino para 16 e 18 paletes. Carga com outra quantidade: o app sugere o valor proporcional e pede a sua confirmação. Linhas “COM 175” valem quando a carga tem palete de 175 fardos. Mais de um destino: o mais caro mais o adicional abaixo.</p>
+      <div class="row-2 fretes-ctrl">
+        <label>Buscar destino
+          <input type="search" id="f-fretes-busca" autocomplete="off" placeholder="Ex.: Santos" />
+        </label>
+        <label>Adicional por carga com mais de um destino (R$)
+          <input type="number" id="f-fretes-adicional" min="0" step="0.01" inputmode="decimal" />
+        </label>
+      </div>
+      <div id="fretes-tabela-list"></div>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-add-frete-linha">+ Adicionar destino</button>
+    </section>
+  </div>
+
   <div class="tab-panel hidden" id="tab-pesquisas">
     <div id="pesq-area"></div>
   </div>
@@ -675,19 +707,11 @@
       <button type="button" class="btn btn-secondary btn-sm" id="btn-add-driver">+ Adicionar motorista</button>
     </section>
 
-    <section class="drivers-admin" id="fretes-admin">
-      <div class="section-head"><h2 class="section-title">Tabela de fretes</h2><span class="count-chip" id="fretes-versao"></span></div>
-      <p class="hint">Valor da viagem por destino para 16 e 18 paletes. Carga com outra quantidade: o app sugere o valor proporcional e pede a sua confirmação. Linhas “COM 175” valem quando a carga tem palete de 175 fardos. Mais de um destino: o mais caro mais o adicional abaixo.</p>
-      <div class="row-2 fretes-ctrl">
-        <label>Buscar destino
-          <input type="search" id="f-fretes-busca" autocomplete="off" placeholder="Ex.: Santos" />
-        </label>
-        <label>Adicional por carga com mais de um destino (R$)
-          <input type="number" id="f-fretes-adicional" min="0" step="0.01" inputmode="decimal" />
-        </label>
-      </div>
-      <div id="fretes-tabela-list"></div>
-      <button type="button" class="btn btn-secondary btn-sm" id="btn-add-frete-linha">+ Adicionar destino</button>
+    <section class="drivers-admin" id="fv-admin">
+      <div class="section-head"><h2 class="section-title">Força de vendas</h2></div>
+      <p class="hint">Cada representante entra com a própria senha e lança os pedidos dos clientes dele. Pedido da força de vendas só fica liberado para carregar com o <b>ok do financeiro</b> e o <b>ok da logística</b> (pessoas da Equipe com senha).</p>
+      <div id="fv-list"></div>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-add-rep">+ Adicionar representante</button>
     </section>
 
     <section class="drivers-admin" id="pagers-admin">
@@ -757,6 +781,25 @@
     <div id="driver-done-list"></div>
   </div>
 </div>
+
+<div id="rep-view" class="hidden">
+  <div id="rep-app">
+    <header>
+      <div class="brand brand-sm" aria-hidden="true"><svg class="brand-h" viewBox="356.7 194.1 432.8 99.0" aria-hidden="true"><use href="#lv-simb"/><g transform="translate(335.87 -8.16) scale(0.74)"><use href="#lv-pal"/></g></svg></div>
+      <div class="header-row">
+        <h1 id="rep-title">Força de vendas</h1>
+        <button type="button" class="btn-text" id="btn-logout-rep">Sair</button>
+      </div>
+      <p class="tagline">Lance os pedidos dos seus clientes. Cada pedido passa pelo ok do financeiro e da logística e, liberado, entra na programação de carregamento.</p>
+    </header>
+    <div class="rep-resumo" id="rep-resumo"></div>
+    <div class="section-head"><h2 class="section-title">Em andamento</h2></div>
+    <div id="rep-andamento"></div>
+    <div class="section-head" style="margin-top:22px"><h2 class="section-title">Carregados</h2></div>
+    <div id="rep-carregados"></div>
+  </div>
+</div>
+<button class="fab hidden" id="btn-rep-novo">+ Novo pedido</button>
 
 <div class="sheet-overlay hidden" id="sheet-overlay">
   <div class="sheet">
@@ -902,6 +945,67 @@
   </div>
 </div>
 
+<!-- Página de cada representante (só a senha mestre): dados e acesso, pedidos, documentos e contratos -->
+<div class="sheet-overlay mot-overlay hidden" id="repcad-overlay">
+  <div class="sheet sheet-tall" role="dialog" aria-labelledby="repcad-title">
+    <div class="sheet-header">
+      <h2 id="repcad-title">Representante</h2>
+      <button class="icon-btn" id="btn-close-repcad" aria-label="Fechar">✕</button>
+    </div>
+    <nav class="segmented" id="repcad-tabs" aria-label="Seções do representante">
+      <button type="button" class="seg-btn" data-rtab="dados">Dados e acesso</button>
+      <button type="button" class="seg-btn" data-rtab="pedidos">Pedidos</button>
+      <button type="button" class="seg-btn" data-rtab="docs">Documentos e contratos</button>
+    </nav>
+    <div id="repcad-body"></div>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="repsenha-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="repsenha-title">Senha do representante</h2>
+      <button class="icon-btn" id="btn-close-repsenha" aria-label="Fechar">✕</button>
+    </div>
+    <form id="repsenha-form" novalidate>
+      <label>Nova senha <span class="req">*</span>
+        <input type="password" id="f-repsenha-1" minlength="6" autocomplete="new-password" />
+      </label>
+      <label>Repita a senha <span class="req">*</span>
+        <input type="password" id="f-repsenha-2" minlength="6" autocomplete="new-password" />
+      </label>
+      <p class="hint">Mínimo de 6 caracteres. O representante entra no app com essa senha e vê só os pedidos dele.</p>
+      <p class="form-error hidden" id="repsenha-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-repsenha-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-repsenha-submit">Salvar senha</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="repnovo-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2>Adicionar representante</h2>
+      <button class="icon-btn" id="btn-close-repnovo" aria-label="Fechar">✕</button>
+    </div>
+    <form id="repnovo-form" novalidate>
+      <label>Nome <span class="req">*</span>
+        <input type="text" id="f-repnovo-nome" autocomplete="off" maxlength="60" />
+      </label>
+      <label>Celular com WhatsApp <span class="opt">(opcional)</span>
+        <input type="tel" id="f-repnovo-tel" inputmode="tel" autocomplete="off" placeholder="(19) 99999-9999" />
+      </label>
+      <p class="form-error hidden" id="repnovo-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-repnovo-cancel">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Adicionar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Frete de uma carga: destino(s) e valor -->
 <div class="sheet-overlay hidden" id="frete-sheet-overlay">
   <div class="sheet">
@@ -1000,7 +1104,14 @@
       <label>Celular com WhatsApp <span class="opt">(opcional)</span>
         <input type="tel" id="f-driver-tel" inputmode="tel" autocomplete="off" placeholder="(19) 99999-9999" />
       </label>
-      <label><span id="driver-senha-text">Senha de acesso <span class="req">*</span></span>
+      <label>Vínculo com a Levíssima
+        <select id="f-driver-vinculo">
+          <option value="">Não informado</option>
+          <option value="terceiro">Terceiro contratado a serviço da Levíssima</option>
+          <option value="proprio">Motorista próprio da Levíssima</option>
+        </select>
+      </label>
+      <label><span id="driver-senha-text">Senha de acesso <span class="opt">(pode criar depois)</span></span>
         <input type="password" id="f-driver-senha" minlength="6" autocomplete="new-password" />
       </label>
       <p class="hint">O motorista usa essa senha para entrar e ver somente os pedidos designados a ele. Com o celular, dá para chamá-lo e mandar a ordem de carregamento pelo WhatsApp.</p>
@@ -1204,6 +1315,8 @@
         <legend>O que essa pessoa faz <span class="req">*</span></legend>
         <label class="check"><input type="checkbox" id="f-equipe-fat" /> Dá o ok do faturamento</label>
         <label class="check"><input type="checkbox" id="f-equipe-conf" /> Confere o carregamento (expedição)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-fin" /> Dá o ok do financeiro (pedidos da força de vendas)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-log" /> Programa a logística dos caminhões (ok da logística)</label>
       </fieldset>
       <p class="hint">Quando essa senha for digitada, o ok do faturamento ou a conferência saem no nome desta pessoa.</p>
       <p class="form-error hidden" id="equipe-form-error"></p>
@@ -2283,7 +2396,7 @@
   function subscribeProdutos() {
     db.collection('produtos').onSnapshot(function(snap) {
       produtos = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-      if (!produtosSeedChecked) { produtosSeedChecked = true; seedProdutosDb(); }
+      if (!produtosSeedChecked && session && session.role !== 'representante') { produtosSeedChecked = true; seedProdutosDb(); }
       if (session) render();
     }, function(err) { console.error('produtos error', err); });
   }
@@ -2642,6 +2755,7 @@
   // ---------- rendering ----------
   function render() {
     if (session && session.role === 'motorista') { renderDriverView(); return; }
+    if (session && session.role === 'representante') { renderRepView(); return; }
     if (mode === 'loading') {
       document.getElementById('summary').innerHTML = '';
       document.getElementById('pending-section').classList.add('hidden');
@@ -2658,6 +2772,8 @@
     renderFretesDatalist();
     renderTabelaFretesAdmin();
     renderMotoristaPage(false);
+    renderFvAdmin();
+    renderRepCadPage(false);
     renderStorageNote();
     renderCargasSection();
     renderProdutosAdmin();
@@ -2939,7 +3055,34 @@
     document.getElementById('sem-motorista-hint').classList.toggle('hidden', sorted.length > 0);
   }
 
+  var VINCULOS = { terceiro: 'Terceiro contratado a serviço da Levíssima', proprio: 'Motorista próprio da Levíssima' };
+  function vinculoCurto(v) { return v === 'terceiro' ? 'terceiro contratado' : v === 'proprio' ? 'próprio' : ''; }
+  // aba Fretes: quanto falta pagar a cada motorista
+  function renderFretesResumo() {
+    var list = document.getElementById('fretes-resumo-list');
+    if (!list || !session || session.role !== 'admin') return;
+    var tot = document.getElementById('fretes-resumo-total');
+    if (!fretesTabela) { tot.textContent = ''; list.innerHTML = '<p class="field-hint">' + (fretesCarregado ? 'Cadastre a tabela de fretes abaixo para o app calcular os valores.' : 'Carregando…') + '</p>'; return; }
+    var geral = 0, nConf = 0;
+    var linhas = motoristas.map(function(m) { var rf = resumoFretesMotorista(m); geral += rf.apagar; nConf += rf.nConfirmar; return { m: m, rf: rf }; })
+      .sort(function(a, b) { return (b.rf.apagar - a.rf.apagar) || (b.rf.nConfirmar - a.rf.nConfirmar) || a.m.nome.localeCompare(b.m.nome, 'pt-BR'); });
+    tot.textContent = geral ? fmtBRL(geral) + ' a pagar' : '';
+    if (!linhas.length) { list.innerHTML = '<p class="empty-state">Nenhum motorista cadastrado ainda (Cadastros › Motoristas).</p>'; return; }
+    list.innerHTML = linhas.map(function(x) {
+      var sub = [];
+      if (x.m.vinculo) sub.push(escapeHtml(vinculoCurto(x.m.vinculo)));
+      sub.push(x.rf.nApagar ? '<span class="apagar">' + fmtBRL(x.rf.apagar) + ' a pagar (' + x.rf.nApagar + (x.rf.nApagar === 1 ? ' frete' : ' fretes') + ')</span>' : 'nada a pagar');
+      if (x.rf.nConfirmar) sub.push('<span class="alerta">' + x.rf.nConfirmar + (x.rf.nConfirmar === 1 ? ' frete a confirmar' : ' fretes a confirmar') + '</span>');
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.m.nome) + '<span class="driver-sub">' + sub.join(' · ') + '</span></span>' +
+        '<button class="btn-text" data-action="fretes-abrir-mot" data-id="' + escapeHtml(x.m.id) + '">Abrir</button></div>';
+    }).join('') + (nConf ? '<p class="field-hint warn">' + nConf + (nConf === 1 ? ' frete precisa' : ' fretes precisam') + ' da sua confirmação (carga com outra quantidade de paletes ou sem destino).</p>' : '');
+  }
+  document.getElementById('fretes-resumo-list').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-action="fretes-abrir-mot"]');
+    if (b) abrirMotoristaPage(b.dataset.id, 'fretes');
+  });
   function renderDriversAdmin() {
+    renderFretesResumo();
     var list = document.getElementById('drivers-list');
     if (!motoristas.length) {
       list.innerHTML = '<p class="empty-state">Nenhum motorista cadastrado ainda.</p>';
@@ -2953,6 +3096,7 @@
           '<button class="btn-text" data-action="cancel-remove-driver">Cancelar</button></div>';
       }
       var sub = [];
+      if (m.vinculo) sub.push(escapeHtml(vinculoCurto(m.vinculo)));
       if (m.telefone) sub.push(escapeHtml(telMask(m.telefone)));
       if (session && session.role === 'admin' && fretesTabela) {
         var rf = resumoFretesMotorista(m);
@@ -3014,16 +3158,17 @@
   function carregarAcessoInfo() {
     acessoBuscando = true;
     chamarAcesso({ acao: 'lista' }).then(function(r) {
-      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [] };
+      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [], reps: {} };
       (r.senhas || []).forEach(function(x) {
         if (x.ref === 'mestre') info.mestre = x.atualizado_em || true;
         if (x.ref === 'equipe') { info.equipe = x.atualizado_em || true; info.equipeModulos = x.modulos || []; }
         if (/^setor:/.test(x.ref || '')) info.setores.push({ ref: x.ref, nome: x.nome || '', modulos: x.modulos || [], em: x.atualizado_em });
+        if (/^representante:/.test(x.ref || '')) info.reps[x.ref] = x.atualizado_em || true;
       });
       info.setores.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       acessoInfo = info;
     }).catch(function(e) { console.error('acesso lista', e); acessoInfo = { erro: true }; })
-      .then(function() { acessoBuscando = false; renderAcessoAdmin(); });
+      .then(function() { acessoBuscando = false; renderAcessoAdmin(); renderFvAdmin(); renderRepCadPage(false); });
   }
   function openAcessoForm(modo) {
     acessoModo = modo;
@@ -3263,6 +3408,7 @@
     document.getElementById('admin-view').classList.add('hidden');
     document.getElementById('driver-view').classList.add('hidden');
     document.getElementById('setor-view').classList.remove('hidden');
+    esconderRepView();
     document.getElementById('setor-titulo').textContent = session && session.nome ? 'Olá, ' + session.nome : 'Olá';
     var mods = modulosDaSessao();
     document.getElementById('setor-modulos').innerHTML = mods.length ? mods.map(function(m) {
@@ -3367,6 +3513,7 @@
   function cargaMatchesFilter(c, f) {
     if (!f) return true;
     if (f === 'semFaturamento') return !c.faturamentoOk;
+    if (f === 'forcaVendas') return pedidoRep(c) && c.status !== 'concluida' && !liberadaCarga(c);
     return cargaStatusKey(c) === f;
   }
   function renderCargaFilters() {
@@ -3382,8 +3529,10 @@
         '<span class="cg-filter-count"><span class="swatch' + (f.cls ? '' : ' outline') + '"></span>' + fmtInt(n) + '</span>' +
         '<span class="cg-filter-label">' + escapeHtml(f.label(n)) + '</span></button>';
     }).join('');
+    renderFvBanner();
     var note = document.getElementById('carga-filter-note');
     var active = ui.cargaFilter && CARGA_FILTERS.find(function(f) { return f.key === ui.cargaFilter; });
+    if (ui.cargaFilter === 'forcaVendas') active = { label: function() { return 'pedidos da força de vendas aguardando ok'; } };
     if (active) {
       note.innerHTML = '<span>Mostrando só: ' + escapeHtml(active.label(2)) + '</span><button type="button" class="btn-text" data-filter="">Mostrar todas</button>';
       note.classList.remove('hidden');
@@ -3544,6 +3693,7 @@
     var fat = c.faturamentoOk
       ? '<div class="fat-badge ok">✓ ok de ' + escapeHtml(c.faturamentoPor || '—') + '</div>'
       : '<button type="button" class="fat-badge pend" data-action="fat-ok" data-id="' + id + '">○ Sem ok do faturamento<span class="fat-badge-cta">Dar ok</span></button>';
+    var fv = fvCardHtml(c, id);
     var ent = done ? entregasResumo(c) : null;
     var viagemInfo = '';
     if (fase === 'carregada') viagemInfo = '<div class="carga-sub">Aguardando a saída do motorista</div>';
@@ -3568,6 +3718,10 @@
         : key === 'futura'
           ? '<button type="button" class="btn btn-secondary btn-sm" data-action="detalhes" data-id="' + id + '">Ver detalhes</button>'
           : '<button type="button" class="btn btn-primary btn-sm" data-action="pager-entregar" data-id="' + id + '">Entregar pager</button>';
+    if (!done && !liberadaCarga(c)) {
+      // pedido da força de vendas: antes de carregar, ok do financeiro e da logística
+      main = '<button type="button" class="btn btn-primary btn-sm" data-action="' + (!c.financeiroOk ? 'fin-ok' : 'log-ok') + '" data-id="' + id + '">' + (!c.financeiroOk ? 'Ok do financeiro' : 'Ok da logística') + '</button>';
+    }
     var detalhesLink = (!done && !c.numeroPager && key === 'futura') ? '' : '<button type="button" class="btn-text" data-action="detalhes" data-id="' + id + '">Detalhes</button>';
     return '<article class="carga-card ' + st.cls + '" data-id="' + id + '">' + head +
       '<div class="carga-card-body">' +
@@ -3577,7 +3731,7 @@
         viagemInfo +
         '<div class="carga-figs"><span class="figure-wood"><b>' + fmtInt(c.totalPaletes) + '</b>' + palavraPaletes(c.totalPaletes) + '</span>' +
           '<span class="figure-teal"><b>' + fmtInt(c.totalChapatex) + '</b> chapatex</span></div>' +
-        fat +
+        fat + fv +
         (ent ? '<div class="carga-sub">Entregas: ' + escapeHtml(ent.curto) + '</div>' : '') +
         '<div class="carga-actions">' + main + detalhesLink + '</div>' +
       '</div></article>';
@@ -3593,7 +3747,7 @@
       : 'para ' + formatDateBR(c.data) + (c.hora ? ' às ' + c.hora : '');
     var html = '<div class="detail-head"><span class="detail-status ' + st.cls + '">' + st.label + '</span><span class="detail-when">' + escapeHtml(when) + '</span></div>';
 
-    var pedirPager = !done && (!c.numeroPager || ui.editingPager === c.id);
+    var pedirPager = !done && liberadaCarga(c) && (!c.numeroPager || ui.editingPager === c.id);
     if (pedirPager) {
       var livre = proximoPagerLivre(c.id);
       html += '<div class="detail-block"><label class="detail-label" for="det-pager-input">Pager entregue ao motorista</label><div class="inline-form">' +
@@ -3617,6 +3771,7 @@
       ? row('Faturamento', escapeHtml('ok de ' + (c.faturamentoPor || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')) +
           '<button type="button" class="btn-text" data-action="fat-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
       : row('Faturamento', 'aguardando ok<button type="button" class="btn-text" data-action="fat-ok" data-id="' + id + '">Dar ok</button>');
+    info += fvDetailRows(c, id, row);
     var dev = devolucaoAnteriorTexto(c);
     if (dev) info += row('Devolução da entrega anterior', escapeHtml(dev.texto), dev.pendente ? 'ask' : '');
     if (done) {
@@ -3673,7 +3828,8 @@
       ? '<button type="button" class="btn btn-secondary" data-action="mapa-carga" data-id="' + id + '">Ver a viagem no mapa</button>'
       : '';
     html += '<div class="detail-actions">' +
-      (done ? '' : '<button type="button" class="btn btn-primary" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>') +
+      (done ? '' : liberadaCarga(c) ? '<button type="button" class="btn btn-primary" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>'
+        : '<p class="hint" style="margin:0">' + escapeHtml(faltaOkTexto(c)) + ': pedido da força de vendas só carrega depois dos dois oks.</p>') +
       verMapa + chamar + links + '</div>';
     return html;
   }
@@ -4219,6 +4375,14 @@
       return;
     }
     if (!c) return;
+    if (action === 'fin-ok') { darOkFinanceiro(id); return; }
+    if (action === 'fin-desfazer') { desfazerOkFinanceiro(id); return; }
+    if (action === 'log-ok') { darOkLogistica(id); return; }
+    if (action === 'log-desfazer') { desfazerOkLogistica(id); return; }
+    if ((action === 'pager-entregar' || action === 'pager-save' || action === 'concluir-carga') && !liberadaCarga(c)) {
+      showToast(faltaOkTexto(c) + ': pedido da força de vendas ainda não liberado para carregar.');
+      return;
+    }
     if (action === 'mapa-carga') { openMapaCarga(id); return; }
     if (action === 'detalhes') { openCargaDetail(id); return; }
     if (action === 'pager-entregar') { entregarPagerAuto(id); return; }
@@ -4290,9 +4454,9 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['cargas', 'paletes', 'estoque', 'cadastros', 'pesquisas'];
+  var TABS = ['cargas', 'paletes', 'estoque', 'cadastros', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
-  // A senha da equipe abre o dia a dia do escritório; Cadastros e Pesquisas só com a senha mestre.
+  // A senha da equipe abre o dia a dia do escritório; Cadastros, Fretes e Pesquisas só com a senha mestre.
   function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque'] : TABS; }
   function applyTab() {
     var permitidas = abasPermitidas();
@@ -5781,14 +5945,19 @@
   });
   function openCargaForm(prefillCarga) {
     editingCargaId = prefillCarga ? prefillCarga.id : null;
-    document.getElementById('carga-sheet-title').textContent = editingCargaId ? 'Editar carga' : 'Nova carga';
+    var rep = !!session && session.role === 'representante';
+    document.getElementById('carga-sheet-title').textContent = rep ? (editingCargaId ? 'Editar pedido' : 'Novo pedido') : (editingCargaId ? 'Editar carga' : 'Nova carga');
+    document.getElementById('cg-motorista').closest('label').classList.toggle('hidden', rep);
+    document.getElementById('btn-cg-import-nf').classList.toggle('hidden', rep);
+    document.getElementById('btn-carga-submit').textContent = rep ? 'Enviar pedido' : 'Salvar carga';
     document.getElementById('cg-data').value = (prefillCarga && prefillCarga.data) || todayIso();
     document.getElementById('cg-hora').value = (prefillCarga && prefillCarga.hora) || '';
     renderCgMotoristaSelect((prefillCarga && prefillCarga.motorista) || '');
     renderCgMotoristaInfo((prefillCarga && prefillCarga.motorista) || '', prefillCarga);
     document.getElementById('cg-obs').value = (prefillCarga && prefillCarga.obs) || '';
     document.getElementById('cg-sem-produtos-hint').classList.toggle('hidden', produtos.length > 0);
-    document.getElementById('cg-sem-motorista-hint').classList.toggle('hidden', motoristas.length > 0);
+    document.getElementById('cg-sem-motorista-hint').classList.toggle('hidden', rep || motoristas.length > 0);
+    if (rep) document.getElementById('cg-motorista-info').classList.add('hidden');
     var st = editorStateFromCarga(prefillCarga);
     cgEditor.setState(st.clientes.length ? st.clientes : [newCgCliente()], st.extras);
     document.getElementById('carga-form-error').classList.add('hidden');
@@ -5820,8 +5989,9 @@
     var clientesOut = cgEditor.toOut();
     var errEl = document.getElementById('carga-form-error');
     var err = null;
+    var rep = !!session && session.role === 'representante';
     if (!data) err = 'Informe a data da carga.';
-    else if (!motorista) err = 'Selecione o motorista.';
+    else if (!motorista && !rep) err = 'Selecione o motorista.';
     else if (!clientesOut.length) err = 'Adicione ao menos um cliente à carga.';
     else {
       for (var i = 0; i < clientesOut.length; i++) {
@@ -5845,14 +6015,25 @@
       faturamentoOk: !!base.faturamentoOk, faturamentoPor: base.faturamentoPor || '', faturamentoEm: base.faturamentoEm || '',
       criadoEm: base.criadoEm || new Date().toISOString()
     });
+    if (rep) {
+      // pedido da força de vendas: o motorista é escolhido depois, pela logística
+      Object.assign(rec, {
+        motorista: base.motorista || '', entregaAnterior: null, devolucaoAnteriorConfirmada: '', devolucaoAnteriorObs: '',
+        origem: 'representante', representanteRef: session.ref || '', representanteNome: session.nome || '',
+        status: 'aberta', financeiroOk: false, logisticaOk: false
+      });
+    }
     var editingId = editingCargaId;
     closeCargaForm();
-    addOrUpdateCarga(rec, editingId).catch(function(e) { console.error('save carga error', e); });
+    addOrUpdateCarga(rec, editingId).then(function() {
+      if (rep) showToast(editingId ? 'Pedido atualizado.' : 'Pedido enviado. Agora aguarda o ok do financeiro e da logística.');
+    }).catch(function(e) { console.error('save carga error', e); if (rep) showToast('Não foi possível enviar o pedido agora. Tente de novo.'); });
   });
 
   // ---------- concluir carregamento (expedição) ----------
   var cargaConcludeId = null;
   function openCargaConclude(carga) {
+    if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
     cargaConcludeId = carga.id;
     function row(k, v) { return '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + escapeHtml(v) + '</span></div>'; }
     document.getElementById('cgc-resumo').innerHTML =
@@ -7147,6 +7328,7 @@
     document.getElementById('admin-view').classList.add('hidden');
     document.getElementById('driver-view').classList.add('hidden');
     document.getElementById('setor-view').classList.add('hidden');
+    esconderRepView();
     if (state === 'login') {
       var f = document.getElementById('login-senha');
       f.value = '';
@@ -7158,6 +7340,7 @@
     document.getElementById('admin-view').classList.remove('hidden');
     document.getElementById('driver-view').classList.add('hidden');
     document.getElementById('setor-view').classList.add('hidden');
+    esconderRepView();
     renderModulosNav();
     applyTab();
     render();
@@ -7166,6 +7349,7 @@
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('admin-view').classList.add('hidden');
     document.getElementById('setor-view').classList.add('hidden');
+    esconderRepView();
     document.getElementById('driver-view').classList.remove('hidden');
     render();
   }
@@ -7266,7 +7450,8 @@
     nomeInput.required = kind === 'add';
     nomeInput.value = driver ? driver.nome : '';
     setVal('f-driver-tel', driver && driver.telefone ? telMask(driver.telefone) : '');
-    document.getElementById('driver-senha-text').innerHTML = kind === 'add' ? 'Senha de acesso <span class="req">*</span>' : 'Nova senha <span class="opt">(deixe em branco para manter)</span>';
+    setVal('f-driver-vinculo', (driver && driver.vinculo) || '');
+    document.getElementById('driver-senha-text').innerHTML = kind === 'add' ? 'Senha de acesso <span class="opt">(pode criar depois)</span>' : 'Nova senha <span class="opt">(deixe em branco para manter)</span>';
     setVal('f-driver-senha', '');
     document.getElementById('driver-form-error').classList.add('hidden');
     document.getElementById('driver-sheet-overlay').classList.remove('hidden');
@@ -7291,9 +7476,10 @@
     var nome = document.getElementById('f-driver-nome').value.trim();
     var senha = document.getElementById('f-driver-senha').value;
     var telefone = telMask(document.getElementById('f-driver-tel').value);
+    var vinculo = document.getElementById('f-driver-vinculo').value;
     var err = document.getElementById('driver-form-error');
     if (!editingDriverId && !nome) { err.textContent = 'Informe o nome do motorista.'; err.classList.remove('hidden'); return; }
-    if ((!editingDriverId || senha) && senha.length < 6) { err.textContent = 'A senha precisa ter pelo menos 6 caracteres (números ou letras).'; err.classList.remove('hidden'); return; }
+    if (senha && senha.length < 6) { err.textContent = 'A senha precisa ter pelo menos 6 caracteres (números ou letras).'; err.classList.remove('hidden'); return; }
     if (telefone && !waNumero(telefone)) { err.textContent = 'Celular incompleto: informe DDD e número.'; err.classList.remove('hidden'); return; }
     if (!editingDriverId && motoristas.some(function(m) { return m.nome.toLowerCase() === nome.toLowerCase(); })) {
       err.textContent = 'Já existe um motorista com esse nome.'; err.classList.remove('hidden'); return;
@@ -7306,8 +7492,8 @@
       var btnSalvar = document.querySelector('#driver-form button[type=submit]');
       btnSalvar.disabled = true;
       (senha ? chamarAcesso({ acao: 'definir', ref: 'motorista:' + mid, nome: m0 ? m0.nome : nome, senha: senha }) : Promise.resolve()).then(function() {
-        if (editingDriverId) return saveMotorista(mid, { telefone: telefone });
-        return db.collection('motoristas').doc(mid).set({ nome: nome, telefone: telefone, criadoEm: new Date().toISOString() });
+        if (editingDriverId) return saveMotorista(mid, { telefone: telefone, vinculo: vinculo });
+        return db.collection('motoristas').doc(mid).set({ nome: nome, telefone: telefone, vinculo: vinculo, criadoEm: new Date().toISOString() });
       }).then(function() { btnSalvar.disabled = false; closeDriverForm(); }).catch(function(e) {
         btnSalvar.disabled = false;
         if (!e || (e.codigo !== 'senha_em_uso' && e.codigo !== 'senha_curta')) console.error('driver save error', e);
@@ -7324,11 +7510,11 @@
         var dup = new Error('senha_em_uso'); dup.codigo = 'senha_em_uso'; throw dup;
       }
       if (editingDriverId) {
-        var patch = { telefone: telefone };
+        var patch = { telefone: telefone, vinculo: vinculo };
         if (hash) patch.senhaHash = hash;
         return saveMotorista(editingDriverId, patch);
       }
-      return saveMotorista(null, { nome: nome, senhaHash: hash, telefone: telefone });
+      return saveMotorista(null, { nome: nome, senhaHash: hash, telefone: telefone, vinculo: vinculo });
     }).then(function() { closeDriverForm(); }).catch(function(e) {
       if (!e || e.codigo !== 'senha_em_uso') console.error('driver save error', e);
       err.textContent = e && e.codigo === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : 'Não foi possível salvar agora. Tente novamente.';
@@ -7717,7 +7903,7 @@
     return lista.filter(function(x) { return x.v && x.v.cls; });
   }
 
-  // ----- Cadastros › Tabela de fretes -----
+  // ----- aba Fretes: tabela de fretes -----
   var flEditIndex = null, flConfirmRemover = null;
   function renderTabelaFretesAdmin() {
     var sec = document.getElementById('fretes-admin');
@@ -7857,6 +8043,8 @@
         '<div class="driver-row"><span class="driver-name">Celular (WhatsApp)<span class="est-sub">' + escapeHtml(m.telefone ? telMask(m.telefone) : 'não cadastrado') + '</span></span>' +
           (wa ? '<a class="btn-text" href="' + escapeHtml(waLink(wa, '')) + '" target="_blank" rel="noopener">Abrir conversa</a>' : '') +
           '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
+        '<div class="driver-row"><span class="driver-name">Vínculo<span class="est-sub">' + escapeHtml(VINCULOS[m.vinculo] || 'não informado') + '</span></span>' +
+          '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
       '</section>' +
       '<section class="mot-sec"><h3>Dados do motorista e do caminhão</h3><p class="hint">Só a senha mestre vê estes dados.</p>' +
         '<form class="mot-form" id="mot-dados-form" novalidate>' +
@@ -7908,7 +8096,7 @@
     var ff = fretesFiltrados(m), t = totaisFretes(ff.lista);
     function opt(v, rot) { return '<option value="' + escapeHtml(v) + '"' + (motPage.filtro === v ? ' selected' : '') + '>' + escapeHtml(rot) + '</option>'; }
     var opcoes = opt('apagar', 'A pagar e a confirmar') + ff.meses.map(function(ym) { return opt(ym, nomeMes(ym)); }).join('') + opt('tudo', 'Todas as viagens');
-    var semTabela = !fretesTabela ? '<p class="field-hint warn">Sem tabela de fretes: cadastre os destinos em Cadastros › Tabela de fretes.</p>' : '';
+    var semTabela = !fretesTabela ? '<p class="field-hint warn">Sem tabela de fretes: cadastre os destinos na aba Fretes.</p>' : '';
     var html = semTabela +
       '<div class="frete-filtro"><label>Mostrar<select id="mot-frete-filtro">' + opcoes + '</select></label>' +
         '<button type="button" class="btn btn-secondary btn-sm" data-action="frete-relatorio"' + (ff.lista.length ? '' : ' disabled') + '>Relatório em PDF</button></div>' +
@@ -8129,7 +8317,17 @@
   document.getElementById('frete-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharFreteForm(); });
 
   // ----- envio de documento -----
-  var docEdit = null; // { motoristaId, grupo }
+  var docEdit = null; // { motoristaId, grupo } ou { representanteId, grupo: 'representante' }
+  function abrirDocFormRep(r) {
+    docEdit = { representanteId: r.id, grupo: 'representante' };
+    document.getElementById('mdoc-sheet-title').textContent = 'Documento ou contrato — ' + r.nome;
+    document.getElementById('f-mdoc-tipo').innerHTML = TIPOS_DOC_REP.map(function(t) { return '<option>' + escapeHtml(t) + '</option>'; }).join('');
+    setVal('f-mdoc-desc', ''); setVal('f-mdoc-validade', ''); setVal('f-mdoc-arquivo', '');
+    document.getElementById('mdoc-status').textContent = '';
+    document.getElementById('mdoc-form-error').classList.add('hidden');
+    document.getElementById('btn-mdoc-submit').disabled = false;
+    document.getElementById('mdoc-sheet-overlay').classList.remove('hidden');
+  }
   function abrirDocForm(m, grupo) {
     docEdit = { motoristaId: m.id, grupo: grupo };
     document.getElementById('mdoc-sheet-title').textContent = 'Documento ' + (grupo === 'motorista' ? 'do motorista' : 'do caminhão') + ' — ' + m.nome;
@@ -8144,7 +8342,8 @@
   document.getElementById('mdoc-form').addEventListener('submit', function(e) {
     e.preventDefault();
     if (!docEdit) return;
-    var m = motoristas.find(function(x) { return x.id === docEdit.motoristaId; });
+    var ehRep = docEdit.grupo === 'representante';
+    var m = ehRep ? representantes.find(function(x) { return x.id === docEdit.representanteId; }) : motoristas.find(function(x) { return x.id === docEdit.motoristaId; });
     var err = document.getElementById('mdoc-form-error'), st = document.getElementById('mdoc-status');
     var file = (document.getElementById('f-mdoc-arquivo').files || [])[0];
     function erro(msg) { err.textContent = msg; err.classList.remove('hidden'); }
@@ -8156,9 +8355,9 @@
     var btn = document.getElementById('btn-mdoc-submit');
     btn.disabled = true;
     st.textContent = 'Enviando…';
-    enviarDocMotorista(m, docEdit.grupo, document.getElementById('f-mdoc-tipo').value, document.getElementById('f-mdoc-desc').value.trim(),
-      document.getElementById('f-mdoc-validade').value, file).then(function() {
-      fecharDocForm(); renderMotoristaPage(true); showToast('Documento guardado.');
+    var tipoDoc = document.getElementById('f-mdoc-tipo').value, descDoc = document.getElementById('f-mdoc-desc').value.trim(), valDoc = document.getElementById('f-mdoc-validade').value;
+    (ehRep ? enviarDocRep(m, tipoDoc, descDoc, valDoc, file) : enviarDocMotorista(m, docEdit.grupo, tipoDoc, descDoc, valDoc, file)).then(function() {
+      fecharDocForm(); if (ehRep) renderRepCadPage(true); else renderMotoristaPage(true); showToast('Documento guardado.');
     }).catch(function(x) {
       console.error('enviar documento', x);
       btn.disabled = false; st.textContent = '';
@@ -8182,7 +8381,7 @@
     y = 288;
     var dd = motoristaDados[m.id] || {};
     var colX = [L, L + 520, L + 800], colW = [480, 260, CW - 800];
-    txt(ctx, 'Motorista', colX[0], y, rFont(500, 26, R_DISP), RC.muted, 'left');
+    txtFit(ctx, 'Motorista' + (m.vinculo === 'terceiro' ? ' · terceiro contratado' : m.vinculo === 'proprio' ? ' · próprio' : ''), colX[0], y, 500, R_DISP, 26, 18, colW[0], RC.muted, 'left');
     txt(ctx, 'CPF', colX[1], y, rFont(500, 26, R_DISP), RC.muted, 'left');
     txt(ctx, 'Caminhão', colX[2], y, rFont(500, 26, R_DISP), RC.muted, 'left');
     drawValueBlock(ctx, m.nome || '—', colX[0], y + 46, colW[0], RC.ink);
@@ -8262,6 +8461,465 @@
       };
     });
   }
+
+  // ---------- Força de vendas: representantes, pedidos e os oks do financeiro e da logística ----------
+  // Pedido lançado por um representante (origem "representante") só fica liberado para carregar com o ok do
+  // financeiro e o ok da logística (quem programa os caminhões). As outras cargas seguem como antes.
+  // O banco só deixa o representante ver os pedidos dele e mexer neles enquanto não têm ok (0005_forca_de_vendas.sql).
+  // O cadastro dos representantes e os documentos/contratos deles são só da senha mestre.
+  var representantes = [];     // [{ id, nome, telefone, email, documento, regiao, obs }]
+  var representanteDocs = [];  // documentos e contratos (arquivos no Storage privado, pasta representantes/<id>)
+  var TIPOS_DOC_REP = ['Contrato de representação', 'Aditivo de contrato', 'RG / CNH', 'CPF / CNPJ', 'Comprovante de endereço', 'Registro no CORE', 'Outro'];
+  function pedidoRep(c) { return !!c && c.origem === 'representante'; }
+  function liberadaCarga(c) { return !pedidoRep(c) || (!!c.financeiroOk && !!c.logisticaOk); }
+  function faltaOkTexto(c) {
+    if (!pedidoRep(c)) return '';
+    if (!c.financeiroOk && !c.logisticaOk) return 'Aguardando ok do financeiro e da logística';
+    if (!c.financeiroOk) return 'Aguardando ok do financeiro';
+    if (!c.logisticaOk) return 'Aguardando ok da logística';
+    return '';
+  }
+  var FIN_SEM_CADASTRO = 'Ninguém do financeiro está cadastrado. Cadastre em Cadastros › Equipe com senha (marque "Dá o ok do financeiro").';
+  var LOG_SEM_CADASTRO = 'Ninguém da logística está cadastrado. Cadastre em Cadastros › Equipe com senha (marque "Programa a logística").';
+  function gravarOk(id, patch, msg) {
+    return setCargaFields(id, patch).then(function() { showToast(msg); })
+      .catch(function(err) { console.error('ok da força de vendas', err); showToast('Não foi possível gravar agora. Tente de novo.'); });
+  }
+  function darOkFinanceiro(id) {
+    openPinDialog({
+      titulo: 'Ok do financeiro', funcao: 'financeiro', funcaoTexto: 'dá o ok do financeiro', semCadastro: FIN_SEM_CADASTRO,
+      hint: 'Pedido da força de vendas: digite a sua senha de 4 números para liberar pelo financeiro.',
+      onOk: function(m) { gravarOk(id, { financeiroOk: true, financeiroPor: m.nome, financeiroPorId: m.id, financeiroEm: new Date().toISOString() }, 'Ok do financeiro: ' + m.nome + '.'); }
+    });
+  }
+  function desfazerOkFinanceiro(id) {
+    openPinDialog({
+      titulo: 'Desfazer o ok do financeiro', funcao: 'financeiro', funcaoTexto: 'dá o ok do financeiro', semCadastro: FIN_SEM_CADASTRO,
+      hint: 'Para desfazer, digite a senha de alguém do financeiro.',
+      onOk: function(m) { gravarOk(id, { financeiroOk: false, financeiroPor: '', financeiroPorId: '', financeiroEm: '' }, 'Ok do financeiro desfeito por ' + m.nome + '.'); }
+    });
+  }
+  function darOkLogistica(id) {
+    var c = findCarga(id);
+    if (c && !String(c.motorista || '').trim()) {
+      showToast('Escolha o motorista e a data em "Editar carga" antes do ok da logística.');
+      openCargaDetail(id);
+      return;
+    }
+    openPinDialog({
+      titulo: 'Ok da logística', funcao: 'logistica', funcaoTexto: 'programa a logística', semCadastro: LOG_SEM_CADASTRO,
+      hint: 'Confira motorista, data e hora da carga e digite a sua senha de 4 números.',
+      onOk: function(m) { gravarOk(id, { logisticaOk: true, logisticaPor: m.nome, logisticaPorId: m.id, logisticaEm: new Date().toISOString() }, 'Ok da logística: ' + m.nome + '.'); }
+    });
+  }
+  function desfazerOkLogistica(id) {
+    openPinDialog({
+      titulo: 'Desfazer o ok da logística', funcao: 'logistica', funcaoTexto: 'programa a logística', semCadastro: LOG_SEM_CADASTRO,
+      hint: 'Para desfazer, digite a senha de alguém da logística.',
+      onOk: function(m) { gravarOk(id, { logisticaOk: false, logisticaPor: '', logisticaPorId: '', logisticaEm: '' }, 'Ok da logística desfeito por ' + m.nome + '.'); }
+    });
+  }
+  // Quadro e detalhes da carga (escritório)
+  function fvCardHtml(c, id) {
+    if (!pedidoRep(c)) return '';
+    return '<div class="fv-tag">Força de vendas · ' + escapeHtml(c.representanteNome || '—') + '</div>' +
+      (c.financeiroOk
+        ? '<div class="fat-badge ok">✓ financeiro: ' + escapeHtml(c.financeiroPor || '—') + '</div>'
+        : '<button type="button" class="fat-badge pend" data-action="fin-ok" data-id="' + id + '">○ Sem ok do financeiro<span class="fat-badge-cta">Dar ok</span></button>') +
+      (c.logisticaOk
+        ? '<div class="fat-badge ok">✓ logística: ' + escapeHtml(c.logisticaPor || '—') + '</div>'
+        : '<button type="button" class="fat-badge pend" data-action="log-ok" data-id="' + id + '">○ Sem ok da logística<span class="fat-badge-cta">Dar ok</span></button>');
+  }
+  function fvDetailRows(c, id, row) {
+    if (!pedidoRep(c)) return '';
+    return row('Força de vendas', escapeHtml(c.representanteNome || '—')) +
+      (c.financeiroOk
+        ? row('Financeiro', escapeHtml('ok de ' + (c.financeiroPor || '—') + (c.financeiroEm ? ' em ' + formatDateTimeBR(c.financeiroEm) : '')) + '<button type="button" class="btn-text" data-action="fin-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
+        : row('Financeiro', 'aguardando ok<button type="button" class="btn-text" data-action="fin-ok" data-id="' + id + '">Dar ok</button>', 'ask')) +
+      (c.logisticaOk
+        ? row('Logística', escapeHtml('ok de ' + (c.logisticaPor || '—') + (c.logisticaEm ? ' em ' + formatDateTimeBR(c.logisticaEm) : '')) + '<button type="button" class="btn-text" data-action="log-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
+        : row('Logística', 'aguardando ok<button type="button" class="btn-text" data-action="log-ok" data-id="' + id + '">Dar ok</button>', 'ask'));
+  }
+  function pedidosRepPendentes() { return cargas.filter(function(c) { return pedidoRep(c) && c.status !== 'concluida' && !liberadaCarga(c); }); }
+  function renderFvBanner() {
+    var el = document.getElementById('fv-banner');
+    if (!el) return;
+    var pend = pedidosRepPendentes();
+    if (!pend.length || ui.cargaFilter === 'forcaVendas') { el.classList.add('hidden'); el.innerHTML = ''; return; }
+    var nFin = pend.filter(function(c) { return !c.financeiroOk; }).length, nLog = pend.filter(function(c) { return !c.logisticaOk; }).length;
+    el.innerHTML = '<span><b>Força de vendas:</b> ' + pend.length + (pend.length === 1 ? ' pedido aguardando ok' : ' pedidos aguardando ok') +
+      ' (' + [nFin ? nFin + ' do financeiro' : '', nLog ? nLog + ' da logística' : ''].filter(Boolean).join(', ') + ')</span>' +
+      '<button type="button" class="btn-text" data-filter="forcaVendas">Ver</button>';
+    el.classList.remove('hidden');
+  }
+  document.getElementById('fv-banner').addEventListener('click', function(e) {
+    if (e.target.closest('[data-filter]')) { ui.cargaFilter = 'forcaVendas'; renderCargasSection(); }
+  });
+
+  // ----- portal do representante -----
+  var repUi = { confirmCancelar: null };
+  var dadosRepLigados = false;
+  function ligarDadosRep() {
+    if (dadosRepLigados) return;
+    dadosRepLigados = true;
+    subscribeProdutos();
+    subscribeCargas();
+    subscribeFretes();
+  }
+  function esconderRepView() {
+    document.getElementById('rep-view').classList.add('hidden');
+    document.getElementById('btn-rep-novo').classList.add('hidden');
+  }
+  function showRepView() {
+    document.getElementById('lock-screen').classList.add('hidden');
+    document.getElementById('admin-view').classList.add('hidden');
+    document.getElementById('driver-view').classList.add('hidden');
+    document.getElementById('setor-view').classList.add('hidden');
+    document.getElementById('rep-view').classList.remove('hidden');
+    document.getElementById('btn-rep-novo').classList.remove('hidden');
+    renderRepView();
+  }
+  function meusPedidos() {
+    return cargas.filter(function(c) { return pedidoRep(c) && (!session || !session.ref || c.representanteRef === session.ref); });
+  }
+  function repCardHtml(c) {
+    var id = escapeHtml(c.id), done = c.status === 'concluida';
+    var editavel = !done && !c.financeiroOk && !c.logisticaOk;
+    var etapa = done ? { cls: 'pago', txt: 'Carregado' + (c.concluidoEm ? ' em ' + formatDateTimeBR(c.concluidoEm) : '') }
+      : liberadaCarga(c) ? { cls: 'apagar', txt: 'Liberado para carregamento' }
+      : { cls: 'confirmar', txt: faltaOkTexto(c) };
+    var quando = (!done && liberadaCarga(c) ? 'Programado para ' : done ? 'Pedido para ' : 'Pedido para ') + formatDateBR(c.data) + (c.hora ? ' às ' + c.hora : '');
+    var clientes = (c.clientes || []).map(function(cl) { return (cl.cliente || '—') + (cl.destino ? ' (' + cl.destino + ')' : ''); }).join(', ');
+    var oks = [];
+    if (c.financeiroOk) oks.push('✓ financeiro');
+    if (c.logisticaOk) oks.push('✓ logística' + (c.motorista ? ' · motorista ' + c.motorista : ''));
+    var acoes = '';
+    if (editavel) {
+      acoes = repUi.confirmCancelar === c.id
+        ? '<span>Cancelar este pedido?</span><button class="btn-text danger" data-action="rep-cancelar-ok" data-id="' + id + '">Cancelar pedido</button><button class="btn-text" data-action="rep-cancelar-nao">Manter</button>'
+        : '<button class="btn-text" data-action="rep-editar" data-id="' + id + '">Editar</button><button class="btn-text danger" data-action="rep-cancelar" data-id="' + id + '">Cancelar pedido</button>';
+    }
+    return '<div class="frete-item est-' + etapa.cls + '">' +
+      '<div class="frete-top"><span><b>' + escapeHtml(quando) + '</b></span><span class="frete-valor">' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) + '</span></div>' +
+      '<div style="margin-top:4px"><span class="chip-est ' + etapa.cls + '" style="margin-left:0">' + escapeHtml(etapa.txt) + '</span></div>' +
+      '<div class="frete-sub">' + escapeHtml(clientes || '—') + '</div>' +
+      (oks.length ? '<div class="frete-sub">' + escapeHtml(oks.join(' · ')) + '</div>' : '') +
+      (c.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(c.obs) + '</div>' : '') +
+      (acoes ? '<div class="frete-acoes">' + acoes + '</div>' : '') + '</div>';
+  }
+  function renderRepView() {
+    var el = document.getElementById('rep-andamento');
+    if (!el || !session || session.role !== 'representante') return;
+    document.getElementById('rep-title').textContent = 'Força de vendas · ' + session.nome;
+    var lista = meusPedidos().sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')) || String(b.criadoEm || '').localeCompare(String(a.criadoEm || '')); });
+    var abertos = lista.filter(function(c) { return c.status !== 'concluida'; }), feitos = lista.filter(function(c) { return c.status === 'concluida'; });
+    var nFin = abertos.filter(function(c) { return !c.financeiroOk; }).length;
+    var nLog = abertos.filter(function(c) { return c.financeiroOk && !c.logisticaOk; }).length;
+    var nLib = abertos.filter(liberadaCarga).length;
+    document.getElementById('rep-resumo').innerHTML =
+      '<div class="stat"><div class="stat-value">' + nFin + '</div><div class="stat-label">no financeiro</div></div>' +
+      '<div class="stat"><div class="stat-value">' + nLog + '</div><div class="stat-label">na logística</div></div>' +
+      '<div class="stat"><div class="stat-value">' + nLib + '</div><div class="stat-label">liberados</div></div>';
+    el.innerHTML = abertos.length ? abertos.map(repCardHtml).join('') : '<p class="empty-state">Nenhum pedido em andamento. Toque em “+ Novo pedido”.</p>';
+    document.getElementById('rep-carregados').innerHTML = feitos.length ? feitos.slice(0, 40).map(repCardHtml).join('') : '<p class="empty-state">Nenhum pedido carregado ainda.</p>';
+  }
+  document.getElementById('btn-rep-novo').addEventListener('click', function() { openCargaForm(null); });
+  document.getElementById('btn-logout-rep').addEventListener('click', logout);
+  document.getElementById('rep-view').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.dataset.action, id = b.dataset.id, c = id ? findCarga(id) : null;
+    if (a === 'rep-editar' && c) openCargaForm(c);
+    else if (a === 'rep-cancelar') { repUi.confirmCancelar = id; renderRepView(); }
+    else if (a === 'rep-cancelar-nao') { repUi.confirmCancelar = null; renderRepView(); }
+    else if (a === 'rep-cancelar-ok' && c) { repUi.confirmCancelar = null; deleteCargaById(id); showToast('Pedido cancelado.'); }
+  });
+
+  // ----- Cadastros › Força de vendas (só a senha mestre) -----
+  function subscribeForcaVendas() {
+    if (!session || session.role !== 'admin' || mode !== 'db') return;
+    db.collection('representantes').onSnapshot(function(snap) {
+      representantes = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      renderFvAdmin(); renderRepCadPage(false);
+    }, function(err) { console.error('representantes', err); });
+    db.collection('representante-docs').onSnapshot(function(snap) {
+      representanteDocs = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      renderFvAdmin(); renderRepCadPage(false);
+    }, function(err) { console.error('documentos dos representantes', err); });
+  }
+  function refRep(r) { return 'representante:' + r.id; }
+  function pedidosDoRep(r) { return cargas.filter(function(c) { return pedidoRep(c) && c.representanteRef === refRep(r); }); }
+  function acessoRepTexto(r) {
+    if (mode !== 'db') return '';
+    if (!acessoInfo) return 'conferindo a senha…';
+    if (acessoInfo.erro) return 'não foi possível conferir a senha agora';
+    var em = acessoInfo.reps && acessoInfo.reps[refRep(r)];
+    return em ? 'senha criada' + (em !== true ? ' em ' + formatDateTimeBR(em) : '') : 'sem senha ainda';
+  }
+  function renderFvAdmin() {
+    var sec = document.getElementById('fv-admin');
+    if (!sec) return;
+    var mestre = !!session && session.role === 'admin';
+    sec.classList.toggle('hidden', !mestre);
+    if (!mestre) return;
+    var list = document.getElementById('fv-list');
+    if (!representantes.length) { list.innerHTML = '<p class="empty-state">Nenhum representante cadastrado.</p>'; return; }
+    list.innerHTML = representantes.slice().sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }).map(function(r) {
+      var pend = pedidosDoRep(r).filter(function(c) { return c.status !== 'concluida' && !liberadaCarga(c); }).length;
+      var docs = representanteDocs.filter(function(d) { return d.representanteId === r.id; });
+      var vencidos = docs.filter(function(d) { var v = situacaoValidade(d.validade); return v && v.cls; });
+      var sub = [escapeHtml(acessoRepTexto(r))];
+      if (r.telefone) sub.unshift(escapeHtml(telMask(r.telefone)));
+      if (pend) sub.push('<span class="alerta">' + pend + (pend === 1 ? ' pedido aguardando ok' : ' pedidos aguardando ok') + '</span>');
+      if (docs.length) sub.push(docs.length + (docs.length === 1 ? ' documento' : ' documentos'));
+      if (vencidos.length) sub.push('<span class="alerta">' + escapeHtml(vencidos.map(function(d) { return d.tipo + ' ' + situacaoValidade(d.validade).texto; }).join(', ')) + '</span>');
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(r.nome) + '<span class="driver-sub">' + sub.filter(Boolean).join(' · ') + '</span></span>' +
+        '<button class="btn-text" data-action="rep-abrir" data-id="' + escapeHtml(r.id) + '">Abrir</button></div>';
+    }).join('');
+    if (mode === 'db' && !acessoInfo && !acessoBuscando) carregarAcessoInfo();
+  }
+  document.getElementById('fv-list').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-action="rep-abrir"]');
+    if (b) abrirRepCadPage(b.dataset.id);
+  });
+  // novo representante
+  function fecharRepNovo() { document.getElementById('repnovo-sheet-overlay').classList.add('hidden'); }
+  document.getElementById('btn-add-rep').addEventListener('click', function() {
+    setVal('f-repnovo-nome', ''); setVal('f-repnovo-tel', '');
+    document.getElementById('repnovo-error').classList.add('hidden');
+    document.getElementById('repnovo-sheet-overlay').classList.remove('hidden');
+    setTimeout(function() { document.getElementById('f-repnovo-nome').focus(); }, 30);
+  });
+  document.getElementById('f-repnovo-tel').addEventListener('input', function(e) { var v = telMask(e.target.value); if (v !== e.target.value) e.target.value = v; });
+  document.getElementById('btn-close-repnovo').addEventListener('click', fecharRepNovo);
+  document.getElementById('btn-repnovo-cancel').addEventListener('click', fecharRepNovo);
+  document.getElementById('repnovo-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharRepNovo(); });
+  document.getElementById('repnovo-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var nome = document.getElementById('f-repnovo-nome').value.replace(/\s+/g, ' ').trim();
+    var tel = telMask(document.getElementById('f-repnovo-tel').value);
+    var err = document.getElementById('repnovo-error');
+    function erro(m) { err.textContent = m; err.classList.remove('hidden'); }
+    if (!nome) return erro('Informe o nome.');
+    if (tel && !waNumero(tel)) return erro('Celular incompleto: informe DDD e número.');
+    if (representantes.some(function(r) { return normNome(r.nome) === normNome(nome); })) return erro('Já existe um representante com esse nome.');
+    var id = 'rep-' + (slug(nome) || uid());
+    if (representantes.some(function(r) { return r.id === id; })) id += '-' + uid().slice(-4);
+    db.collection('representantes').doc(id).set({ nome: nome, telefone: tel, criadoEm: new Date().toISOString() })
+      .then(function() { fecharRepNovo(); abrirRepCadPage(id); showToast(nome + ' adicionado. Crie a senha dele.'); })
+      .catch(function(x) { console.error('novo representante', x); erro('Não foi possível salvar agora. Tente novamente.'); });
+  });
+
+  // página do representante
+  var repPage = { id: null, tab: 'dados', confirmDoc: null, confirmRemover: false, confirmAcesso: false };
+  function repAberto() { return representantes.find(function(r) { return r.id === repPage.id; }) || null; }
+  function abrirRepCadPage(id, tab) {
+    repPage = { id: id, tab: tab || 'dados', confirmDoc: null, confirmRemover: false, confirmAcesso: false };
+    document.getElementById('repcad-overlay').classList.remove('hidden');
+    renderRepCadPage(true);
+    document.querySelector('#repcad-overlay .sheet').scrollTop = 0;
+    if (mode === 'db' && !acessoInfo && !acessoBuscando) carregarAcessoInfo();
+  }
+  function fecharRepCadPage() { document.getElementById('repcad-overlay').classList.add('hidden'); repPage.id = null; }
+  function renderRepCadPage(forcar) {
+    var ov = document.getElementById('repcad-overlay');
+    if (!ov || ov.classList.contains('hidden') || !repPage.id) return;
+    var r = repAberto();
+    if (!r) { if (representantes.length) fecharRepCadPage(); return; }
+    var body = document.getElementById('repcad-body');
+    if (!forcar && body.contains(document.activeElement) && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    document.getElementById('repcad-title').textContent = r.nome;
+    document.querySelectorAll('#repcad-tabs .seg-btn').forEach(function(b) {
+      var on = b.dataset.rtab === repPage.tab;
+      b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    body.innerHTML = repPage.tab === 'pedidos' ? htmlRepPedidos(r) : repPage.tab === 'docs' ? htmlRepDocs(r) : htmlRepDados(r);
+  }
+  function htmlRepDados(r) {
+    function campo(nome, rotulo, attrs) {
+      return '<label>' + rotulo + '<input type="text" name="' + nome + '" value="' + escapeHtml(r[nome] || '') + '"' + (attrs || '') + ' autocomplete="off" /></label>';
+    }
+    var temSenha = !!(acessoInfo && acessoInfo.reps && acessoInfo.reps[refRep(r)]);
+    var wa = waNumero(r.telefone);
+    return '<section class="mot-sec"><h3>Acesso ao app</h3>' +
+        '<div class="driver-row"><span class="driver-name">Senha do representante<span class="est-sub">' + escapeHtml(acessoRepTexto(r)) + ' · ele vê só os pedidos dele</span></span>' +
+          '<button class="btn-text" data-action="rep-senha">' + (temSenha ? 'Trocar senha' : 'Criar senha') + '</button>' +
+          (temSenha ? '<button class="btn-text danger" data-action="rep-acesso-remover">Tirar o acesso</button>' : '') + '</div>' +
+        (repPage.confirmAcesso ? '<div class="driver-confirm">Tirar o acesso de ' + escapeHtml(r.nome) + '? Ele sai do app e a senha deixa de funcionar.' +
+          '<button class="btn-text danger" data-action="rep-acesso-remover-ok">Tirar o acesso</button><button class="btn-text" data-action="rep-acesso-remover-nao">Cancelar</button></div>' : '') +
+        (wa ? '<div class="driver-row"><span class="driver-name">Celular (WhatsApp)<span class="est-sub">' + escapeHtml(telMask(r.telefone)) + '</span></span><a class="btn-text" href="' + escapeHtml(waLink(wa, '')) + '" target="_blank" rel="noopener">Abrir conversa</a></div>' : '') +
+      '</section>' +
+      '<section class="mot-sec"><h3>Dados do representante</h3><p class="hint">Só a senha mestre vê estes dados.</p>' +
+        '<form class="mot-form" id="rep-dados-form" novalidate>' +
+          '<div class="row-2">' + campo('nome', 'Nome', ' maxlength="60"') + campo('telefone', 'Celular com WhatsApp', ' inputmode="tel" maxlength="16"') + '</div>' +
+          '<div class="row-2">' + campo('email', 'E-mail', ' inputmode="email" maxlength="80"') + campo('documento', 'CPF ou CNPJ', ' inputmode="numeric" maxlength="18"') + '</div>' +
+          campo('regiao', 'Região ou cidades que atende', ' maxlength="120"') +
+          campo('obs', 'Observações <span class="opt">(comissão, condições…)</span>', ' maxlength="200"') +
+          '<p class="form-error hidden" id="rep-dados-erro"></p>' +
+          '<div class="sheet-actions"><button type="submit" class="btn btn-primary" id="btn-rep-dados">Salvar dados</button></div>' +
+        '</form></section>' +
+      '<section class="mot-sec"><h3>Remover representante</h3>' +
+        (repPage.confirmRemover
+          ? '<div class="driver-confirm">Remover ' + escapeHtml(r.nome) + '? A senha deixa de funcionar e os documentos e contratos dele são apagados. Os pedidos já lançados continuam.' +
+            '<button class="btn-text danger" data-action="rep-remover-ok">Remover</button><button class="btn-text" data-action="rep-remover-nao">Cancelar</button></div>'
+          : '<button class="btn-text danger" data-action="rep-remover">Remover ' + escapeHtml(r.nome) + '</button>') +
+      '</section>';
+  }
+  function htmlRepPedidos(r) {
+    var lista = pedidosDoRep(r).sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')); });
+    if (!lista.length) return '<p class="empty-state">Nenhum pedido lançado por ' + escapeHtml(r.nome) + ' ainda.</p>';
+    return lista.slice(0, 60).map(function(c) {
+      var done = c.status === 'concluida';
+      var est = done ? { cls: 'pago', txt: 'Carregado' } : liberadaCarga(c) ? { cls: 'apagar', txt: 'Liberado' } : { cls: 'confirmar', txt: faltaOkTexto(c) };
+      return '<div class="frete-item est-' + est.cls + '"><div class="frete-top"><span><b>' + escapeHtml(formatDateBR(c.data)) + '</b> · carga ' + escapeHtml(cargaCode(c)) +
+        '<span class="chip-est ' + est.cls + '">' + escapeHtml(est.txt) + '</span></span><span class="frete-valor">' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) + '</span></div>' +
+        '<div class="frete-sub">' + escapeHtml((c.clientes || []).map(function(cl) { return cl.cliente; }).join(', ')) + (c.motorista ? ' · motorista ' + escapeHtml(c.motorista) : '') + '</div></div>';
+    }).join('');
+  }
+  function htmlRepDocs(r) {
+    if (mode !== 'db') return '<p class="empty-state">Os documentos ficam guardados no banco on-line, que não está ligado neste aparelho.</p>';
+    var docs = representanteDocs.filter(function(d) { return d.representanteId === r.id; })
+      .sort(function(a, b) { return String(a.tipo).localeCompare(String(b.tipo), 'pt-BR') || String(b.enviadoEm).localeCompare(String(a.enviadoEm)); });
+    return '<section class="mot-sec"><h3>Documentos e contratos</h3>' +
+      (docs.length ? docs.map(function(d) {
+        if (repPage.confirmDoc === d.id) {
+          return '<div class="driver-confirm">Apagar ' + escapeHtml(d.tipo) + ' (' + escapeHtml(d.nomeArquivo || '') + ')?' +
+            '<button class="btn-text danger" data-action="repdoc-remover-ok" data-id="' + escapeHtml(d.id) + '">Apagar</button><button class="btn-text" data-action="repdoc-remover-nao">Cancelar</button></div>';
+        }
+        var v = situacaoValidade(d.validade);
+        return '<div class="driver-row"><span class="driver-name">' + escapeHtml(d.tipo) + (d.descricao ? ' — ' + escapeHtml(d.descricao) : '') +
+          '<span class="est-sub">' + escapeHtml((d.nomeArquivo || 'arquivo') + ' · ' + tamanhoTexto(d.tamanho) + ' · enviado em ' + formatDateTimeBR(d.enviadoEm)) +
+          (v ? ' · <span class="val-chip ' + v.cls + '">' + escapeHtml(v.texto) + '</span>' : '') + '</span></span>' +
+          '<button class="btn-text" data-action="repdoc-abrir" data-id="' + escapeHtml(d.id) + '">Abrir</button>' +
+          '<button class="btn-text danger" data-action="repdoc-remover" data-id="' + escapeHtml(d.id) + '">Apagar</button></div>';
+      }).join('') : '<p class="field-hint">Nenhum documento ainda.</p>') +
+      '<button type="button" class="btn btn-secondary btn-sm" data-action="repdoc-novo">+ Adicionar documento ou contrato</button></section>' +
+      '<p class="hint">Fotos ou PDF, até 15 MB cada. Os arquivos ficam num armazenamento privado: só a senha mestre abre. Contrato com validade: o app avisa 30 dias antes de vencer.</p>';
+  }
+  function enviarDocRep(r, tipo, descricao, validade, file) {
+    var id = 'rdoc' + uid();
+    return prepararArquivo(file).then(function(a) {
+      if (a.blob.size > 15 * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; throw e; }
+      var caminho = 'representantes/' + r.id + '/' + id + '.' + a.ext;
+      return sbCliente.storage.from(BUCKET_DOCS).upload(caminho, a.blob, { contentType: a.mime || undefined, upsert: false }).then(function(x) {
+        if (x.error) throw x.error;
+        return db.collection('representante-docs').doc(id).set({
+          tipoRegistro: 'arquivo', representanteId: r.id, representante: r.nome, tipo: tipo, descricao: descricao || '',
+          validade: validade || '', caminho: caminho, nomeArquivo: a.nome, mime: a.mime, tamanho: a.blob.size, enviadoEm: new Date().toISOString()
+        });
+      });
+    });
+  }
+  function removerDocRep(d) {
+    return sbCliente.storage.from(BUCKET_DOCS).remove([d.caminho]).then(function(x) {
+      if (x.error) throw x.error;
+      return db.collection('representante-docs').doc(d.id).delete();
+    });
+  }
+  function removerRepresentante(r) {
+    var docs = representanteDocs.filter(function(d) { return d.representanteId === r.id; });
+    return chamarAcesso({ acao: 'remover', ref: refRep(r) }).catch(function(e) { console.error('remover senha do representante', e); })
+      .then(function() { var cs = docs.map(function(d) { return d.caminho; }).filter(Boolean); return cs.length ? sbCliente.storage.from(BUCKET_DOCS).remove(cs) : null; })
+      .then(function() {
+        var b = db.batch();
+        docs.forEach(function(d) { b.delete(db.collection('representante-docs').doc(d.id)); });
+        b.delete(db.collection('representantes').doc(r.id));
+        return b.commit();
+      });
+  }
+  document.getElementById('repcad-tabs').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-rtab]');
+    if (!b) return;
+    repPage.tab = b.dataset.rtab; repPage.confirmDoc = null; repPage.confirmRemover = false; repPage.confirmAcesso = false;
+    renderRepCadPage(true);
+  });
+  document.getElementById('btn-close-repcad').addEventListener('click', fecharRepCadPage);
+  document.getElementById('repcad-overlay').addEventListener('click', function(e) { if (e.target === this) fecharRepCadPage(); });
+  document.getElementById('repcad-body').addEventListener('input', function(e) {
+    if (e.target.name === 'documento') { var v = docMask(e.target.value); if (v !== e.target.value) e.target.value = v; }
+    if (e.target.name === 'telefone') { var t = telMask(e.target.value); if (t !== e.target.value) e.target.value = t; }
+  });
+  document.getElementById('repcad-body').addEventListener('submit', function(e) {
+    if (e.target.id !== 'rep-dados-form') return;
+    e.preventDefault();
+    var r = repAberto(); if (!r) return;
+    var f = e.target, dados = {};
+    ['nome', 'telefone', 'email', 'documento', 'regiao', 'obs'].forEach(function(k) { dados[k] = String(f.elements[k].value || '').replace(/\s+/g, ' ').trim(); });
+    var er = document.getElementById('rep-dados-erro');
+    if (!dados.nome) { er.textContent = 'Informe o nome.'; er.classList.remove('hidden'); return; }
+    if (dados.telefone && !waNumero(dados.telefone)) { er.textContent = 'Celular incompleto: informe DDD e número.'; er.classList.remove('hidden'); return; }
+    var btn = document.getElementById('btn-rep-dados'); btn.disabled = true;
+    var mudouNome = dados.nome !== r.nome;
+    db.collection('representantes').doc(r.id).set(Object.assign({}, r, dados, { id: undefined, atualizadoEm: new Date().toISOString() }))
+      .then(function() {
+        // o nome também vale no login dele (aparece no portal e nos pedidos novos)
+        if (mudouNome && acessoInfo && acessoInfo.reps && acessoInfo.reps[refRep(r)]) return chamarAcesso({ acao: 'ajustar', ref: refRep(r), nome: dados.nome }).catch(function() {});
+      })
+      .then(function() { btn.disabled = false; if (document.activeElement) document.activeElement.blur(); renderRepCadPage(true); showToast('Dados salvos.'); })
+      .catch(function(x) { btn.disabled = false; console.error('dados do representante', x); er.textContent = 'Não foi possível salvar agora. Tente novamente.'; er.classList.remove('hidden'); });
+  });
+  document.getElementById('repcad-body').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.dataset.action, id = b.dataset.id, r = repAberto();
+    if (!r) return;
+    var d;
+    if (a === 'rep-senha') abrirRepSenha(r);
+    else if (a === 'rep-acesso-remover') { repPage.confirmAcesso = true; renderRepCadPage(true); }
+    else if (a === 'rep-acesso-remover-nao') { repPage.confirmAcesso = false; renderRepCadPage(true); }
+    else if (a === 'rep-acesso-remover-ok') {
+      repPage.confirmAcesso = false;
+      chamarAcesso({ acao: 'remover', ref: refRep(r) }).then(function() { acessoInfo = null; carregarAcessoInfo(); showToast('Acesso de ' + r.nome + ' retirado.'); })
+        .catch(function(x) { console.error('tirar acesso', x); showToast('Não foi possível agora. Tente de novo.'); renderRepCadPage(true); });
+    }
+    else if (a === 'rep-remover') { repPage.confirmRemover = true; renderRepCadPage(true); }
+    else if (a === 'rep-remover-nao') { repPage.confirmRemover = false; renderRepCadPage(true); }
+    else if (a === 'rep-remover-ok') {
+      fecharRepCadPage();
+      removerRepresentante(r).then(function() { acessoInfo = null; showToast(r.nome + ' removido.'); }).catch(function(x) { console.error('remover representante', x); showToast('Não foi possível remover agora.'); });
+    }
+    else if (a === 'repdoc-novo') abrirDocFormRep(r);
+    else if (a === 'repdoc-abrir' && (d = representanteDocs.find(function(x) { return x.id === id; }))) abrirDocMotorista(d);
+    else if (a === 'repdoc-remover') { repPage.confirmDoc = id; renderRepCadPage(true); }
+    else if (a === 'repdoc-remover-nao') { repPage.confirmDoc = null; renderRepCadPage(true); }
+    else if (a === 'repdoc-remover-ok' && (d = representanteDocs.find(function(x) { return x.id === id; }))) {
+      repPage.confirmDoc = null;
+      removerDocRep(d).then(function() { renderRepCadPage(true); showToast('Documento apagado.'); })
+        .catch(function(x) { console.error('apagar documento', x); renderRepCadPage(true); showToast('Não foi possível apagar agora.'); });
+    }
+  });
+  // senha do representante (quem digita é a senha mestre)
+  var repSenhaId = null;
+  function abrirRepSenha(r) {
+    repSenhaId = r.id;
+    document.getElementById('repsenha-title').textContent = 'Senha de ' + r.nome;
+    setVal('f-repsenha-1', ''); setVal('f-repsenha-2', '');
+    document.getElementById('repsenha-error').classList.add('hidden');
+    document.getElementById('repsenha-sheet-overlay').classList.remove('hidden');
+    setTimeout(function() { document.getElementById('f-repsenha-1').focus(); }, 30);
+  }
+  function fecharRepSenha() { document.getElementById('repsenha-sheet-overlay').classList.add('hidden'); setVal('f-repsenha-1', ''); setVal('f-repsenha-2', ''); repSenhaId = null; }
+  document.getElementById('btn-close-repsenha').addEventListener('click', fecharRepSenha);
+  document.getElementById('btn-repsenha-cancel').addEventListener('click', fecharRepSenha);
+  document.getElementById('repsenha-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharRepSenha(); });
+  document.getElementById('repsenha-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var r = representantes.find(function(x) { return x.id === repSenhaId; });
+    var s1 = document.getElementById('f-repsenha-1').value, s2 = document.getElementById('f-repsenha-2').value;
+    var err = document.getElementById('repsenha-error');
+    function erro(m) { err.textContent = m; err.classList.remove('hidden'); }
+    if (!r) { fecharRepSenha(); return; }
+    if (s1.length < 6) return erro('A senha precisa ter pelo menos 6 caracteres.');
+    if (s1 !== s2) return erro('As duas senhas não são iguais.');
+    var btn = document.getElementById('btn-repsenha-submit'); btn.disabled = true;
+    chamarAcesso({ acao: 'definir', ref: refRep(r), nome: r.nome, senha: s1 }).then(function() {
+      btn.disabled = false; fecharRepSenha(); acessoInfo = null; carregarAcessoInfo(); showToast('Senha de ' + r.nome + ' salva.');
+    }).catch(function(x) {
+      btn.disabled = false;
+      var c = x && x.codigo;
+      erro(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.' : 'Não foi possível salvar agora. Tente novamente.');
+    });
+  });
 
   // ---------- estoque: tela, entrada de produção e contagem ----------
   function renderEstoque() {
@@ -8399,7 +9057,7 @@
     var list = document.getElementById('equipe-list');
     var sorted = equipe.slice().sort(function(a, b) { return (a.nome || '').localeCompare(b.nome || '', 'pt-BR'); });
     if (!sorted.length) {
-      list.innerHTML = '<p class="empty-state">Ninguém cadastrado. Sem isso, ninguém consegue dar o ok do faturamento nem conferir com senha.</p>';
+      list.innerHTML = '<p class="empty-state">Ninguém cadastrado. Sem isso, ninguém consegue dar o ok do faturamento, do financeiro ou da logística, nem conferir com senha.</p>';
       return;
     }
     list.innerHTML = sorted.map(function(m) {
@@ -8408,7 +9066,8 @@
           '<button class="btn-text danger" data-action="confirm-remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
           '<button class="btn-text" data-action="cancel-remove-membro">Cancelar</button></div>';
       }
-      var chips = (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '');
+      var chips = (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
+        (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
@@ -8424,6 +9083,8 @@
     document.getElementById('f-equipe-pin-text').innerHTML = kind === 'add' ? 'Senha de 4 números <span class="req">*</span>' : 'Nova senha de 4 números <span class="opt">(deixe em branco para manter)</span>';
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
+    document.getElementById('f-equipe-fin').checked = m ? !!m.financeiro : false;
+    document.getElementById('f-equipe-log').checked = m ? !!m.logistica : false;
     document.getElementById('equipe-form-error').classList.add('hidden');
     document.getElementById('equipe-sheet-overlay').classList.remove('hidden');
     setTimeout(function() { document.getElementById(kind === 'add' ? 'f-equipe-nome' : 'f-equipe-pin').focus(); }, 30);
@@ -8463,17 +9124,18 @@
     var nome = document.getElementById('f-equipe-nome').value.trim();
     var pin = document.getElementById('f-equipe-pin').value;
     var fat = document.getElementById('f-equipe-fat').checked, conf = document.getElementById('f-equipe-conf').checked;
+    var fin = document.getElementById('f-equipe-fin').checked, logi = document.getElementById('f-equipe-log').checked;
     var err = document.getElementById('equipe-form-error');
     var fail = function(msg) { err.textContent = msg; err.classList.remove('hidden'); };
     if (!editingMembroId && !nome) return fail('Informe o nome.');
     if ((!editingMembroId || pin) && !/^[0-9]{4}$/.test(pin)) return fail('A senha precisa ter 4 números.');
-    if (!fat && !conf) return fail('Marque o que essa pessoa faz: faturamento, conferência ou os dois.');
+    if (!fat && !conf && !fin && !logi) return fail('Marque o que essa pessoa faz: faturamento, conferência, financeiro ou logística.');
     if (!editingMembroId && equipe.some(function(m) { return normNome(m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
     (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
       // Duas pessoas com a mesma senha: não daria para saber de quem é o ok.
       if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
-      var patch = { faturamento: fat, conferente: conf };
+      var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi };
       if (hash) patch.pinHash = hash;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch)
@@ -8726,6 +9388,7 @@
     if (m.papel === 'equipe') return { role: 'equipe', nome: m.nome || '', modulos: mods };
     if (m.papel === 'motorista' && m.nome) return { role: 'motorista', nome: m.nome };
     if (m.papel === 'setor') return { role: 'setor', nome: m.nome || '', modulos: mods };
+    if (m.papel === 'representante' && m.nome) return { role: 'representante', nome: m.nome, ref: m.ref || '' };
     return null;
   }
   var dadosLigados = false;
@@ -8743,6 +9406,7 @@
     subscribeRastreio();
     subscribeDiretoria();
     subscribeFretes();
+    subscribeForcaVendas();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
@@ -8752,6 +9416,7 @@
       if (token && sbCliente.realtime && sbCliente.realtime.setAuth) sbCliente.realtime.setAuth(token);
       if (irParaModuloPedido()) return;
       if (s.role === 'setor') { showSetorView(); return; } // senha de setor: só os módulos da fábrica
+      if (s.role === 'representante') { ligarDadosRep(); showRepView(); return; } // Força de vendas: só os pedidos dele
       ligarDados();
     }
     if (s.role === 'motorista') showDriverView(); else showAdminView();
