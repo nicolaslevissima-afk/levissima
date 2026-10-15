@@ -339,6 +339,25 @@
   .est-dias th { font-family: var(--font-display); font-size: 0.75rem; color: var(--ink); font-weight: 700; vertical-align: bottom; }
   .est-dias th:first-child, .est-dias td:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); text-align: left; font-family: var(--font-display); font-weight: 600; white-space: normal; min-width: 104px; max-width: 132px; box-shadow: 1px 0 0 var(--line); }
   .est-dias td .est-sub { font-family: var(--font-mono); }
+  .conf-camera { position: relative; background: #000; border-radius: 10px; overflow: hidden; margin: 6px 0 8px; aspect-ratio: 4 / 3; max-height: 46vh; }
+  .conf-camera video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .conf-mira { position: absolute; left: 12%; right: 12%; top: 38%; bottom: 38%; border: 2px solid rgba(255, 255, 255, 0.85); border-radius: 8px; box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.25); }
+  .conf-flash { position: absolute; inset: 0; pointer-events: none; transition: background 0.15s ease; }
+  .conf-flash.ok { background: rgba(67, 176, 42, 0.35); }
+  .conf-flash.dif { background: rgba(var(--danger-rgb), 0.4); }
+  .conf-cam-ctl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .conf-manual input { flex: 1; min-width: 0; font-family: var(--font-mono); }
+  .conf-msg { border-radius: 8px; padding: 8px 10px; font-size: 0.875rem; font-weight: 600; margin: 6px 0; }
+  .conf-msg.ok { background: rgba(67, 176, 42, 0.14); color: var(--verde-texto); }
+  .conf-msg.dif { background: rgba(var(--danger-rgb), 0.12); color: var(--danger); }
+  .conf-msg select { margin-top: 6px; }
+  .conf-total { font-weight: 700; margin: 8px 0 2px; }
+  .conf-tab td .btn-text + .btn-text { margin-left: 12px; }
+  .conf-tab td:last-child { white-space: nowrap; }
+  .conf-tab td.conf-ok { color: var(--verde-texto); font-weight: 700; }
+  .conf-tab td.conf-dif { color: var(--danger); font-weight: 700; }
+  .check-row { display: flex; gap: 8px; align-items: flex-start; font-size: 0.875rem; }
+  .check-row input { width: auto; margin-top: 3px; }
   .tab-alerta { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px; }
   .est-form-head, .est-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 96px; gap: 8px; align-items: center; }
   .est-form-head { font-size: 0.6875rem; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
@@ -757,7 +776,7 @@
     </section>
 
     <section class="drivers-admin" id="pagers-admin">
-      <div class="section-head"><h2 class="section-title">Pagers</h2></div>
+      <div class="section-head"><h2 class="section-title">Pagers e carregamento</h2></div>
       <p class="hint">Ao tocar em "Entregar pager", o app escolhe o próximo pager livre. Ele volta a ficar livre sozinho quando o carregamento é concluído.</p>
       <div class="row-2 pager-range">
         <label>Do número
@@ -770,6 +789,7 @@
       <p class="field-hint" id="pagers-status"></p>
       <p class="form-error hidden" id="pagers-error"></p>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-save-pagers">Salvar pagers</button>
+      <label class="check-row" style="margin-top:14px"><input type="checkbox" id="f-exigir-dupla" /> Exigir a <b>dupla conferência por código de barras</b> (duas pessoas, sem divergência) para concluir o carregamento</label>
     </section>
 
     <section class="drivers-admin" id="acesso-admin">
@@ -1206,6 +1226,9 @@
       <label>Estoque mínimo em paletes <span class="opt" id="f-produto-minimo-padrao"></span>
         <input type="number" id="f-produto-minimo" min="0" step="1" inputmode="numeric" />
       </label>
+      <label>Códigos de barras <span class="opt">(do fardo/caixa, DUN-14 e etiqueta do palete; separe com vírgula)</span>
+        <input type="text" id="f-produto-codigos" autocomplete="off" inputmode="numeric" placeholder="Ex.: 7898123456789, 17898123456786" />
+      </label>
       <p class="hint" id="f-produto-regra"></p>
       <p class="form-error hidden" id="produto-form-error"></p>
       <div class="sheet-actions">
@@ -1213,6 +1236,31 @@
         <button type="submit" class="btn btn-primary">Salvar</button>
       </div>
     </form>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="conf-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="conf-title">Dupla conferência</h2>
+      <button class="icon-btn" id="btn-close-conf" aria-label="Fechar">✕</button>
+    </div>
+    <div id="conf-body">
+      <p class="hint" id="conf-hint"></p>
+      <div id="conf-leitura">
+        <div class="conf-camera hidden" id="conf-camera"><video id="conf-video" playsinline muted autoplay></video><div class="conf-mira" aria-hidden="true"></div><div class="conf-flash" id="conf-flash"></div></div>
+        <div class="conf-cam-ctl"><button type="button" class="btn btn-secondary btn-sm" id="btn-conf-camera">Ligar câmera</button><span class="field-hint" id="conf-cam-status"></span></div>
+        <div class="inline-form conf-manual"><input type="text" id="conf-codigo" autocomplete="off" inputmode="text" placeholder="Leitor de código de barras ou digite o código" aria-label="Código de barras" /><button type="button" class="btn-text" id="btn-conf-lancar">Lançar</button></div>
+      </div>
+      <div id="conf-aviso" aria-live="polite"></div>
+      <div id="conf-tabela"></div>
+      <label class="hidden" id="conf-nome-label">Seu nome <span class="req">*</span><input type="text" id="conf-nome" autocomplete="off" maxlength="60" /></label>
+      <p class="form-error hidden" id="conf-erro"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-conf-cancel">Fechar</button>
+        <button type="button" class="btn btn-primary" id="btn-conf-finalizar">Finalizar a conferência</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3807,7 +3855,7 @@
         viagemInfo +
         '<div class="carga-figs"><span class="figure-wood"><b>' + fmtInt(c.totalPaletes) + '</b>' + palavraPaletes(c.totalPaletes) + '</span>' +
           '<span class="figure-teal"><b>' + fmtInt(c.totalChapatex) + '</b> chapatex</span></div>' +
-        fat + fv +
+        fat + fv + duplaCardHtml(c, id) +
         (ent ? '<div class="carga-sub">Entregas: ' + escapeHtml(ent.curto) + '</div>' : '') +
         '<div class="carga-actions">' + main + detalhesLink + '</div>' +
       '</div></article>';
@@ -3848,6 +3896,7 @@
           '<button type="button" class="btn-text" data-action="fat-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
       : row('Faturamento', 'aguardando ok<button type="button" class="btn-text" data-action="fat-ok" data-id="' + id + '">Dar ok</button>');
     info += fvDetailRows(c, id, row);
+    info += duplaDetailRow(c, id, row);
     var dev = devolucaoAnteriorTexto(c);
     if (dev) info += row('Devolução da entrega anterior', escapeHtml(dev.texto), dev.pendente ? 'ask' : '');
     if (done) {
@@ -4459,6 +4508,7 @@
       showToast(faltaOkTexto(c) + ': pedido da força de vendas ainda não liberado para carregar.');
       return;
     }
+    if (action === 'conf-barras') { closeCargaDetail(); abrirConferencia(id); return; }
     if (action === 'mapa-carga') { openMapaCarga(id); return; }
     if (action === 'detalhes') { openCargaDetail(id); return; }
     if (action === 'pager-entregar') { entregarPagerAuto(id); return; }
@@ -4593,7 +4643,8 @@
       tipoChapatex: document.getElementById('f-produto-tipo').value,
       unidadesPorFileira: parseInt(document.getElementById('f-produto-upf').value, 10),
       ordem: parseInt(document.getElementById('f-produto-ordem').value, 10),
-      estoqueMinimo: document.getElementById('f-produto-minimo').value
+      estoqueMinimo: document.getElementById('f-produto-minimo').value,
+      codigosBarras: document.getElementById('f-produto-codigos').value.split(/[\s,;]+/).map(function(x) { return x.trim(); }).filter(Boolean)
     };
   }
   function atualizarMinimoPadrao() {
@@ -4634,6 +4685,7 @@
     var maxOrdem = produtos.reduce(function(m, x) { return ordemDe(x) < 9999 ? Math.max(m, ordemDe(x)) : m; }, 0);
     document.getElementById('f-produto-ordem').value = p ? (ordemDe(p) < 9999 ? ordemDe(p) : '') : maxOrdem + 1;
     document.getElementById('f-produto-minimo').value = p && p.estoqueMinimo !== undefined && p.estoqueMinimo !== null ? p.estoqueMinimo : '';
+    document.getElementById('f-produto-codigos').value = ((p && p.codigosBarras) || []).join(', ');
     atualizarMinimoPadrao();
     document.getElementById('produto-form-error').classList.add('hidden');
     updateProdutoFormRegra();
@@ -4664,8 +4716,12 @@
       nome: v.nome, unidade: v.unidade, unidadesPorPalete: v.unidadesPorPalete, tipoChapatex: v.tipoChapatex,
       unidadesPorFileira: v.tipoChapatex === 'fileira' ? v.unidadesPorFileira : 0,
       ordem: v.ordem >= 1 ? v.ordem : maxOrdem + 1,
-      estoqueMinimo: v.estoqueMinimo === '' || isNaN(Number(v.estoqueMinimo)) ? null : Math.max(0, Math.round(Number(v.estoqueMinimo)))
+      estoqueMinimo: v.estoqueMinimo === '' || isNaN(Number(v.estoqueMinimo)) ? null : Math.max(0, Math.round(Number(v.estoqueMinimo))),
+      codigosBarras: v.codigosBarras
     };
+    var repetido = null;
+    v.codigosBarras.forEach(function(cod) { var outro = produtoDoCodigo(cod); if (outro && outro.id !== editingProdutoId) repetido = cod + ' (já é de ' + outro.nome + ')'; });
+    if (repetido) return fail('Código de barras repetido: ' + repetido + '.');
     saveProduto(editingProdutoId, patch).then(function() {
       closeProdutoForm();
     }).catch(function(e) {
@@ -6210,6 +6266,7 @@
   var cargaConcludeId = null;
   function openCargaConclude(carga) {
     if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
+    if (ajustes.exigirDupla && !duplaOk(carga)) { showToast('Antes de concluir, faça a dupla conferência por código de barras (sem divergência).'); abrirConferencia(carga.id); return; }
     cargaConcludeId = carga.id;
     function row(k, v) { return '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + escapeHtml(v) + '</span></div>'; }
     document.getElementById('cgc-resumo').innerHTML =
@@ -6217,6 +6274,7 @@
       row('Motorista', carga.motorista || '—') +
       (carga.numeroPager ? row('Pager', String(carga.numeroPager)) : '') +
       row('Faturamento', carga.faturamentoOk ? 'ok de ' + (carga.faturamentoPor || '—') : 'aguardando ok') +
+      row('Dupla conferência', duplaOk(carga) ? 'ok (' + carga.dupla.r1.por + ' e ' + carga.dupla.r2.por + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, '')) +
       (carga.obs ? row('Observações', carga.obs) : '');
     var devBox = document.getElementById('cgc-devolucao');
     if (carga.entregaAnterior) {
@@ -9363,8 +9421,336 @@
     });
   });
 
+  // ---------- dupla conferência do carregamento por código de barras ----------
+  // Cada palete carregado é lido pela câmera (ou por um leitor de código de barras ligado ao celular/computador):
+  // o código diz o produto (Cadastros › Produtos › Códigos de barras) e o app compara com os paletes do pedido.
+  // São duas conferências, feitas por pessoas diferentes (cada uma com a senha de 4 números de conferente).
+  // Fica gravado na carga em "dupla": { r1: { lidos, log, por, porId, em, ok, divergencias }, r2: {…} }.
+  // Em Cadastros › Pagers e carregamento dá para exigir a dupla conferência antes de concluir o carregamento.
+  var ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js';
+  var conf = { cargaId: null, rodada: 1, lidos: {}, log: [], pendente: null, stream: null, detector: null, zxing: null, loop: null, pausaAte: 0, ultimo: null };
+  function chaveCodigo(c) {
+    var s = String(c == null ? '' : c).replace(/\s+/g, '').toUpperCase();
+    return /^\d+$/.test(s) ? s.replace(/^0+/, '') : s; // EAN-13 e UPC-A com o mesmo número
+  }
+  function produtoDoCodigo(cod) {
+    var k = chaveCodigo(cod);
+    if (!k) return null;
+    return produtos.find(function(p) { return (p.codigosBarras || []).some(function(x) { return chaveCodigo(x) === k; }); }) || null;
+  }
+  function esperadoConferencia(c) {
+    var m = {};
+    (c.clientes || []).forEach(function(cl) {
+      (cl.itens || []).forEach(function(it) { var pal = Number(it.paletes) || 0; if (pal > 0 && it.produtoId) m[it.produtoId] = (m[it.produtoId] || 0) + pal; });
+    });
+    return m;
+  }
+  function situacaoDupla(c) {
+    var d = c.dupla || {};
+    if (d.r1 && d.r2) return (d.r1.ok && d.r2.ok) ? { cls: 'ok', txt: '✓ Dupla conferência: ' + d.r1.por + ' e ' + d.r2.por, feita: true }
+      : { cls: 'pend', txt: '⚠ Dupla conferência com divergência', feita: true, divergencia: true };
+    if (d.r1) return { cls: 'pend', txt: d.r1.ok ? '◐ 1ª conferência ok (' + d.r1.por + ') · falta a 2ª' : '⚠ 1ª conferência com divergência · falta a 2ª', feita: false };
+    return { cls: 'pend', txt: '○ Dupla conferência por código de barras', feita: false };
+  }
+  function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r2 && d.r1.ok && d.r2.ok); }
+  function duplaCardHtml(c, id) {
+    if (c.status === 'concluida') return '';
+    var s = situacaoDupla(c);
+    return '<button type="button" class="fat-badge ' + (duplaOk(c) ? 'ok' : 'pend') + '" data-action="conf-barras" data-id="' + id + '">' + escapeHtml(s.txt) +
+      (duplaOk(c) ? '' : '<span class="fat-badge-cta">' + (c.dupla && c.dupla.r1 ? 'Fazer a 2ª' : 'Conferir') + '</span>') + '</button>';
+  }
+  function duplaDetailRow(c, id, row) {
+    var d = c.dupla || {}, s = situacaoDupla(c);
+    var txt = d.r1 ? '1ª: ' + d.r1.por + ' (' + formatDateTimeBR(d.r1.em) + (d.r1.ok ? ', ok' : ', com divergência') + ')' : 'pendente';
+    if (d.r2) txt += ' · 2ª: ' + d.r2.por + ' (' + formatDateTimeBR(d.r2.em) + (d.r2.ok ? ', ok' : ', com divergência') + ')';
+    var botao = c.status === 'concluida' ? '' : '<button type="button" class="btn-text" data-action="conf-barras" data-id="' + id + '">' + (s.feita ? 'Ver' : d.r1 ? 'Fazer a 2ª' : 'Conferir') + '</button>';
+    return row('Dupla conferência', escapeHtml(txt) + botao, duplaOk(c) ? 'ok' : (s.divergencia ? 'ask' : ''));
+  }
+
+  // ----- folha da conferência -----
+  function abrirConferencia(id) {
+    var c = findCarga(id);
+    if (!c) return;
+    var d = c.dupla || {};
+    conf.cargaId = id;
+    conf.rodada = !d.r1 ? 1 : !d.r2 ? 2 : 0; // 0 = as duas já feitas (só ver)
+    conf.lidos = {}; conf.log = []; conf.pendente = null; conf.ultimo = null; conf.confirmarDivergencia = false; confirmarRefazer = false;
+    document.getElementById('conf-title').textContent = conf.rodada === 0 ? 'Dupla conferência' : (conf.rodada === 1 ? '1ª conferência' : '2ª conferência (outra pessoa)') + ' · código de barras';
+    document.getElementById('conf-hint').innerHTML = conf.rodada === 0
+      ? 'As duas conferências já foram feitas. Para refazer, toque em <b>Refazer a conferência</b>.'
+      : 'Aponte a câmera para o código de barras de <b>cada palete</b> carregado (ou use o leitor de código de barras). Cada leitura conta 1 palete do produto. ' +
+        (conf.rodada === 2 ? 'A 2ª conferência tem que ser feita por <b>outra pessoa</b>.' : '');
+    document.getElementById('conf-leitura').classList.toggle('hidden', conf.rodada === 0);
+    var porSenha = membrosCom('conferente').length > 0;
+    document.getElementById('conf-nome-label').classList.toggle('hidden', porSenha || conf.rodada === 0);
+    setVal('conf-nome', '');
+    setVal('conf-codigo', '');
+    document.getElementById('conf-erro').classList.add('hidden');
+    document.getElementById('btn-conf-finalizar').textContent = conf.rodada === 0 ? 'Refazer a conferência' : 'Finalizar a ' + conf.rodada + 'ª conferência';
+    document.getElementById('conf-overlay').classList.remove('hidden');
+    renderConferencia();
+    if (conf.rodada !== 0) setTimeout(function() { var i = document.getElementById('conf-codigo'); if (i && !('ontouchstart' in window)) i.focus(); }, 60);
+  }
+  function fecharConferencia() {
+    pararCamera();
+    document.getElementById('conf-overlay').classList.add('hidden');
+    conf.cargaId = null;
+  }
+  function renderConferencia() {
+    var c = findCarga(conf.cargaId);
+    if (!c) return;
+    var esp = esperadoConferencia(c), d = c.dupla || {};
+    var ids = Object.keys(esp);
+    Object.keys(conf.lidos).forEach(function(k) { if (ids.indexOf(k) < 0) ids.push(k); });
+    var mostrar = conf.rodada === 0 ? null : conf.lidos;
+    var tab = '<table class="resumo-table conf-tab"><thead><tr><th scope="col">Produto</th><th scope="col">Pedido</th>' +
+      (conf.rodada === 0 ? '<th scope="col">1ª</th><th scope="col">2ª</th>' : '<th scope="col">Lidos</th><th scope="col"></th>') + '</tr></thead><tbody>' +
+      ids.map(function(pid) {
+        var p = findProduto(pid), nome = p ? p.nome : pid, e = esp[pid] || 0;
+        if (conf.rodada === 0) {
+          var a = ((d.r1 || {}).lidos || {})[pid] || 0, b = ((d.r2 || {}).lidos || {})[pid] || 0;
+          return '<tr><td>' + escapeHtml(nome) + '</td><td>' + fmtInt(e) + '</td><td class="' + (a === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(a) + '</td><td class="' + (b === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(b) + '</td></tr>';
+        }
+        var l = mostrar[pid] || 0, cls = l === e ? 'conf-ok' : l > e ? 'conf-dif' : '';
+        return '<tr><td>' + escapeHtml(nome) + (p && !(p.codigosBarras || []).length ? '<span class="est-sub">sem código de barras cadastrado</span>' : '') + '</td><td>' + fmtInt(e) + '</td>' +
+          '<td class="' + cls + '">' + fmtInt(l) + (l === e ? ' ✓' : l > e ? ' (' + fmtInt(l - e) + ' a mais)' : '') + '</td>' +
+          '<td>' + (l ? '<button type="button" class="btn-text" data-conf="menos" data-produto="' + escapeHtml(pid) + '" aria-label="Tirar uma leitura de ' + escapeHtml(nome) + '">−1</button>' : '') +
+            (e > l ? '<button type="button" class="btn-text" data-conf="mais" data-produto="' + escapeHtml(pid) + '" aria-label="Contar um palete sem ler o código">+1</button>' : '') + '</td></tr>';
+      }).join('') + '</tbody></table>';
+    var totE = ids.reduce(function(s, k) { return s + (esp[k] || 0); }, 0);
+    var totL = ids.reduce(function(s, k) { return s + ((conf.rodada === 0 ? 0 : conf.lidos[k]) || 0); }, 0);
+    document.getElementById('conf-tabela').innerHTML = (conf.rodada === 0 ? '' : '<p class="conf-total">' + fmtInt(totL) + ' de ' + fmtInt(totE) + ' paletes lidos</p>') + tab;
+    var av = document.getElementById('conf-aviso');
+    if (conf.pendente) {
+      av.innerHTML = '<div class="conf-msg dif"><b>Código ' + escapeHtml(conf.pendente) + ' não está cadastrado.</b> É de qual produto?' +
+        '<div class="inline-form"><select id="conf-vincular">' + '<option value="">Escolha o produto</option>' +
+          produtosOrdenados().map(function(p) { return '<option value="' + escapeHtml(p.id) + '">' + escapeHtml(p.nome) + '</option>'; }).join('') + '</select>' +
+        '<button type="button" class="btn-text" data-conf="vincular">Vincular e contar</button><button type="button" class="btn-text" data-conf="ignorar">Ignorar</button></div></div>';
+    } else if (conf.ultimo) {
+      av.innerHTML = '<div class="conf-msg ' + conf.ultimo.cls + '">' + escapeHtml(conf.ultimo.txt) + '</div>';
+    } else av.innerHTML = '';
+  }
+  function somFeedback(ok) {
+    try { if (navigator.vibrate) navigator.vibrate(ok ? 60 : [80, 60, 80]); } catch (e) {}
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      conf.audio = conf.audio || new AC();
+      var o = conf.audio.createOscillator(), g = conf.audio.createGain();
+      o.frequency.value = ok ? 1320 : 330; g.gain.value = 0.08;
+      o.connect(g); g.connect(conf.audio.destination); o.start(); o.stop(conf.audio.currentTime + (ok ? 0.09 : 0.25));
+    } catch (e) {}
+    var fl = document.getElementById('conf-flash');
+    if (fl) { fl.className = 'conf-flash ' + (ok ? 'ok' : 'dif'); setTimeout(function() { fl.className = 'conf-flash'; }, 350); }
+  }
+  // Uma leitura (câmera, leitor ou digitada): conta 1 palete do produto do código.
+  function registrarLeitura(cod, manual) {
+    if (!conf.cargaId || conf.rodada === 0) return;
+    var c = findCarga(conf.cargaId);
+    if (!c) return;
+    conf.confirmarDivergencia = false;
+    var p = produtoDoCodigo(cod);
+    if (!p) { conf.pendente = String(cod).trim(); conf.ultimo = null; somFeedback(false); renderConferencia(); return; }
+    var esp = esperadoConferencia(c), e = esp[p.id] || 0;
+    conf.lidos[p.id] = (conf.lidos[p.id] || 0) + 1;
+    conf.log.push({ codigo: String(cod).trim().slice(0, 40), produtoId: p.id, em: new Date().toISOString(), manual: !!manual });
+    var l = conf.lidos[p.id];
+    var ok = l <= e;
+    conf.ultimo = !e ? { cls: 'dif', txt: '✕ ' + p.nome + ' não está neste pedido.' }
+      : l > e ? { cls: 'dif', txt: '✕ ' + p.nome + ': ' + l + ' lidos, o pedido tem ' + e + ' (a mais).' }
+      : { cls: 'ok', txt: '✓ ' + p.nome + ': palete ' + l + ' de ' + e + (l === e ? ' — completo.' : '.') };
+    conf.pendente = null;
+    somFeedback(ok && !!e);
+    renderConferencia();
+  }
+  function conferir(lidos, esp) {
+    var div = [];
+    var ids = Object.keys(esp);
+    Object.keys(lidos).forEach(function(k) { if (ids.indexOf(k) < 0) ids.push(k); });
+    ids.forEach(function(k) {
+      var e = esp[k] || 0, l = lidos[k] || 0;
+      if (e !== l) { var p = findProduto(k); div.push((p ? p.nome : k) + ': pedido ' + e + ', lidos ' + l); }
+    });
+    return div;
+  }
+  function gravarRodada(quem) {
+    var c = findCarga(conf.cargaId);
+    if (!c) return;
+    var d = Object.assign({}, c.dupla || {}), r1 = d.r1;
+    if (conf.rodada === 2 && r1 && ((quem.id && r1.porId && quem.id === r1.porId) || normNome(quem.nome) === normNome(r1.por))) {
+      var er = document.getElementById('conf-erro');
+      er.textContent = 'A 2ª conferência tem que ser feita por outra pessoa (a 1ª foi de ' + r1.por + ').';
+      er.classList.remove('hidden');
+      return;
+    }
+    var div = conferir(conf.lidos, esperadoConferencia(c));
+    d['r' + conf.rodada] = { lidos: Object.assign({}, conf.lidos), log: conf.log.slice(-400), por: quem.nome, porId: quem.id || '', em: new Date().toISOString(), ok: !div.length, divergencias: div };
+    var rodada = conf.rodada;
+    setCargaFields(conf.cargaId, { dupla: d }).then(function() {
+      showToast(rodada + 'ª conferência registrada' + (div.length ? ' com divergência: ' + div.join('; ') + '.' : ': tudo certo.'));
+      fecharConferencia();
+    }).catch(function(e) { console.error('dupla conferência', e); showToast('Não foi possível gravar a conferência. Tente de novo.'); });
+  }
+  function finalizarConferencia() {
+    var c = findCarga(conf.cargaId), er = document.getElementById('conf-erro');
+    if (!c) return;
+    er.classList.add('hidden');
+    if (conf.rodada === 0) {
+      if (!confirmarRefazer) { confirmarRefazer = true; er.textContent = 'Refazer apaga as duas conferências desta carga. Toque de novo em "Refazer a conferência" para confirmar.'; er.classList.remove('hidden'); return; }
+      confirmarRefazer = false;
+      setCargaFields(conf.cargaId, { dupla: {} }).then(function() { var id = conf.cargaId; fecharConferencia(); abrirConferencia(id); });
+      return;
+    }
+    var lidosTot = Object.keys(conf.lidos).reduce(function(s, k) { return s + conf.lidos[k]; }, 0);
+    if (!lidosTot) { er.textContent = 'Leia o código de barras dos paletes antes de finalizar.'; er.classList.remove('hidden'); return; }
+    var div = conferir(conf.lidos, esperadoConferencia(c));
+    if (div.length && !conf.confirmarDivergencia) {
+      conf.confirmarDivergencia = true;
+      er.textContent = 'Não bate com o pedido: ' + div.join('; ') + '. Confira de novo ou toque em "Finalizar" outra vez para registrar com divergência.';
+      er.classList.remove('hidden');
+      return;
+    }
+    conf.confirmarDivergencia = false;
+    if (membrosCom('conferente').length) {
+      openPinDialog({
+        titulo: conf.rodada + 'ª conferência', funcao: 'conferente', funcaoTexto: 'confere o carregamento',
+        semCadastro: 'Ninguém da conferência está cadastrado. Cadastre em Cadastros › Equipe com senha.',
+        hint: 'Digite a sua senha de 4 números: o seu nome fica na conferência.',
+        onOk: function(m) { gravarRodada({ id: m.id, nome: m.nome }); }
+      });
+      return;
+    }
+    var nome = document.getElementById('conf-nome').value.replace(/\s+/g, ' ').trim();
+    if (!nome) { er.textContent = 'Informe o seu nome.'; er.classList.remove('hidden'); return; }
+    gravarRodada({ id: '', nome: nome });
+  }
+  var confirmarRefazer = false;
+
+  // ----- câmera -----
+  function camStatus(t) { var el = document.getElementById('conf-cam-status'); if (el) el.textContent = t || ''; }
+  function carregarZxing() {
+    if (window.ZXing) return Promise.resolve(window.ZXing);
+    return new Promise(function(ok, falha) {
+      var s = document.createElement('script');
+      s.src = ZXING_URL; s.async = true;
+      s.onload = function() { window.ZXing ? ok(window.ZXing) : falha(new Error('zxing')); };
+      s.onerror = function() { falha(new Error('zxing')); };
+      document.head.appendChild(s);
+    });
+  }
+  function aoLerDaCamera(valor) {
+    var agora = Date.now();
+    if (!valor || agora < conf.pausaAte) return;
+    conf.pausaAte = agora + 1600; // um palete por vez: espera o leitor sair do código
+    registrarLeitura(valor, false);
+  }
+  function ligarCamera() {
+    var video = document.getElementById('conf-video');
+    if (conf.stream || conf.zxing) { pararCamera(); return; }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camStatus('Este aparelho não libera a câmera para o app. Use o leitor ou digite o código.'); return; }
+    document.getElementById('btn-conf-camera').textContent = 'Desligar câmera';
+    document.getElementById('conf-camera').classList.remove('hidden');
+    camStatus('Ligando a câmera…');
+    var restricoes = { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false };
+    if ('BarcodeDetector' in window) {
+      navigator.mediaDevices.getUserMedia(restricoes).then(function(stream) {
+        conf.stream = stream; video.srcObject = stream;
+        return video.play().catch(function() {});
+      }).then(function() {
+        return window.BarcodeDetector.getSupportedFormats ? window.BarcodeDetector.getSupportedFormats() : [];
+      }).then(function(fmts) {
+        var quero = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'itf', 'code_39', 'qr_code', 'data_matrix'];
+        var usar = (fmts || []).filter(function(f) { return quero.indexOf(f) >= 0; });
+        conf.detector = new window.BarcodeDetector(usar.length ? { formats: usar } : undefined);
+        camStatus('Câmera ligada: aponte para o código de barras do palete.');
+        var ocupado = false;
+        conf.loop = setInterval(function() {
+          if (ocupado || !conf.detector || !conf.stream || video.readyState < 2) return;
+          ocupado = true;
+          conf.detector.detect(video).then(function(r) { ocupado = false; if (r && r.length) aoLerDaCamera(r[0].rawValue); })
+            .catch(function() { ocupado = false; });
+        }, 180);
+      }).catch(erroCamera);
+      return;
+    }
+    carregarZxing().then(function(Z) {
+      var leitor = new Z.BrowserMultiFormatReader();
+      conf.zxing = leitor;
+      return leitor.decodeFromConstraints(restricoes, video, function(res) { if (res) aoLerDaCamera(res.getText ? res.getText() : res.text); });
+    }).then(function() { camStatus('Câmera ligada: aponte para o código de barras do palete.'); }).catch(erroCamera);
+  }
+  function erroCamera(e) {
+    console.warn('câmera', e);
+    pararCamera();
+    camStatus(e && e.name === 'NotAllowedError' ? 'A câmera foi bloqueada. Libere a câmera do LEVÍSSIMA nas configurações do celular.' : 'Não foi possível ligar a câmera. Use o leitor ou digite o código.');
+  }
+  function pararCamera() {
+    if (conf.loop) { clearInterval(conf.loop); conf.loop = null; }
+    if (conf.zxing) { try { conf.zxing.reset(); } catch (e) {} conf.zxing = null; }
+    if (conf.stream) { conf.stream.getTracks().forEach(function(t) { try { t.stop(); } catch (e) {} }); conf.stream = null; }
+    conf.detector = null;
+    var v = document.getElementById('conf-video');
+    if (v) { try { v.srcObject = null; } catch (e) {} }
+    var b = document.getElementById('btn-conf-camera');
+    if (b) b.textContent = 'Ligar câmera';
+    var cam = document.getElementById('conf-camera');
+    if (cam) cam.classList.add('hidden');
+    camStatus('');
+  }
+  document.getElementById('btn-conf-camera').addEventListener('click', ligarCamera);
+  document.getElementById('btn-close-conf').addEventListener('click', fecharConferencia);
+  document.getElementById('btn-conf-cancel').addEventListener('click', fecharConferencia);
+  document.getElementById('conf-overlay').addEventListener('click', function(e) { if (e.target === this) fecharConferencia(); });
+  document.getElementById('btn-conf-finalizar').addEventListener('click', finalizarConferencia);
+  // leitor de código de barras (funciona como teclado: digita o código e aperta Enter) ou código digitado
+  function lancarDigitado() {
+    var i = document.getElementById('conf-codigo'), v = i.value.trim();
+    if (!v) return;
+    i.value = '';
+    registrarLeitura(v, false);
+    i.focus();
+  }
+  document.getElementById('conf-codigo').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); lancarDigitado(); } });
+  document.getElementById('btn-conf-lancar').addEventListener('click', lancarDigitado);
+  document.getElementById('conf-body').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-conf]');
+    if (!b) return;
+    var a = b.dataset.conf, pid = b.dataset.produto;
+    if (a === 'menos' && conf.lidos[pid]) {
+      conf.lidos[pid]--;
+      for (var i = conf.log.length - 1; i >= 0; i--) if (conf.log[i].produtoId === pid) { conf.log.splice(i, 1); break; }
+      if (!conf.lidos[pid]) delete conf.lidos[pid];
+      conf.ultimo = { cls: 'ok', txt: 'Uma leitura tirada.' };
+      renderConferencia();
+    } else if (a === 'mais') {
+      var p = findProduto(pid);
+      conf.lidos[pid] = (conf.lidos[pid] || 0) + 1;
+      conf.log.push({ codigo: '', produtoId: pid, em: new Date().toISOString(), manual: true });
+      conf.ultimo = { cls: 'ok', txt: '+1 palete de ' + (p ? p.nome : pid) + ' contado sem leitura (fica marcado como manual).' };
+      renderConferencia();
+    } else if (a === 'ignorar') { conf.pendente = null; renderConferencia(); }
+    else if (a === 'vincular') {
+      var sel = document.getElementById('conf-vincular'), prod = sel ? findProduto(sel.value) : null, cod = conf.pendente;
+      if (!prod) { sel && sel.focus(); return; }
+      var lista = (prod.codigosBarras || []).concat([cod]);
+      saveProduto(prod.id, { codigosBarras: lista }).then(function() {
+        prod.codigosBarras = lista; // já vale para a próxima leitura, antes do banco responder
+        conf.pendente = null;
+        showToast('Código ' + cod + ' vinculado a ' + prod.nome + '.');
+        registrarLeitura(cod, false);
+      }).catch(function(x) { console.error('vincular código', x); showToast('Não foi possível vincular agora.'); });
+    }
+  });
+
   // ---------- pagers: faixa de números (Cadastros) ----------
+  document.getElementById('f-exigir-dupla').addEventListener('change', function(e) {
+    var v = e.target.checked;
+    saveAjustes({ exigirDupla: v }).then(function() { showToast(v ? 'Dupla conferência obrigatória para concluir o carregamento.' : 'Dupla conferência deixou de ser obrigatória.'); })
+      .catch(function(x) { console.error('ajustes', x); e.target.checked = !v; showToast('Não foi possível salvar agora.'); });
+  });
   function renderPagersAdmin() {
+    var ex = document.getElementById('f-exigir-dupla');
+    if (ex) ex.checked = !!ajustes.exigirDupla;
     var de = document.getElementById('f-pager-de'), ate = document.getElementById('f-pager-ate');
     if (document.activeElement !== de) de.value = ajustes.pagerDe;
     if (document.activeElement !== ate) ate.value = ajustes.pagerAte;

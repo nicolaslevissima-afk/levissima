@@ -10,6 +10,9 @@ extras = [
     '<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />',
     '<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />',
     '<uses-feature android:name="android.hardware.location.gps" android:required="false" />',
+    # câmera: leitura do código de barras na dupla conferência do carregamento
+    '<uses-permission android:name="android.permission.CAMERA" />',
+    '<uses-feature android:name="android.hardware.camera" android:required="false" />',
 ]
 for linha in extras:
     nome = re.search(r'android:name="([^"]+)"', linha).group(1)
