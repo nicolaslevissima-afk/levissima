@@ -503,6 +503,69 @@
   .ini-v small { font-family: var(--font-display); font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
   .ini-s { grid-area: s; font-size: 0.8125rem; color: var(--muted); line-height: 1.3; }
   .ini-ir { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; color: var(--muted); }
+  /* ---- agendamento on-line ---- */
+  .ag-chip.online { border: 1px dashed #702082; }
+  .ag-chip.online.confirmado { border-style: solid; border-color: #43B02A; }
+  .ao-cfg { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 0.875rem; background: var(--card); }
+  .ao-item .driver-name, .ao-cli .driver-name { flex: 1; min-width: 160px; }
+  .ao-cli.inativo { opacity: 0.6; }
+  .ao-dia { margin: 0 !important; border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; }
+  /* ---- pedido de senha com foto ---- */
+  .cp-fotos, .cp-comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 4px 0 12px; }
+  .cp-foto { margin: 0 !important; cursor: pointer; }
+  .cp-foto input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .cp-foto-t { display: block; font-size: 0.8125rem; margin-bottom: 4px; }
+  .cp-foto-box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; aspect-ratio: 3 / 4; border: 2px dashed var(--line); border-radius: 10px; background: var(--card); font-size: 2rem; color: var(--muted); overflow: hidden; }
+  .cp-foto-box small { font-size: 0.6875rem; }
+  .cp-foto-box img { width: 100%; height: 100%; object-fit: cover; }
+  .cp-comparar figure { margin: 0; }
+  .cp-comparar figcaption { text-align: center; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+  .cp-comparar .cp-foto-box { border-style: solid; font-size: 0.8125rem; }
+  .cp-aceite { font-size: 0.75rem !important; color: var(--muted); margin: 8px 0; }
+  .cp-funcs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 10px; margin-bottom: 4px; }
+  .cp-setor-btn { margin-top: 22px; width: 100%; }
+  /* ---- ordem de compra ---- */
+  .oc-passos { display: flex; gap: 4px; list-style: none; margin: 8px 0 6px; padding: 0; }
+  .oc-passos li { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.625rem; color: var(--muted); text-align: center; line-height: 1.15; }
+  .oc-passos li span { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line); display: inline-flex; align-items: center; justify-content: center; font-size: 0.6875rem; font-weight: 700; background: var(--card); }
+  .oc-passos li.feito span { background: #43B02A; border-color: #43B02A; color: #10200C; }
+  .oc-passos li.agora { color: var(--ink); font-weight: 700; }
+  .oc-passos li.agora span { border-color: #702082; color: #702082; }
+  .oc-passos li.neg span { background: rgb(var(--danger-rgb)); border-color: rgb(var(--danger-rgb)); color: #FFFFFF; }
+  .oc-itens { list-style: none; margin: 4px 0; padding: 0; font-size: 0.875rem; }
+  .oc-itens li { padding: 3px 0; }
+  .oc-itens small { display: block; color: var(--muted); font-size: 0.75rem; }
+  .oc-it { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 0 0 8px; background: var(--card); }
+  .oc-decisao { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0; }
+  .oc-decisao .oc-reprovar { color: var(--danger); border-color: var(--danger); }
+  .oc-cot tr.oc-escolhida td { background: rgba(67, 176, 42, 0.12); font-weight: 700; }
+  .oc-esc { font-weight: 700; color: var(--ink) !important; }
+  .oc-tl { list-style: none; margin: 0; padding: 0; }
+  .oc-tl li { display: flex; flex-direction: column; padding: 7px 0 7px 12px; border-left: 3px solid var(--line); margin-left: 4px; font-size: 0.8125rem; }
+  .oc-tl li.ok { border-left-color: var(--verde); }
+  .oc-tl li.neg { border-left-color: var(--danger); }
+  .oc-tl li span { color: var(--muted); }
+  .oc-tl-pend b { color: var(--muted); }
+  .oc-filtros { margin-top: 2px; }
+  label.sub-campo { margin-left: 26px; font-size: 0.8125rem; }
+  /* ---- participantes e convites das salas ---- */
+  .sl-part-membros { margin: 2px 0 8px; }
+  .sl-ext { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8125rem; border: 1px dashed var(--line); border-radius: 999px; padding: 3px 4px 3px 10px; margin: 0 6px 6px 0; }
+  .sl-part-add { display: flex; gap: 8px; align-items: center; margin: 4px 0 6px; }
+  .sl-part-add input { flex: 1; margin-top: 0 !important; }
+  .sl-part-ver { margin: 4px 0 12px; }
+  .sl-psts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .sl-pst { display: inline-flex; flex-direction: column; border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 0.8125rem; font-weight: 600; background: var(--card); }
+  .sl-pst small { font-weight: 400; color: var(--muted); font-size: 0.6875rem; }
+  .sl-pst.st-aceito { border-color: var(--verde); box-shadow: inset 3px 0 0 var(--verde); }
+  .sl-pst.st-recusado { border-color: var(--danger); box-shadow: inset 3px 0 0 var(--danger); opacity: 0.8; }
+  .sl-pst.st-convidado { border-color: var(--laranja); box-shadow: inset 3px 0 0 var(--laranja); }
+  .sl-resp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
+  .ini-conv { border: 1px solid var(--line); border-left: 4px solid #702082; border-radius: 10px; background: var(--card); padding: 10px 12px; margin: 0 0 14px; }
+  .ini-conv-t { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.9375rem; }
+  .ini-conv ul { list-style: none; margin: 8px 0 0; padding: 0; }
+  .ini-conv-it { width: 100%; text-align: left; background: transparent; border: 0; border-top: 1px solid var(--line); padding: 8px 0; font: inherit; font-size: 0.875rem; color: var(--ink); cursor: pointer; }
+  .ini-conv-it small { display: block; color: var(--laranja-texto); font-weight: 600; font-size: 0.75rem; margin-top: 2px; }
   /* ---- recado em destaque (mural) ---- */
   .mural { position: relative; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 44px 12px 16px; margin: 0;
     background: linear-gradient(100deg, #2D7A1C 0%, #43B02A 38%, #702082 100%); color: #FFFFFF; box-shadow: 0 2px 10px rgba(28, 42, 46, 0.25); overflow: hidden; }
@@ -1012,6 +1075,7 @@
       <button type="button" class="seg-btn" data-tab="agenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M8 17h6"/></svg></span><span class="tab-txt">Agenda</span></button>
       <button type="button" class="seg-btn" data-tab="salas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="1.5"/><path d="M12 15v5M8 20h8M7 9h6"/></svg></span><span class="tab-txt">Salas</span></button>
       <button type="button" class="seg-btn" data-tab="qualidade"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="tab-txt">Qualidade</span></button>
+      <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
       <button type="button" class="seg-btn" data-tab="cadastros"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="tab-txt">Cadastros</span></button>
       <button type="button" class="seg-btn" data-tab="rh"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><span class="tab-txt">RH</span></button>
       <button type="button" class="seg-btn" data-tab="fretes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.6-.8-1.7-1.2-3-1.2-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.3 0-2.4-.4-3-1.2M12 6v2M12 16v2"/></svg></span><span class="tab-txt">Fretes</span></button>
@@ -1022,6 +1086,7 @@
   <div class="tab-panel hidden" id="tab-inicio">
     <div class="ini-topo"><div><h2 class="ini-saud" id="ini-saud"></h2><p class="ini-data" id="ini-data"></p></div></div>
     <div class="ini-atalhos" id="ini-atalhos" aria-label="Atalhos"></div>
+    <div id="ini-convites"></div>
     <div class="ini-tiles" id="ini-tiles"></div>
   </div>
 
@@ -1126,6 +1191,10 @@
       <div class="section-head"><h2 class="section-title">Observações da semana</h2></div>
       <textarea id="f-ag-obs" rows="3" maxlength="1000" placeholder="Ex.: Fuji vai buscar 200 garrafões na quinta"></textarea>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-ag-obs" style="margin-top:8px">Salvar observações</button>
+    </section>
+    <section class="drivers-admin" id="ao-sec" aria-label="Agendamento on-line">
+      <div class="section-head"><h2 class="section-title">Agendamento on-line dos clientes</h2></div>
+      <div id="ao-conteudo"></div>
     </section>
   </div>
 
@@ -1233,6 +1302,9 @@
     <div id="q-conteudo"></div>
   </div>
 
+  <div class="tab-panel hidden" id="tab-compras">
+    <div id="oc-conteudo"></div>
+  </div>
   <div class="tab-panel hidden" id="tab-fretes">
     <p class="tagline">Fretes dos motoristas: quanto falta pagar a cada um e a tabela de valores por destino. Só a senha mestre vê esta aba.</p>
     <section class="drivers-admin" id="fretes-resumo-admin">
@@ -1323,6 +1395,11 @@
       <div id="acesso-list"></div>
     </section>
 
+    <section class="drivers-admin hidden" id="cp-sec">
+      <div class="section-head"><h2 class="section-title">Pedidos de senha</h2><span class="count-chip" id="cp-n"></span></div>
+      <p class="hint">Quem criou a própria senha de 4 números com a foto do documento e uma selfie. Confira o rosto e os dados e aprove; as fotos são apagadas na decisão.</p>
+      <div id="cp-lista"></div>
+    </section>
     <section class="drivers-admin" id="equipe-admin">
       <div class="section-head"><h2 class="section-title">Equipe com senha</h2></div>
       <p class="hint">Faturamento dá o ok; conferente conclui o carregamento. Cada pessoa digita a própria senha de 4 números e o nome dela aparece sozinho.</p>
@@ -1349,6 +1426,7 @@
     <h2 class="section-title" id="setor-titulo" style="font-size:1.25rem;margin-top:18px">Olá</h2>
     <p class="tagline" style="margin-top:4px">Escolha o que você vai usar agora.</p>
     <div class="mod-cards" id="setor-modulos"></div>
+    <button type="button" class="btn btn-secondary cp-setor-btn" id="btn-cp-setor">Criar a minha senha de 4 números</button>
   </div>
 </div>
 
@@ -2074,6 +2152,10 @@
         <label class="check"><input type="checkbox" id="f-equipe-gestao" /> Diretoria / gestão (reserva a sala Levíssima Protein)</label>
         <label class="check"><input type="checkbox" id="f-equipe-qual" /> Qualidade (assina inspeções, checklists de linha e análises)</label>
         <label class="check"><input type="checkbox" id="f-equipe-aprovafrete" /> Aprova frete com valor editado (Nicolas)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-coord" /> Coordenador de setor (aprova os pedidos de compra do setor)</label>
+        <label class="sub-campo">Setores que coordena <span class="opt">(separe com vírgula; em branco = todos)</span><input type="text" id="f-equipe-setores" maxlength="120" placeholder="Ex.: Produção, Manutenção" autocomplete="off" /></label>
+        <label class="check"><input type="checkbox" id="f-equipe-compras" /> Assistente de compras (faz as cotações)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-aprovacompra" /> Aprova compras (Nicolas)</label>
       </fieldset>
       <p class="hint">Quando essa senha for digitada, o ok do faturamento ou a conferência saem no nome desta pessoa.</p>
       <p class="form-error hidden" id="equipe-form-error"></p>
@@ -2586,6 +2668,8 @@
     loadLocalSalas();
     loadLocalQualidade();
     loadLocalSup();
+    loadLocalCompras();
+    loadLocalAgOnline();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -3554,6 +3638,10 @@
     renderQualidade();
     renderTabQualidadeBadge();
     renderTabMateriaBadge();
+    renderConvitesBadge();
+    renderCompras();
+    renderTabComprasBadge();
+    renderPedidosSenha();
     renderMuralAdmin();
     renderInicio();
     renderRH();
@@ -5265,10 +5353,10 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'compras', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
-  function abasPermitidas() { return session && session.role === 'equipe' ? ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade'] : TABS; }
+  function abasPermitidas() { return session && session.role === 'equipe' ? ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'compras'] : TABS; }
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
@@ -5288,6 +5376,7 @@
     if (ui.tab === 'rh' && !rhDados.carregado && !rhDados.carregando) rhCarregar();
     if (ui.tab === 'salas') { salasUi.rolou = null; renderSalas(); }
     if (ui.tab === 'qualidade') renderQualidade();
+    if (ui.tab === 'compras') renderCompras();
     if (ui.tab === 'inicio') renderInicio();
     var ativa = document.querySelector('#admin-tabs .seg-btn.active');
     if (ativa && ativa.scrollIntoView && window.innerWidth < 1100) { try { ativa.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
@@ -10590,7 +10679,7 @@
     Object.keys(AG_COL).forEach(function(k) {
       db.collection(AG_COL[k]).onSnapshot(function(snap) {
         agenda[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-        if (session) { renderAgenda(); renderAgSlot(); }
+        if (session) { renderAgenda(); renderAgSlot(); renderAgOnline(); }
       }, function(err) { console.error(AG_COL[k], err); });
     });
   }
@@ -10604,7 +10693,7 @@
       if ((f.dias || []).indexOf(wd) < 0 || (f.desde && iso < f.desde) || (f.ate && iso > f.ate) || (f.pulos || []).indexOf(iso) >= 0) return;
       out.push({ id: f.id, fixo: true, hora: f.hora, cliente: f.cliente, tipo: f.tipo || 'cliente', obs: f.obs || '', dias: f.dias });
     });
-    agenda.itens.forEach(function(it) { if (it.data === iso) out.push({ id: it.id, fixo: false, hora: it.hora, cliente: it.cliente, tipo: it.tipo || 'cliente', obs: it.obs || '' }); });
+    agenda.itens.forEach(function(it) { if (it.data === iso && !it.cancelado) out.push({ id: it.id, fixo: false, hora: it.hora, cliente: it.cliente, tipo: it.tipo || 'cliente', obs: it.obs || '', origem: it.origem || '', status: it.status || '' }); });
     return out.sort(function(a, b) { return a.hora.localeCompare(b.hora) || ((a.tipo === 'bloqueio') ? -1 : 0) - ((b.tipo === 'bloqueio') ? -1 : 0) || a.cliente.localeCompare(b.cliente, 'pt-BR'); });
   }
   function agPorHora(iso) {
@@ -10619,13 +10708,15 @@
   }
   function agChipHtml(e) {
     var achou = agUi.busca && normNome(e.cliente).indexOf(normNome(agUi.busca)) >= 0;
-    return '<span class="ag-chip' + (e.tipo === 'bloqueio' ? ' bloq' : '') + (achou ? ' achou' : '') + '"' + (e.obs ? ' title="' + escapeHtml(e.obs) + '"' : '') + '>' + escapeHtml(e.cliente) + '</span>';
+    var on = e.origem === 'online', tit = [on ? 'agendado pelo cliente (on-line)' + (e.status === 'confirmado' ? ', confirmado' : '') : '', e.obs || ''].filter(Boolean).join(' · ');
+    return '<span class="ag-chip' + (e.tipo === 'bloqueio' ? ' bloq' : '') + (on ? ' online' : '') + (on && e.status === 'confirmado' ? ' confirmado' : '') + (achou ? ' achou' : '') + '"' + (tit ? ' title="' + escapeHtml(tit) + '"' : '') + '>' + (on ? (e.status === 'confirmado' ? '✓ ' : '🌐 ') : '') + escapeHtml(e.cliente) + '</span>';
   }
 
   // ----- tela -----
   function renderAgenda() {
     var box = document.getElementById('ag-semana');
     if (!box || !session || !ehEscritorio()) return;
+    renderAgOnline();
     var seg = agUi.semana, hoje = todayIso(), dias = [];
     for (var i = 0; i < 7; i++) dias.push(agMaisDias(seg, i));
     document.getElementById('ag-periodo').textContent = formatDateBR(seg).slice(0, 5) + ' a ' + formatDateBR(dias[6]);
@@ -12182,7 +12273,7 @@
   function subscribeSalas() {
     db.collection(SALAS_COL).onSnapshot(function(snap) {
       salasReservas = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-      if (session) renderSalas();
+      if (session) { renderSalas(); renderConvitesBadge(); if (ui.tab === 'inicio') renderInicio(); }
     }, function(err) { console.error(SALAS_COL, err); });
   }
   function salasGravar(ops) {
@@ -12200,7 +12291,7 @@
       else { var novo = Object.assign({ id: id }, o.data); if (i >= 0) salasReservas[i] = novo; else salasReservas.push(novo); }
     });
     try { localStorage.setItem(salasChaveLocal(), JSON.stringify(salasReservas)); } catch (e) {}
-    renderSalas();
+    renderSalas(); renderConvitesBadge();
     return Promise.resolve();
   }
   function diaSemanaIso(iso) { return new Date(iso + 'T12:00:00').getDay(); }
@@ -12269,7 +12360,7 @@
     el.innerHTML = l.length ? l.slice(0, 40).map(function(r) {
       var s = salaPorId(r.sala);
       return '<button type="button" class="driver-row sl-item" data-sl="ver" data-id="' + escapeHtml(r.id) + '"><span class="sl-tag sl-' + s.id + '">' + escapeHtml(s.nome) + '</span>' +
-        '<span class="driver-name">' + escapeHtml(r.assunto || 'Reunião') + '<span class="driver-sub">' + escapeHtml(rotuloDia(r.data, hoje) + ' · ' + r.inicio + ' às ' + r.fim + (r.responsavel ? ' · ' + r.responsavel : '') + (r.setor ? ' (' + r.setor + ')' : '')) + '</span></span></button>';
+        '<span class="driver-name">' + escapeHtml(r.assunto || 'Reunião') + '<span class="driver-sub">' + escapeHtml(rotuloDia(r.data, hoje) + ' · ' + r.inicio + ' às ' + r.fim + (r.responsavel ? ' · ' + r.responsavel : '') + (r.setor ? ' (' + r.setor + ')' : '') + slResumoPart(r)) + '</span></span></button>';
     }).join('') : '<p class="empty-state">Nenhuma reserva nos próximos 14 dias.</p>';
   }
 
@@ -12282,7 +12373,7 @@
   function abrirSalaNova(sala, ini, iso) {
     var dia = iso || salasUi.dia || todayIso();
     var inicio = ini == null ? Math.min(47, Math.ceil(agoraMin() / 30)) * 30 : ini;
-    salasUi.sheet = { modo: 'novo', sala: sala || 'ph8' };
+    salasUi.sheet = { modo: 'novo', sala: sala || 'ph8', part: [] };
     salasUi.confirmarCancelar = false;
     document.getElementById('sala-sheet-title').textContent = 'Reservar sala';
     var fimPadrao = Math.min(1440, inicio + 60);
@@ -12302,6 +12393,7 @@
       '<div class="row-2"><label>Repetir<select id="sl-rep"><option value="nao">Não repete</option><option value="dias">Todos os dias</option><option value="uteis">Dias úteis (seg. a sex.)</option><option value="semana">Toda semana</option></select></label>' +
       '<label id="sl-ate-l" class="hidden">Até <span class="req">*</span><input type="date" id="sl-ate" /></label></div>' +
       '<label>Observações <span class="opt">(opcional)</span><input type="text" id="sl-obs" maxlength="140" autocomplete="off" placeholder="Ex.: precisa de projetor, café para 8 pessoas" /></label>' +
+      '<p class="field-label">Participantes <span class="opt">(opcional: quem está em Cadastros › Equipe recebe o convite no app)</span></p><div id="sl-part"></div>' +
       '<div id="sl-livre-info" class="hint"></div>';
     document.getElementById('btn-sala-submit').textContent = 'Reservar';
     document.getElementById('btn-sala-submit').classList.remove('hidden');
@@ -12309,6 +12401,7 @@
     document.getElementById('sala-form-error').classList.add('hidden');
     document.getElementById('sala-sheet-overlay').classList.remove('hidden');
     atualizarSalaForm();
+    slRenderPart();
     setTimeout(function() { var a = document.getElementById('sl-assunto'); if (a && !('ontouchstart' in window)) a.focus(); }, 40);
   }
   function datasDaReserva(dia, rep, ate) {
@@ -12364,7 +12457,7 @@
       row('Sala', s.nome + ' (' + s.sub.toLowerCase() + ')') + row('Quando', rotuloDiaLongo(r.data) + ', das ' + r.inicio + ' às ' + r.fim) +
       row('Assunto', r.assunto) + row('Responsável', r.responsavel) + row('Setor', r.setor) + row('Observações', r.obs) +
       row('Repete', grupo > 1 ? grupo + ' reservas iguais (as futuras podem ser canceladas juntas)' : '') +
-      row('Reservado em', r.criadoEm ? formatDateTimeBR(r.criadoEm) : '') + '</div><div id="sl-cancelar-box"></div>';
+      row('Reservado em', r.criadoEm ? formatDateTimeBR(r.criadoEm) : '') + '</div>' + slParticipantesVerHtml(r) + '<div id="sl-cancelar-box"></div>';
     var passou = r.data < todayIso() || (r.data === todayIso() && minDe(r.fim) <= agoraMin());
     var b = document.getElementById('btn-sala-submit');
     b.textContent = 'Cancelar reserva';
@@ -12407,17 +12500,19 @@
     if (!datas.length) return erroSala('Nenhum dia nessa repetição.');
     var confl = datas.filter(function(d) { return conflitoSala(s.sala, d, ini, fim, null); });
     if (confl.length) return erroSala('Horário ocupado em ' + confl.length + (confl.length === 1 ? ' dia' : ' dias') + ' (' + confl.slice(0, 3).map(function(d) { return formatDateBR(d).slice(0, 5); }).join(', ') + '). Escolha outro horário.');
+    var participantes = (s.part || []).map(function(x) { return { id: x.id || '', nome: x.nome, status: x.id ? 'convidado' : 'externo' }; });
     autorizarSala(s.sala, 'reservar', function(m) {
       var agora = new Date().toISOString(), grupo = datas.length > 1 ? 'g' + uid() : '';
       var ops = datas.map(function(d) {
         return { op: 'set', id: null, data: { sala: s.sala, data: d, inicio: hhmmDe(ini), fim: hhmmDe(fim), assunto: assunto,
           responsavel: m ? m.nome : resp, setor: setor, obs: document.getElementById('sl-obs').value.trim(), porId: m ? m.id : (session && session.role === 'admin' ? 'mestre' : ''),
-          grupo: grupo, criadoEm: agora, cancelada: false } };
+          grupo: grupo, criadoEm: agora, cancelada: false, participantes: participantes } };
       });
       var btn = document.getElementById('btn-sala-submit'); btn.disabled = true;
       salasGravar(ops).then(function() {
         btn.disabled = false; salasUi.dia = dia; fecharSalaSheet();
-        showToast(salaPorId(s.sala).nome + ' reservada' + (datas.length > 1 ? ' em ' + datas.length + ' dias' : '') + ': ' + formatDateBR(dia).slice(0, 5) + ', ' + hhmmDe(ini) + ' às ' + hhmmDe(fim) + '.');
+        var nConv = participantes.filter(function(x) { return x.status === 'convidado'; }).length;
+        showToast(salaPorId(s.sala).nome + ' reservada' + (datas.length > 1 ? ' em ' + datas.length + ' dias' : '') + ': ' + formatDateBR(dia).slice(0, 5) + ', ' + hhmmDe(ini) + ' às ' + hhmmDe(fim) + (nConv ? '. Convite enviado no app para ' + nConv + (nConv === 1 ? ' pessoa.' : ' pessoas.') : '.'));
         renderSalas();
       }).catch(function(err) { btn.disabled = false; console.error('salas', err); erroSala('Não foi possível salvar agora. Tente novamente.'); });
     });
@@ -12474,6 +12569,158 @@
   document.getElementById('btn-close-sala-sheet').addEventListener('click', fecharSalaSheet);
   document.getElementById('btn-sala-cancel').addEventListener('click', fecharSalaSheet);
   document.getElementById('sala-sheet-overlay').addEventListener('click', function(e) { if (e.target === document.getElementById('sala-sheet-overlay')) fecharSalaSheet(); });
+
+  // ----- participantes e convites (pedido de 16/10/2026) -----
+  // Opcional na reserva. Quem está em Cadastros › Equipe recebe o convite dentro do app (Início e aba Salas) e responde
+  // com a própria senha de 4 números (o login do escritório é um só, então a senha diz quem é). Convidado de fora: só o nome.
+  var SL_STATUS = { convidado: 'aguardando resposta', aceito: 'vai', recusado: 'não vai', externo: 'convidado de fora' };
+  function membrosConvidaveis() { return equipe.filter(function(m) { return m && m.nome; }).sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }); }
+  function slRenderPart() {
+    var el = document.getElementById('sl-part'), s = salasUi.sheet;
+    if (!el || !s || s.modo !== 'novo') return;
+    var sel = s.part || [], membros = membrosConvidaveis();
+    el.innerHTML = (membros.length ? '<div class="est-loc-chips sl-part-membros">' + membros.map(function(m) {
+        var on = sel.some(function(p) { return p.id === m.id; });
+        return '<button type="button" class="est-loc' + (on ? ' on' : '') + '" data-sl-part="membro" data-id="' + escapeHtml(m.id) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + (on ? '✓ ' : '+ ') + escapeHtml(m.nome) + '</button>';
+      }).join('') + '</div>' : '<p class="field-hint">Ninguém em Cadastros › Equipe ainda: dá para pôr convidados de fora pelo nome.</p>') +
+      sel.filter(function(p) { return !p.id; }).map(function(p) {
+        return '<span class="sl-ext">' + escapeHtml(p.nome) + ' (de fora) <button type="button" class="btn-text danger" data-sl-part="tirar" data-nome="' + escapeHtml(p.nome) + '" aria-label="Tirar ' + escapeHtml(p.nome) + '">✕</button></span>';
+      }).join('') +
+      '<div class="sl-part-add"><input type="text" id="sl-part-nome" maxlength="60" placeholder="Convidado de fora (nome)" autocomplete="off" aria-label="Nome do convidado de fora" />' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-sl-part="externo">Adicionar</button></div>' +
+      (sel.length ? '<p class="field-hint">' + sel.length + (sel.length === 1 ? ' participante' : ' participantes') + (sel.some(function(p) { return p.id; }) ? '; quem é da equipe recebe o convite no app.' : '.') + '</p>' : '');
+  }
+  function slAddExterno() {
+    var inp = document.getElementById('sl-part-nome'), s = salasUi.sheet;
+    if (!inp || !s) return;
+    var nome = inp.value.replace(/\s+/g, ' ').trim();
+    if (!nome) { inp.focus(); return; }
+    var m = membrosConvidaveis().find(function(x) { return normNome(x.nome) === normNome(nome); });
+    if (m) { if (!s.part.some(function(p) { return p.id === m.id; })) s.part.push({ id: m.id, nome: m.nome }); }
+    else if (!s.part.some(function(p) { return !p.id && normNome(p.nome) === normNome(nome); })) s.part.push({ id: '', nome: nome });
+    slRenderPart();
+    var n = document.getElementById('sl-part-nome'); if (n) n.focus();
+  }
+  document.getElementById('sala-form-body').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-sl-part]'), s = salasUi.sheet;
+    if (b && s && s.modo === 'novo') {
+      var a = b.dataset.slPart;
+      if (a === 'membro') {
+        var m = equipe.find(function(x) { return x.id === b.dataset.id; });
+        if (!m) return;
+        var i = s.part.findIndex(function(p) { return p.id === m.id; });
+        if (i >= 0) s.part.splice(i, 1); else s.part.push({ id: m.id, nome: m.nome });
+        slRenderPart();
+      } else if (a === 'externo') slAddExterno();
+      else if (a === 'tirar') { s.part = s.part.filter(function(p) { return p.id || p.nome !== b.dataset.nome; }); slRenderPart(); }
+      return;
+    }
+    var rb = e.target.closest('[data-sl-resp]');
+    if (rb && s && s.modo === 'ver') {
+      var r = salasReservas.find(function(x) { return x.id === s.id; });
+      if (r) responderConvite(r, rb.dataset.slResp);
+    }
+  });
+  document.getElementById('sala-form-body').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target && e.target.id === 'sl-part-nome') { e.preventDefault(); slAddExterno(); }
+  });
+  function slResumoPart(r) {
+    var p = r.participantes || [];
+    if (!p.length) return '';
+    var ag = p.filter(function(x) { return x.status === 'convidado'; }).length;
+    return ' · ' + p.length + (p.length === 1 ? ' participante' : ' participantes') + (ag ? ' (' + ag + ' sem resposta)' : '');
+  }
+  function slParticipantesVerHtml(r) {
+    var p = r.participantes || [];
+    if (!p.length) return '';
+    var passou = r.data < todayIso() || (r.data === todayIso() && minDe(r.fim) <= agoraMin());
+    var temConvite = p.some(function(x) { return x.id && x.status !== 'externo'; });
+    return '<div class="sl-part-ver"><p class="field-label">Participantes</p><div class="sl-psts">' + p.map(function(x) {
+        return '<span class="sl-pst st-' + escapeHtml(x.status) + '">' + escapeHtml(x.nome) + '<small>' + escapeHtml(SL_STATUS[x.status] || x.status) + '</small></span>';
+      }).join('') + '</div>' +
+      (temConvite && !passou ? '<div class="sl-resp"><button type="button" class="btn btn-primary btn-sm" data-sl-resp="aceito">Vou participar</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-sl-resp="recusado">Não vou</button>' +
+        '<span class="field-hint">Quem foi convidado responde com a sua senha de 4 números.</span></div>' : '') + '</div>';
+  }
+  function gravarRespostaConvite(r, m, resp) {
+    var hoje = todayIso(), agora = new Date().toISOString();
+    var alvo = r.grupo ? salasAtivas().filter(function(x) { return x.grupo === r.grupo && x.data >= r.data; }) : [r];
+    return salasGravar(alvo.filter(function(x) { return x.data >= hoje; }).map(function(x) {
+      return { op: 'update', id: x.id, data: { participantes: (x.participantes || []).map(function(p) { return p.id === m.id ? Object.assign({}, p, { status: resp, respondidoEm: agora }) : p; }) } };
+    }));
+  }
+  function responderConvite(r, resp) {
+    openPinDialog({
+      funcao: 'nome', funcaoTexto: 'está na equipe', titulo: resp === 'aceito' ? 'Confirmar presença' : 'Recusar convite',
+      hint: 'Digite a sua senha de 4 números (a mesma de Cadastros › Equipe).', semCadastro: 'Ninguém cadastrado em Cadastros › Equipe.',
+      onOk: function(m) {
+        if (!(r.participantes || []).some(function(p) { return p.id === m.id; })) { showToast(m.nome + ' não foi convidado(a) para esta reunião.'); return; }
+        gravarRespostaConvite(r, m, resp).then(function() {
+          showToast(resp === 'aceito' ? m.nome + ': presença confirmada.' : m.nome + ': convite recusado.');
+          if (salasUi.sheet && salasUi.sheet.modo === 'ver') abrirSalaVer(r.id);
+        }).catch(function(err) { console.error('convite', err); showToast('Não foi possível responder agora.'); });
+      }
+    });
+  }
+  // convites esperando resposta (próximos 30 dias); reunião que se repete conta uma vez por pessoa
+  function convitesPendentes() {
+    var hoje = todayIso(), ate = addDiasIso(hoje, 30), agora = agoraMin(), vistos = {}, out = [];
+    salasAtivas().slice().sort(function(a, b) { return (a.data + a.inicio).localeCompare(b.data + b.inicio); }).forEach(function(r) {
+      if (r.data < hoje || r.data > ate || (r.data === hoje && minDe(r.fim) <= agora)) return;
+      (r.participantes || []).forEach(function(p) {
+        if (p.status !== 'convidado' || !p.id) return;
+        var k = (r.grupo || r.id) + '|' + p.id;
+        if (vistos[k]) return;
+        vistos[k] = 1; out.push({ r: r, p: p });
+      });
+    });
+    return out;
+  }
+  function renderConvitesBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="salas"]');
+    if (!b) return;
+    var n = ehEscritorio() ? convitesPendentes().length : 0;
+    seloAba(b, n, n + (n === 1 ? ' convite de reunião sem resposta' : ' convites de reunião sem resposta'));
+  }
+  function renderConvitesInicio() {
+    var el = document.getElementById('ini-convites');
+    if (!el) return;
+    var l = convitesPendentes();
+    if (!l.length) { el.innerHTML = ''; return; }
+    var porReuniao = [], idx = {};
+    l.forEach(function(x) { var k = x.r.grupo || x.r.id; if (idx[k] === undefined) { idx[k] = porReuniao.length; porReuniao.push({ r: x.r, nomes: [] }); } porReuniao[idx[k]].nomes.push(x.p.nome); });
+    var hoje = todayIso();
+    el.innerHTML = '<section class="ini-conv" aria-label="Convites para reunião"><div class="ini-conv-t"><span><b>Convites para reunião</b> · ' + l.length + (l.length === 1 ? ' esperando resposta' : ' esperando resposta') + '</span>' +
+      '<button type="button" class="btn btn-primary btn-sm" data-conv="meus">Responder os meus</button></div><ul>' + porReuniao.slice(0, 6).map(function(x) {
+        var s = salaPorId(x.r.sala);
+        return '<li><button type="button" class="ini-conv-it" data-conv="ver" data-id="' + escapeHtml(x.r.id) + '"><b>' + escapeHtml(x.r.assunto || 'Reunião') + '</b> · ' + escapeHtml(s.nome) + ' · ' +
+          escapeHtml(rotuloDia(x.r.data, hoje) + ' ' + x.r.inicio + '–' + x.r.fim) + '<small>aguardando: ' + escapeHtml(x.nomes.join(', ')) + '</small></button></li>';
+      }).join('') + '</ul></section>';
+  }
+  function mostrarConvitesDe(m) {
+    var meus = convitesPendentes().filter(function(x) { return x.p.id === m.id; }), hoje = todayIso();
+    gerAbrir({
+      titulo: 'Convites de ' + m.nome,
+      html: meus.length ? meus.map(function(x, i) {
+        var s = salaPorId(x.r.sala);
+        return '<div class="frete-item est-apagar"><div class="frete-top"><span><b>' + escapeHtml(x.r.assunto || 'Reunião') + '</b></span><span class="chip-est apagar">' + escapeHtml(s.nome) + '</span></div>' +
+          '<div class="frete-sub">' + escapeHtml(rotuloDiaLongo(x.r.data) + ', das ' + x.r.inicio + ' às ' + x.r.fim + (x.r.responsavel ? ' · convite de ' + x.r.responsavel : '') + (x.r.grupo ? ' · reunião que se repete' : '')) + '</div>' +
+          '<div class="frete-acoes"><button type="button" class="btn btn-primary btn-sm" data-ger="aceito" data-i="' + i + '">Vou participar</button><button type="button" class="btn btn-secondary btn-sm" data-ger="recusado" data-i="' + i + '">Não vou</button></div></div>';
+      }).join('') : '<p class="empty-state">Nenhum convite esperando a sua resposta.</p>',
+      acao: function(a, b) {
+        var x = meus[Number(b.dataset.i)];
+        if (!x) return;
+        gravarRespostaConvite(x.r, m, a).then(function() { showToast(a === 'aceito' ? 'Presença confirmada: ' + (x.r.assunto || 'reunião') + '.' : 'Convite recusado.'); mostrarConvitesDe(m); })
+          .catch(function(err) { console.error('convite', err); showToast('Não foi possível responder agora.'); });
+      }
+    });
+  }
+  document.getElementById('ini-convites').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-conv]');
+    if (!b) return;
+    if (b.dataset.conv === 'ver') { setTab('salas'); abrirSalaVer(b.dataset.id); }
+    else if (b.dataset.conv === 'meus') openPinDialog({ funcao: 'nome', funcaoTexto: 'está na equipe', titulo: 'Meus convites', hint: 'Digite a sua senha de 4 números para ver os seus convites.', semCadastro: 'Ninguém cadastrado em Cadastros › Equipe.', onOk: mostrarConvitesDe });
+  });
   // a linha do "agora" anda sozinha
   setInterval(function() { if (session && ui.tab === 'salas' && !document.hidden) renderSalas(); }, 60000);
 
@@ -14570,6 +14817,727 @@
       .catch(function(e) { console.error('mural', e); err.textContent = 'Não foi possível salvar agora.'; err.classList.remove('hidden'); });
   });
 
+  // ---------- Ordem de compra com assinatura em cada etapa (pedido de 16/10/2026) ----------
+  // 1. Pedido (qualquer pessoa): descrição do item, quantidade e onde vai aplicar.
+  // 2. Aprovação do coordenador do setor (senha de 4 números de quem é "Coordenador de setor" em Cadastros › Equipe).
+  // 3. Cotação (assistente de compras).
+  // 4. Aprovação do Nicolas ("Aprova compras").
+  // 5. Fechamento da entrega com quem fez o pedido.
+  // Coleção compras-ordens (só o escritório; só a senha mestre apaga). Cada etapa guarda quem assinou e quando.
+  var OC_COL = 'compras-ordens';
+  var ordensCompra = [];
+  var OC_ETAPAS = [
+    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coordenador' }, { k: 'cotacao', nome: 'Cotação' },
+    { k: 'aprovacao', nome: 'Nicolas' }, { k: 'fechamento', nome: 'Entrega' }
+  ];
+  var OC_STATUS = {
+    pedido: { txt: 'Aguardando coordenador', cls: 'confirmar', etapa: 1 }, cotacao: { txt: 'Em cotação', cls: 'apagar', etapa: 2 },
+    aprovacao: { txt: 'Aguardando Nicolas', cls: 'aprovar', etapa: 3 }, compra: { txt: 'Aguardando entrega', cls: 'apagar', etapa: 4 },
+    fechada: { txt: 'Entregue', cls: 'pago', etapa: 5 }, reprovada: { txt: 'Reprovada', cls: 'falta', etapa: -1 }, cancelada: { txt: 'Cancelada', cls: '', etapa: -1 }
+  };
+  var OC_UNIDADES = ['un', 'cx', 'pct', 'kg', 'L', 'm', 'par', 'jogo', 'rolo', 'serviço'];
+  var ocUi = { filtro: 'abertas', confirmar: null };
+  function ocChaveLocal() { return 'levissima-compras-v1'; }
+  function loadLocalCompras() { try { ordensCompra = JSON.parse(localStorage.getItem(ocChaveLocal()) || '[]') || []; } catch (e) { ordensCompra = []; } }
+  function subscribeCompras() {
+    if (!ehEscritorio()) return;
+    db.collection(OC_COL).onSnapshot(function(snap) {
+      ordensCompra = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      if (session) { renderCompras(); renderTabComprasBadge(); if (ui.tab === 'inicio') renderInicio(); }
+    }, function(err) { console.error(OC_COL, err); });
+  }
+  function ocGravar(id, data) {
+    if (mode === 'db' && db) return id ? db.collection(OC_COL).doc(id).update(data) : db.collection(OC_COL).doc().set(data);
+    if (id) { var i = ordensCompra.findIndex(function(o) { return o.id === id; }); if (i >= 0) ordensCompra[i] = Object.assign({}, ordensCompra[i], data); }
+    else ordensCompra.push(Object.assign({ id: 'local-' + uid() }, data));
+    try { localStorage.setItem(ocChaveLocal(), JSON.stringify(ordensCompra)); } catch (e) {}
+    renderCompras(); renderTabComprasBadge();
+    return Promise.resolve();
+  }
+  function ocPorId(id) { return ordensCompra.find(function(o) { return o.id === id; }) || null; }
+  function ocProximoNumero() { return ordensCompra.reduce(function(m, o) { return Math.max(m, Number(o.numero) || 0); }, 0) + 1; }
+  function ocAbertas() { return ordensCompra.filter(function(o) { return o.status === 'pedido' || o.status === 'cotacao' || o.status === 'aprovacao' || o.status === 'compra'; }); }
+  function ocValorEscolhido(o) { var c = o.cotacao; if (!c || !c.cotacoes) return null; var x = c.cotacoes[c.escolhida || 0]; return x || null; }
+  function ocItensTexto(o) { return (o.itens || []).map(function(it) { return fmtMp(it.quantidade, it.unidade) + ' ' + it.descricao; }).join(' · '); }
+  function ocQuem(a) { return a ? a.nome + (a.semSenha ? ' (sem senha)' : '') + ' em ' + formatDateTimeBR(a.em) : ''; }
+  function coordenaSetor(m, setor) {
+    var l = String(m.setores || '').split(/[,;\n]+/).map(function(x) { return normNome(x); }).filter(Boolean);
+    return !l.length || l.indexOf(normNome(setor)) >= 0;
+  }
+  // assinatura com a senha de 4 números de quem tem a função (filtro: devolve um erro, ou nada se pode assinar)
+  function ocAssinar(funcao, funcaoTexto, titulo, semCadastro, filtro, feito) {
+    openPinDialog({
+      funcao: funcao, funcaoTexto: funcaoTexto, titulo: titulo, hint: 'Assine com a sua senha de 4 números.', semCadastro: semCadastro,
+      onOk: function(m) { var erro = filtro ? filtro(m) : null; if (erro) { showToast(erro); return; } feito(m); }
+    });
+  }
+  function falhaOc(err) { console.error('compras', err); showToast('Não foi possível salvar agora. Tente novamente.'); }
+  // valor em reais digitado: "1.234,56", "395,50" ou "395.5"
+  function ocValor(t) {
+    var x = String(t == null ? '' : t).replace(/[R$\s]/g, '');
+    if (!x) return null;
+    if (x.indexOf(',') >= 0) x = x.replace(/\./g, '').replace(',', '.');
+    else if (!/^\d+\.\d{1,2}$/.test(x)) x = x.replace(/\./g, '');
+    var n = Number(x);
+    return isNaN(n) ? null : n;
+  }
+  function ocValorTexto(v) { return (Number(v) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  // ----- tela -----
+  function ocPassosHtml(o) {
+    var st = OC_STATUS[o.status] || {}, et = st.etapa;
+    var parou = et === -1 ? (o.aprovacao && o.aprovacao.decisao === 'reprovado' ? 3 : o.coord && o.coord.decisao === 'reprovado' ? 1 : -1) : -1;
+    return '<ol class="oc-passos">' + OC_ETAPAS.map(function(e, i) {
+      var cls = parou === i ? 'neg' : (et === 5 || i < et || (et === -1 && i < parou)) ? 'feito' : i === et ? 'agora' : '';
+      return '<li class="' + cls + '"><span>' + (cls === 'feito' ? '✓' : cls === 'neg' ? '✕' : (i + 1)) + '</span>' + escapeHtml(e.nome) + '</li>';
+    }).join('') + '</ol>';
+  }
+  function ocCardHtml(o) {
+    var st = OC_STATUS[o.status] || { txt: o.status, cls: '' }, id = escapeHtml(o.id), v = ocValorEscolhido(o), hoje = todayIso();
+    var acoes = [];
+    if (ocUi.confirmar === 'cancelar:' + o.id) {
+      acoes.push('<span>Cancelar a OC nº ' + escapeHtml(String(o.numero)) + '?</span><button class="btn-text danger" data-oc="cancelar-ok" data-id="' + id + '">Cancelar OC</button><button class="btn-text" data-oc="nao">Manter</button>');
+    } else {
+      if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Aprovar ou reprovar</b> (coordenador)</button>');
+      if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (compras)</button>');
+      if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (Nicolas)</button>');
+      if (o.status === 'compra') {
+        if (!o.compra) acoes.push('<button class="btn-text" data-oc="comprar" data-id="' + id + '">Registrar pedido ao fornecedor</button>');
+        acoes.push('<button class="btn-text" data-oc="entrega" data-id="' + id + '"><b>Confirmar entrega</b> (quem pediu)</button>');
+      }
+      acoes.push('<button class="btn-text" data-oc="ver" data-id="' + id + '">Detalhes</button>');
+      if (o.status === 'pedido' || o.status === 'cotacao') acoes.push('<button class="btn-text danger" data-oc="cancelar" data-id="' + id + '">Cancelar</button>');
+    }
+    var atraso = o.compra && o.compra.previsao && o.status === 'compra' && o.compra.previsao < hoje;
+    return '<div class="frete-item est-' + st.cls + ' oc-card">' +
+      '<div class="frete-top"><span><b>OC nº ' + escapeHtml(String(o.numero || '—')) + '</b> · ' + escapeHtml(o.setor || '—') + (o.urgencia === 'urgente' ? ' <span class="chip-est falta" style="margin-left:4px">Urgente</span>' : '') + '</span>' +
+        '<span class="chip-est ' + st.cls + '">' + escapeHtml(st.txt) + '</span></div>' + ocPassosHtml(o) +
+      '<ul class="oc-itens">' + (o.itens || []).map(function(it) {
+        return '<li><b>' + escapeHtml(fmtMp(it.quantidade, it.unidade)) + '</b> ' + escapeHtml(it.descricao) + (it.aplicacao ? '<small>aplicar em: ' + escapeHtml(it.aplicacao) + '</small>' : '') + '</li>';
+      }).join('') + '</ul>' +
+      '<div class="frete-sub">Pedido por ' + escapeHtml(ocQuem(o.pedido)) + '</div>' +
+      (v ? '<div class="frete-sub">Cotação escolhida: <b>' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + '</b> · ' + escapeHtml(v.fornecedor) + (v.prazo ? ' · entrega em ' + v.prazo + (Number(v.prazo) === 1 ? ' dia' : ' dias') : '') + '</div>' : '') +
+      (o.compra ? '<div class="frete-sub' + (atraso ? ' alerta' : '') + '">Pedido ao fornecedor' + (o.compra.pedidoFornecedor ? ' nº ' + escapeHtml(o.compra.pedidoFornecedor) : '') + (o.compra.previsao ? ' · previsão ' + escapeHtml(formatDateBR(o.compra.previsao)) + (atraso ? ' (atrasada)' : '') : '') + '</div>' : '') +
+      ((o.status === 'reprovada' || o.status === 'cancelada') ? '<div class="frete-sub alerta">' + escapeHtml(o.status === 'cancelada' ? 'Cancelada' + (o.canceladaPor ? ' por ' + o.canceladaPor : '') : 'Reprovada por ' + ((o.aprovacao && o.aprovacao.decisao === 'reprovado') ? o.aprovacao.nome + ': ' + (o.aprovacao.obs || '') : (o.coord ? o.coord.nome + ': ' + (o.coord.obs || '') : ''))) + '</div>' : '') +
+      '<div class="frete-acoes">' + acoes.join('') + '</div></div>';
+  }
+  var OC_FILTROS = [
+    { k: 'abertas', nome: 'Abertas', f: function(o) { return OC_STATUS[o.status] && OC_STATUS[o.status].etapa > 0 && o.status !== 'fechada'; } },
+    { k: 'pedido', nome: 'Coordenador', f: function(o) { return o.status === 'pedido'; } },
+    { k: 'cotacao', nome: 'Cotação', f: function(o) { return o.status === 'cotacao'; } },
+    { k: 'aprovacao', nome: 'Nicolas', f: function(o) { return o.status === 'aprovacao'; } },
+    { k: 'compra', nome: 'Entrega', f: function(o) { return o.status === 'compra'; } },
+    { k: 'fechada', nome: 'Entregues', f: function(o) { return o.status === 'fechada'; } },
+    { k: 'outras', nome: 'Reprovadas e canceladas', f: function(o) { return o.status === 'reprovada' || o.status === 'cancelada'; } }
+  ];
+  function renderCompras() {
+    var box = document.getElementById('oc-conteudo');
+    if (!box || !session || !ehEscritorio()) return;
+    var n = function(s) { return ordensCompra.filter(function(o) { return o.status === s; }).length; };
+    var urg = ocAbertas().filter(function(o) { return o.urgencia === 'urgente'; }).length;
+    var filtro = OC_FILTROS.find(function(f) { return f.k === ocUi.filtro; }) || OC_FILTROS[0];
+    var lista = ordensCompra.filter(filtro.f).sort(function(a, b) { return (b.urgencia === 'urgente') - (a.urgencia === 'urgente') || (Number(b.numero) || 0) - (Number(a.numero) || 0); });
+    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · aprovação do <b>coordenador do setor</b> → 3 · <b>cotação</b> (compras) → 4 · aprovação do <b>Nicolas</b> → 5 · <b>entrega conferida</b> por quem pediu.</p>' +
+      '<div class="est-cards">' +
+        supCard('c-entrada', 'Pedido de compra', fmtInt(ocAbertas().length), (ocAbertas().length === 1 ? 'ordem aberta' : 'ordens abertas') + (urg ? ' · <b>' + urg + (urg === 1 ? ' urgente' : ' urgentes') + '</b>' : ''), '<button type="button" class="btn btn-primary btn-sm" data-oc="novo">+ Novo pedido</button>') +
+        supCard('c-saldo' + (n('pedido') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('aprovacao')), n('pedido') + ' com o coordenador · ' + n('aprovacao') + ' com o Nicolas') +
+        supCard('c-futuro', 'Cotação e entrega', fmtInt(n('cotacao') + n('compra')), n('cotacao') + ' em cotação · ' + n('compra') + ' aguardando entrega') +
+      '</div>' +
+      '<div class="est-loc-chips oc-filtros" role="group" aria-label="Filtrar ordens">' + OC_FILTROS.map(function(f) {
+        var c = ordensCompra.filter(f.f).length;
+        return '<button type="button" class="est-loc' + (f.k === filtro.k ? ' on' : '') + '" data-oc="filtro" data-f="' + f.k + '">' + escapeHtml(f.nome) + (c ? '<b>' + c + '</b>' : '') + '</button>';
+      }).join('') + '</div>' +
+      (lista.length ? lista.slice(0, 60).map(ocCardHtml).join('') : '<p class="empty-state">' + (ordensCompra.length ? 'Nenhuma ordem neste filtro.' : 'Nenhum pedido de compra ainda. Toque em “+ Novo pedido”.') + '</p>');
+  }
+  function renderTabComprasBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="compras"]');
+    if (!b) return;
+    var n = ehEscritorio() ? ordensCompra.filter(function(o) { return o.status === 'pedido' || o.status === 'cotacao' || o.status === 'aprovacao'; }).length : 0;
+    seloAba(b, n, n + (n === 1 ? ' ordem de compra esperando assinatura' : ' ordens de compra esperando assinatura'));
+  }
+  document.getElementById('tab-compras').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-oc]');
+    if (!b) return;
+    var a = b.dataset.oc, o = b.dataset.id ? ocPorId(b.dataset.id) : null;
+    if (a === 'novo') abrirPedidoCompra();
+    else if (a === 'filtro') { ocUi.filtro = b.dataset.f; renderCompras(); }
+    else if (a === 'nao') { ocUi.confirmar = null; renderCompras(); }
+    else if (a === 'ver' && o) verOrdemCompra(o);
+    else if (a === 'coord' && o) abrirDecisaoOc(o, 'coord');
+    else if (a === 'nicolas' && o) abrirDecisaoOc(o, 'aprovacao');
+    else if (a === 'cotar' && o) abrirCotacao(o);
+    else if (a === 'comprar' && o) abrirRegistroCompra(o);
+    else if (a === 'entrega' && o) abrirEntregaOc(o);
+    else if (a === 'cancelar' && o) { ocUi.confirmar = 'cancelar:' + o.id; renderCompras(); }
+    else if (a === 'cancelar-ok' && o) { ocUi.confirmar = null; ocGravar(o.id, { status: 'cancelada', canceladaEm: new Date().toISOString(), canceladaPor: quemSessao(), atualizadoEm: new Date().toISOString() }).then(function() { showToast('OC cancelada.'); }).catch(falhaOc); }
+  });
+
+  // ----- 1. pedido -----
+  function abrirPedidoCompra() {
+    var nomes = membrosConvidaveis().map(function(m) { return m.nome; });
+    gerAbrir({
+      titulo: 'Novo pedido de compra', botao: 'Enviar pedido', itens: [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }],
+      html: '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para o coordenador do setor aprovar.</p>' +
+        '<div class="row-2"><label>Setor <span class="req">*</span><select id="oc-setor"><option value="">— escolha —</option>' + SETORES_SALA.map(function(x) { return '<option>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente">Urgente</option></select></label></div>' +
+        '<div id="oc-itens"></div><button type="button" class="btn-text" data-ger="it-add">+ outro item</button>' +
+        '<label>Justificativa ou observação <span class="opt">(opcional)</span><input type="text" id="oc-obs" maxlength="200" autocomplete="off" /></label>' +
+        '<label>Seu nome <span class="req">*</span><input type="text" id="oc-nome" maxlength="60" list="oc-nomes" autocomplete="off" /></label>' +
+        '<datalist id="oc-nomes">' + nomes.map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
+        '<p class="field-hint">Quem está em Cadastros › Equipe assina com a senha de 4 números; os outros, só com o nome.</p>',
+      depois: ocRenderItens,
+      input: function(t) { if (t.closest('#oc-itens')) ocLerItens(); },
+      change: function(t) { if (t.closest('#oc-itens')) ocLerItens(); },
+      acao: function(a, b) {
+        if (a === 'it-add') { ocLerItens(); ger.itens.push({ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }); ocRenderItens(); }
+        else if (a === 'it-rem') { ocLerItens(); ger.itens.splice(Number(b.dataset.i), 1); if (!ger.itens.length) ger.itens.push({ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }); ocRenderItens(); }
+      },
+      salvar: function() {
+        ocLerItens();
+        var setor = document.getElementById('oc-setor').value, nome = gerVal('oc-nome').replace(/\s+/g, ' '), itens = [], erro = '';
+        if (!setor) return gerErro('Escolha o setor.');
+        ger.itens.forEach(function(it, i) {
+          var q = numCampo(it.quantidade), d = String(it.descricao || '').trim(), ap = String(it.aplicacao || '').trim();
+          if (!d && !q && !ap) return;
+          if (!d) { erro = 'Descreva o item ' + (i + 1) + '.'; return; }
+          if (q === null || q <= 0) { erro = 'Informe a quantidade de “' + d + '”.'; return; }
+          if (!ap) { erro = 'Informe onde vai aplicar “' + d + '”.'; return; }
+          itens.push({ descricao: d, quantidade: arred3(q), unidade: it.unidade || 'un', aplicacao: ap });
+        });
+        if (erro) return gerErro(erro);
+        if (!itens.length) return gerErro('Informe ao menos um item: descrição, quantidade e onde vai aplicar.');
+        if (!nome) return gerErro('Informe o seu nome.');
+        var dados = { status: 'pedido', setor: setor, urgencia: document.getElementById('oc-urg').value, itens: itens, obs: gerVal('oc-obs') };
+        var membro = membrosConvidaveis().find(function(m) { return normNome(m.nome) === normNome(nome); });
+        function gravar(quem) {
+          var agora = new Date().toISOString();
+          dados.pedido = quem; dados.numero = ocProximoNumero(); dados.criadoEm = agora; dados.atualizadoEm = agora;
+          var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
+          ocGravar(null, dados).then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + '. Agora é com o coordenador de ' + setor + '.'); })
+            .catch(function(err) { btn.disabled = false; falhaOc(err); });
+        }
+        if (membro) ocAssinar('nome', 'está na equipe', 'Assinar o pedido', '', function(m) { return m.id === membro.id ? null : 'Essa senha não é de ' + membro.nome + '.'; },
+          function(m) { gravar({ nome: m.nome, id: m.id, em: new Date().toISOString() }); });
+        else gravar({ nome: nome, id: '', em: new Date().toISOString(), semSenha: true });
+        return false;
+      }
+    });
+  }
+  function ocRenderItens() {
+    var box = document.getElementById('oc-itens');
+    if (!box || !ger) return;
+    box.innerHTML = ger.itens.map(function(it, i) {
+      return '<div class="oc-it"><div class="sp-row-t"><span>Item ' + (i + 1) + '</span>' + (ger.itens.length > 1 ? '<button type="button" class="btn-text danger" data-ger="it-rem" data-i="' + i + '">Tirar</button>' : '') + '</div>' +
+        '<label>Descrição <span class="req">*</span><input type="text" class="oc-desc" data-i="' + i + '" maxlength="120" value="' + escapeHtml(it.descricao) + '" placeholder="Ex.: Rolamento 6205 2RS" autocomplete="off" /></label>' +
+        '<div class="row-2"><label>Quantidade <span class="req">*</span><input type="number" class="oc-qtd" data-i="' + i + '" min="0" step="any" inputmode="decimal" value="' + escapeHtml(it.quantidade) + '" /></label>' +
+        '<label>Unidade<select class="oc-un" data-i="' + i + '">' + OC_UNIDADES.map(function(u) { return '<option' + (u === it.unidade ? ' selected' : '') + '>' + u + '</option>'; }).join('') + '</select></label></div>' +
+        '<label>Onde vai aplicar <span class="req">*</span><input type="text" class="oc-ap" data-i="' + i + '" maxlength="120" value="' + escapeHtml(it.aplicacao) + '" placeholder="Ex.: esteira da enchedora, linha PET" autocomplete="off" /></label></div>';
+    }).join('');
+  }
+  function ocLerItens() {
+    if (!ger || !ger.itens) return;
+    ['desc', 'qtd', 'un', 'ap'].forEach(function(c) {
+      document.querySelectorAll('#oc-itens .oc-' + c).forEach(function(el) {
+        var it = ger.itens[Number(el.dataset.i)];
+        if (it) it[{ desc: 'descricao', qtd: 'quantidade', un: 'unidade', ap: 'aplicacao' }[c]] = el.value;
+      });
+    });
+  }
+  // ----- 2 e 4. aprovação (coordenador do setor e Nicolas) -----
+  function abrirDecisaoOc(o, etapa) {
+    var coord = etapa === 'coord', v = ocValorEscolhido(o);
+    gerAbrir({
+      titulo: (coord ? 'Aprovação do coordenador' : 'Aprovação do Nicolas') + ' · OC nº ' + o.numero,
+      html: ocResumoHtml(o) + (!coord && o.cotacao ? ocCotacoesHtml(o) : '') +
+        '<label>Observação <span class="opt">(obrigatória para reprovar' + (coord ? '' : ' ou pedir nova cotação') + ')</span><input type="text" id="oc-dec-obs" maxlength="200" autocomplete="off" /></label>' +
+        '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovado">Aprovar' + (v && !coord ? ' (' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + ')' : '') + '</button>' +
+        (coord ? '' : '<button type="button" class="btn btn-secondary" data-ger="recotar">Pedir nova cotação</button>') +
+        '<button type="button" class="btn btn-secondary oc-reprovar" data-ger="reprovado">Reprovar</button></div>' +
+        '<p class="field-hint">' + (coord ? 'Assina quem é “Coordenador de setor” em Cadastros › Equipe (e coordena ' + escapeHtml(o.setor) + ').' : 'Assina quem tem “Aprova compras (Nicolas)” em Cadastros › Equipe.') + '</p>',
+      acao: function(dec) {
+        var obs = gerVal('oc-dec-obs');
+        if ((dec === 'reprovado' || dec === 'recotar') && !obs) { gerErro(dec === 'recotar' ? 'Escreva o que precisa mudar na cotação.' : 'Escreva o motivo da reprovação.'); return; }
+        var onde = coord ? ['coordenador', 'é coordenador de setor', 'Ninguém marcado como “Coordenador de setor” em Cadastros › Equipe.', function(m) { return coordenaSetor(m, o.setor) ? null : m.nome + ' não coordena ' + o.setor + '.'; }]
+          : ['aprovaCompra', 'aprova compras', 'Ninguém marcado como “Aprova compras (Nicolas)” em Cadastros › Equipe.', null];
+        ocAssinar(onde[0], onde[1], (dec === 'aprovado' ? 'Aprovar' : dec === 'recotar' ? 'Pedir nova cotação' : 'Reprovar') + ' · OC nº ' + o.numero, onde[2], onde[3], function(m) {
+          var agora = new Date().toISOString(), ass = { nome: m.nome, id: m.id, em: agora, decisao: dec === 'recotar' ? 'recotar' : dec, obs: obs }, dados = { atualizadoEm: agora };
+          if (coord) { dados.coord = ass; dados.status = dec === 'aprovado' ? 'cotacao' : 'reprovada'; }
+          else { dados.aprovacao = ass; dados.status = dec === 'aprovado' ? 'compra' : dec === 'recotar' ? 'cotacao' : 'reprovada'; if (dec === 'recotar') dados.recotacoes = (o.recotacoes || []).concat([ass]); }
+          ocGravar(o.id, dados).then(function() {
+            gerFechar();
+            showToast(dec === 'aprovado' ? (coord ? 'Aprovado pelo coordenador: agora vai para a cotação.' : 'Compra aprovada: aguardando a entrega.') : dec === 'recotar' ? 'Voltou para a cotação.' : 'OC reprovada.');
+          }).catch(falhaOc);
+        });
+      }
+    });
+  }
+  function ocResumoHtml(o) {
+    return '<div class="pedido-resumo"><div class="resumo-row"><span class="resumo-k">Setor</span><span class="resumo-v">' + escapeHtml(o.setor) + (o.urgencia === 'urgente' ? ' · urgente' : '') + '</span></div>' +
+      '<div class="resumo-row"><span class="resumo-k">Pedido por</span><span class="resumo-v">' + escapeHtml(ocQuem(o.pedido)) + '</span></div>' +
+      (o.obs ? '<div class="resumo-row"><span class="resumo-k">Justificativa</span><span class="resumo-v">' + escapeHtml(o.obs) + '</span></div>' : '') + '</div>' +
+      '<ul class="oc-itens">' + (o.itens || []).map(function(it) { return '<li><b>' + escapeHtml(fmtMp(it.quantidade, it.unidade)) + '</b> ' + escapeHtml(it.descricao) + '<small>aplicar em: ' + escapeHtml(it.aplicacao || '—') + '</small></li>'; }).join('') + '</ul>';
+  }
+  function ocCotacoesHtml(o) {
+    var c = o.cotacao;
+    if (!c || !(c.cotacoes || []).length) return '';
+    return '<h3 class="q-plano-t">Cotações (' + c.cotacoes.length + ') · por ' + escapeHtml(c.nome) + '</h3><table class="resumo-table oc-cot"><thead><tr><th>Fornecedor</th><th>Valor</th><th>Prazo</th><th>Pagamento</th></tr></thead><tbody>' +
+      c.cotacoes.map(function(x, i) {
+        return '<tr class="' + (i === (c.escolhida || 0) ? 'oc-escolhida' : '') + '"><td>' + (i === (c.escolhida || 0) ? '✓ ' : '') + escapeHtml(x.fornecedor) + (x.obs ? '<span class="est-sub">' + escapeHtml(x.obs) + '</span>' : '') + '</td><td>' + escapeHtml(fmtBRL(Number(x.valor) || 0)) + '</td><td>' + (x.prazo ? escapeHtml(String(x.prazo)) + ' d' : '—') + '</td><td>' + escapeHtml(x.pagamento || '—') + '</td></tr>';
+      }).join('') + '</tbody></table>' + (c.obs ? '<p class="field-hint">Obs. da cotação: ' + escapeHtml(c.obs) + '</p>' : '');
+  }
+  // ----- 3. cotação (assistente de compras) -----
+  function abrirCotacao(o) {
+    var ant = o.cotacao && o.cotacao.cotacoes ? o.cotacao.cotacoes.map(function(x) { return { fornecedor: x.fornecedor, valor: ocValorTexto(x.valor), prazo: x.prazo ? String(x.prazo) : '', pagamento: x.pagamento || '', obs: x.obs || '' }; }) : [];
+    while (ant.length < 3) ant.push({ fornecedor: '', valor: '', prazo: '', pagamento: '', obs: '' });
+    var rec = (o.recotacoes || []).slice(-1)[0];
+    gerAbrir({
+      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para o Nicolas', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
+      html: ocResumoHtml(o) + (rec ? '<p class="sup-aviso">⚠ Nova cotação pedida por ' + escapeHtml(rec.nome) + ': ' + escapeHtml(rec.obs || '') + '</p>' : '') +
+        '<p class="hint">O ideal são 3 cotações. Marque a escolhida (o menor preço vem marcado).</p><div id="oc-cots"></div>' +
+        '<button type="button" class="btn-text" data-ger="cot-add">+ outra cotação</button>' +
+        '<datalist id="oc-forns">' + nomesFornecedoresCadastro().map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="oc-cot-obs" maxlength="200" autocomplete="off" value="' + escapeHtml((o.cotacao && o.cotacao.obs) || '') + '" /></label>' +
+        '<p class="field-hint">Assina quem é “Assistente de compras” em Cadastros › Equipe.</p>',
+      depois: ocRenderCots,
+      input: function(t) { if (t.closest('#oc-cots')) { ocLerCots(); if (t.classList.contains('oc-cv')) ocMarcarMenor(); } },
+      change: function(t) { if (t.name === 'oc-esc') { ger.escolhida = Number(t.value); ger.escolhaManual = true; } },
+      acao: function(a) { if (a === 'cot-add') { ocLerCots(); ger.cot.push({ fornecedor: '', valor: '', prazo: '', pagamento: '', obs: '' }); ocRenderCots(); } },
+      salvar: function() {
+        ocLerCots();
+        var cots = [], erro = '', mapa = [];
+        ger.cot.forEach(function(x, i) {
+          var v = ocValor(x.valor), f = String(x.fornecedor || '').trim();
+          if (!f && v === null) return;
+          if (!f) { erro = 'Informe o fornecedor da cotação ' + (i + 1) + '.'; return; }
+          if (v === null || v <= 0) { erro = 'Informe o valor da cotação de ' + f + '.'; return; }
+          mapa[i] = cots.length;
+          cots.push({ fornecedor: f, valor: Math.round(v * 100) / 100, prazo: numCampo(x.prazo) ? Math.round(numCampo(x.prazo)) : '', pagamento: String(x.pagamento || '').trim(), obs: String(x.obs || '').trim() });
+        });
+        if (erro) return gerErro(erro);
+        if (!cots.length) return gerErro('Lance ao menos uma cotação (fornecedor e valor).');
+        var esc = mapa[ger.escolhida];
+        if (esc === undefined) return gerErro('Marque a cotação escolhida (uma que tenha fornecedor e valor).');
+        ocAssinar('compras', 'é assistente de compras', 'Cotação · OC nº ' + o.numero, 'Ninguém marcado como “Assistente de compras” em Cadastros › Equipe.', null, function(m) {
+          var agora = new Date().toISOString();
+          ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs') }, status: 'aprovacao', atualizadoEm: agora })
+            .then(function() { gerFechar(); showToast('Cotação enviada para a aprovação do Nicolas.'); }).catch(falhaOc);
+        });
+        return false;
+      }
+    });
+  }
+  function ocRenderCots() {
+    var box = document.getElementById('oc-cots');
+    if (!box || !ger) return;
+    box.innerHTML = ger.cot.map(function(x, i) {
+      return '<div class="oc-it"><label class="check-row oc-esc"><input type="radio" name="oc-esc" value="' + i + '"' + (i === ger.escolhida ? ' checked' : '') + ' /> Cotação ' + (i + 1) + (i === ger.escolhida ? ' · escolhida' : '') + '</label>' +
+        '<div class="row-2"><label>Fornecedor<input type="text" class="oc-cf" data-i="' + i + '" list="oc-forns" maxlength="80" value="' + escapeHtml(x.fornecedor) + '" autocomplete="off" /></label>' +
+        '<label>Valor total (R$)<input type="text" class="oc-cv" data-i="' + i + '" inputmode="decimal" maxlength="14" value="' + escapeHtml(x.valor) + '" placeholder="0,00" autocomplete="off" /></label></div>' +
+        '<div class="row-2"><label>Prazo de entrega (dias)<input type="number" class="oc-cp" data-i="' + i + '" min="0" step="1" inputmode="numeric" value="' + escapeHtml(x.prazo) + '" /></label>' +
+        '<label>Pagamento<input type="text" class="oc-cg" data-i="' + i + '" maxlength="40" value="' + escapeHtml(x.pagamento) + '" placeholder="Ex.: 28 dias, à vista" autocomplete="off" /></label></div>' +
+        '<label>Observação<input type="text" class="oc-co" data-i="' + i + '" maxlength="120" value="' + escapeHtml(x.obs) + '" autocomplete="off" /></label></div>';
+    }).join('');
+  }
+  function ocLerCots() {
+    if (!ger || !ger.cot) return;
+    var mapa = { cf: 'fornecedor', cv: 'valor', cp: 'prazo', cg: 'pagamento', co: 'obs' };
+    Object.keys(mapa).forEach(function(c) {
+      document.querySelectorAll('#oc-cots .oc-' + c).forEach(function(el) { var x = ger.cot[Number(el.dataset.i)]; if (x) x[mapa[c]] = el.value; });
+    });
+  }
+  function ocMarcarMenor() {
+    var menor = null;
+    ger.cot.forEach(function(x, i) { var v = ocValor(x.valor); if (v && v > 0 && x.fornecedor && (menor === null || v < menor.v)) menor = { v: v, i: i }; });
+    if (menor && !ger.escolhaManual) { ger.escolhida = menor.i; document.querySelectorAll('#oc-cots input[name="oc-esc"]').forEach(function(r) { r.checked = Number(r.value) === menor.i; }); }
+  }
+  // ----- pedido ao fornecedor (opcional) e 5. entrega -----
+  function abrirRegistroCompra(o) {
+    var v = ocValorEscolhido(o);
+    gerAbrir({
+      titulo: 'Pedido ao fornecedor · OC nº ' + o.numero, botao: 'Registrar',
+      html: '<p class="hint">Compra aprovada' + (v ? ': ' + escapeHtml(v.fornecedor + ', ' + fmtBRL(Number(v.valor) || 0)) : '') + '. Registre o pedido feito ao fornecedor e a previsão de entrega.</p>' +
+        '<div class="row-2"><label>Nº do pedido no fornecedor <span class="opt">(opcional)</span><input type="text" id="oc-pf" maxlength="30" autocomplete="off" /></label>' +
+        '<label>Previsão de entrega<input type="date" id="oc-prev" value="' + escapeHtml(v && v.prazo ? addDiasIso(todayIso(), Number(v.prazo)) : '') + '" /></label></div>',
+      salvar: function() {
+        ocAssinar('compras', 'é assistente de compras', 'Pedido ao fornecedor · OC nº ' + o.numero, 'Ninguém marcado como “Assistente de compras” em Cadastros › Equipe.', null, function(m) {
+          var agora = new Date().toISOString();
+          ocGravar(o.id, { compra: { nome: m.nome, id: m.id, em: agora, pedidoFornecedor: gerVal('oc-pf'), previsao: gerVal('oc-prev') }, atualizadoEm: agora })
+            .then(function() { gerFechar(); showToast('Pedido ao fornecedor registrado.'); }).catch(falhaOc);
+        });
+        return false;
+      }
+    });
+  }
+  function abrirEntregaOc(o) {
+    var temId = !!(o.pedido && o.pedido.id);
+    gerAbrir({
+      titulo: 'Entrega · OC nº ' + o.numero, botao: 'Confirmar entrega',
+      html: ocResumoHtml(o) + '<label class="check-row"><input type="checkbox" id="oc-conf" /> Recebi e conferi: veio o que foi pedido, na quantidade certa</label>' +
+        '<label>Observação <span class="opt">(obrigatória se veio diferente)</span><input type="text" id="oc-ent-obs" maxlength="200" autocomplete="off" /></label>' +
+        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confirma com a senha de 4 números.</p>'
+          : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-ent-nome" maxlength="60" value="" placeholder="' + escapeHtml(o.pedido ? o.pedido.nome : '') + '" autocomplete="off" /></label><p class="field-hint">O pedido foi feito por ' + escapeHtml(o.pedido ? o.pedido.nome : '—') + ': é ele (ou ela) quem confirma a entrega.</p>'),
+      salvar: function() {
+        var conf = document.getElementById('oc-conf').checked, obs = gerVal('oc-ent-obs');
+        if (!conf && !obs) return gerErro('Marque “Recebi e conferi” ou escreva o que veio diferente.');
+        function gravar(quem) {
+          var agora = new Date().toISOString();
+          ocGravar(o.id, { fechamento: Object.assign(quem, { em: agora, conforme: conf, obs: obs }), status: 'fechada', atualizadoEm: agora })
+            .then(function() { gerFechar(); showToast('Entrega confirmada: OC nº ' + o.numero + ' fechada.'); }).catch(falhaOc);
+        }
+        if (temId) {
+          ocAssinar('nome', 'está na equipe', 'Confirmar entrega · OC nº ' + o.numero, '', function(m) { return m.id === o.pedido.id ? null : 'Só ' + o.pedido.nome + ' (quem fez o pedido) confirma a entrega.'; },
+            function(m) { gravar({ nome: m.nome, id: m.id }); });
+        } else {
+          var nome = gerVal('oc-ent-nome');
+          if (!nome) return gerErro('Informe o seu nome.');
+          if (o.pedido && normNome(nome) !== normNome(o.pedido.nome)) return gerErro('Quem confirma a entrega é quem fez o pedido: ' + o.pedido.nome + '.');
+          gravar({ nome: nome, id: '', semSenha: true });
+        }
+        return false;
+      }
+    });
+  }
+  function verOrdemCompra(o) {
+    var st = OC_STATUS[o.status] || { txt: o.status };
+    function linha(et, a, extra) {
+      if (!a) return '<li class="oc-tl-pend"><b>' + et + '</b><span>pendente</span></li>';
+      var dec = a.decisao === 'reprovado' ? ' · reprovou' : a.decisao === 'recotar' ? ' · pediu nova cotação' : a.decisao === 'aprovado' ? ' · aprovou' : '';
+      return '<li class="' + (a.decisao === 'reprovado' ? 'neg' : 'ok') + '"><b>' + et + '</b><span>' + escapeHtml(ocQuem(a) + dec + (a.obs ? ': ' + a.obs : '') + (extra || '')) + '</span></li>';
+    }
+    var v = ocValorEscolhido(o);
+    gerAbrir({
+      titulo: 'OC nº ' + o.numero + ' · ' + st.txt,
+      html: ocPassosHtml(o) + ocResumoHtml(o) + ocCotacoesHtml(o) +
+        '<h3 class="q-plano-t">Assinaturas</h3><ol class="oc-tl">' +
+          linha('1 · Pedido', o.pedido) + linha('2 · Coordenador', o.coord) +
+          linha('3 · Cotação', o.cotacao, v ? ' · escolhida ' + v.fornecedor + ' ' + fmtBRL(Number(v.valor) || 0) : '') +
+          linha('4 · Nicolas', o.aprovacao) + (o.compra ? linha('Pedido ao fornecedor', o.compra, o.compra.previsao ? ' · previsão ' + formatDateBR(o.compra.previsao) : '') : '') +
+          linha('5 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>'
+    });
+  }
+
+  // ---------- criar a própria senha de 4 números com foto do documento e do rosto (opção B, 16/10/2026) ----------
+  // A pessoa informa nome, matrícula e CPF, tira foto do RG (ou CNH) e uma selfie, aceita o uso das fotos e cria a senha.
+  // O pedido vai para a senha mestre (Cadastros › Equipe › Pedidos de senha), que compara as fotos e aprova; as fotos
+  // são apagadas na decisão e o CPF fica mascarado. Quem já está na equipe e esqueceu a senha usa o mesmo caminho.
+  // Gravação pela função cadastro_pedir (confere CPF, senha repetida e o cadastro do RH no servidor); fotos no bucket
+  // privado "cadastros" (só a senha mestre vê). Mais tarde, a conferência do rosto pode ser automática (opção A).
+  var CP_COL = 'cadastro-pedidos', BUCKET_CADASTROS = 'cadastros';
+  var cadastroPedidos = [];
+  var CP_ACEITE = 'Autorizo a Levíssima a usar a foto do meu documento e do meu rosto só para conferir a minha identidade e liberar a minha senha. As fotos são apagadas assim que o pedido é aprovado ou recusado.';
+  function cpfValido(c) {
+    c = String(c || '').replace(/\D/g, '');
+    if (c.length !== 11 || /^(\d)\1{10}$/.test(c)) return false;
+    function dv(n) { var s = 0; for (var i = 0; i < n; i++) s += Number(c.charAt(i)) * (n + 1 - i); var r = (s * 10) % 11; return r === 10 ? 0 : r; }
+    return dv(9) === Number(c.charAt(9)) && dv(10) === Number(c.charAt(10));
+  }
+  function cpfMascara(c) { c = String(c || '').replace(/\D/g, ''); return c.length === 11 ? '***.***.' + c.slice(6, 9) + '-' + c.slice(9) : '—'; }
+  function subscribeCadastroPedidos() {
+    if (!session || session.role !== 'admin') return;
+    db.collection(CP_COL).onSnapshot(function(snap) {
+      cadastroPedidos = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      renderPedidosSenha();
+    }, function(err) { console.error(CP_COL, err); });
+  }
+  function abrirCadastroSenha() {
+    if (mode !== 'db' || !sbCliente) { showToast('Para criar a senha, o app precisa estar conectado à internet.'); return; }
+    gerAbrir({
+      titulo: 'Criar a minha senha de 4 números', botao: 'Enviar para aprovação', fotos: {},
+      html: '<p class="hint">A senha de 4 números assina o que você faz no app (conferência, inspeção, pedido de compra…). Ela só passa a valer depois que a diretoria conferir as fotos. Esqueceu a sua? Faça um pedido novo.</p>' +
+        '<label>Nome completo <span class="req">*</span><input type="text" id="cp-nome" maxlength="80" autocomplete="name" /></label>' +
+        '<div class="row-2"><label>Matrícula <span class="opt">(se souber)</span><input type="text" id="cp-mat" maxlength="20" inputmode="numeric" autocomplete="off" /></label>' +
+        '<label>CPF <span class="req">*</span><input type="text" id="cp-cpf" maxlength="14" inputmode="numeric" placeholder="000.000.000-00" autocomplete="off" /></label></div>' +
+        '<div class="cp-fotos">' +
+          '<label class="cp-foto"><span class="cp-foto-t">Foto do RG ou da CNH <span class="req">*</span></span><span class="cp-foto-box" id="cp-prev-doc">📄<small>tocar para fotografar</small></span><input type="file" id="cp-doc" accept="image/*" capture="environment" /></label>' +
+          '<label class="cp-foto"><span class="cp-foto-t">Selfie (o seu rosto) <span class="req">*</span></span><span class="cp-foto-box" id="cp-prev-rosto">🙂<small>tocar para fotografar</small></span><input type="file" id="cp-rosto" accept="image/*" capture="user" /></label>' +
+        '</div>' +
+        '<div class="row-2"><label>Crie a senha (4 números) <span class="req">*</span><input type="password" id="cp-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" /></label>' +
+        '<label>Repita a senha <span class="req">*</span><input type="password" id="cp-pin2" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" /></label></div>' +
+        '<label class="check-row cp-aceite"><input type="checkbox" id="cp-aceite" /> ' + escapeHtml(CP_ACEITE) + '</label>',
+      change: function(t) {
+        if (t.id !== 'cp-doc' && t.id !== 'cp-rosto') return;
+        var f = t.files && t.files[0], qual = t.id === 'cp-doc' ? 'doc' : 'rosto', box = document.getElementById('cp-prev-' + qual);
+        if (!f) return;
+        ger.fotos[qual] = f;
+        var url = URL.createObjectURL(f);
+        box.innerHTML = '<img src="' + url + '" alt="" />';
+      },
+      input: function(t) {
+        if (t.id === 'cp-cpf') { var d = t.value.replace(/\D/g, '').slice(0, 11); t.value = d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2'); }
+        if (t.id === 'cp-pin' || t.id === 'cp-pin2') t.value = t.value.replace(/\D/g, '').slice(0, 4);
+      },
+      salvar: function() {
+        var nome = gerVal('cp-nome').replace(/\s+/g, ' '), cpf = gerVal('cp-cpf').replace(/\D/g, ''), pin = gerVal('cp-pin'), pin2 = gerVal('cp-pin2');
+        if (nome.split(' ').length < 2) return gerErro('Informe o nome completo (nome e sobrenome).');
+        if (!cpfValido(cpf)) return gerErro('CPF inválido. Confira os números.');
+        if (!ger.fotos.doc) return gerErro('Tire a foto do RG ou da CNH.');
+        if (!ger.fotos.rosto) return gerErro('Tire a selfie (foto do seu rosto).');
+        if (!/^[0-9]{4}$/.test(pin)) return gerErro('A senha tem 4 números.');
+        if (pin !== pin2) return gerErro('As duas senhas não são iguais.');
+        if (/^(\d)\1{3}$/.test(pin) || pin === '1234' || pin === '4321') return gerErro('Senha fácil demais. Escolha outra (sem números repetidos ou em sequência).');
+        if (!document.getElementById('cp-aceite').checked) return gerErro('Para continuar, marque a autorização do uso das fotos.');
+        var pasta = 'pedidos/' + uid(), fotos = ger.fotos;
+        function subir(f, nomeArq) {
+          return prepararArquivo(f).then(function(a) {
+            var caminho = pasta + '/' + nomeArq + '.' + a.ext;
+            return sbCliente.storage.from(BUCKET_CADASTROS).upload(caminho, a.blob, { contentType: a.mime || undefined, upsert: false }).then(function(r) { if (r.error) throw r.error; return caminho; });
+          });
+        }
+        var caminhos = {};
+        return subir(fotos.doc, 'documento').then(function(c1) { caminhos.doc = c1; return subir(fotos.rosto, 'rosto'); }).then(function(c2) {
+          caminhos.rosto = c2;
+          return sha256Hex(pin);
+        }).then(function(hash) {
+          return db.rpc('cadastro_pedir', { p: { nome: nome, matricula: gerVal('cp-mat'), cpf: cpf, pinHash: hash, fotoDoc: caminhos.doc, fotoRosto: caminhos.rosto, aceite: true, aceiteTexto: CP_ACEITE } })
+            .then(function() { showToast('Pedido enviado. A senha passa a valer quando a diretoria aprovar.'); }, function(err) {
+              var erro = String((err && (err.message || err.code)) || err || '');
+              sbCliente.storage.from(BUCKET_CADASTROS).remove([caminhos.doc, caminhos.rosto]).catch(function() {});
+              gerErro(/senha_em_uso/.test(erro) ? 'Essa senha já é de outra pessoa. Escolha outra.' : /ja_pedido/.test(erro) ? 'Já existe um pedido esperando aprovação com esse CPF.' : /cpf/.test(erro) ? 'CPF inválido.' : 'Não foi possível enviar agora. Tente novamente.');
+              return false;
+            });
+        });
+      }
+    });
+  }
+  // ----- aprovação (senha mestre) -----
+  function renderPedidosSenha() {
+    var sec = document.getElementById('cp-sec'), box = document.getElementById('cp-lista');
+    if (!sec || !box) return;
+    var mestre = !!session && session.role === 'admin';
+    sec.classList.toggle('hidden', !mestre);
+    if (!mestre) return;
+    var pend = cadastroPedidos.filter(function(x) { return x.status === 'pendente'; }).sort(function(a, b) { return String(a.criadoEm || '').localeCompare(String(b.criadoEm || '')); });
+    document.getElementById('cp-n').textContent = pend.length ? String(pend.length) : '';
+    box.innerHTML = pend.length ? pend.map(function(x) {
+      var ja = equipe.find(function(m) { return normNome(m.nome) === normNome(x.nome); });
+      return '<div class="frete-item est-confirmar"><div class="frete-top"><span><b>' + escapeHtml(x.nome) + '</b></span><span class="chip-est confirmar">' + (ja ? 'Troca de senha' : 'Senha nova') + '</span></div>' +
+        '<div class="frete-sub">CPF ' + escapeHtml(cpfMascara(x.cpf)) + (x.matricula ? ' · matrícula ' + escapeHtml(x.matricula) : '') + ' · pedido em ' + escapeHtml(formatDateTimeBR(x.criadoEm)) + '</div>' +
+        '<div class="frete-sub">' + (x.rh ? 'No RH: ' + escapeHtml([x.rh.nome, x.rh.funcao, x.rh.setor, x.rh.admissao ? 'admissão ' + formatDateBR(x.rh.admissao) : ''].filter(Boolean).join(' · ')) : '<span class="alerta">Não achado no cadastro do RH (confira com cuidado)</span>') + '</div>' +
+        '<div class="frete-acoes"><button class="btn-text" data-cp="ver" data-id="' + escapeHtml(x.id) + '"><b>Conferir fotos e decidir</b></button></div></div>';
+    }).join('') : '<p class="empty-state">Nenhum pedido de senha esperando.</p>';
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="cadastros"]');
+    if (b) seloAba(b, pend.length, pend.length + (pend.length === 1 ? ' pedido de senha esperando' : ' pedidos de senha esperando'));
+  }
+  function cpFoto(caminho, alvo) {
+    if (!caminho) return;
+    sbCliente.storage.from(BUCKET_CADASTROS).download(caminho).then(function(r) {
+      if (r.error) throw r.error;
+      var el = document.getElementById(alvo);
+      if (el) el.innerHTML = '<img src="' + URL.createObjectURL(r.data) + '" alt="" />';
+    }).catch(function(e) { console.error('foto do cadastro', e); var el = document.getElementById(alvo); if (el) el.textContent = 'Foto indisponível'; });
+  }
+  function abrirDecisaoSenha(x) {
+    var ja = equipe.find(function(m) { return normNome(m.nome) === normNome(x.nome); });
+    var FUNCS = [['faturamento', 'Dá o ok do faturamento'], ['conferente', 'Confere o carregamento'], ['financeiro', 'Ok do financeiro'], ['logistica', 'Logística dos caminhões'],
+      ['gestao', 'Diretoria / gestão'], ['qualidade', 'Qualidade'], ['coordenador', 'Coordenador de setor'], ['compras', 'Assistente de compras']];
+    gerAbrir({
+      titulo: 'Pedido de senha · ' + x.nome,
+      html: '<div class="cp-comparar"><figure><span class="cp-foto-box" id="cp-ver-doc">carregando…</span><figcaption>Documento</figcaption></figure>' +
+          '<figure><span class="cp-foto-box" id="cp-ver-rosto">carregando…</span><figcaption>Selfie</figcaption></figure></div>' +
+        '<div class="pedido-resumo"><div class="resumo-row"><span class="resumo-k">Nome</span><span class="resumo-v">' + escapeHtml(x.nome) + '</span></div>' +
+          '<div class="resumo-row"><span class="resumo-k">CPF</span><span class="resumo-v">' + escapeHtml(String(x.cpf || '').replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4')) + '</span></div>' +
+          '<div class="resumo-row"><span class="resumo-k">No RH</span><span class="resumo-v">' + (x.rh ? escapeHtml([x.rh.nome, x.rh.matricula ? 'matrícula ' + x.rh.matricula : '', x.rh.funcao, x.rh.setor].filter(Boolean).join(' · ')) : 'não achado') + '</span></div></div>' +
+        '<p class="hint">Confira se o rosto da selfie é o da foto do documento e se o nome e o CPF batem.</p>' +
+        (ja ? '<p class="sup-aviso">' + escapeHtml(x.nome) + ' já está na equipe: aprovar troca a senha dele(a) e mantém as funções.</p>'
+          : '<p class="field-label">O que essa pessoa faz no app</p><div class="cp-funcs">' + FUNCS.map(function(f) { return '<label class="check-row"><input type="checkbox" class="cp-func" value="' + f[0] + '" /> ' + escapeHtml(f[1]) + '</label>'; }).join('') + '</div>' +
+            '<p class="field-hint">Sem marcar nada, a pessoa assina pedidos de compra, responde convites e confirma entregas.</p>') +
+        '<label>Motivo <span class="opt">(obrigatório para recusar)</span><input type="text" id="cp-motivo" maxlength="160" autocomplete="off" /></label>' +
+        '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovar">Aprovar</button><button type="button" class="btn btn-secondary oc-reprovar" data-ger="recusar">Recusar</button></div>',
+      depois: function() { cpFoto(x.fotoDoc, 'cp-ver-doc'); cpFoto(x.fotoRosto, 'cp-ver-rosto'); },
+      acao: function(a) {
+        var motivo = gerVal('cp-motivo');
+        if (a === 'recusar' && !motivo) { gerErro('Escreva o motivo da recusa.'); return; }
+        var agora = new Date().toISOString(), fim = { status: a === 'aprovar' ? 'aprovado' : 'recusado', decididoEm: agora, decididoPor: quemSessao(), motivo: motivo, cpf: cpfMascara(x.cpf), fotoDoc: '', fotoRosto: '', pinHash: '' };
+        var passo;
+        if (a === 'aprovar') {
+          if (equipe.some(function(m) { return m.pinHash === x.pinHash && (!ja || m.id !== ja.id); })) { gerErro('Essa senha já é de outra pessoa da equipe: recuse e peça outra.'); return; }
+          var verif = { em: agora, por: quemSessao(), pedidoId: x.id };
+          if (ja) passo = saveMembro(ja.id, { pinHash: x.pinHash, cadastroVerificado: verif });
+          else {
+            var novo = { nome: x.nome, pinHash: x.pinHash, criadoEm: agora, cadastroVerificado: verif };
+            document.querySelectorAll('#ger-form-body .cp-func').forEach(function(c) { novo[c.value] = c.checked; });
+            passo = saveMembro(null, novo);
+          }
+        } else passo = Promise.resolve();
+        passo.then(function() {
+          return db.collection(CP_COL).doc(x.id).update(fim);
+        }).then(function() {
+          return sbCliente.storage.from(BUCKET_CADASTROS).remove([x.fotoDoc, x.fotoRosto].filter(Boolean)).catch(function(e) { console.error('apagar fotos', e); });
+        }).then(function() {
+          gerFechar();
+          showToast(a === 'aprovar' ? (ja ? 'Senha de ' + x.nome + ' trocada.' : x.nome + ' entrou na equipe com a senha que criou.') + ' As fotos foram apagadas.' : 'Pedido recusado; as fotos foram apagadas.');
+        }).catch(function(err) { console.error('pedido de senha', err); gerErro('Não foi possível salvar agora. Tente novamente.'); });
+      }
+    });
+  }
+  document.getElementById('cp-sec').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-cp]');
+    if (!b) return;
+    var x = cadastroPedidos.find(function(p) { return p.id === b.dataset.id; });
+    if (b.dataset.cp === 'ver' && x) abrirDecisaoSenha(x);
+  });
+
+  document.getElementById('btn-cp-setor').addEventListener('click', abrirCadastroSenha);
+
+  // ---------- agendamento on-line dos clientes (pedido de 17/10/2026) ----------
+  // Cada cliente recebe um link pessoal (agendar.html#t=<chave>): vê só os dias e horários livres da Agenda dos
+  // retornáveis (sem o nome de ninguém) e agenda sozinho; o horário entra na hora na agenda (agenda-itens, origem
+  // "online"). Na véspera, a equipe manda pelo WhatsApp o lembrete com o link para confirmar ou cancelar (um toque
+  // por cliente). Envio automático: depende de contratar um serviço de WhatsApp (ex.: Z-API) — fica para depois.
+  // Coleção agenda-online: doc "config" (vagas por horário, antecedência, dias e horário) e os clientes (cli-*).
+  var AO_COL = 'agenda-online';
+  var agOnline = [];
+  var AO_PADRAO = { ativo: true, vagas: 2, antecedenciaHoras: 12, diasAFrente: 14, dias: [1, 2, 3, 4, 5, 6], de: '05:00', ate: '17:30', maxAtivos: 5 };
+  var SITE_URL = 'https://nicolaslevissima-afk.github.io/levissima/';
+  var aoUi = { confirmar: null, inativos: false };
+  function aoChaveLocal() { return 'levissima-agenda-online-v1'; }
+  function loadLocalAgOnline() { try { agOnline = JSON.parse(localStorage.getItem(aoChaveLocal()) || '[]') || []; } catch (e) { agOnline = []; } }
+  function subscribeAgOnline() {
+    if (!ehEscritorio()) return;
+    db.collection(AO_COL).onSnapshot(function(snap) {
+      agOnline = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      if (session) renderAgOnline();
+    }, function(err) { console.error(AO_COL, err); });
+  }
+  function aoGravar(id, data, op) {
+    if (mode === 'db' && db) { var ref = db.collection(AO_COL).doc(id); return op === 'update' ? ref.update(data) : ref.set(data); }
+    var i = agOnline.findIndex(function(x) { return x.id === id; });
+    if (op === 'update') { if (i >= 0) agOnline[i] = Object.assign({}, agOnline[i], data); }
+    else { var novo = Object.assign({ id: id }, data); if (i >= 0) agOnline[i] = novo; else agOnline.push(novo); }
+    try { localStorage.setItem(aoChaveLocal(), JSON.stringify(agOnline)); } catch (e) {}
+    renderAgOnline();
+    return Promise.resolve();
+  }
+  function aoConfig() { var c = agOnline.find(function(x) { return x.id === 'config'; }); return Object.assign({}, AO_PADRAO, c || {}); }
+  function aoClientes() { return agOnline.filter(function(x) { return x.id.indexOf('cli-') === 0; }).sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); }); }
+  function aoToken() {
+    var c = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789', r = crypto.getRandomValues(new Uint8Array(24)), s = '';
+    for (var i = 0; i < r.length; i++) s += c.charAt(r[i] % c.length);
+    return s;
+  }
+  function aoLink(c) { return SITE_URL + 'agendar.html#t=' + c.token; }
+  function aoTel(t) { var d = String(t || '').replace(/\D/g, ''); if (d.length === 10 || d.length === 11) d = '55' + d; return d; }
+  function aoWhats(tel, texto) { return 'https://wa.me/' + aoTel(tel) + '?text=' + encodeURIComponent(texto); }
+  function aoCopiar(texto) {
+    function fallback() { var ta = document.createElement('textarea'); ta.value = texto; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch (e) {} document.body.removeChild(ta); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(texto).catch(fallback); else fallback();
+    showToast('Link copiado.');
+  }
+  function aoAbrir(url) { if (appNativo()) { window.open(url, '_system'); } else { window.open(url, '_blank', 'noopener'); } }
+  function aoItensOnline() { return agenda.itens.filter(function(it) { return it.origem === 'online' && !it.cancelado; }); }
+  function aoDiasTexto(c) { var n = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']; return (c.dias || []).slice().sort().map(function(d) { return n[d - 1]; }).join(', '); }
+  function aoLembretes() {
+    var amanha = addDiasIso(todayIso(), 1);
+    return aoItensOnline().filter(function(it) { return it.data === amanha; }).sort(function(a, b) { return String(a.hora).localeCompare(String(b.hora)); });
+  }
+  function renderAgendaBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="agenda"]');
+    if (!b) return;
+    var n = ehEscritorio() ? aoLembretes().filter(function(it) { return !it.lembreteEnviadoEm && it.status !== 'confirmado'; }).length : 0;
+    seloAba(b, n, n + (n === 1 ? ' lembrete de amanhã para enviar' : ' lembretes de amanhã para enviar'));
+  }
+  function renderAgOnline() {
+    renderAgendaBadge();
+    var box = document.getElementById('ao-conteudo');
+    if (!box || !session || !ehEscritorio()) return;
+    var c = aoConfig(), cli = aoClientes(), ativos = cli.filter(function(x) { return x.ativo !== false; }), hoje = todayIso();
+    var lemb = aoLembretes(), prox = aoItensOnline().filter(function(it) { return it.data >= hoje; }).sort(function(a, b) { return (a.data + a.hora).localeCompare(b.data + b.hora); });
+    var h = '<p class="hint">Cada cliente recebe um <b>link pessoal</b>: ele vê só os dias e horários livres (sem o nome de ninguém) e agenda sozinho; o horário entra na hora na agenda acima, marcado com 🌐. Na véspera, mande o lembrete para ele confirmar.</p>' +
+      '<div class="ao-cfg"><span><b>' + (c.ativo ? 'Aberto' : 'Fechado') + '</b> · ' + c.vagas + (Number(c.vagas) === 1 ? ' cliente' : ' clientes') + ' por horário · de ' + c.antecedenciaHoras + ' h antes até ' + c.diasAFrente + ' dias à frente · ' + escapeHtml(aoDiasTexto(c)) + ', ' + escapeHtml(c.de) + ' às ' + escapeHtml(c.ate) + '</span>' +
+        '<button type="button" class="btn-text" data-ao="config">Ajustar</button></div>';
+    // lembretes de amanhã
+    h += '<h3 class="q-plano-t">Lembretes de amanhã (confirmação 24 h antes)</h3>';
+    h += lemb.length ? lemb.map(function(it) {
+      var st = it.status === 'confirmado' ? '<span class="q-chip ok">confirmado</span>' : it.lembreteEnviadoEm ? '<span class="q-chip aviso">lembrete enviado ' + escapeHtml(formatDateTimeBR(it.lembreteEnviadoEm).replace(/^.* /, 'às ')) + '</span>' : '<span class="q-chip falta">mandar lembrete</span>';
+      return '<div class="driver-row ao-item"><span class="driver-name">' + escapeHtml(it.hora + ' · ' + it.cliente) + '<span class="driver-sub">' + escapeHtml(it.telefone || 'sem telefone') + (it.obs ? ' · ' + escapeHtml(it.obs) : '') + '</span></span>' + st +
+        (it.status !== 'confirmado' && it.telefone ? '<button class="btn btn-secondary btn-sm" data-ao="lembrete" data-id="' + escapeHtml(it.id) + '">WhatsApp</button>' : '') + '</div>';
+    }).join('') : '<p class="field-hint">Nenhum agendamento on-line para amanhã.</p>';
+    // próximos
+    h += '<h3 class="q-plano-t">Próximos agendamentos on-line (' + prox.length + ')</h3>' + (prox.length ? prox.slice(0, 20).map(function(it) {
+      return '<div class="driver-row ao-item"><span class="driver-name">' + escapeHtml(rotuloDia(it.data, hoje) + ' ' + it.hora + ' · ' + it.cliente) + (it.obs ? '<span class="driver-sub">' + escapeHtml(it.obs) + '</span>' : '') + '</span>' +
+        '<span class="q-chip ' + (it.status === 'confirmado' ? 'ok' : '') + '">' + (it.status === 'confirmado' ? 'confirmado' : 'agendado') + '</span></div>';
+    }).join('') : '<p class="field-hint">Nenhum ainda.</p>');
+    // clientes com link
+    h += '<div class="section-head" style="margin-top:14px"><h3 class="q-plano-t" style="margin:0">Clientes com link (' + ativos.length + ')</h3><button type="button" class="btn btn-primary btn-sm sp-nova" data-ao="cliente-novo">+ Cliente</button></div>';
+    var lista = aoUi.inativos ? cli : ativos;
+    h += lista.length ? lista.map(function(x) {
+      var id = escapeHtml(x.id);
+      if (aoUi.confirmar === 'novo:' + x.id) return '<div class="driver-confirm">Gerar um link novo para ' + escapeHtml(x.nome) + '? O link antigo para de funcionar.<button class="btn-text danger" data-ao="novo-link-ok" data-id="' + id + '">Gerar</button><button class="btn-text" data-ao="nao">Cancelar</button></div>';
+      return '<div class="driver-row ao-cli' + (x.ativo === false ? ' inativo' : '') + '"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="driver-sub">' + escapeHtml(x.telefone || 'sem telefone') + (x.ativo === false ? ' · desativado' : '') + '</span></span>' +
+        (x.ativo !== false ? (x.telefone ? '<button class="btn-text" data-ao="link-whats" data-id="' + id + '">Enviar link</button>' : '') + '<button class="btn-text" data-ao="copiar" data-id="' + id + '">Copiar link</button><button class="btn-text" data-ao="editar" data-id="' + id + '">Editar</button><button class="btn-text" data-ao="novo-link" data-id="' + id + '">Novo link</button>' : '') +
+        '<button class="btn-text' + (x.ativo === false ? '' : ' danger') + '" data-ao="ativo" data-id="' + id + '">' + (x.ativo === false ? 'Reativar' : 'Desativar') + '</button></div>';
+    }).join('') : '<p class="empty-state">Nenhum cliente com link. Toque em “+ Cliente”.</p>';
+    if (cli.length > ativos.length) h += '<button type="button" class="btn-text" data-ao="inativos">' + (aoUi.inativos ? 'Esconder desativados' : 'Ver desativados (' + (cli.length - ativos.length) + ')') + '</button>';
+    h += '<p class="field-hint">Envio automático do lembrete pelo WhatsApp: precisa contratar um serviço de envio (ex.: Z-API ou a API oficial da Meta). Com ele, o app manda sozinho 24 horas antes.</p>';
+    box.innerHTML = h;
+  }
+  document.getElementById('ao-conteudo').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-ao]');
+    if (!b) return;
+    var a = b.dataset.ao, x = b.dataset.id ? agOnline.find(function(y) { return y.id === b.dataset.id; }) : null;
+    if (a === 'config') abrirAoConfig();
+    else if (a === 'cliente-novo') abrirAoCliente(null);
+    else if (a === 'editar' && x) abrirAoCliente(x);
+    else if (a === 'inativos') { aoUi.inativos = !aoUi.inativos; renderAgOnline(); }
+    else if (a === 'nao') { aoUi.confirmar = null; renderAgOnline(); }
+    else if (a === 'copiar' && x) aoCopiar(aoLink(x));
+    else if (a === 'link-whats' && x) aoAbrir(aoWhats(x.telefone, 'Olá, ' + x.nome + '! Agora você pode agendar a retirada dos garrafões na Levíssima pelo celular, quando quiser. Este é o seu link (não compartilhe): ' + aoLink(x)));
+    else if (a === 'novo-link' && x) { aoUi.confirmar = 'novo:' + x.id; renderAgOnline(); }
+    else if (a === 'novo-link-ok' && x) { aoUi.confirmar = null; aoGravar(x.id, { token: aoToken(), atualizadoEm: new Date().toISOString() }, 'update').then(function() { showToast('Link novo gerado. Mande para o cliente.'); }).catch(function(err) { console.error(err); showToast('Não foi possível agora.'); }); }
+    else if (a === 'ativo' && x) aoGravar(x.id, { ativo: x.ativo === false, atualizadoEm: new Date().toISOString() }, 'update').then(function() { showToast(x.ativo === false ? 'Link reativado.' : 'Link desativado: o cliente não agenda mais por ele.'); });
+    else if (a === 'lembrete') {
+      var it = agenda.itens.find(function(y) { return y.id === b.dataset.id; }), cl = it ? agOnline.find(function(y) { return y.id === it.clienteOnlineId; }) : null;
+      if (!it || !cl) { showToast('Cliente sem link ativo.'); return; }
+      var dm = formatDateBR(it.data).slice(0, 5);
+      aoAbrir(aoWhats(it.telefone || cl.telefone, 'Olá, ' + it.cliente + '! Lembrete da Levíssima: amanhã (' + dm + '), às ' + it.hora + ', você tem retirada de garrafões agendada. Por favor, confirme ou cancele por aqui: ' + aoLink(cl) + '&c=' + it.id));
+      agGravar([{ op: 'update', col: AG_COL.itens, id: it.id, data: { lembreteEnviadoEm: new Date().toISOString(), lembretePor: quemSessao() } }]).catch(function(err) { console.error('lembrete', err); });
+    }
+  });
+  function abrirAoCliente(x) {
+    var conhecidos = agClientesConhecidos();
+    gerAbrir({
+      titulo: x ? 'Editar cliente do agendamento' : 'Cliente do agendamento on-line', botao: x ? 'Salvar' : 'Criar link',
+      html: '<label>Nome do cliente <span class="req">*</span><input type="text" id="ao-nome" maxlength="60" list="ao-nomes" value="' + escapeHtml(x ? x.nome : '') + '" autocomplete="off" /></label>' +
+        '<datalist id="ao-nomes">' + conhecidos.map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>' +
+        '<label>WhatsApp <span class="opt">(com DDD; para mandar o link e o lembrete)</span><input type="tel" id="ao-tel" maxlength="20" value="' + escapeHtml(x ? x.telefone || '' : '') + '" placeholder="(19) 99999-9999" autocomplete="off" /></label>' +
+        '<p class="field-hint">Use o mesmo nome da agenda: é assim que o horário aparece para a equipe.</p>',
+      salvar: function() {
+        var nome = gerVal('ao-nome').replace(/\s+/g, ' ').toUpperCase(), tel = gerVal('ao-tel'), dig = tel.replace(/\D/g, '');
+        if (!nome) return gerErro('Informe o nome do cliente.');
+        if (dig && dig.length < 10) return gerErro('Telefone com DDD (10 ou 11 números).');
+        if (aoClientes().some(function(c) { return (!x || c.id !== x.id) && normNome(c.nome) === normNome(nome); })) return gerErro('Esse cliente já tem link.');
+        var agora = new Date().toISOString();
+        if (x) return aoGravar(x.id, { nome: nome, telefone: tel, atualizadoEm: agora }, 'update').then(function() { showToast('Cliente salvo.'); });
+        var id = 'cli-' + (slug(nome) || uid()) + '-' + uid().slice(-4);
+        return aoGravar(id, { nome: nome, telefone: tel, token: aoToken(), ativo: true, criadoEm: agora, criadoPor: quemSessao() }, 'set').then(function() { showToast('Link criado para ' + nome + '. Toque em “Enviar link”.'); });
+      }
+    });
+  }
+  function abrirAoConfig() {
+    var c = aoConfig(), nomes = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    function opts(sel) { return AG_HORAS.map(function(hh) { return '<option' + (hh === sel ? ' selected' : '') + '>' + hh + '</option>'; }).join(''); }
+    gerAbrir({
+      titulo: 'Agendamento on-line', botao: 'Salvar',
+      html: '<label class="check-row"><input type="checkbox" id="ao-ativo"' + (c.ativo ? ' checked' : '') + ' /> Aberto para os clientes agendarem</label>' +
+        '<div class="row-2"><label>Clientes por horário (30 min)<input type="number" id="ao-vagas" min="1" max="10" step="1" inputmode="numeric" value="' + c.vagas + '" /></label>' +
+        '<label>Máximo de agendamentos por cliente<input type="number" id="ao-max" min="1" max="30" step="1" inputmode="numeric" value="' + c.maxAtivos + '" /></label></div>' +
+        '<div class="row-2"><label>Antecedência mínima (horas)<input type="number" id="ao-antes" min="0" max="168" step="1" inputmode="numeric" value="' + c.antecedenciaHoras + '" /></label>' +
+        '<label>Até quantos dias à frente<input type="number" id="ao-frente" min="1" max="60" step="1" inputmode="numeric" value="' + c.diasAFrente + '" /></label></div>' +
+        '<div class="row-2"><label>A partir de<select id="ao-de">' + opts(c.de) + '</select></label><label>Até<select id="ao-ate">' + opts(c.ate) + '</select></label></div>' +
+        '<p class="field-label">Dias da semana</p><div class="est-loc-chips">' + nomes.map(function(n, i) { return '<label class="check-row ao-dia"><input type="checkbox" class="ao-dia-ck" value="' + (i + 1) + '"' + ((c.dias || []).indexOf(i + 1) >= 0 ? ' checked' : '') + ' /> ' + n + '</label>'; }).join('') + '</div>' +
+        '<p class="field-hint">Horários com bloqueio na agenda (almoço, carros pequenos) e feriados não aparecem para o cliente.</p>',
+      salvar: function() {
+        var dias = []; document.querySelectorAll('#ger-form-body .ao-dia-ck:checked').forEach(function(x) { dias.push(Number(x.value)); });
+        var de = document.getElementById('ao-de').value, ate = document.getElementById('ao-ate').value;
+        if (!dias.length) return gerErro('Marque ao menos um dia.');
+        if (ate < de) return gerErro('O horário final é antes do inicial.');
+        var n = function(id, min, max, pad) { var v = Math.round(Number(gerVal(id))); return isNaN(v) ? pad : Math.max(min, Math.min(max, v)); };
+        return aoGravar('config', { ativo: document.getElementById('ao-ativo').checked, vagas: n('ao-vagas', 1, 10, 2), maxAtivos: n('ao-max', 1, 30, 5), antecedenciaHoras: n('ao-antes', 0, 168, 12),
+          diasAFrente: n('ao-frente', 1, 60, 14), de: de, ate: ate, dias: dias, atualizadoEm: new Date().toISOString(), por: quemSessao() }, 'set').then(function() { showToast('Agendamento on-line salvo.'); });
+      }
+    });
+  }
+
   // ---------- Início: o dia num olhar (indicadores de cada área + atalhos) ----------
   // Inspirado nas telas iniciais dos ERPs (Omie, SAP Fiori, TOTVS): cada cartão mostra o número que importa e
   // leva para a aba; os atalhos abrem direto as ações mais usadas. Só aparecem as áreas que a senha pode ver.
@@ -14583,7 +15551,9 @@
     { tab: 'materia', txt: 'Recebimento de insumo', fn: function() { abrirMovForm('entrada', 'producao'); } },
     { tab: 'qualidade', txt: 'Checklist de linha', fn: function() { abrirQChk(); } },
     { tab: 'qualidade', txt: 'Inspeção de recebimento', fn: function() { abrirQRec(); } },
-    { tab: 'salas', txt: 'Reservar sala', fn: function() { abrirSalaNova('ph8', null, todayIso()); } }
+    { tab: 'salas', txt: 'Reservar sala', fn: function() { abrirSalaNova('ph8', null, todayIso()); } },
+    { tab: 'compras', txt: 'Pedido de compra', fn: function() { abrirPedidoCompra(); } },
+    { tab: 'inicio', txt: 'Criar a minha senha', fn: function() { abrirCadastroSenha(); } }
   ];
   function renderInicio() {
     var el = document.getElementById('ini-tiles');
@@ -14613,12 +15583,16 @@
       try { motoristas.forEach(function(m) { var rf = resumoFretesMotorista(m); fa += rf.nApagar; fv += rf.apagar; fap += rf.nAprovar || 0; fc += rf.nConfirmar; }); } catch (e) {}
       tiles.push({ tab: 'fretes', t: 'Fretes', v: fap, u: fap === 1 ? 'aguardando a sua aprovação' : 'aguardando a sua aprovação', s: fa + (fa === 1 ? ' a pagar' : ' a pagar') + ' (' + fmtBRL(fv) + ')' + (fc ? ' · ' + fc + ' a confirmar' : ''), alerta: fap > 0 });
     }
+    var ocAprov = 0, ocCot = 0, ocEnt = 0;
+    try { ordensCompra.forEach(function(o) { if (o.status === 'pedido' || o.status === 'aprovacao') ocAprov++; else if (o.status === 'cotacao') ocCot++; else if (o.status === 'compra') ocEnt++; }); } catch (e) {}
+    tiles.push({ tab: 'compras', t: 'Compras', v: ocAprov + ocCot, u: ocAprov + ocCot === 1 ? 'ordem esperando assinatura' : 'ordens esperando assinatura', s: ocAprov + ' para aprovar · ' + ocCot + ' em cotação · ' + ocEnt + ' aguardando entrega', alerta: ocAprov > 0 });
     var ag = 0; try { ag = agEntradasDoDia(hoje).length; } catch (e) {}
     tiles.push({ tab: 'agenda', t: 'Agenda dos retornáveis', v: ag, u: ag === 1 ? 'agendamento hoje' : 'agendamentos hoje', s: 'linha dos garrafões 10 L e 20 L' });
     el.innerHTML = tiles.filter(function(x) { return perm.indexOf(x.tab) >= 0; }).map(function(x) {
       return '<button type="button" class="ini-tile' + (x.alerta ? ' alerta' : '') + '" data-ir="' + x.tab + '"><span class="ini-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + iconeDaAba(x.tab).replace(/^<svg[^>]*>|<\/svg>$/g, '') + '</svg></span>' +
         '<span class="ini-k">' + escapeHtml(x.t) + '</span><span class="ini-v">' + fmtInt(x.v) + '<small>' + escapeHtml(x.u) + '</small></span><span class="ini-s">' + escapeHtml(x.s) + '</span><span class="ini-ir" aria-hidden="true">›</span></button>';
     }).join('');
+    renderConvitesInicio();
     document.getElementById('ini-atalhos').innerHTML = INI_ATALHOS.filter(function(a) { return perm.indexOf(a.tab) >= 0; }).map(function(a, i) {
       return '<button type="button" class="ini-atalho" data-atalho="' + i + '">+ ' + escapeHtml(a.txt) + '</button>';
     }).join('');
@@ -14669,7 +15643,8 @@
       }
       var chips = (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
         (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '') +
-        (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '');
+        (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '') +
+        (m.coordenador ? '<span class="func-chip">Coordenador' + (m.setores ? ' (' + escapeHtml(m.setores) + ')' : '') + '</span>' : '') + (m.compras ? '<span class="func-chip">Compras</span>' : '') + (m.aprovaCompra ? '<span class="func-chip">Aprova compras</span>' : '');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
@@ -14690,6 +15665,10 @@
     document.getElementById('f-equipe-gestao').checked = m ? !!m.gestao : false;
     document.getElementById('f-equipe-qual').checked = m ? !!m.qualidade : false;
     document.getElementById('f-equipe-aprovafrete').checked = m ? !!m.aprovaFrete : false;
+    document.getElementById('f-equipe-coord').checked = m ? !!m.coordenador : false;
+    document.getElementById('f-equipe-setores').value = m && m.setores ? m.setores : '';
+    document.getElementById('f-equipe-compras').checked = m ? !!m.compras : false;
+    document.getElementById('f-equipe-aprovacompra').checked = m ? !!m.aprovaCompra : false;
     document.getElementById('equipe-form-error').classList.add('hidden');
     document.getElementById('equipe-sheet-overlay').classList.remove('hidden');
     setTimeout(function() { document.getElementById(kind === 'add' ? 'f-equipe-nome' : 'f-equipe-pin').focus(); }, 30);
@@ -14731,17 +15710,20 @@
     var fat = document.getElementById('f-equipe-fat').checked, conf = document.getElementById('f-equipe-conf').checked;
     var fin = document.getElementById('f-equipe-fin').checked, logi = document.getElementById('f-equipe-log').checked;
     var gest = document.getElementById('f-equipe-gestao').checked, qualid = document.getElementById('f-equipe-qual').checked, aprovF = document.getElementById('f-equipe-aprovafrete').checked;
+    var coordS = document.getElementById('f-equipe-coord').checked, setoresS = document.getElementById('f-equipe-setores').value.replace(/\s+/g, ' ').trim();
+    var comprasS = document.getElementById('f-equipe-compras').checked, aprovC = document.getElementById('f-equipe-aprovacompra').checked;
     var err = document.getElementById('equipe-form-error');
     var fail = function(msg) { err.textContent = msg; err.classList.remove('hidden'); };
     if (!editingMembroId && !nome) return fail('Informe o nome.');
     if ((!editingMembroId || pin) && !/^[0-9]{4}$/.test(pin)) return fail('A senha precisa ter 4 números.');
-    if (!fat && !conf && !fin && !logi && !gest && !qualid && !aprovF) return fail('Marque o que essa pessoa faz: faturamento, conferência, financeiro, logística, diretoria/gestão ou qualidade.');
+    if (!fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Marque o que essa pessoa faz: faturamento, conferência, financeiro, logística, diretoria/gestão ou qualidade.');
     if (!editingMembroId && equipe.some(function(m) { return normNome(m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
     (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
       // Duas pessoas com a mesma senha: não daria para saber de quem é o ok.
       if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
-      var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF };
+      var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
+        coordenador: coordS, setores: coordS ? setoresS : '', compras: comprasS, aprovaCompra: aprovC };
       if (hash) patch.pinHash = hash;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch)
@@ -15019,6 +16001,9 @@
     subscribeSalas();
     subscribeQualidade();
     subscribeSuprimentos();
+    subscribeCompras();
+    subscribeCadastroPedidos();
+    subscribeAgOnline();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;

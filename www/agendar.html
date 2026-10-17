@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<meta name="robots" content="noindex" />
+<title>Agendar retirada · LEVÍSSIMA</title>
+<link rel="icon" type="image/png" href="icons/favicon-32.png" />
+<style>
+  :root { --ink: #1C2A2E; --paper: #F6F7F4; --card: #FFFFFF; --line: #D6D5DE; --muted: #545869; --verde: #43B02A; --verde-texto: #2D7A1C; --roxo: #702082; --danger: #B3261E; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.5 -apple-system, "Segoe UI", Inter, Roboto, sans-serif; -webkit-text-size-adjust: 100%; }
+  main { max-width: 640px; margin: 0 auto; padding: 18px 16px 48px; }
+  .topo { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .topo svg { height: 40px; width: auto; }
+  .lv-s1, .lv-s2, .lv-s3, .lv-s4 { fill: #1E3A8A; } .lv-p { fill: #64B04A; }
+  .faixa { height: 4px; background: linear-gradient(90deg, #43B02A 0 25%, #702082 25% 50%, #001489 50% 75%, #FF6A13 75%); }
+  h1 { font-size: 1.375rem; margin: 6px 0 2px; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
+  h2 { font-size: 0.8125rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin: 22px 0 8px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .card.destaque { border: 2px solid var(--roxo); }
+  .dias { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .dia { flex: 0 0 auto; min-width: 104px; scroll-snap-align: start; text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 10px 12px; font: inherit; color: var(--ink); cursor: pointer; }
+  .dia b { display: block; font-size: 0.9375rem; }
+  .dia small { color: var(--verde-texto); font-weight: 600; font-size: 0.75rem; }
+  .dia.sem small { color: var(--muted); font-weight: 400; }
+  .dia.sem { opacity: 0.6; }
+  .dia.on { border: 2px solid var(--verde); background: #EFF8EC; }
+  .horas { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+  .hora { min-height: 52px; border: 1px solid var(--line); background: var(--card); border-radius: 10px; font: inherit; font-size: 1.0625rem; font-weight: 700; color: var(--ink); cursor: pointer; }
+  .hora.on { background: var(--verde); border-color: var(--verde); color: #10200C; }
+  .vazio { color: var(--muted); text-align: center; padding: 18px 8px; }
+  .btn { display: block; width: 100%; min-height: 50px; border: 0; border-radius: 12px; background: var(--roxo); color: #fff; font: inherit; font-size: 1.0625rem; font-weight: 700; cursor: pointer; }
+  .btn:disabled { opacity: 0.6; }
+  .btn.sec { background: transparent; color: var(--danger); border: 1px solid var(--line); margin-top: 8px; font-weight: 600; }
+  .linha { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  .chip { font-size: 0.75rem; font-weight: 700; border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+  .chip.ok { background: #E3F4DE; color: var(--verde-texto); } .chip.ag { background: #F1E5F5; color: var(--roxo); }
+  .link { background: none; border: 0; color: var(--danger); font: inherit; font-size: 0.875rem; cursor: pointer; padding: 6px 0 0; }
+  .link.conf { color: var(--verde-texto); font-weight: 700; margin-right: 14px; }
+  label { display: block; font-size: 0.875rem; color: var(--muted); margin: 10px 0; }
+  input[type=text] { display: block; width: 100%; margin-top: 4px; padding: 12px; border: 1px solid var(--line); border-radius: 10px; font: inherit; }
+  .msg { border-radius: 12px; padding: 12px 14px; margin: 10px 0; font-weight: 600; }
+  .msg.ok { background: #E3F4DE; color: var(--verde-texto); } .msg.erro { background: #FBE9E7; color: var(--danger); }
+  footer { color: var(--muted); font-size: 0.8125rem; margin-top: 30px; text-align: center; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="faixa"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><g id="lv-simb"><path class="lv-s1" d="M423.06 207.32C411.61 207.32 400.50 212 392.50 220.19L392.48 220.18L391.41 221.33C387.82 225.20 382.73 227.41 377.45 227.41C371.58 227.41 366.16 224.81 362.60 220.32C362.08 219.47 361.17 218.95 360.17 218.95C358.96 218.95 357.94 219.69 357.52 220.89L357.36 221.38C356.93 224.33 356.72 227.36 356.72 230.40C356.72 264.98 384.85 293.12 419.44 293.12C423.30 293.12 427.16 292.76 430.94 292.06L431.55 291.90C435.87 291.03 440.01 289.50 443.84 287.36C457.37 279.81 465.77 265.51 465.77 250.03C465.77 226.48 446.61 207.32 423.06 207.32M392.85 224.75L393.89 223.61C401.34 215.39 411.97 210.67 423.06 210.67C444.76 210.67 462.42 228.33 462.42 250.03C462.42 264.30 454.67 277.48 442.21 284.43C438.51 286.5 434.51 287.94 430.28 288.73L429.80 288.86C426.41 289.46 422.92 289.76 419.44 289.76C386.71 289.76 360.08 263.13 360.08 230.40C360.08 227.91 360.23 225.44 360.52 223.05C364.79 227.96 370.90 230.76 377.45 230.76C383.10 230.76 388.66 228.56 392.79 224.70L392.85 224.75"/><path class="lv-s2" d="M429.48 202.91C418.03 202.91 406.93 207.59 398.92 215.78L398.91 215.77L397.83 216.93C394.23 220.79 389.14 223.01 383.87 223.01C378.01 223.01 372.58 220.40 369.01 215.91C368.5 215.05 367.59 214.55 366.59 214.55C365.29 214.55 364.14 215.44 363.85 216.68L363.79 216.98C363.36 219.96 363.14 222.99 363.14 226C363.14 260.57 391.27 288.71 425.85 288.71C429.73 288.71 433.59 288.35 437.37 287.65L437.95 287.50C442.27 286.63 446.41 285.10 450.26 282.95C463.80 275.40 472.20 261.10 472.20 245.63C472.20 222.07 453.04 202.91 429.48 202.91M399.30 220.32L400.31 219.20C407.76 210.98 418.39 206.27 429.48 206.27C451.19 206.27 468.84 223.92 468.84 245.63C468.84 259.89 461.10 273.07 448.63 280.02C444.92 282.09 440.92 283.54 436.71 284.32L436.23 284.45C432.82 285.05 429.32 285.35 425.85 285.35C393.12 285.35 366.5 258.73 366.5 226C366.5 223.57 366.64 221.16 366.94 218.64C371.22 223.56 377.33 226.36 383.87 226.36C389.53 226.36 395.10 224.15 399.23 220.27L399.30 220.32"/><path class="lv-s3" d="M435.91 198.50C424.51 198.50 413.43 203.16 405.43 211.29L405.41 211.27L404.26 212.52C400.66 216.38 395.57 218.60 390.30 218.60C384.43 218.60 379.01 215.99 375.44 211.50C374.92 210.65 374.02 210.14 373.02 210.14C371.99 210.14 371.08 210.69 370.58 211.59L370.51 211.55L370.21 212.57C369.78 215.54 369.57 218.58 369.57 221.58C369.57 256.17 397.70 284.30 432.28 284.30C436.14 284.30 440.01 283.95 443.80 283.24L444.41 283.08C448.72 282.21 452.85 280.69 456.69 278.54C470.22 271 478.62 256.70 478.62 241.22C478.62 217.66 459.46 198.50 435.91 198.50M405.56 216.09L406.73 214.80C414.19 206.57 424.82 201.85 435.91 201.85C457.61 201.85 475.26 219.51 475.26 241.22C475.26 255.48 467.52 268.66 455.06 275.62C451.35 277.68 447.35 279.12 443.14 279.91L442.67 280.04C439.27 280.64 435.78 280.94 432.28 280.94C399.55 280.94 372.92 254.32 372.92 221.58C372.92 219.14 373.07 216.71 373.37 214.24C377.65 219.15 383.76 221.95 390.30 221.95C395.88 221.95 401.38 219.80 405.49 216.02L405.56 216.09"/><path class="lv-s4" d="M481.69 236.81C481.69 251.07 473.95 264.26 461.48 271.21C457.78 273.28 453.78 274.72 449.57 275.51L449.08 275.64C445.66 276.24 442.17 276.54 438.71 276.54C405.98 276.54 379.35 249.91 379.35 217.17C379.35 214.73 379.5 212.31 379.80 209.82C384.06 214.75 390.17 217.55 396.72 217.55C402.37 217.55 407.94 215.34 412.07 211.48L412.13 211.52L413.16 210.39C420.61 202.17 431.24 197.45 442.34 197.45C464.04 197.45 481.69 215.11 481.69 236.81M442.34 194.10C430.82 194.10 419.66 198.83 411.64 207.10L411.63 207.10L410.68 208.11C407.08 211.98 402 214.19 396.72 214.19C390.86 214.19 385.43 211.58 381.87 207.09C381.34 206.24 380.44 205.73 379.45 205.73C378.14 205.73 376.99 206.62 376.71 207.85L376.64 208.16C376.21 211.12 376 214.16 376 217.17C376 251.76 404.13 279.89 438.71 279.89C442.56 279.89 446.42 279.54 450.23 278.84L450.85 278.67C455.16 277.80 459.29 276.28 463.11 274.14C476.64 266.59 485.05 252.29 485.05 236.81C485.05 213.26 465.89 194.10 442.34 194.10"/></g><g id="lv-pal"><path class="lv-p" d="M234.98 310.37L228.62 310.37L228.62 370.08L267.23 370.08L267.23 364.20L234.98 364.20ZM234.98 310.37"/><path class="lv-p" d="M276.96 342.05L307.34 342.05L307.34 336.17L276.96 336.17L276.96 316.25L307.34 316.25L307.34 310.37L270.60 310.37L270.60 370.08L312.08 370.08L312.08 364.20L276.96 364.20ZM276.96 342.05"/><path class="lv-p" d="M335.92 361.66L317.33 310.37L310.60 310.37L332.85 370.08L338.90 370.08L361.23 310.37L354.66 310.37ZM335.92 361.66"/><path class="lv-p" d="M363.80 370.08L370.17 370.08L370.17 310.37L363.80 310.37ZM363.80 370.08"/><path class="lv-p" d="M484.17 370.08L490.53 370.08L490.53 310.37L484.17 310.37ZM484.17 370.08"/><path class="lv-p" d="M528.60 361.23L507.26 310.37L499.86 310.37L499.86 370.08L506.23 370.08L506.23 322.87L525.53 369.19L525.89 370.08L531.32 370.08L550.75 322.94L550.75 370.08L557.12 370.08L557.12 310.37L549.71 310.37ZM528.60 361.23"/><path class="lv-p" d="M403.83 336.83L402.42 336.54C393.41 334.71 385.62 333.12 385.62 325.57C385.62 317.69 393.26 314.90 399.80 314.90C410.11 314.90 416.23 319.69 416.60 328.03L416.64 328.86L423.01 328.86L422.97 327.96C422.42 315.92 413.98 309.01 399.80 309.01C389.58 309.01 379.26 314.13 379.26 325.57C379.26 337.87 391.09 340.32 399.76 342.10L400.66 342.29C409.99 344.19 418.04 345.83 418.04 354C418.04 363.12 408.58 365.55 402.99 365.55C402.34 365.55 401.71 365.53 401.07 365.50L399.57 365.43L399.57 371.33L400.93 371.39C401.61 371.42 402.30 371.44 402.99 371.44C410.94 371.44 424.41 367.77 424.41 354C424.41 341.05 412.51 338.61 403.83 336.83"/><path class="lv-p" d="M456.17 336.83L454.75 336.54C445.74 334.70 437.95 333.12 437.95 325.57C437.95 317.69 445.59 314.90 452.14 314.90C462.44 314.90 468.56 319.69 468.94 328.04L468.97 328.86L475.35 328.86L475.30 327.96C474.75 315.92 466.31 309.01 452.14 309.01C441.91 309.01 431.59 314.13 431.59 325.57C431.59 337.86 443.42 340.31 452.09 342.10L453 342.29C462.32 344.19 470.37 345.83 470.37 354C470.37 363.12 460.91 365.55 455.32 365.55C454.67 365.55 454.04 365.53 453.40 365.50L451.90 365.43L451.90 371.33L453.27 371.39C453.94 371.42 454.62 371.44 455.32 371.44C463.28 371.44 476.74 367.77 476.74 354C476.74 341.05 464.85 338.61 456.17 336.83"/><path class="lv-p" d="M589.57 310.37L583.80 310.37L559.80 370.08L566.64 370.08L586.75 318.98L606.33 370.08L613.15 370.08ZM589.57 310.37"/><path class="lv-p" d="M363.92 306.59L369.90 306.59L377.86 298.26L369.44 298.26ZM363.92 306.59"/><path class="lv-p" d="M607.84 315.23C608.62 315.23 609.31 315.18 609.31 314.25C609.31 313.50 608.63 313.36 607.99 313.36L606.75 313.36L606.75 315.23ZM606.75 318.63L605.83 318.63L605.83 312.59L608.13 312.59C609.56 312.59 610.27 313.11 610.27 314.31C610.27 315.39 609.59 315.86 608.70 315.97L610.42 318.63L609.39 318.63L607.80 316.01L606.75 316.01ZM607.85 319.98C610.23 319.98 612.10 318.12 612.10 315.60C612.10 313.11 610.23 311.24 607.85 311.24C605.46 311.24 603.58 313.11 603.58 315.60C603.58 318.12 605.46 319.98 607.85 319.98M602.53 315.60C602.53 312.59 604.97 310.37 607.85 310.37C610.71 310.37 613.15 312.59 613.15 315.60C613.15 318.63 610.71 320.85 607.85 320.85C604.97 320.85 602.53 318.63 602.53 315.60"/></g></defs></svg>
+<main>
+  <div class="topo"><svg viewBox="356.7 194.1 432.8 99.0" role="img" aria-label="LEVÍSSIMA"><use href="#lv-simb"/><g transform="translate(335.87 -8.16) scale(0.74)"><use href="#lv-pal"/></g></svg></div>
+  <div id="app"><p class="vazio">Carregando…</p></div>
+  <footer>Levíssima · Água Mineral Natural · <a href="privacidade.html">Privacidade</a></footer>
+</main>
+<script>
+(function () {
+  'use strict';
+  var SB_URL = "https://lzsvtwwpthjncrhznfez.supabase.co";
+  var SB_CHAVE = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6c3Z0d3dwdGhqbmNyaHpuZmV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3NTQ5MjgsImV4cCI6MjEwNzMzMDkyOH0.W446lxCtvIVPn45yQqgr8Gj77s_n-t5E1Q-YYeWFN2E";
+  var FN = SB_URL + '/functions/v1/agendamento';
+  var est = { t: '', d: null, dia: null, hora: null, conf: '', msg: null, ocupado: false };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function hash() { var o = {}; location.hash.replace(/^#/, '').split('&').forEach(function (x) { var kv = x.split('='); if (kv[0]) o[kv[0]] = decodeURIComponent(kv[1] || ''); }); return o; }
+  function chamar(corpo) {
+    return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: SB_CHAVE, Authorization: 'Bearer ' + SB_CHAVE }, body: JSON.stringify(Object.assign({ t: est.t }, corpo)) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || j.erro) { var e = new Error(j.erro || 'erro'); e.codigo = j.erro || 'rede'; e.max = j.max; throw e; } return j; }); });
+  }
+  function carregar() {
+    return chamar({ acao: 'horarios' }).then(function (d) {
+      est.d = d;
+      if (!est.dia || !d.dias.some(function (x) { return x.data === est.dia; })) { var p = d.dias.filter(function (x) { return x.horas.length; })[0]; est.dia = p ? p.data : (d.dias[0] && d.dias[0].data); }
+      var dd = d.dias.find(function (x) { return x.data === est.dia; });
+      if (est.hora && (!dd || dd.horas.indexOf(est.hora) < 0)) est.hora = null;
+      render();
+    }).catch(function (e) {
+      document.getElementById('app').innerHTML = e.codigo === 'link'
+        ? '<h1>Link inválido</h1><p class="sub">Este link de agendamento não vale mais. Peça um novo link à Levíssima.</p>'
+        : '<h1>Sem conexão</h1><p class="sub">Não foi possível abrir a agenda agora. Confira a internet e tente de novo.</p><button class="btn" id="tentar">Tentar de novo</button>';
+      var b = document.getElementById('tentar'); if (b) b.onclick = carregar;
+    });
+  }
+  function render() {
+    var d = est.d, h = '';
+    var primeiro = String(d.cliente.nome || '').split(' ')[0];
+    h += '<h1>Olá, ' + esc(primeiro) + '!</h1><p class="sub">Escolha o dia e o horário para buscar os seus garrafões. Você só vê os horários livres.</p>';
+    if (est.msg) h += '<div class="msg ' + est.msg.tipo + '">' + esc(est.msg.txt) + '</div>';
+    var conf = est.conf ? d.meus.find(function (m) { return m.id === est.conf; }) : null;
+    if (conf) {
+      h += '<div class="card destaque"><b>Confirme o seu agendamento</b><p style="margin:6px 0 12px">' + esc(conf.rotulo) + ' às <b>' + esc(conf.hora) + '</b>' + (conf.status === 'confirmado' ? ' · <span class="chip ok">confirmado</span>' : '') + '</p>' +
+        (conf.status === 'confirmado' ? '' : '<button class="btn" data-a="confirmar" data-id="' + esc(conf.id) + '">Confirmo, vou buscar</button>') +
+        '<button class="btn sec" data-a="cancelar" data-id="' + esc(conf.id) + '">Não vou, cancelar</button></div>';
+    }
+    if (d.meus.length) {
+      h += '<h2>Seus agendamentos</h2>' + d.meus.map(function (m) {
+        return '<div class="card"><div class="linha"><span><b>' + esc(m.rotulo) + '</b> às <b>' + esc(m.hora) + '</b></span><span class="chip ' + (m.status === 'confirmado' ? 'ok' : 'ag') + '">' + (m.status === 'confirmado' ? 'confirmado' : 'agendado') + '</span></div>' +
+          (m.status !== 'confirmado' ? '<button class="link conf" data-a="confirmar" data-id="' + esc(m.id) + '">Confirmar</button>' : '') + '<button class="link" data-a="cancelar" data-id="' + esc(m.id) + '">Cancelar</button></div>';
+      }).join('');
+    }
+    if (!d.ativo) { h += '<div class="card"><p class="vazio">O agendamento on-line está fechado no momento. Fale com a Levíssima.</p></div>'; document.getElementById('app').innerHTML = h; ligar(); return; }
+    h += '<h2>Escolha o dia</h2><div class="dias">' + d.dias.map(function (x) {
+      var n = x.horas.length, partes = x.rotulo.split(', ');
+      return '<button class="dia' + (n ? '' : ' sem') + (x.data === est.dia ? ' on' : '') + '" data-a="dia" data-d="' + x.data + '"><b>' + esc(partes[0]) + '</b>' + esc(partes[1] || '') + '<br><small>' + (n ? n + (n === 1 ? ' horário' : ' horários') : esc(x.motivo === 'Sem horário livre.' ? 'lotado' : 'fechado')) + '</small></button>';
+    }).join('') + '</div>';
+    var dia = d.dias.find(function (x) { return x.data === est.dia; });
+    if (dia) {
+      h += '<h2>Horários livres · ' + esc(dia.rotulo) + '</h2>';
+      h += dia.horas.length ? '<div class="horas">' + dia.horas.map(function (x) { return '<button class="hora' + (x === est.hora ? ' on' : '') + '" data-a="hora" data-h="' + x + '">' + x + '</button>'; }).join('') + '</div>'
+        : '<div class="card"><p class="vazio">' + esc(dia.motivo || 'Sem horário livre.') + ' Escolha outro dia.</p></div>';
+    }
+    if (est.hora && dia) {
+      h += '<div class="card destaque" style="margin-top:14px"><b>' + esc(dia.rotulo) + ' às ' + esc(est.hora) + '</b>' +
+        '<label>Observação <span>(opcional, ex.: quantos garrafões)</span><input type="text" id="obs" maxlength="140" autocomplete="off" /></label>' +
+        '<button class="btn" data-a="agendar"' + (est.ocupado ? ' disabled' : '') + '>Confirmar agendamento</button></div>';
+    }
+    document.getElementById('app').innerHTML = h;
+    ligar();
+  }
+  function ligar() {
+    document.querySelectorAll('#app [data-a]').forEach(function (b) { b.onclick = function () { acao(b); }; });
+  }
+  function acao(b) {
+    var a = b.getAttribute('data-a');
+    if (a === 'dia') { est.dia = b.getAttribute('data-d'); est.hora = null; est.msg = null; render(); return; }
+    if (a === 'hora') { est.hora = b.getAttribute('data-h'); est.msg = null; render(); setTimeout(function () { var c = document.querySelector('.card.destaque:last-of-type'); if (c && c.scrollIntoView) c.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 30); return; }
+    if (a === 'agendar') {
+      est.ocupado = true; b.disabled = true;
+      var obs = document.getElementById('obs');
+      chamar({ acao: 'agendar', data: est.dia, hora: est.hora, obs: obs ? obs.value : '' }).then(function (r) {
+        est.msg = { tipo: 'ok', txt: 'Agendado: ' + r.rotulo + ' às ' + r.hora + '. Na véspera você recebe uma mensagem para confirmar.' };
+        est.hora = null; est.ocupado = false; window.scrollTo(0, 0); return carregar();
+      }).catch(function (e) {
+        est.ocupado = false;
+        est.msg = { tipo: 'erro', txt: e.codigo === 'ocupado' ? 'Esse horário acabou de ser preenchido. Escolha outro.' : e.codigo === 'limite' ? 'Você já tem ' + (e.max || 'vários') + ' agendamentos. Cancele um para marcar outro.' : e.codigo === 'repetido' ? 'Você já tem agendamento nesse horário.' : 'Não foi possível agendar agora. Tente de novo.' };
+        window.scrollTo(0, 0); carregar();
+      });
+      return;
+    }
+    if (a === 'confirmar' || a === 'cancelar') {
+      if (a === 'cancelar' && !window.confirm('Cancelar este agendamento?')) return;
+      b.disabled = true;
+      chamar({ acao: a, id: b.getAttribute('data-id') }).then(function () {
+        est.msg = { tipo: 'ok', txt: a === 'confirmar' ? 'Obrigado! Agendamento confirmado.' : 'Agendamento cancelado. O horário ficou livre para outro cliente.' };
+        if (a === 'cancelar' && est.conf === b.getAttribute('data-id')) est.conf = '';
+        window.scrollTo(0, 0); return carregar();
+      }).catch(function () { est.msg = { tipo: 'erro', txt: 'Não foi possível agora. Tente de novo.' }; render(); });
+    }
+  }
+  var p = hash();
+  est.t = p.t || '';
+  est.conf = p.c || '';
+  if (!est.t) { document.getElementById('app').innerHTML = '<h1>Link incompleto</h1><p class="sub">Abra o link que a Levíssima mandou para você.</p>'; return; }
+  carregar();
+})();
+</script>
+</body>
+</html>

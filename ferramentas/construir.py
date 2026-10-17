@@ -6,6 +6,7 @@ Uso (na pasta do projeto):
     python3 ferramentas/construir.py --modulos  # app principal + módulos da fábrica (www/modulos/)
 
 - App principal: fontes/app/levissima.html -> www/index.html, com o endereço e a chave pública do Supabase.
+- Agendamento on-line dos clientes: fontes/app/agendar.html -> www/agendar.html (mesma chave pública).
 - Módulos: fontes/modulos/ -> www/modulos/ (pelo montar.py).
 A chave abaixo é a pública (anon) do Supabase: ela não dá acesso a dados sem login.
 """
@@ -32,6 +33,17 @@ def app_principal():
     print('www/index.html ok', len(s))
 
 
+def agendar():
+    fonte = os.path.join(RAIZ, 'fontes', 'app', 'agendar.html')
+    if not os.path.exists(fonte):
+        return
+    s = open(fonte, encoding='utf-8').read()
+    assert s.count('"COLE_AQUI"') == 2, 'agendar.html deve ficar com COLE_AQUI no endereço e na chave'
+    s = s.replace('var SB_URL = "COLE_AQUI"', 'var SB_URL = "' + URL + '"').replace('var SB_CHAVE = "COLE_AQUI"', 'var SB_CHAVE = "' + CHAVE + '"')
+    open(os.path.join(RAIZ, 'www', 'agendar.html'), 'w', encoding='utf-8').write(s)
+    print('www/agendar.html ok', len(s))
+
+
 def modulos():
     sys.path.insert(0, os.path.join(RAIZ, 'fontes', 'modulos'))
     import montar
@@ -40,5 +52,6 @@ def modulos():
 
 if __name__ == '__main__':
     app_principal()
+    agendar()
     if '--modulos' in sys.argv:
         modulos()
