@@ -8,8 +8,10 @@ Uso: python3 montar.py <pasta de saída (www)> [url anonKey]
   trocados por textos do LEVÍSSIMA.
 - Checklist de empilhadeiras: módulo novo (empilhadeiras.html), escrito para o LEVÍSSIMA.
 - ponte.js: com a configuração do Supabase preenchida (se informada).
+- Fundo claro sempre (pedido de 16/10/2026): o tema escuro automático dos módulos fica desligado.
 """
 import os
+import re
 import sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -62,6 +64,11 @@ MODULOS = {
 }
 
 
+def sem_tema_escuro(s):
+    """Desliga o tema escuro automático (o app fica sempre com fundo branco/claro)."""
+    return re.sub(r'@media\s*\(prefers-color-scheme:\s*dark\)', '@media not all', s)
+
+
 def cabeca(modulo):
     return ('\n<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">'
             '\n<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">'
@@ -80,13 +87,14 @@ def montar(saida, url=None, chave=None):
         for a, b in cfg['trocas']:
             assert s.count(a) == 1, (nome, a[:70], s.count(a))
             s = s.replace(a, b)
+        s = sem_tema_escuro(s)
         i = s.lower().index('<head>') + len('<head>')
         s = s[:i] + cabeca(nome) + s[i:]
         open(os.path.join(pasta, nome + '.html'), 'w', encoding='utf-8').write(s)
     # módulo novo
     e = open(os.path.join(AQUI, 'empilhadeiras.html'), encoding='utf-8').read()
     assert '<script src="ponte.js" data-modulo="empilhadeiras"></script>' in e
-    open(os.path.join(pasta, 'empilhadeiras.html'), 'w', encoding='utf-8').write(e)
+    open(os.path.join(pasta, 'empilhadeiras.html'), 'w', encoding='utf-8').write(sem_tema_escuro(e))
     # ponte com a configuração
     p = open(os.path.join(AQUI, 'ponte.js'), encoding='utf-8').read()
     if url and chave:

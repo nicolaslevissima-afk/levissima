@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="light">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -24,10 +24,10 @@
      O verde marca o que está concluído e o laranja o que é de hoje / pede atenção. */
   :root {
     --ink: #1C2A2E;
-    --paper: #F3F3F6;
+    --paper: #FFFFFF;
     --card: #FFFFFF;
-    --line: #DDDCE3;
-    --muted: #63677A;
+    --line: #D6D5DE;
+    --muted: #545869;
     --wood-rgb: 0, 20, 137;
     --teal-rgb: 112, 32, 130;
     --danger-rgb: 168, 65, 46;
@@ -358,10 +358,6 @@
   .conf-tab td.conf-dif { color: var(--danger); font-weight: 700; }
   .check-row { display: flex; gap: 8px; align-items: flex-start; font-size: 0.875rem; }
   .check-row input { width: auto; margin-top: 3px; }
-  @media (max-width: 559px) {
-    #admin-tabs.tabs-grade { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); }
-    #admin-tabs.tabs-grade .seg-btn { min-height: 44px; }
-  }
   /* ---- agenda dos retornáveis ---- */
   .ag-topo { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
   .ag-periodo { text-align: center; display: flex; flex-direction: column; }
@@ -452,6 +448,148 @@
     .mpf-row .mpf-ins { grid-column: 1 / -1; }
     .mpf-row.sem-base { grid-template-columns: minmax(0, 1fr) 36px; }
   }
+  /* ---- visual 2 (16/10/2026): fundo branco, ícones nas abas, faixa de abas fixa no celular e menu lateral no computador ---- */
+  body { background: #FFFFFF; }
+  #app > header { display: contents; }
+  #admin-tabs, #admin-tabs.tabs-3 { display: flex; gap: 2px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; border: 0; border-radius: 0;
+    margin: 8px -16px 16px; padding: 4px 10px 0; background: #FFFFFF; position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--line);
+    box-shadow: 0 4px 10px -8px rgba(28, 42, 46, 0.35); -webkit-overflow-scrolling: touch; }
+  #admin-tabs::-webkit-scrollbar { display: none; }
+  #admin-tabs .seg-btn { flex: 0 0 auto; min-width: 66px; max-width: 92px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 6px 8px;
+    background: transparent; color: var(--muted); border-radius: 10px 10px 0 0; border-bottom: 3px solid transparent; font-size: 0.71875rem; font-weight: 600; line-height: 1.15;
+    text-align: center; white-space: normal; position: relative; }
+  #admin-tabs .seg-btn.hidden { display: none; }
+  #admin-tabs .tab-ico { display: block; width: 24px; height: 24px; }
+  #admin-tabs .tab-ico svg { width: 24px; height: 24px; display: block; }
+  #admin-tabs .seg-btn:hover { color: var(--ink); background: rgba(112, 32, 130, 0.05); }
+  #admin-tabs .seg-btn.active { background: transparent; color: #702082; border-bottom-color: #702082; }
+  #admin-tabs .seg-btn .tab-alerta { position: absolute; top: 2px; right: 8px; }
+  .tab-panel > .tagline:first-child { margin-top: 0; }
+  .carga-card, .est-card, .cg-filter, .pedido-resumo, .sl-grade, .q-it { box-shadow: 0 1px 3px rgba(28, 42, 46, 0.07); }
+  .drivers-admin { border-top-color: var(--line); }
+  @media (min-width: 1100px) {
+    #app { max-width: 1340px; display: grid; grid-template-columns: 228px minmax(0, 1fr); column-gap: 30px; align-items: start; padding-top: 18px; }
+    #app > * { grid-column: 2; min-width: 0; }
+    #app .header-row { grid-column: 1 / -1; }
+    #admin-tabs, #admin-tabs.tabs-3 { grid-column: 1; grid-row: 2 / span 40; flex-direction: column; overflow: visible; position: sticky; top: 16px; margin: 4px 0 0;
+      padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: #FFFFFF; gap: 2px; box-shadow: 0 2px 8px rgba(28, 42, 46, 0.06); }
+    #admin-tabs .seg-btn { flex-direction: row; max-width: none; min-width: 0; width: 100%; gap: 11px; padding: 10px 12px; border-radius: 9px; border-bottom: 0;
+      font-size: 0.9375rem; text-align: left; justify-content: flex-start; }
+    #admin-tabs .tab-ico, #admin-tabs .tab-ico svg { width: 21px; height: 21px; }
+    #admin-tabs .seg-btn.active { background: rgba(112, 32, 130, 0.09); color: #702082; box-shadow: inset 3px 0 0 #702082; }
+    #admin-tabs .seg-btn .tab-alerta { position: static; margin-left: auto; }
+  }
+  /* ---- Início ---- */
+  .ini-topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin: 0 0 12px; }
+  .ini-saud { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: -0.01em; }
+  .ini-data { margin: 2px 0 0; color: var(--muted); font-size: 0.875rem; }
+  .ini-atalhos { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px 14px; padding: 2px 16px 4px; }
+  .ini-atalhos::-webkit-scrollbar { display: none; }
+  .ini-atalho { flex: 0 0 auto; border: 1px solid rgba(112, 32, 130, 0.35); background: rgba(112, 32, 130, 0.06); color: #702082; border-radius: 999px; padding: 9px 14px;
+    font-family: var(--font-display); font-weight: 700; font-size: 0.8125rem; cursor: pointer; white-space: nowrap; }
+  .ini-atalho:hover { background: rgba(112, 32, 130, 0.12); }
+  @media (min-width: 1100px) { .ini-atalhos { flex-wrap: wrap; overflow: visible; margin: 0 0 16px; padding: 0; } }
+  .ini-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .ini-tile { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "ico k" "ico v" "ico s"; column-gap: 12px; row-gap: 2px; align-items: center;
+    text-align: left; background: #FFFFFF; border: 1px solid var(--line); border-radius: 14px; padding: 14px 30px 14px 14px; cursor: pointer; font-family: var(--font-display); color: var(--ink);
+    box-shadow: 0 1px 3px rgba(28, 42, 46, 0.07); transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease; }
+  .ini-tile:hover { border-color: #702082; box-shadow: 0 6px 16px -8px rgba(112, 32, 130, 0.45); transform: translateY(-1px); }
+  .ini-tile.alerta { border-color: #FF6A13; box-shadow: inset 4px 0 0 #FF6A13, 0 1px 3px rgba(28, 42, 46, 0.07); }
+  .ini-ico { grid-area: ico; align-self: start; width: 40px; height: 40px; border-radius: 11px; background: rgba(112, 32, 130, 0.09); color: #702082; display: flex; align-items: center; justify-content: center; }
+  .ini-tile.alerta .ini-ico { background: rgba(255, 106, 19, 0.14); color: #B5470A; }
+  .ini-ico svg { width: 22px; height: 22px; }
+  .ini-k { grid-area: k; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+  .ini-v { grid-area: v; font-family: var(--font-mono); font-size: 1.625rem; font-weight: 700; line-height: 1.1; display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .ini-v small { font-family: var(--font-display); font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+  .ini-s { grid-area: s; font-size: 0.8125rem; color: var(--muted); line-height: 1.3; }
+  .ini-ir { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; color: var(--muted); }
+  /* ---- qualidade ---- */
+  .q-areas { margin: 0 0 14px; }
+  .q-areas .seg-btn { padding: 9px 4px; font-size: 0.8125rem; }
+  .est-card.qc-verde { border-top-color: var(--verde); } .est-card.qc-azul { border-top-color: var(--azul); }
+  .est-card.qc-roxo { border-top-color: var(--roxo); } .est-card.qc-laranja { border-top-color: var(--laranja); }
+  .est-alertas.ok { border-color: var(--verde); border-left-color: var(--verde); color: var(--verde-texto); font-weight: 700; }
+  .q-topo { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 8px; }
+  .q-item { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); cursor: pointer; font-family: var(--font-display); color: var(--ink); gap: 10px; }
+  .q-chip { flex-shrink: 0; font-size: 0.6875rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(99, 103, 122, 0.12); color: var(--ink); white-space: nowrap; }
+  .q-chip.ok { background: rgba(67, 176, 42, 0.16); color: var(--verde-texto); }
+  .q-chip.aviso { background: rgba(255, 106, 19, 0.16); color: var(--laranja-texto); }
+  .q-chip.falta { background: rgba(var(--danger-rgb), 0.14); color: var(--danger); }
+  .q-linha.atrasada, .driver-row.q-vencida { box-shadow: inset 4px 0 0 var(--laranja); padding-left: 10px; }
+  .q-it { border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; margin: 0 0 8px; background: var(--card); }
+  .q-it.nc { border-color: var(--danger); box-shadow: inset 4px 0 0 var(--danger); }
+  .q-it-t { font-size: 0.875rem; font-weight: 600; line-height: 1.3; }
+  .q-crit { display: inline-block; font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--danger); border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; vertical-align: 1px; }
+  .q-faixa { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+  .q-it-c { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+  .q-op { display: inline-flex; gap: 6px; }
+  .q-op-b { min-width: 52px; min-height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-family: var(--font-display); font-weight: 700; font-size: 0.875rem; color: var(--ink); cursor: pointer; }
+  .q-op-b.q-c[aria-pressed="true"] { background: #43B02A; border-color: #43B02A; color: #10200C; }
+  .q-op-b.q-nc[aria-pressed="true"] { background: #C8102E; border-color: #C8102E; color: #FFFFFF; }
+  .q-op-b.q-na[aria-pressed="true"] { background: #63677A; border-color: #63677A; color: #FFFFFF; }
+  .q-num { max-width: 130px; text-align: right; font-family: var(--font-mono); }
+  .q-cod { flex: 1; font-family: var(--font-mono); }
+  .q-un { font-size: 0.8125rem; color: var(--muted); }
+  .q-it-msg { font-size: 0.75rem; color: var(--danger); margin-top: 4px; font-weight: 600; }
+  .q-it-msg.ok { color: var(--verde-texto); }
+  .q-acao { margin-top: 7px; }
+  .q-todos { margin: -4px 0 8px; }
+  .q-dh { display: flex; gap: 6px; }
+  .q-dh input { min-width: 0; }
+  .q-param { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.875rem; }
+  .q-param small { display: block; color: var(--muted); font-size: 0.75rem; }
+  .q-param input { text-align: right; font-family: var(--font-mono); }
+  .q-conf { margin: 6px 0 12px; }
+  .q-plano-sec { margin: 0 0 14px; }
+  .q-plano-t { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
+  .q-plano-item.desativado .driver-name { opacity: 0.55; text-decoration: line-through; }
+  .q-ver-it { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.8125rem; }
+  .q-ver-it small { display: block; color: var(--muted); }
+  .q-ver-it b { flex-shrink: 0; }
+  .q-ver-it.nc b { color: var(--danger); } .q-ver-it.c b { color: var(--verde-texto); } .q-ver-it.na b { color: var(--muted); }
+  /* ---- salas de reunião ---- */
+  .sl-topo { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; }
+  .sl-nav { font-size: 1.5rem; line-height: 1; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); }
+  .sl-dia { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .sl-dia span { font-weight: 700; font-size: 0.9375rem; }
+  .sl-dia input { padding: 6px 8px; font-size: 0.875rem; max-width: 180px; }
+  .sl-reservar { width: 100%; margin: 0 0 10px; }
+  .sl-grade { border: 1px solid var(--line); border-radius: 10px; background: var(--card); overflow: hidden; margin-bottom: 8px; }
+  .sl-cab, .sl-corpo { display: grid; grid-template-columns: 46px repeat(2, minmax(0, 1fr)); }
+  .sl-cab { border-bottom: 1px solid var(--line); }
+  .sl-sala-cab { padding: 9px 8px 7px; border-left: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .sl-sala-cab b { font-size: 0.875rem; }
+  .sl-sala-cab small { font-size: 0.6875rem; color: var(--muted); }
+  .sl-sala-cab.sl-protein { box-shadow: inset 0 4px 0 #702082; }
+  .sl-sala-cab.sl-ph8 { box-shadow: inset 0 4px 0 #43B02A; }
+  .sl-corpo { position: relative; max-height: 62vh; overflow-y: auto; overscroll-behavior: contain; }
+  .sl-horas { display: flex; flex-direction: column; }
+  .sl-hora { height: 26px; flex-shrink: 0; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--muted); padding: 2px 6px 0 0; text-align: right; border-top: 1px solid var(--line); }
+  .sl-hora.meia { border-top: 1px dotted var(--line); }
+  .sl-col { position: relative; border-left: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; }
+  .sl-livre { height: 26px; flex-shrink: 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: transparent; cursor: pointer; padding: 0 6px; text-align: left; font-family: var(--font-mono); font-size: 0.6875rem; color: transparent; }
+  .sl-livre.meia { border-top: 1px dotted var(--line); }
+  .sl-livre:hover, .sl-livre:focus-visible { background: rgba(var(--teal-rgb), 0.09); color: var(--teal); outline: none; }
+  .sl-livre:hover span::after, .sl-livre:focus-visible span::after { content: ' + reservar'; font-family: var(--font-display); font-weight: 600; }
+  .sl-livre.passou { background: rgba(99, 103, 122, 0.07); cursor: default; }
+  .sl-res { position: absolute; left: 3px; right: 3px; border: 0; border-radius: 7px; padding: 4px 6px; text-align: left; overflow: hidden; display: flex; flex-direction: column; gap: 1px; cursor: pointer; font-family: var(--font-display); font-size: 0.75rem; line-height: 1.2; z-index: 1; box-shadow: 0 1px 2px rgba(28, 42, 46, 0.25); }
+  .sl-res.sl-protein { background: #702082; color: #FFFFFF; }
+  .sl-res.sl-ph8 { background: #43B02A; color: #10200C; }
+  .sl-res b, .sl-res span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sl-res b { font-weight: 700; }
+  .sl-res span { opacity: 0.92; }
+  .sl-res.curta { padding: 0 6px; justify-content: center; }
+  .sl-agora { position: absolute; left: 46px; right: 0; height: 2px; background: #C8102E; z-index: 2; pointer-events: none; }
+  .sl-agora::before { content: ''; position: absolute; left: -5px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: #C8102E; }
+  .sl-item { width: 100%; text-align: left; background: transparent; border: 0; border-bottom: 1px solid var(--line); cursor: pointer; font-family: var(--font-display); color: var(--ink); gap: 10px; }
+  .sl-tag { flex-shrink: 0; font-size: 0.6875rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
+  .sl-tag.sl-protein { background: #702082; color: #FFFFFF; }
+  .sl-tag.sl-ph8 { background: #43B02A; color: #10200C; }
+  .sl-escolha { margin-bottom: 8px; }
+  .sl-escolha .seg-btn { display: flex; flex-direction: column; gap: 2px; padding: 10px 6px; white-space: normal; }
+  .sl-escolha .seg-btn small { font-size: 0.6875rem; font-weight: 500; opacity: 0.85; }
+  .sl-ocupada { color: var(--danger); font-weight: 700; }
+  .sl-ok { color: var(--verde-texto); font-weight: 700; }
   /* ---- marcas: logo na frente do produto e cor de cada produto ---- */
   .pc-verde { --pc-bg: #43B02A; --pc-fg: #10200C; }
   .pc-roxo { --pc-bg: #702082; --pc-fg: #FFFFFF; }
@@ -461,6 +599,10 @@
   .pc-azul-claro { --pc-bg: #6CACE4; --pc-fg: #0B2341; }
   .pc-roxo-claro { --pc-bg: #B98BD6; --pc-fg: #2A0F33; }
   .pc-branco { --pc-bg: #FFFFFF; --pc-fg: #1C2A2E; }
+  .pc-rosa { --pc-bg: #F06CA8; --pc-fg: #3B0A22; }
+  .pc-azul-esverdeado { --pc-bg: #00A5AD; --pc-fg: #04282B; }
+  .pc-azul-clarinho { --pc-bg: #BFE4F8; --pc-fg: #0B2341; }
+  .pc-laranja-clarinho { --pc-bg: #FFC9A0; --pc-fg: #3A1A05; }
   .mk-logo { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 24px; height: 24px; border-radius: 6px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(28, 42, 46, 0.16); overflow: hidden;
     --lv-s1: #125A9E; --lv-s2: #134785; --lv-s3: #13366D; --lv-s4: #122657; }
   .mk-logo img { width: 100%; height: 100%; object-fit: contain; padding: 2px; display: block; }
@@ -721,6 +863,9 @@
   .chip-est.confirmar { background: #FF6A13; color: #1C2A2E; }
   .chip-est.apagar { background: #001489; color: #FFFFFF; }
   .chip-est.pago { background: #43B02A; color: #10200C; }
+  .chip-est.aprovar { background: #702082; color: #FFFFFF; }
+  .frete-item.est-aprovar { border-left-color: #702082; }
+  .frete-aviso { margin: -4px 0 12px; padding: 8px 10px; border-radius: 8px; background: rgba(112, 32, 130, 0.08); color: #702082; font-size: 0.8125rem; font-weight: 600; }
   .frete-sugestao { border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; font-size: 0.8125rem; }
   .fretes-ctrl > label { font-size: 0.8125rem; color: var(--muted); }
   .fretes-ctrl input { margin-top: 5px; }
@@ -779,18 +924,27 @@
     </div>
     <nav class="modulos-nav hidden" id="modulos-nav" aria-label="Módulos da fábrica"></nav>
     <nav class="segmented tabs" id="admin-tabs" aria-label="Seções do app">
-      <button type="button" class="seg-btn" data-tab="cargas">Cargas</button>
-      <button type="button" class="seg-btn" data-tab="paletes">Paletes e chapatex</button>
-      <button type="button" class="seg-btn" data-tab="estoque">Estoque</button>
-      <button type="button" class="seg-btn" data-tab="producao">Produção</button>
-      <button type="button" class="seg-btn" data-tab="materia">Matéria-prima</button>
-      <button type="button" class="seg-btn" data-tab="agenda">Agenda</button>
-      <button type="button" class="seg-btn" data-tab="cadastros">Cadastros</button>
-      <button type="button" class="seg-btn" data-tab="rh">RH</button>
-      <button type="button" class="seg-btn" data-tab="fretes">Fretes</button>
-      <button type="button" class="seg-btn" data-tab="pesquisas">Pesquisas</button>
+      <button type="button" class="seg-btn" data-tab="inicio"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg></span><span class="tab-txt">Início</span></button>
+      <button type="button" class="seg-btn" data-tab="cargas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h12v10H2z"/><path d="M14 9h4l4 4v3h-8z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="tab-txt">Cargas</span></button>
+      <button type="button" class="seg-btn" data-tab="paletes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h18M5 17v3M12 17v3M19 17v3"/><path d="M5 9h6v8H5zM13 9h6v8h-6zM8 3h8v6H8z"/></svg></span><span class="tab-txt">Paletes e chapatex</span></button>
+      <button type="button" class="seg-btn" data-tab="estoque"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8l9-5 9 5-9 5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span><span class="tab-txt">Estoque</span></button>
+      <button type="button" class="seg-btn" data-tab="producao"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V11l6 3v-3l6 3V5h6v16z"/><path d="M7 17h2M12 17h2M17 17h1"/></svg></span><span class="tab-txt">Produção</span></button>
+      <button type="button" class="seg-btn" data-tab="materia"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6L5 18a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 14h9"/></svg></span><span class="tab-txt">Matéria-prima</span></button>
+      <button type="button" class="seg-btn" data-tab="agenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M8 17h6"/></svg></span><span class="tab-txt">Agenda</span></button>
+      <button type="button" class="seg-btn" data-tab="salas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="1.5"/><path d="M12 15v5M8 20h8M7 9h6"/></svg></span><span class="tab-txt">Salas</span></button>
+      <button type="button" class="seg-btn" data-tab="qualidade"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="tab-txt">Qualidade</span></button>
+      <button type="button" class="seg-btn" data-tab="cadastros"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="tab-txt">Cadastros</span></button>
+      <button type="button" class="seg-btn" data-tab="rh"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><span class="tab-txt">RH</span></button>
+      <button type="button" class="seg-btn" data-tab="fretes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.6-.8-1.7-1.2-3-1.2-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.3 0-2.4-.4-3-1.2M12 6v2M12 16v2"/></svg></span><span class="tab-txt">Fretes</span></button>
+      <button type="button" class="seg-btn" data-tab="pesquisas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span><span class="tab-txt">Pesquisas</span></button>
     </nav>
   </header>
+
+  <div class="tab-panel hidden" id="tab-inicio">
+    <div class="ini-topo"><div><h2 class="ini-saud" id="ini-saud"></h2><p class="ini-data" id="ini-data"></p></div></div>
+    <div class="ini-atalhos" id="ini-atalhos" aria-label="Atalhos"></div>
+    <div class="ini-tiles" id="ini-tiles"></div>
+  </div>
 
   <div class="tab-panel" id="tab-cargas">
     <p class="tagline">O comercial lança a carga, o faturamento dá o ok e a expedição conclui o carregamento com as assinaturas.</p>
@@ -954,6 +1108,34 @@
       <div id="mp-insumos-list"></div>
       <button type="button" class="btn btn-secondary btn-sm" data-mp="ins-novo">+ Adicionar insumo</button>
     </section>
+  </div>
+
+  <div class="tab-panel hidden" id="tab-salas">
+    <p class="tagline">Reserva das salas de reunião: <b>Levíssima Protein</b> (exclusiva da diretoria e gestão) e <b>PH+8</b> (todos os setores). Agenda das 24 horas: toque num horário livre para reservar; a reserva pode durar vários blocos de 30 minutos.</p>
+    <div class="sl-topo">
+      <button type="button" class="icon-btn sl-nav" data-sl="dia-ant" aria-label="Dia anterior">‹</button>
+      <div class="sl-dia"><span id="salas-dia-rotulo"></span><input type="date" id="salas-dia" aria-label="Escolher o dia" /></div>
+      <button type="button" class="icon-btn sl-nav" data-sl="dia-prox" aria-label="Próximo dia">›</button>
+      <button type="button" class="btn btn-secondary btn-sm" data-sl="hoje">Hoje</button>
+    </div>
+    <button type="button" class="btn btn-primary sl-reservar" data-sl="reservar">+ Reservar sala</button>
+    <div class="sl-grade" id="salas-grade"></div>
+    <section class="drivers-admin" aria-label="Próximas reservas">
+      <div class="section-head"><h2 class="section-title">Próximas reservas</h2><span class="count-chip" id="salas-proximas-n"></span></div>
+      <div id="salas-proximas"></div>
+    </section>
+  </div>
+
+  <div class="tab-panel hidden" id="tab-qualidade">
+    <nav class="segmented q-areas" id="q-areas" aria-label="Áreas da qualidade">
+      <button type="button" class="seg-btn" data-qarea="hoje">Hoje</button>
+      <button type="button" class="seg-btn" data-qarea="rec">Recebimento</button>
+      <button type="button" class="seg-btn" data-qarea="linha">Linha</button>
+      <button type="button" class="seg-btn" data-qarea="ana">Análises</button>
+      <button type="button" class="seg-btn" data-qarea="nc">NCs</button>
+      <button type="button" class="seg-btn" data-qarea="plano">Plano</button>
+    </nav>
+    <div id="q-conteudo"></div>
   </div>
 
   <div class="tab-panel hidden" id="tab-fretes">
@@ -1320,6 +1502,7 @@
       <label>Valor do frete (R$) <span class="req">*</span>
         <input type="number" id="f-frete-valor" min="0" step="0.01" inputmode="decimal" />
       </label>
+      <p class="frete-aviso hidden" id="frete-aviso-editado" role="status"></p>
       <label>Observação <span class="opt">(opcional)</span>
         <input type="text" id="f-frete-obs" autocomplete="off" maxlength="200" />
       </label>
@@ -1583,6 +1766,40 @@
   </div>
 </div>
 
+<div class="sheet-overlay hidden" id="sala-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="sala-sheet-title">Reservar sala</h2>
+      <button class="icon-btn" id="btn-close-sala-sheet" aria-label="Fechar">✕</button>
+    </div>
+    <form id="sala-form" novalidate>
+      <div id="sala-form-body"></div>
+      <p class="form-error hidden" id="sala-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-sala-cancel">Fechar</button>
+        <button type="submit" class="btn btn-primary" id="btn-sala-submit">Reservar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="sheet-overlay hidden" id="q-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="q-sheet-title">Qualidade</h2>
+      <button class="icon-btn" id="btn-close-q-sheet" aria-label="Fechar">✕</button>
+    </div>
+    <form id="q-form" novalidate>
+      <div id="q-form-body"></div>
+      <p class="form-error hidden" id="q-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-q-cancel">Fechar</button>
+        <button type="submit" class="btn btn-primary" id="btn-q-submit">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <div class="sheet-overlay hidden" id="carga-sheet-overlay">
   <div class="sheet">
     <div class="sheet-header">
@@ -1729,6 +1946,9 @@
         <label class="check"><input type="checkbox" id="f-equipe-conf" /> Confere o carregamento (expedição)</label>
         <label class="check"><input type="checkbox" id="f-equipe-fin" /> Dá o ok do financeiro (pedidos da força de vendas)</label>
         <label class="check"><input type="checkbox" id="f-equipe-log" /> Programa a logística dos caminhões (ok da logística)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-gestao" /> Diretoria / gestão (reserva a sala Levíssima Protein)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-qual" /> Qualidade (assina inspeções, checklists de linha e análises)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-aprovafrete" /> Aprova frete com valor editado (Nicolas)</label>
       </fieldset>
       <p class="hint">Quando essa senha for digitada, o ok do faturamento ou a conferência saem no nome desta pessoa.</p>
       <p class="form-error hidden" id="equipe-form-error"></p>
@@ -2237,6 +2457,8 @@
     loadLocalAgenda();
     loadLocalMp();
     loadLocalMarcas();
+    loadLocalSalas();
+    loadLocalQualidade();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -3201,6 +3423,10 @@
     renderProducao();
     renderMateria();
     renderAgenda();
+    renderSalas();
+    renderQualidade();
+    renderTabQualidadeBadge();
+    renderInicio();
     renderRH();
     renderPesquisasTab();
   }
@@ -3494,6 +3720,7 @@
       if (x.m.vinculo) sub.push(escapeHtml(vinculoCurto(x.m.vinculo)));
       sub.push(x.rf.nApagar ? '<span class="apagar">' + fmtBRL(x.rf.apagar) + ' a pagar (' + x.rf.nApagar + (x.rf.nApagar === 1 ? ' frete' : ' fretes') + ')</span>' : 'nada a pagar');
       if (x.rf.nConfirmar) sub.push('<span class="alerta">' + x.rf.nConfirmar + (x.rf.nConfirmar === 1 ? ' frete a confirmar' : ' fretes a confirmar') + '</span>');
+      if (x.rf.nAprovar) sub.push('<span class="alerta">' + x.rf.nAprovar + (x.rf.nAprovar === 1 ? ' aguardando a sua aprovação' : ' aguardando a sua aprovação') + ' (' + fmtBRL(x.rf.aprovar) + ')</span>');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.m.nome) + '<span class="driver-sub">' + sub.join(' · ') + '</span></span>' +
         '<button class="btn-text" data-action="fretes-abrir-mot" data-id="' + escapeHtml(x.m.id) + '">Abrir</button></div>';
     }).join('') + (nConf ? '<p class="field-hint warn">' + nConf + (nConf === 1 ? ' frete precisa' : ' fretes precisam') + ' da sua confirmação (carga com outra quantidade de paletes ou sem destino).</p>' : '');
@@ -4909,10 +5136,10 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
-  function abasPermitidas() { return session && session.role === 'equipe' ? ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda'] : TABS; }
+  function abasPermitidas() { return session && session.role === 'equipe' ? ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade'] : TABS; }
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
@@ -4930,6 +5157,11 @@
     document.getElementById('btn-new-entrada').classList.toggle('hidden', ui.tab !== 'estoque');
     if (ui.tab === 'pesquisas') renderPesquisasTab();
     if (ui.tab === 'rh' && !rhDados.carregado && !rhDados.carregando) rhCarregar();
+    if (ui.tab === 'salas') { salasUi.rolou = null; renderSalas(); }
+    if (ui.tab === 'qualidade') renderQualidade();
+    if (ui.tab === 'inicio') renderInicio();
+    var ativa = document.querySelector('#admin-tabs .seg-btn.active');
+    if (ativa && ativa.scrollIntoView && window.innerWidth < 1100) { try { ativa.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
     if (ui.tab === 'cargas') setTimeout(function() {
       if (boardMapa && document.getElementById('viagem-mapa').offsetWidth) boardMapa.map.invalidateSize();
       else if (ultimaViagemLista.length) renderMapaViagens(ultimaViagemLista);
@@ -8256,7 +8488,7 @@
     var precisa = !partes.length || partes.some(function(p) { return p.confirmar; });
     var temValor = !!reg && reg.valor != null && reg.valor !== '' && !isNaN(Number(reg.valor));
     var valor = temValor ? arred2(reg.valor) : sugerido;
-    var estado = reg && reg.pagoEm ? 'pago' : ((reg && reg.confirmado) || !precisa) ? 'apagar' : 'confirmar';
+    var estado = reg && reg.pagoEm ? 'pago' : (reg && reg.confirmado && reg.aprovacao === 'pendente') ? 'aprovar' : ((reg && reg.confirmado) || !precisa) ? 'apagar' : 'confirmar';
     return {
       carga: c, reg: reg, destinos: destinos, partes: partes, maior: maior, adicional: adicional, sugerido: sugerido,
       cheio: arred2(cheioMax + adicional), valor: valor, estado: estado, precisa: precisa, paletes: paletes, com175: com175,
@@ -8274,7 +8506,7 @@
     if (f.partes.length > 1) t.push(f.partes.length + ' destinos: o mais caro + adicional de ' + fmtBRL(f.adicional));
     return t.join('; ');
   }
-  function estadoFreteTexto(e) { return e === 'pago' ? 'Pago' : e === 'apagar' ? 'A pagar' : 'A confirmar'; }
+  function estadoFreteTexto(e) { return e === 'pago' ? 'Pago' : e === 'apagar' ? 'A pagar' : e === 'aprovar' ? 'Aguardando aprovação' : 'A confirmar'; }
   function mesmoMotorista(a, b) { return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase(); }
   function cargasDoMotorista(m) {
     return cargas.filter(function(c) { return c.status === 'concluida' && mesmoMotorista(c.motorista, m.nome); })
@@ -8285,6 +8517,7 @@
     cargasDoMotorista(m).forEach(function(c) {
       var f = freteDaCarga(c);
       if (f.estado === 'apagar') { r.apagar += f.valor; r.nApagar++; }
+      else if (f.estado === 'aprovar') { r.nAprovar = (r.nAprovar || 0) + 1; r.aprovar = (r.aprovar || 0) + f.valor; }
       else if (f.estado === 'confirmar') { r.nConfirmar++; r.sugConfirmar += f.sugerido; }
     });
     return r;
@@ -8345,11 +8578,28 @@
     fretesCargas[cargaId] = dados; salvarLocalFretes(); renderFretesTudo();
     return Promise.resolve();
   }
+  // Valor diferente do da tabela (ou carga sem valor na tabela): o lançamento fica salvo, mas o pagamento só depois
+  // da aprovação do Nicolas (senha de 4 números de quem tem "Aprova frete com valor editado" em Cadastros › Equipe).
+  function freteValorEditado(f, valor) { return f.semTabela || !f.partes.length || Math.abs(arred2(valor) - f.sugerido) > 0.004; }
+  function aprovacaoDoFrete(f, valor) {
+    if (!freteValorEditado(f, valor)) return { aprovacao: '', aprovadoEm: null, aprovadoPor: '' };
+    var r = f.reg || {};
+    if (r.aprovacao === 'aprovado' && arred2(r.valor) === arred2(valor)) return { aprovacao: 'aprovado', aprovadoEm: r.aprovadoEm || null, aprovadoPor: r.aprovadoPor || '' };
+    return { aprovacao: 'pendente', aprovadoEm: null, aprovadoPor: '' };
+  }
   function registroConfirmado(f, valor, extra) {
     return Object.assign({
       destinos: f.destinos.slice(), valor: arred2(valor), sugerido: f.sugerido, regra: composicaoFrete(f), paletes: f.paletes,
       confirmado: true, confirmadoEm: (f.reg && f.reg.confirmadoEm) || new Date().toISOString()
-    }, extra || {});
+    }, aprovacaoDoFrete(f, valor), extra || {});
+  }
+  function aprovarFrete(id, depois) {
+    openPinDialog({
+      funcao: 'aprovaFrete', funcaoTexto: 'aprova frete com valor editado',
+      titulo: 'Aprovar frete com valor editado', hint: 'Só quem aprova fretes (Nicolas): digite a sua senha de 4 números.',
+      semCadastro: 'Ninguém cadastrado para aprovar. Em Cadastros › Equipe, marque "Aprova frete com valor editado" na pessoa do Nicolas.',
+      onOk: function(m) { salvarFrete(id, { aprovacao: 'aprovado', aprovadoEm: new Date().toISOString(), aprovadoPor: m.nome }).then(depois).catch(falhaSalvar); }
+    });
   }
   function salvarTabelaFretes(tab) {
     tab = Object.assign({ paletesBase: 16, adicionalDestino: 300, linhas: [] }, tab);
@@ -8655,10 +8905,11 @@
     return { todas: todas, lista: lista, meses: meses, periodo: periodo };
   }
   function totaisFretes(lista) {
-    var t = { apagar: 0, nApagar: 0, confirmar: 0, nConfirmar: 0, pago: 0, nPago: 0 };
+    var t = { apagar: 0, nApagar: 0, confirmar: 0, nConfirmar: 0, pago: 0, nPago: 0, aprovar: 0, nAprovar: 0 };
     lista.forEach(function(f) {
       if (f.estado === 'pago') { t.pago += f.valor; t.nPago++; }
       else if (f.estado === 'apagar') { t.apagar += f.valor; t.nApagar++; }
+      else if (f.estado === 'aprovar') { t.aprovar += f.valor; t.nAprovar++; }
       else { t.confirmar += f.sugerido; t.nConfirmar++; }
     });
     return t;
@@ -8674,6 +8925,7 @@
         '<button type="button" class="btn btn-secondary btn-sm" data-action="frete-relatorio"' + (ff.lista.length ? '' : ' disabled') + '>Relatório em PDF</button></div>' +
       '<div class="frete-totais">' +
         '<div class="resumo-row"><span class="resumo-k">A pagar</span><span class="resumo-v mono">' + fmtBRL(t.apagar) + ' <span class="opt">(' + t.nApagar + (t.nApagar === 1 ? ' viagem' : ' viagens') + ')</span></span></div>' +
+        (t.nAprovar ? '<div class="resumo-row ask"><span class="resumo-k">Aguardando aprovação (valor editado)</span><span class="resumo-v mono">' + fmtBRL(t.aprovar) + ' <span class="opt">(' + t.nAprovar + (t.nAprovar === 1 ? ' viagem' : ' viagens') + ')</span></span></div>' : '') +
         (t.nConfirmar ? '<div class="resumo-row ask"><span class="resumo-k">A confirmar</span><span class="resumo-v mono">' + t.nConfirmar + (t.nConfirmar === 1 ? ' viagem' : ' viagens') + ' · sugestão ' + fmtBRL(t.confirmar) + '</span></div>' : '') +
         (t.nPago ? '<div class="resumo-row ok"><span class="resumo-k">Pago</span><span class="resumo-v mono">' + fmtBRL(t.pago) + '</span></div>' : '') +
       '</div>';
@@ -8688,6 +8940,8 @@
       var c = f.carga;
       var clientes = (c.clientes || []).map(function(cl) { return (cl.cliente || '—') + (cl.destino ? ' (' + cl.destino + ')' : ''); }).join(', ');
       var info = f.ajustado ? 'Valor ajustado; pela tabela: ' + fmtBRL(f.sugerido) + ' — ' + composicaoFrete(f) : composicaoFrete(f);
+      if (f.estado === 'aprovar') info = 'Valor editado (pela tabela: ' + (f.semTabela ? 'sem valor' : fmtBRL(f.sugerido)) + '): o pagamento só depois da aprovação do Nicolas. ' + composicaoFrete(f);
+      else if (f.reg && f.reg.aprovacao === 'aprovado') info += ' · valor aprovado por ' + (f.reg.aprovadoPor || '—') + (f.reg.aprovadoEm ? ' em ' + formatDateTimeBR(f.reg.aprovadoEm) : '');
       var acoes = '';
       if (f.estado === 'confirmar') {
         if (f.semTabela) acoes = '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Informar destino e valor</button>';
@@ -8696,6 +8950,10 @@
           if (f.proporcional && f.cheio !== f.sugerido) acoes += '<button class="btn-text" data-action="frete-cheio" data-id="' + escapeHtml(c.id) + '">Valor cheio ' + fmtBRL(f.cheio) + '</button>';
           acoes += '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Outro valor</button>';
         }
+      } else if (f.estado === 'aprovar') {
+        acoes = '<button class="btn-text" data-action="frete-aprovar" data-id="' + escapeHtml(c.id) + '">Aprovar ' + fmtBRL(f.valor) + ' (Nicolas)</button>' +
+          (f.semTabela ? '' : '<button class="btn-text" data-action="frete-confirmar" data-id="' + escapeHtml(c.id) + '">Usar o da tabela ' + fmtBRL(f.sugerido) + '</button>') +
+          '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Ajustar</button>';
       } else if (f.estado === 'apagar') {
         acoes = '<button class="btn-text" data-action="frete-pagar" data-id="' + escapeHtml(c.id) + '">Marcar como pago</button>' +
           '<button class="btn-text" data-action="frete-editar" data-id="' + escapeHtml(c.id) + '">Ajustar</button>';
@@ -8790,7 +9048,11 @@
     else if (a === 'frete-confirmar' && (f = freteDe(id))) salvarFrete(id, registroConfirmado(f, f.sugerido)).then(aposSalvar('Frete confirmado: ' + fmtBRL(f.sugerido) + '.')).catch(falhaSalvar);
     else if (a === 'frete-cheio' && (f = freteDe(id))) salvarFrete(id, registroConfirmado(f, f.cheio, { obs: 'valor cheio (sem proporcional)' })).then(aposSalvar('Frete confirmado: ' + fmtBRL(f.cheio) + '.')).catch(falhaSalvar);
     else if (a === 'frete-editar') abrirFreteForm(id);
-    else if (a === 'frete-pagar' && (f = freteDe(id))) salvarFrete(id, registroConfirmado(f, f.valor, { pagoEm: new Date().toISOString() })).then(aposSalvar('Frete marcado como pago.')).catch(falhaSalvar);
+    else if (a === 'frete-aprovar') aprovarFrete(id, aposSalvar('Frete aprovado. Já pode ser pago.'));
+    else if (a === 'frete-pagar' && (f = freteDe(id))) {
+      if (f.estado !== 'apagar') { showToast(f.estado === 'aprovar' ? 'Valor editado: só pode ser pago depois da aprovação do Nicolas.' : 'Confirme o frete antes de pagar.'); return; }
+      salvarFrete(id, registroConfirmado(f, f.valor, { pagoEm: new Date().toISOString() })).then(aposSalvar('Frete marcado como pago.')).catch(falhaSalvar);
+    }
     else if (a === 'frete-despagar') salvarFrete(id, { pagoEm: null }).then(aposSalvar('Pagamento desfeito.')).catch(falhaSalvar);
     else if (a === 'frete-pagar-todos') { motPage.confirmTodos = true; renderMotoristaPage(true); }
     else if (a === 'frete-pagar-todos-cancelar') { motPage.confirmTodos = false; renderMotoristaPage(true); }
@@ -8838,6 +9100,16 @@
         (f.semTabela ? '' : ' <button type="button" class="btn-text" id="btn-frete-usar">Usar ' + fmtBRL(f.sugerido) + '</button>')
       : 'Informe o destino de cada cliente para o app calcular pela tabela.';
     if (usarNoCampo && !f.semTabela && f.partes.length) setVal('f-frete-valor', String(f.sugerido));
+    avisoValorFrete(f);
+  }
+  function avisoValorFrete(f) {
+    var av = document.getElementById('frete-aviso-editado');
+    if (!av || !freteEdit) return;
+    if (!f) { var c = cargas.find(function(x) { return x.id === freteEdit.cargaId; }); if (!c) return; f = freteDaCarga(c, destinosDoFormulario()); }
+    var v = numBR(document.getElementById('f-frete-valor').value);
+    var ed = !isNaN(v) && freteValorEditado(f, v) && !(f.reg && f.reg.aprovacao === 'aprovado' && arred2(f.reg.valor) === arred2(v));
+    av.textContent = ed ? (f.semTabela || !f.partes.length ? 'Sem valor na tabela: ' : 'Valor diferente da tabela (' + fmtBRL(f.sugerido) + '): ') + 'o lançamento fica salvo, mas o pagamento só depois da aprovação do Nicolas.' : '';
+    av.classList.toggle('hidden', !ed);
   }
   function abrirFreteForm(cargaId) {
     var c = cargas.find(function(x) { return x.id === cargaId; });
@@ -8868,6 +9140,7 @@
     if (freteEdit) atualizarSugestaoFrete(true);
   });
   document.getElementById('frete-sugestao').addEventListener('click', function(e) { if (e.target.id === 'btn-frete-usar') atualizarSugestaoFrete(true); });
+  document.getElementById('f-frete-valor').addEventListener('input', function() { avisoValorFrete(null); });
   document.getElementById('frete-form').addEventListener('submit', function(e) {
     e.preventDefault();
     if (!freteEdit) return;
@@ -8880,8 +9153,9 @@
     var obs = document.getElementById('f-frete-obs').value.trim();
     err.classList.add('hidden');
     var cargaId = freteEdit.cargaId;
+    var editado = aprovacaoDoFrete(f, valor).aprovacao === 'pendente';
     salvarFrete(cargaId, registroConfirmado(f, valor, { obs: obs, confirmadoEm: new Date().toISOString() }))
-      .then(function() { fecharFreteForm(); renderMotoristaPage(true); showToast('Frete confirmado: ' + fmtBRL(valor) + '.'); })
+      .then(function() { fecharFreteForm(); renderMotoristaPage(true); showToast(editado ? 'Frete lançado com valor editado (' + fmtBRL(valor) + '): o pagamento fica liberado depois da aprovação do Nicolas.' : 'Frete confirmado: ' + fmtBRL(valor) + '.'); })
       .catch(function(x) { console.error('frete', x); err.textContent = 'Não foi possível salvar agora. Tente novamente.'; err.classList.remove('hidden'); });
   });
   document.getElementById('btn-close-frete').addEventListener('click', fecharFreteForm);
@@ -8941,7 +9215,7 @@
   document.getElementById('mdoc-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) fecharDocForm(); });
 
   // ----- relatório de fretes (PDF/imagem no mesmo estilo dos outros documentos) -----
-  function corEstadoFrete(e) { return e === 'pago' ? RC.verdeTexto : e === 'apagar' ? RC.wood : RC.laranjaTexto; }
+  function corEstadoFrete(e) { return e === 'pago' ? RC.verdeTexto : e === 'apagar' ? RC.wood : e === 'aprovar' ? RC.teal : RC.laranjaTexto; }
   function layoutRelatorioFretes(ctx, m, lista, periodo) {
     var L = RM, R = RW - RM, CW = R - L, y, i;
     txtFit(ctx, 'Relatório de fretes', L, 146, 800, R_DISP, 62, 40, 760, RC.ink, 'left');
@@ -9583,10 +9857,17 @@
     if (q < 0) return 'faltam ' + palTexto(l.p, -q) + ' ' + (a.dia ? 'para as cargas de ' + (a.dia === hoje ? 'hoje' : rotuloDia(a.dia, hoje).replace('Amanhã', 'amanhã')) : 'no estoque');
     return 'fica com ' + palTexto(l.p, q) + ' ' + quando + (l.min !== null ? ' (mínimo ' + fmtInt(l.min) + ' pal)' : '');
   }
+  // Selo (número) numa aba, sem mexer no ícone e no nome.
+  function seloAba(b, n, titulo) {
+    var sp = b.querySelector('.tab-alerta');
+    if (!n) { if (sp) sp.parentNode.removeChild(sp); return; }
+    if (!sp) { sp = document.createElement('span'); sp.className = 'tab-alerta'; b.appendChild(sp); }
+    sp.textContent = String(n); sp.title = titulo || '';
+  }
   function renderEstoqueAbaAlerta(n) {
     var b = document.querySelector('#admin-tabs .seg-btn[data-tab="estoque"]');
     if (!b) return;
-    b.innerHTML = 'Estoque' + (n ? ' <span class="tab-alerta" title="' + n + (n === 1 ? ' produto abaixo do mínimo' : ' produtos abaixo do mínimo') + '">' + n + '</span>' : '');
+    seloAba(b, n, n + (n === 1 ? ' produto abaixo do mínimo' : ' produtos abaixo do mínimo'));
   }
   function renderEstoquePainel(plano) {
     var hoje = plano.hoje, linhas = plano.linhas;
@@ -10382,7 +10663,7 @@
     experiencia: { nome: 'Contrato de experiência', cls: 'exp' },
     ativo: { nome: 'Ativo', cls: '' }
   };
-  var RH_EXPERIENCIA = [30, 60]; // marcos do contrato de experiência, em dias (como na planilha: início, 30 dias, 60 dias)
+  var RH_EXPERIENCIA = [30, 60]; // contrato de experiência de 30 + 30 dias (confirmado em 16/10/2026): marcos aos 30 e aos 60 dias do início
   var rhDados = { funcionarios: [], treinamentos: [], nrTipos: [], cfg: {}, carregado: false, carregando: false, erro: '' };
   var rhUi = { visao: 'funcao', busca: '', desligados: false, editando: null, confirmar: null };
   function rhLer(caminho) {
@@ -11523,21 +11804,27 @@
   // ---------- marcas: cor de cada produto e logo de cada marca ----------
   // Cores combinadas em 16/10/2026: Levíssima natural verde, Levíssima com gás roxo, Colina Azul natural azul,
   // Colina Azul com gás laranja, Betel vermelho, Bom Coração natural azul-claro, Bom Coração com gás roxo-claro.
-  // Bulnez (e as marcas sem cor combinada) ficam em branco. Os produtos de copo, 6L e 10L da Levíssima são "natural".
+  // Depois (16/10/2026, 22h): New Mania azul-esverdeado, Betel rosa, Casa de Mãe natural azul clarinho e com gás laranja
+  // clarinho; a Levíssima também aparece com as iniciais (LV). Bulnez fica em branco. Copo, 6L e 10L da Levíssima são "natural".
   // O logo de cada marca fica na coleção "marcas" (id = marca), enviado em Cadastros › Marcas; sem logo enviado,
   // a Levíssima usa o símbolo dela e as outras marcas mostram as iniciais.
   var CORES_MARCA = {
     'levissima': { natural: 'verde', gas: 'roxo' },
     'colina-azul': { natural: 'azul', gas: 'laranja' },
-    'betel': { natural: 'vermelho', gas: 'vermelho' },
-    'bom-coracao': { natural: 'azul-claro', gas: 'roxo-claro' }
+    'betel': { natural: 'rosa', gas: 'rosa' },
+    'bom-coracao': { natural: 'azul-claro', gas: 'roxo-claro' },
+    'new-mania': { natural: 'azul-esverdeado', gas: 'azul-esverdeado' },
+    'casa-de-mae': { natural: 'azul-clarinho', gas: 'laranja-clarinho' }
   };
+  var INICIAIS_MARCA = { levissima: 'LV' };
   // fundo e texto (contraste conferido); as mesmas no tema escuro, porque é a cor do produto
   var COR_PRODUTO_HEX = {
     verde: ['#43B02A', '#10200C'], roxo: ['#702082', '#FFFFFF'], azul: ['#001489', '#FFFFFF'], laranja: ['#FF6A13', '#1C2A2E'],
-    vermelho: ['#C8102E', '#FFFFFF'], 'azul-claro': ['#6CACE4', '#0B2341'], 'roxo-claro': ['#B98BD6', '#2A0F33'], branco: ['#FFFFFF', '#1C2A2E']
+    vermelho: ['#C8102E', '#FFFFFF'], 'azul-claro': ['#6CACE4', '#0B2341'], 'roxo-claro': ['#B98BD6', '#2A0F33'], branco: ['#FFFFFF', '#1C2A2E'],
+    rosa: ['#F06CA8', '#3B0A22'], 'azul-esverdeado': ['#00A5AD', '#04282B'], 'azul-clarinho': ['#BFE4F8', '#0B2341'], 'laranja-clarinho': ['#FFC9A0', '#3A1A05']
   };
-  var NOME_COR = { verde: 'verde', roxo: 'roxo', azul: 'azul', laranja: 'laranja', vermelho: 'vermelho', 'azul-claro': 'azul-claro', 'roxo-claro': 'roxo-claro', branco: 'branco' };
+  var NOME_COR = { verde: 'verde', roxo: 'roxo', azul: 'azul', laranja: 'laranja', vermelho: 'vermelho', 'azul-claro': 'azul-claro', 'roxo-claro': 'roxo-claro', branco: 'branco',
+    rosa: 'rosa', 'azul-esverdeado': 'azul-esverdeado', 'azul-clarinho': 'azul clarinho', 'laranja-clarinho': 'laranja clarinho' };
   var marcasDocs = {}; // marca -> { marca, logo (imagem pequena em data URL), atualizadoEm }
   var LOCAL_MARCAS_KEY = 'levissima-marcas-v1';
   function listaMarcas() { return [{ marca: 'Levíssima', slug: 'levissima' }].concat(MARCAS_V3.map(function(m) { return { marca: m.marca, slug: m.slug }; })); }
@@ -11545,13 +11832,13 @@
   function corDaMarca(slug, gas) { var c = CORES_MARCA[slug]; return c ? (gas ? c.gas : c.natural) : 'branco'; }
   function corDoProduto(nome) { return corDaMarca(marcaDoTexto(nome), ehGas(nome)); }
   function iniciaisMarca(slug) {
+    if (INICIAIS_MARCA[slug]) return INICIAIS_MARCA[slug];
     var n = nomeMarca(slug).split(/\s+/).filter(function(w) { return w.length > 2; }); // "Casa de Mãe" -> CM
     return (n.length > 1 ? n[0].charAt(0) + n[1].charAt(0) : (n[0] || '?').slice(0, 2)).toUpperCase();
   }
   function logoMarcaHtml(slug) {
     var d = marcasDocs[slug];
     if (d && d.logo) return '<span class="mk-logo"><img src="' + escapeHtml(d.logo) + '" alt="" /></span>';
-    if (slug === 'levissima') return '<span class="mk-logo mk-lv"><svg viewBox="356.7 194.1 128.4 99.0" aria-hidden="true" focusable="false"><use href="#lv-simb"/></svg></span>';
     return '<span class="mk-logo mk-ini" aria-hidden="true">' + escapeHtml(iniciaisMarca(slug)) + '</span>';
   }
   // Etiqueta do produto: logo da marca + nome, na cor do produto (extra: html depois do nome, ex. "3 pal").
@@ -11608,9 +11895,6 @@
     if (im && im.naturalWidth) {
       var k = Math.min((t - 6) / im.naturalWidth, (t - 6) / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k;
       ctx.drawImage(im, x + (t - w) / 2, y + (t - h) / 2, w, h);
-    } else if (slug === 'levissima') {
-      var alt = t * 0.62;
-      desenharSimbolo(ctx, x + (t - 128.33 * alt / 99.02) / 2, y + (t - alt) / 2, alt);
     } else {
       txt(ctx, iniciaisMarca(slug), x + t / 2, y + t * 0.66, rFont(800, Math.round(t * 0.42), R_DISP), '#1C2A2E', 'center');
     }
@@ -11680,7 +11964,7 @@
         : '<span class="ptag pc-branco">branco</span>';
       return '<div class="driver-row marca-row">' + logoMarcaHtml(m.slug) +
         '<span class="driver-name">' + escapeHtml(m.marca) + '<span class="marca-cores">' + amostra + '</span>' +
-          '<span class="produto-regra">' + (temLogo ? 'logo enviado' : (m.slug === 'levissima' ? 'usando o símbolo da Levíssima' : 'sem logo: aparecem as iniciais')) + '</span></span>' +
+          '<span class="produto-regra">' + (temLogo ? 'logo enviado' : 'sem logo: aparecem as iniciais (' + escapeHtml(iniciaisMarca(m.slug)) + ')') + '</span></span>' +
         '<button class="btn-text" data-marca="logo" data-slug="' + escapeHtml(m.slug) + '">' + (temLogo ? 'Trocar logo' : 'Enviar logo') + '</button>' +
         (temLogo ? '<button class="btn-text danger" data-marca="tirar" data-slug="' + escapeHtml(m.slug) + '">Tirar</button>' : '') + '</div>';
     }).join('');
@@ -11702,6 +11986,1216 @@
     reduzirLogo(file).then(function(url) { return salvarMarca(slug, { marca: nomeMarca(slug), logo: url }); })
       .then(function() { showToast('Logo de ' + nomeMarca(slug) + ' salvo.'); })
       .catch(function(err) { console.error('marca', err); showToast('Não foi possível usar essa imagem. Tente outra (PNG ou JPG).'); });
+  });
+
+  // ---------- salas de reunião: reserva (aba Salas) ----------
+  // Duas salas: "Levíssima Protein" (só diretoria e gestão) e "PH+8" (todos os setores). Agenda das 24 horas do dia,
+  // em blocos de 30 minutos; a reserva pode durar vários blocos (até 24:00) e se repetir (todo dia, dias úteis ou
+  // toda semana, até uma data). Coleção "salas-reservas": { sala, data, inicio, fim, assunto, responsavel, setor,
+  // obs, porId, grupo, criadoEm, cancelada, canceladaEm, canceladaPor }. Cancelar não apaga: marca como cancelada.
+  // A Levíssima Protein só é reservada (e cancelada) com a senha mestre ou com a senha de 4 números de quem
+  // está marcado como "Diretoria / gestão" em Cadastros › Equipe.
+  var SALAS = [
+    { id: 'protein', nome: 'Levíssima Protein', sub: 'Diretoria e gestão', restrita: true },
+    { id: 'ph8', nome: 'PH+8', sub: 'Todos os setores', restrita: false }
+  ];
+  var SALAS_COL = 'salas-reservas';
+  var SETORES_SALA = ['Diretoria', 'Gestão', 'Comercial', 'Faturamento', 'Financeiro', 'Logística', 'Expedição', 'Produção', 'Qualidade', 'Manutenção', 'RH', 'Compras', 'Administrativo', 'Força de vendas'];
+  var salasReservas = [];
+  var salasUi = { dia: null, sheet: null, confirmarCancelar: false, rolou: null };
+  var SALA_PX = 26; // altura de cada bloco de 30 minutos
+  function salaPorId(id) { return SALAS.find(function(s) { return s.id === id; }) || SALAS[1]; }
+  function minDe(hhmm) { var p = String(hhmm || '0:0').split(':'); return (Number(p[0]) || 0) * 60 + (Number(p[1]) || 0); }
+  function hhmmDe(m) { return String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); }
+  function salasAtivas() { return salasReservas.filter(function(r) { return !r.cancelada; }); }
+  function reservasDoDia(iso, sala) {
+    return salasAtivas().filter(function(r) { return r.data === iso && (!sala || r.sala === sala); })
+      .sort(function(a, b) { return minDe(a.inicio) - minDe(b.inicio); });
+  }
+  function conflitoSala(sala, iso, ini, fim, ignorarId) {
+    return salasAtivas().find(function(r) {
+      return r.sala === sala && r.data === iso && r.id !== ignorarId && minDe(r.inicio) < fim && ini < minDe(r.fim);
+    }) || null;
+  }
+  function salasChaveLocal() { return 'levissima-salas-v1'; }
+  function loadLocalSalas() { try { salasReservas = JSON.parse(localStorage.getItem(salasChaveLocal()) || '[]') || []; } catch (e) { salasReservas = []; } }
+  function subscribeSalas() {
+    db.collection(SALAS_COL).onSnapshot(function(snap) {
+      salasReservas = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      if (session) renderSalas();
+    }, function(err) { console.error(SALAS_COL, err); });
+  }
+  function salasGravar(ops) {
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      ops.forEach(function(o) {
+        var ref = o.id ? db.collection(SALAS_COL).doc(o.id) : db.collection(SALAS_COL).doc();
+        if (o.op === 'update') b.update(ref, o.data); else b.set(ref, o.data);
+      });
+      return b.commit();
+    }
+    ops.forEach(function(o) {
+      var id = o.id || ('local-' + uid()), i = salasReservas.findIndex(function(x) { return x.id === id; });
+      if (o.op === 'update') { if (i >= 0) salasReservas[i] = Object.assign({}, salasReservas[i], o.data); }
+      else { var novo = Object.assign({ id: id }, o.data); if (i >= 0) salasReservas[i] = novo; else salasReservas.push(novo); }
+    });
+    try { localStorage.setItem(salasChaveLocal(), JSON.stringify(salasReservas)); } catch (e) {}
+    renderSalas();
+    return Promise.resolve();
+  }
+  function diaSemanaIso(iso) { return new Date(iso + 'T12:00:00').getDay(); }
+  function rotuloDiaLongo(iso) {
+    var hoje = todayIso(), d = new Date(iso + 'T12:00:00');
+    var nomes = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+    var pre = iso === hoje ? 'Hoje, ' : iso === addDiasIso(hoje, 1) ? 'Amanhã, ' : iso === addDiasIso(hoje, -1) ? 'Ontem, ' : '';
+    return pre + nomes[d.getDay()] + ', ' + formatDateBR(iso);
+  }
+  function agoraMin() { var n = new Date(); return n.getHours() * 60 + n.getMinutes(); }
+
+  // ----- aba -----
+  function renderSalas() {
+    var el = document.getElementById('salas-grade');
+    if (!el || !session || !ehEscritorio()) return;
+    if (!salasUi.dia) salasUi.dia = todayIso();
+    var iso = salasUi.dia, hoje = todayIso();
+    document.getElementById('salas-dia-rotulo').textContent = rotuloDiaLongo(iso);
+    var di = document.getElementById('salas-dia');
+    if (document.activeElement !== di) di.value = iso;
+    // cabeçalho das salas
+    var cab = '<div class="sl-cab"><span class="sl-hora-cab"></span>' + SALAS.map(function(s) {
+      var n = reservasDoDia(iso, s.id).length;
+      return '<span class="sl-sala-cab sl-' + s.id + '"><b>' + escapeHtml(s.nome) + '</b><small>' + (s.restrita ? '🔒 ' : '') + escapeHtml(s.sub) + ' · ' + (n ? n + (n === 1 ? ' reserva' : ' reservas') : 'livre') + '</small></span>';
+    }).join('') + '</div>';
+    // linhas de 30 em 30 minutos (00:00 a 24:00)
+    var horas = '', faixas = SALAS.map(function() { return ''; }), i;
+    for (i = 0; i < 48; i++) {
+      var m = i * 30, passou = iso < hoje || (iso === hoje && m + 30 <= agoraMin());
+      horas += '<span class="sl-hora' + (m % 60 ? ' meia' : '') + '">' + (m % 60 ? '' : hhmmDe(m)) + '</span>';
+      SALAS.forEach(function(s, k) {
+        faixas[k] += '<button type="button" class="sl-livre' + (m % 60 ? ' meia' : '') + (passou ? ' passou' : '') + '" data-sl="novo" data-sala="' + s.id + '" data-ini="' + m + '" aria-label="Reservar ' + escapeHtml(s.nome) + ' às ' + hhmmDe(m) + '"><span>' + hhmmDe(m) + '</span></button>';
+      });
+    }
+    var colunas = SALAS.map(function(s, k) {
+      var blocos = reservasDoDia(iso, s.id).map(function(r) {
+        var a = minDe(r.inicio), b = minDe(r.fim), alto = Math.max(1, (b - a) / 30) * SALA_PX;
+        var curto = (b - a) <= 30;
+        return '<button type="button" class="sl-res sl-' + s.id + (curto ? ' curta' : '') + '" style="top:' + (a / 30 * SALA_PX) + 'px;height:' + (alto - 2) + 'px" data-sl="ver" data-id="' + escapeHtml(r.id) + '">' +
+          '<b>' + escapeHtml(r.inicio + '–' + r.fim) + ' ' + escapeHtml(r.assunto || 'Reunião') + '</b>' +
+          (curto ? '' : '<span>' + escapeHtml([r.responsavel, r.setor].filter(Boolean).join(' · ')) + '</span>') + '</button>';
+      }).join('');
+      return '<div class="sl-col" data-sala="' + s.id + '">' + faixas[k] + blocos + '</div>';
+    }).join('');
+    var agora = iso === hoje ? '<div class="sl-agora" style="top:' + (agoraMin() / 30 * SALA_PX) + 'px"></div>' : '';
+    var velho = document.getElementById('salas-corpo'), stVelho = velho ? velho.scrollTop : null;
+    el.innerHTML = cab + '<div class="sl-corpo" id="salas-corpo"><div class="sl-horas">' + horas + '</div>' + colunas + agora + '</div>';
+    // rola até a hora atual (ou 7h) quando muda o dia
+    if (salasUi.rolou !== iso) {
+      salasUi.rolou = iso;
+      var corpo = document.getElementById('salas-corpo');
+      var alvo = iso === hoje ? Math.max(0, agoraMin() - 60) : 7 * 60;
+      if (corpo) corpo.scrollTop = alvo / 30 * SALA_PX;
+    } else if (stVelho != null) {
+      document.getElementById('salas-corpo').scrollTop = stVelho; // redesenhou (reserva nova, outra pessoa salvou): fica onde estava
+    }
+    renderSalasProximas();
+  }
+  function renderSalasProximas() {
+    var el = document.getElementById('salas-proximas');
+    if (!el) return;
+    var hoje = todayIso(), ate = addDiasIso(hoje, 14), agora = agoraMin();
+    var l = salasAtivas().filter(function(r) { return r.data >= hoje && r.data <= ate && !(r.data === hoje && minDe(r.fim) <= agora); })
+      .sort(function(a, b) { return (a.data + a.inicio).localeCompare(b.data + b.inicio); });
+    document.getElementById('salas-proximas-n').textContent = l.length ? String(l.length) : '';
+    el.innerHTML = l.length ? l.slice(0, 40).map(function(r) {
+      var s = salaPorId(r.sala);
+      return '<button type="button" class="driver-row sl-item" data-sl="ver" data-id="' + escapeHtml(r.id) + '"><span class="sl-tag sl-' + s.id + '">' + escapeHtml(s.nome) + '</span>' +
+        '<span class="driver-name">' + escapeHtml(r.assunto || 'Reunião') + '<span class="driver-sub">' + escapeHtml(rotuloDia(r.data, hoje) + ' · ' + r.inicio + ' às ' + r.fim + (r.responsavel ? ' · ' + r.responsavel : '') + (r.setor ? ' (' + r.setor + ')' : '')) + '</span></span></button>';
+    }).join('') : '<p class="empty-state">Nenhuma reserva nos próximos 14 dias.</p>';
+  }
+
+  // ----- folha da reserva -----
+  function opcoesHoras(de, ate, sel) {
+    var h = '';
+    for (var m = de; m <= ate; m += 30) h += '<option value="' + m + '"' + (m === sel ? ' selected' : '') + '>' + hhmmDe(m) + '</option>';
+    return h;
+  }
+  function abrirSalaNova(sala, ini, iso) {
+    var dia = iso || salasUi.dia || todayIso();
+    var inicio = ini == null ? Math.min(47, Math.ceil(agoraMin() / 30)) * 30 : ini;
+    salasUi.sheet = { modo: 'novo', sala: sala || 'ph8' };
+    salasUi.confirmarCancelar = false;
+    document.getElementById('sala-sheet-title').textContent = 'Reservar sala';
+    var fimPadrao = Math.min(1440, inicio + 60);
+    document.getElementById('sala-form-body').innerHTML =
+      '<div class="segmented sl-escolha" role="radiogroup" aria-label="Sala">' + SALAS.map(function(s) {
+        return '<button type="button" class="seg-btn' + (s.id === salasUi.sheet.sala ? ' active' : '') + '" data-sl-sala="' + s.id + '" aria-pressed="' + (s.id === salasUi.sheet.sala) + '">' + escapeHtml(s.nome) + '<small>' + (s.restrita ? '🔒 ' : '') + escapeHtml(s.sub) + '</small></button>';
+      }).join('') + '</div>' +
+      '<p class="hint" id="sl-aviso-sala"></p>' +
+      '<label>Data <span class="req">*</span><input type="date" id="sl-data" value="' + dia + '" /></label>' +
+      '<div class="row-2"><label>Começa <span class="req">*</span><select id="sl-ini">' + opcoesHoras(0, 1410, inicio) + '</select></label>' +
+      '<label>Termina <span class="req">*</span><select id="sl-fim">' + opcoesHoras(30, 1440, fimPadrao) + '</select></label></div>' +
+      '<p class="hint" id="sl-duracao"></p>' +
+      '<label>Assunto <span class="req">*</span><input type="text" id="sl-assunto" maxlength="80" autocomplete="off" placeholder="Ex.: Reunião de vendas" /></label>' +
+      '<div class="row-2"><label>Responsável <span class="req" id="sl-resp-req">*</span><input type="text" id="sl-resp" maxlength="60" autocomplete="off" /></label>' +
+      '<label>Setor <span class="req">*</span><input type="text" id="sl-setor" list="sl-setores" maxlength="40" autocomplete="off" /></label></div>' +
+      '<datalist id="sl-setores">' + SETORES_SALA.map(function(x) { return '<option value="' + escapeHtml(x) + '"></option>'; }).join('') + '</datalist>' +
+      '<div class="row-2"><label>Repetir<select id="sl-rep"><option value="nao">Não repete</option><option value="dias">Todos os dias</option><option value="uteis">Dias úteis (seg. a sex.)</option><option value="semana">Toda semana</option></select></label>' +
+      '<label id="sl-ate-l" class="hidden">Até <span class="req">*</span><input type="date" id="sl-ate" /></label></div>' +
+      '<label>Observações <span class="opt">(opcional)</span><input type="text" id="sl-obs" maxlength="140" autocomplete="off" placeholder="Ex.: precisa de projetor, café para 8 pessoas" /></label>' +
+      '<div id="sl-livre-info" class="hint"></div>';
+    document.getElementById('btn-sala-submit').textContent = 'Reservar';
+    document.getElementById('btn-sala-submit').classList.remove('hidden');
+    document.getElementById('btn-sala-cancel').textContent = 'Fechar';
+    document.getElementById('sala-form-error').classList.add('hidden');
+    document.getElementById('sala-sheet-overlay').classList.remove('hidden');
+    atualizarSalaForm();
+    setTimeout(function() { var a = document.getElementById('sl-assunto'); if (a && !('ontouchstart' in window)) a.focus(); }, 40);
+  }
+  function datasDaReserva(dia, rep, ate) {
+    if (rep === 'nao' || !ate || ate < dia) return [dia];
+    var out = [], d = dia, guarda = 0;
+    while (d <= ate && guarda++ < 400) {
+      var wd = diaSemanaIso(d);
+      if (rep === 'dias' || (rep === 'uteis' && wd >= 1 && wd <= 5) || (rep === 'semana' && wd === diaSemanaIso(dia))) out.push(d);
+      d = addDiasIso(d, 1);
+    }
+    return out;
+  }
+  function atualizarSalaForm() {
+    var s = salasUi.sheet;
+    if (!s || s.modo !== 'novo') return;
+    var sala = salaPorId(s.sala);
+    var ini = Number(document.getElementById('sl-ini').value), fimSel = document.getElementById('sl-fim');
+    var fim = Number(fimSel.value);
+    if (fim <= ini) { fim = Math.min(1440, ini + 30); }
+    fimSel.innerHTML = opcoesHoras(ini + 30, 1440, fim);
+    var dur = fim - ini;
+    document.getElementById('sl-duracao').textContent = 'Duração: ' + (dur >= 60 ? Math.floor(dur / 60) + ' h' + (dur % 60 ? ' 30 min' : '') : dur + ' min') + ' (' + (dur / 30) + (dur === 30 ? ' bloco' : ' blocos') + ' de 30 min).';
+    var porSenha = sala.restrita && !(session && session.role === 'admin');
+    document.getElementById('sl-aviso-sala').innerHTML = sala.restrita
+      ? '🔒 <b>' + escapeHtml(sala.nome) + '</b> é exclusiva da <b>diretoria e gestão</b>' + (porSenha ? ': ao reservar, digite a sua senha de 4 números (quem está como Diretoria / gestão em Cadastros › Equipe).' : '.')
+      : '<b>' + escapeHtml(sala.nome) + '</b> é liberada para todos os setores.';
+    document.getElementById('sl-resp-req').classList.toggle('hidden', porSenha);
+    var resp = document.getElementById('sl-resp');
+    resp.placeholder = porSenha ? 'Sai no nome de quem digitar a senha' : 'Quem vai usar a sala';
+    var rep = document.getElementById('sl-rep').value;
+    document.getElementById('sl-ate-l').classList.toggle('hidden', rep === 'nao');
+    var dia = document.getElementById('sl-data').value, ate = document.getElementById('sl-ate').value;
+    if (rep !== 'nao' && !ate && dia) document.getElementById('sl-ate').value = ate = addDiasIso(dia, rep === 'semana' ? 28 : 6);
+    var datas = dia ? datasDaReserva(dia, rep, ate) : [];
+    var confl = datas.map(function(d) { return { d: d, c: conflitoSala(s.sala, d, ini, fim, null) }; }).filter(function(x) { return x.c; });
+    var info = document.getElementById('sl-livre-info');
+    if (!dia) info.textContent = '';
+    else if (confl.length) info.innerHTML = '<span class="sl-ocupada">⚠ Horário ocupado: ' + confl.slice(0, 4).map(function(x) {
+      return escapeHtml(formatDateBR(x.d).slice(0, 5) + ' ' + x.c.inicio + '–' + x.c.fim + ' (' + (x.c.assunto || 'reunião') + (x.c.responsavel ? ', ' + x.c.responsavel : '') + ')');
+    }).join('; ') + (confl.length > 4 ? ' e mais ' + (confl.length - 4) : '') + '</span>';
+    else info.innerHTML = '<span class="sl-ok">✓ Livre' + (datas.length > 1 ? ' nos ' + datas.length + ' dias' : '') + '</span>';
+  }
+  function abrirSalaVer(id) {
+    var r = salasReservas.find(function(x) { return x.id === id; });
+    if (!r) return;
+    var s = salaPorId(r.sala);
+    salasUi.sheet = { modo: 'ver', id: id, sala: r.sala };
+    salasUi.confirmarCancelar = false;
+    document.getElementById('sala-sheet-title').textContent = s.nome;
+    function row(k, v) { return v ? '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + escapeHtml(v) + '</span></div>' : ''; }
+    var grupo = r.grupo ? salasAtivas().filter(function(x) { return x.grupo === r.grupo; }).length : 0;
+    document.getElementById('sala-form-body').innerHTML = '<div class="pedido-resumo">' +
+      row('Sala', s.nome + ' (' + s.sub.toLowerCase() + ')') + row('Quando', rotuloDiaLongo(r.data) + ', das ' + r.inicio + ' às ' + r.fim) +
+      row('Assunto', r.assunto) + row('Responsável', r.responsavel) + row('Setor', r.setor) + row('Observações', r.obs) +
+      row('Repete', grupo > 1 ? grupo + ' reservas iguais (as futuras podem ser canceladas juntas)' : '') +
+      row('Reservado em', r.criadoEm ? formatDateTimeBR(r.criadoEm) : '') + '</div><div id="sl-cancelar-box"></div>';
+    var passou = r.data < todayIso() || (r.data === todayIso() && minDe(r.fim) <= agoraMin());
+    var b = document.getElementById('btn-sala-submit');
+    b.textContent = 'Cancelar reserva';
+    b.classList.toggle('hidden', passou);
+    document.getElementById('btn-sala-cancel').textContent = 'Fechar';
+    document.getElementById('sala-form-error').classList.add('hidden');
+    document.getElementById('sala-sheet-overlay').classList.remove('hidden');
+  }
+  function fecharSalaSheet() { document.getElementById('sala-sheet-overlay').classList.add('hidden'); salasUi.sheet = null; }
+  function erroSala(msg) { var e = document.getElementById('sala-form-error'); e.textContent = msg; e.classList.remove('hidden'); }
+  // Levíssima Protein: senha mestre já basta; com a senha da equipe, pede a senha de 4 números de alguém da diretoria/gestão.
+  function autorizarSala(sala, acao, feito) {
+    if (!salaPorId(sala).restrita || (session && session.role === 'admin')) { feito(null); return; }
+    openPinDialog({
+      funcao: 'gestao', funcaoTexto: 'é da diretoria ou gestão',
+      titulo: 'Levíssima Protein · ' + acao,
+      hint: 'Sala exclusiva da diretoria e gestão: digite a sua senha de 4 números.',
+      semCadastro: 'Ninguém marcado como Diretoria / gestão em Cadastros › Equipe. Peça para a senha mestre cadastrar (ou reservar).',
+      onOk: function(m) { feito(m); }
+    });
+  }
+  function salvarReservaSala() {
+    var s = salasUi.sheet;
+    var dia = document.getElementById('sl-data').value;
+    var ini = Number(document.getElementById('sl-ini').value), fim = Number(document.getElementById('sl-fim').value);
+    var assunto = document.getElementById('sl-assunto').value.replace(/\s+/g, ' ').trim();
+    var resp = document.getElementById('sl-resp').value.replace(/\s+/g, ' ').trim();
+    var setor = document.getElementById('sl-setor').value.replace(/\s+/g, ' ').trim();
+    var rep = document.getElementById('sl-rep').value, ate = document.getElementById('sl-ate').value;
+    var restritaPorSenha = salaPorId(s.sala).restrita && !(session && session.role === 'admin');
+    if (!dia) return erroSala('Escolha a data.');
+    if (!(fim > ini)) return erroSala('O fim tem que ser depois do começo.');
+    if (dia < todayIso() || (dia === todayIso() && fim <= agoraMin())) return erroSala('Esse horário já passou.');
+    if (!assunto) return erroSala('Informe o assunto da reunião.');
+    if (!resp && !restritaPorSenha) return erroSala('Informe o responsável.');
+    if (!setor) return erroSala('Informe o setor.');
+    if (rep !== 'nao' && (!ate || ate < dia)) return erroSala('Informe até quando a reserva se repete.');
+    if (rep !== 'nao' && ate > addDiasIso(dia, 180)) return erroSala('A repetição vai no máximo 6 meses à frente.');
+    var datas = datasDaReserva(dia, rep, ate);
+    if (!datas.length) return erroSala('Nenhum dia nessa repetição.');
+    var confl = datas.filter(function(d) { return conflitoSala(s.sala, d, ini, fim, null); });
+    if (confl.length) return erroSala('Horário ocupado em ' + confl.length + (confl.length === 1 ? ' dia' : ' dias') + ' (' + confl.slice(0, 3).map(function(d) { return formatDateBR(d).slice(0, 5); }).join(', ') + '). Escolha outro horário.');
+    autorizarSala(s.sala, 'reservar', function(m) {
+      var agora = new Date().toISOString(), grupo = datas.length > 1 ? 'g' + uid() : '';
+      var ops = datas.map(function(d) {
+        return { op: 'set', id: null, data: { sala: s.sala, data: d, inicio: hhmmDe(ini), fim: hhmmDe(fim), assunto: assunto,
+          responsavel: m ? m.nome : resp, setor: setor, obs: document.getElementById('sl-obs').value.trim(), porId: m ? m.id : (session && session.role === 'admin' ? 'mestre' : ''),
+          grupo: grupo, criadoEm: agora, cancelada: false } };
+      });
+      var btn = document.getElementById('btn-sala-submit'); btn.disabled = true;
+      salasGravar(ops).then(function() {
+        btn.disabled = false; salasUi.dia = dia; fecharSalaSheet();
+        showToast(salaPorId(s.sala).nome + ' reservada' + (datas.length > 1 ? ' em ' + datas.length + ' dias' : '') + ': ' + formatDateBR(dia).slice(0, 5) + ', ' + hhmmDe(ini) + ' às ' + hhmmDe(fim) + '.');
+        renderSalas();
+      }).catch(function(err) { btn.disabled = false; console.error('salas', err); erroSala('Não foi possível salvar agora. Tente novamente.'); });
+    });
+  }
+  function cancelarReservaSala(todasDoGrupo) {
+    var s = salasUi.sheet, r = salasReservas.find(function(x) { return x.id === s.id; });
+    if (!r) return;
+    autorizarSala(r.sala, 'cancelar', function(m) {
+      var hoje = todayIso(), agora = new Date().toISOString();
+      var alvo = todasDoGrupo && r.grupo ? salasAtivas().filter(function(x) { return x.grupo === r.grupo && x.data >= r.data; }) : [r];
+      var por = m ? m.nome : (session && session.role === 'admin' ? 'senha mestre' : 'equipe');
+      salasGravar(alvo.filter(function(x) { return x.data >= hoje; }).map(function(x) { return { op: 'update', id: x.id, data: { cancelada: true, canceladaEm: agora, canceladaPor: por } }; }))
+        .then(function() { fecharSalaSheet(); showToast(alvo.length > 1 ? alvo.length + ' reservas canceladas.' : 'Reserva cancelada.'); })
+        .catch(function(err) { console.error('salas', err); erroSala('Não foi possível cancelar agora.'); });
+    });
+  }
+  // ----- eventos -----
+  document.getElementById('tab-salas').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-sl]');
+    if (!b) return;
+    var a = b.dataset.sl;
+    if (a === 'novo') { if (b.classList.contains('passou')) { showToast('Esse horário já passou.'); return; } abrirSalaNova(b.dataset.sala, Number(b.dataset.ini), salasUi.dia); }
+    else if (a === 'ver') abrirSalaVer(b.dataset.id);
+    else if (a === 'dia-ant') { salasUi.dia = addDiasIso(salasUi.dia || todayIso(), -1); renderSalas(); }
+    else if (a === 'dia-prox') { salasUi.dia = addDiasIso(salasUi.dia || todayIso(), 1); renderSalas(); }
+    else if (a === 'hoje') { salasUi.dia = todayIso(); salasUi.rolou = null; renderSalas(); }
+    else if (a === 'reservar') abrirSalaNova('ph8', null, salasUi.dia);
+  });
+  document.getElementById('salas-dia').addEventListener('change', function(e) { if (e.target.value) { salasUi.dia = e.target.value; renderSalas(); } });
+  document.getElementById('sala-form-body').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-sl-sala]');
+    if (b && salasUi.sheet && salasUi.sheet.modo === 'novo') {
+      salasUi.sheet.sala = b.dataset.slSala;
+      document.querySelectorAll('#sala-form-body [data-sl-sala]').forEach(function(x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+      atualizarSalaForm(); return;
+    }
+    var c = e.target.closest('[data-sl-cancelar]');
+    if (c) cancelarReservaSala(c.dataset.slCancelar === 'todas');
+  });
+  document.getElementById('sala-form-body').addEventListener('change', atualizarSalaForm);
+  document.getElementById('sala-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var s = salasUi.sheet;
+    if (!s) return;
+    if (s.modo === 'novo') { salvarReservaSala(); return; }
+    // ver: o botão principal vira "Cancelar reserva" e pede confirmação
+    var r = salasReservas.find(function(x) { return x.id === s.id; });
+    if (!r) return;
+    var futuras = r.grupo ? salasAtivas().filter(function(x) { return x.grupo === r.grupo && x.data >= r.data; }).length : 1;
+    document.getElementById('sl-cancelar-box').innerHTML = '<div class="tx-confirm">Cancelar esta reserva?' +
+      ' <button type="button" class="btn-text danger" data-sl-cancelar="uma">Cancelar só esta</button>' +
+      (futuras > 1 ? '<button type="button" class="btn-text danger" data-sl-cancelar="todas">Esta e as próximas (' + futuras + ')</button>' : '') + '</div>';
+  });
+  document.getElementById('btn-close-sala-sheet').addEventListener('click', fecharSalaSheet);
+  document.getElementById('btn-sala-cancel').addEventListener('click', fecharSalaSheet);
+  document.getElementById('sala-sheet-overlay').addEventListener('click', function(e) { if (e.target === document.getElementById('sala-sheet-overlay')) fecharSalaSheet(); });
+  // a linha do "agora" anda sozinha
+  setInterval(function() { if (session && ui.tab === 'salas' && !document.hidden) renderSalas(); }, 60000);
+
+  // ---------- qualidade: recebimento de insumos, checklist de linha, análises e não conformidades ----------
+  // Base: RDC 173/2006 (boas práticas para água mineral: inspeção de todos os insumos no recebimento, garrafões
+  // retornáveis avaliados um a um, CO₂ com laudo de cada carga, enxágue comprovado por indicador, plano de amostragem,
+  // ações corretivas documentadas, registros guardados por no mínimo 1 ano) e RDC 275/2005 (padrão microbiológico:
+  // E. coli, coliformes totais, enterococos, P. aeruginosa e clostrídios sulfito redutores em 100 mL).
+  // Coleções: qualidade-recebimentos, qualidade-checklists, qualidade-analises, qualidade-ncs e qualidade-config
+  // (doc "plano": itens desativados, itens a mais, limites, frequência das análises). Nada é apagado: a NC é encerrada.
+  // Quem assina: com pessoas marcadas como "Qualidade" em Cadastros › Equipe, a senha de 4 números de uma delas;
+  // sem ninguém cadastrado (ou com a senha mestre), o nome do responsável.
+  var Q_COL = { rec: 'qualidade-recebimentos', chk: 'qualidade-checklists', ana: 'qualidade-analises', nc: 'qualidade-ncs', cfg: 'qualidade-config' };
+  var qual = { rec: [], chk: [], ana: [], nc: [], cfg: [] };
+  var qUi = { area: 'hoje', sheet: null, todos: false };
+  var Q_LINHAS = [
+    { id: 'pet', nome: 'Linha PET (350 ml, 510 ml e 1,5 L)' },
+    { id: 'galao', nome: 'Linha 6 L e 10 L' },
+    { id: 'copo', nome: 'Linha de copos' },
+    { id: 'retornavel', nome: 'Garrafões 10 L e 20 L (retornáveis)' }
+  ];
+  var Q_TURNOS = ['1º turno (Desc 1)', '2º turno (Desc 2)', '3º turno (Desc 3)', 'Administrativo'];
+  var Q_CHECK_TIPOS = {
+    preop: { nome: 'Pré-operacional (início do turno)', curto: 'Pré-operacional' },
+    processo: { nome: 'Verificação de processo (a cada 2 horas)', curto: 'Verificação de processo' },
+    garrafoes: { nome: 'Garrafões retornáveis (triagem e lavagem)', curto: 'Garrafões retornáveis' }
+  };
+  function I(id, texto, critico, tipo, unidade) { return { id: id, texto: texto, critico: !!critico, tipo: tipo || 'ok', unidade: unidade || '' }; }
+  var Q_ITENS = {
+    'rec:comum': [
+      I('rc-veiculo', 'Veículo limpo, coberto, sem odor e sem outras cargas que contaminem', true),
+      I('rc-embalagem', 'Volumes íntegros, secos, limpos e sem sinais de pragas'),
+      I('rc-ident', 'Produto, lote e data de fabricação/validade conferem com a nota fiscal', true),
+      I('rc-qtd', 'Quantidade confere com a nota fiscal e o pedido'),
+      I('rc-laudo', 'Laudo/certificado de qualidade do lote entregue e dentro da especificação'),
+      I('rc-validade', 'Dentro da validade / prazo de uso')
+    ],
+    'rec:Pré-formas': [
+      I('pf-visual', 'Sem bolhas, manchas, pontos pretos, fios ou rebarbas (amostra)', true),
+      I('pf-cor', 'Cor e transparência uniformes, conforme o padrão'),
+      I('pf-gargalo', 'Gargalo e rosca sem defeito, ovalização ou lascas', true),
+      I('pf-peso', 'Peso médio da pré-forma', false, 'num', 'g'),
+      I('pf-armazen', 'Caixas/octabins fechados, protegidos da umidade e do sol')
+    ],
+    'rec:Tampas': [
+      I('tp-cor', 'Cor e modelo corretos (natural / com gás / garrafão)'),
+      I('tp-lacre', 'Lacre (anel de segurança) íntegro, pontes sem ruptura', true),
+      I('tp-vedante', 'Vedante presente e sem defeito'),
+      I('tp-deform', 'Sem deformação, rebarbas ou sujeira'),
+      I('tp-encaixe', 'Teste de encaixe/rosqueamento em embalagem da linha aprovado')
+    ],
+    'rec:Rótulos': [
+      I('rt-arte', 'Arte e versão corretas (marca, produto, volume)', true),
+      I('rt-dados', 'Informações obrigatórias legíveis (composição, fonte, registro, CNPJ)'),
+      I('rt-impressao', 'Impressão sem falhas, cores conforme o padrão'),
+      I('rt-codigo', 'Código de barras lido confere com o produto', true, 'codigo'),
+      I('rt-bobina', 'Bobinas/maços íntegros, sentido de enrolamento correto')
+    ],
+    'rec:Copos': [
+      I('cp-integridade', 'Copos sem trincas, deformação ou sujeira', true),
+      I('cp-selo', 'Tampa de alumínio (selo) com arte correta e sem falha de impressão'),
+      I('cp-laudo', 'Laudo do material para contato com alimentos')
+    ],
+    'rec:Embalagem': [
+      I('em-espec', 'Medidas, espessura ou gramatura conforme o pedido'),
+      I('em-integridade', 'Bobinas/fardos sem furos, rasgos ou umidade'),
+      I('em-impressao', 'Impressão das caixas correta e legível')
+    ],
+    'rec:Gás carbônico': [
+      I('co2-certificado', 'Laudo da carga: CO₂ grau alimentício (Food Chemical Codex)', true),
+      I('co2-pureza', 'Pureza do CO₂ no laudo', true, 'num', '%'),
+      I('co2-sensorial', 'Sem odor ou sabor estranho (teste sensorial)')
+    ],
+    'rec:Higienização': [
+      I('hg-registro', 'Produto regularizado na Anvisa / Ministério da Saúde', true),
+      I('hg-fispq', 'FISPQ e ficha técnica disponíveis'),
+      I('hg-rotulo', 'Rótulo íntegro com lote e validade')
+    ],
+    'rec:Lacres': [
+      I('lc-medida', 'Medida e cor conforme a especificação'),
+      I('lc-integridade', 'Sem rasgos ou emendas; encolhimento testado')
+    ],
+    preop: [
+      I('po-sala', 'Sala de envase limpa e higienizada (registro da higienização feito)', true),
+      I('po-equip', 'Enchedora, tampadora e esteiras higienizadas, sem resíduos', true),
+      I('po-uniforme', 'Equipe com uniforme exclusivo do dia, touca, máscara e sem adornos', true),
+      I('po-antessala', 'Ante-sala: lavatório sem contato manual, sabonete, antisséptico e papel'),
+      I('po-portas', 'Portas fechadas, telas íntegras, sem sinais de pragas'),
+      I('po-filtros', 'Filtros e desinfecção (UV/ozônio) funcionando e no prazo de troca'),
+      I('po-lubrificante', 'Lubrificante de grau alimentício, sem vazamento de óleo'),
+      I('po-insumos', 'Pré-forma, tampa e rótulo na linha corretos e aprovados no recebimento', true),
+      I('po-codificador', 'Codificador ajustado: lote e validade corretos', true),
+      I('po-instrumentos', 'Torquímetro, termômetro e balança calibrados')
+    ],
+    processo: [
+      I('pr-nivel', 'Nível de enchimento conforme', true),
+      I('pr-volume', 'Volume medido', false, 'num', 'mL'),
+      I('pr-torque', 'Torque de abertura da tampa', false, 'num', 'lbf·pol'),
+      I('pr-vazamento', 'Teste de vazamento (aperto) sem vazamento', true),
+      I('pr-codigo', 'Lote e validade legíveis e corretos na embalagem', true),
+      I('pr-rotulo', 'Rótulo correto, alinhado e bem colado'),
+      I('pr-visual', 'Inspeção contra a luz: sem partículas ou corpo estranho', true),
+      I('pr-co2', 'Gás carbônico (só água com gás)', false, 'num', 'vol'),
+      I('pr-temp', 'Temperatura da água no envase', false, 'num', '°C'),
+      I('pr-fardo', 'Fardo bem formado, quantidade certa por fardo'),
+      I('pr-palete', 'Palete montado no padrão, com filme e identificação')
+    ],
+    garrafoes: [
+      I('gf-triagem', 'Triagem um a um: reprovados os amassados, rachados, riscados, remendados, com odor ou cor alterada', true),
+      I('gf-reprovados', 'Garrafões reprovados na triagem', false, 'num', 'un'),
+      I('gf-validade', 'Garrafões dentro da validade (3 anos da fabricação)', true),
+      I('gf-prelavagem', 'Pré-lavagem: rótulo, cola e sujeira removidos'),
+      I('gf-temp', 'Temperatura da solução de lavagem', false, 'num', '°C'),
+      I('gf-conc', 'Concentração do detergente', false, 'num', '%'),
+      I('gf-enxague', 'Enxágue final com a própria água mineral', true),
+      I('gf-residuo', 'Teste de resíduo de detergente no enxágue (indicador) negativo', true),
+      I('gf-tampa', 'Tampa, lacre, data de envase e validade corretos'),
+      I('gf-transporte', 'Transporte automático até o envase, sem manuseio')
+    ]
+  };
+  // Padrão microbiológico (RDC 275/2005, amostra indicativa, 100 mL): E. coli ausência; os demais < 1 UFC.
+  var Q_MICRO = [
+    { id: 'ecoli', nome: 'E. coli / coliformes termotolerantes' }, { id: 'colif', nome: 'Coliformes totais' },
+    { id: 'entero', nome: 'Enterococos' }, { id: 'pseud', nome: 'Pseudomonas aeruginosa' }, { id: 'clost', nome: 'Clostrídios sulfito redutores' }
+  ];
+  var Q_FQ = [{ id: 'ph', nome: 'pH', unidade: '' }, { id: 'cond', nome: 'Condutividade', unidade: 'µS/cm' }, { id: 'temp', nome: 'Temperatura', unidade: '°C' }, { id: 'turb', nome: 'Turbidez', unidade: 'NTU' }];
+  var Q_ANALISES = [
+    { id: 'fonte-micro', nome: 'Fonte / captação · microbiológica', tipo: 'micro', dias: 30 },
+    { id: 'reserv-micro', nome: 'Reservatório · microbiológica', tipo: 'micro', dias: 30 },
+    { id: 'prod-micro', nome: 'Produto acabado (PET, 6 L/10 L, copos) · microbiológica', tipo: 'micro', dias: 7 },
+    { id: 'garrafao-micro', nome: 'Garrafão 10 L/20 L envasado · microbiológica', tipo: 'micro', dias: 7 },
+    { id: 'prod-fq', nome: 'Produto acabado · físico-química (pH, condutividade, temperatura)', tipo: 'fq', dias: 1 },
+    { id: 'swab', nome: 'Superfícies e mãos (swab)', tipo: 'outro', dias: 30 },
+    { id: 'abast-potab', nome: 'Água de abastecimento (potabilidade)', tipo: 'outro', dias: 180 }
+  ];
+  var Q_ORIGENS = { recebimento: 'Recebimento', linha: 'Checklist de linha', analise: 'Análise', reclamacao: 'Reclamação de cliente', auditoria: 'Auditoria / inspeção', outra: 'Outra' };
+  var Q_STATUS_NC = { aberta: 'Aberta', andamento: 'Em andamento', encerrada: 'Encerrada' };
+  // NBR 5426 (ISO 2859-1), inspeção normal, nível II: tamanho da amostra pelo tamanho do lote.
+  var Q_AMOSTRA = [[8, 2], [15, 3], [25, 5], [50, 8], [90, 13], [150, 20], [280, 32], [500, 50], [1200, 80], [3200, 125], [10000, 200], [35000, 315], [150000, 500], [500000, 800], [Infinity, 1250]];
+  function qAmostra(n) { n = Number(n) || 0; if (n <= 0) return 0; for (var i = 0; i < Q_AMOSTRA.length; i++) if (n <= Q_AMOSTRA[i][0]) return Math.min(n, Q_AMOSTRA[i][1]); return 1250; }
+
+  // ----- plano (config) -----
+  function qPlano() { var c = qual.cfg.find(function(x) { return x.id === 'plano'; }); return c || {}; }
+  function qItensDe(chave, todos) {
+    var pl = qPlano(), des = pl.desativados || {}, lim = pl.limites || {};
+    var base = (Q_ITENS[chave] || []).concat(((pl.extras || {})[chave]) || []);
+    return base.filter(function(it) { return todos || !des[it.id]; }).map(function(it) {
+      var l = lim[it.id] || {};
+      return Object.assign({}, it, { min: l.min != null && l.min !== '' ? Number(l.min) : (it.min != null ? it.min : null), max: l.max != null && l.max !== '' ? Number(l.max) : (it.max != null ? it.max : null), ativo: !des[it.id] });
+    });
+  }
+  function qChaveRec(grupo) { return Q_ITENS['rec:' + grupo] ? 'rec:' + grupo : null; }
+  function qItensRec(grupo) { var k = qChaveRec(grupo); return qItensDe('rec:comum').concat(k ? qItensDe(k) : []); }
+  function qAnalises(todas) {
+    var pl = qPlano(), fr = pl.freq || {}, des = pl.anaDesativadas || {};
+    return Q_ANALISES.concat(pl.anaExtras || []).filter(function(a) { return todas || !des[a.id]; }).map(function(a) { return Object.assign({}, a, { dias: fr[a.id] != null ? Number(fr[a.id]) : a.dias, ativo: !des[a.id] }); });
+  }
+  function qLimiteFq(id) { var l = (qPlano().fq || {})[id] || {}; return { min: l.min != null && l.min !== '' ? Number(l.min) : null, max: l.max != null && l.max !== '' ? Number(l.max) : null }; }
+  function qForaLimite(v, min, max) { if (v === '' || v == null || isNaN(Number(v))) return false; v = Number(v); return (min != null && v < min) || (max != null && v > max); }
+  function qFaixaTexto(min, max, un) {
+    if (min == null && max == null) return '';
+    var u = un ? ' ' + un : '';
+    return min != null && max != null ? fmtNumQ(min) + ' a ' + fmtNumQ(max) + u : min != null ? 'mínimo ' + fmtNumQ(min) + u : 'máximo ' + fmtNumQ(max) + u;
+  }
+  function fmtNumQ(n) { return Number(n).toLocaleString('pt-BR', { maximumFractionDigits: 3 }); }
+
+  // ----- dados -----
+  function qChaveLocal(k) { return 'levissima-qualidade-' + k + '-v1'; }
+  function loadLocalQualidade() { Object.keys(Q_COL).forEach(function(k) { try { qual[k] = JSON.parse(localStorage.getItem(qChaveLocal(k)) || '[]') || []; } catch (e) { qual[k] = []; } }); }
+  function subscribeQualidade() {
+    Object.keys(Q_COL).forEach(function(k) {
+      db.collection(Q_COL[k]).onSnapshot(function(snap) {
+        qual[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        if (session) { renderQualidade(); renderTabQualidadeBadge(); }
+      }, function(err) { console.error(Q_COL[k], err); });
+    });
+  }
+  function qGravar(ops) {
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      ops.forEach(function(o) {
+        var ref = o.id ? db.collection(Q_COL[o.k]).doc(o.id) : db.collection(Q_COL[o.k]).doc();
+        o.idFinal = ref.id;
+        if (o.op === 'update') b.update(ref, o.data); else b.set(ref, o.data);
+      });
+      return b.commit();
+    }
+    ops.forEach(function(o) {
+      var id = o.id || ('local-' + uid()), i = qual[o.k].findIndex(function(x) { return x.id === id; });
+      o.idFinal = id;
+      if (o.op === 'update') { if (i >= 0) qual[o.k][i] = Object.assign({}, qual[o.k][i], o.data); }
+      else { var novo = Object.assign({ id: id }, o.data); if (i >= 0) qual[o.k][i] = novo; else qual[o.k].push(novo); }
+      try { localStorage.setItem(qChaveLocal(o.k), JSON.stringify(qual[o.k])); } catch (e) {}
+    });
+    renderQualidade(); renderTabQualidadeBadge();
+    return Promise.resolve();
+  }
+  function qNovoId() { return 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function qProximaNc() { return qual.nc.reduce(function(m, x) { return Math.max(m, Number(x.numero) || 0); }, 0) + 1; }
+  function qPorSenha() { return !!session && session.role !== 'admin' && membrosCom('qualidade').length > 0; }
+  // Assinatura do registro: senha de 4 números de quem é da Qualidade (ou o nome do responsável).
+  function qAssinar(nomeDigitado, acao, feito) {
+    if (!qPorSenha()) { feito({ nome: nomeDigitado || (session && session.role === 'admin' ? 'Senha mestre' : 'Equipe'), id: '' }); return; }
+    openPinDialog({
+      funcao: 'qualidade', funcaoTexto: 'é da Qualidade',
+      titulo: 'Qualidade · ' + acao, hint: 'Assine com a sua senha de 4 números.',
+      semCadastro: 'Ninguém marcado como Qualidade em Cadastros › Equipe.',
+      onOk: function(m) { feito({ nome: m.nome, id: m.id }); }
+    });
+  }
+  function qHoraAgora() { var n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }
+  function qDiasDesde(iso) { if (!iso) return Infinity; return Math.round((Date.parse(todayIso() + 'T12:00:00') - Date.parse(String(iso).slice(0, 10) + 'T12:00:00')) / 86400000); }
+
+  // ----- pendências (painel e selo da aba) -----
+  var Q_INTERVALO_PROCESSO_MIN = 120;
+  function qSituacaoAnalises() {
+    return qAnalises().map(function(a) {
+      var ult = qual.ana.filter(function(x) { return x.planoId === a.id; }).sort(function(x, y) { return String(y.data).localeCompare(String(x.data)); })[0];
+      var prox = ult ? addDiasIso(ult.data, a.dias) : todayIso();
+      return { a: a, ult: ult, prox: prox, vencida: prox < todayIso(), hoje: prox === todayIso() };
+    });
+  }
+  function qSituacaoLinhas() {
+    var hoje = todayIso(), agora = new Date();
+    return Q_LINHAS.map(function(l) {
+      var doDia = qual.chk.filter(function(c) { return c.linha === l.id && c.data === hoje; });
+      var pre = doDia.filter(function(c) { return c.tipo === 'preop' || c.tipo === 'garrafoes'; });
+      var proc = doDia.filter(function(c) { return c.tipo === 'processo'; }).sort(function(a, b) { return String(b.hora).localeCompare(String(a.hora)); })[0];
+      var emProducao = pre.length > 0;
+      var minDesde = null;
+      if (proc) { var p = String(proc.hora || '00:00').split(':'); minDesde = agora.getHours() * 60 + agora.getMinutes() - (Number(p[0]) * 60 + Number(p[1])); }
+      else if (emProducao) { var p2 = String(pre[pre.length - 1].hora || '00:00').split(':'); minDesde = agora.getHours() * 60 + agora.getMinutes() - (Number(p2[0]) * 60 + Number(p2[1])); }
+      var atrasada = l.id !== 'retornavel' && emProducao && minDesde != null && minDesde > Q_INTERVALO_PROCESSO_MIN;
+      return { l: l, pre: pre, proc: proc, emProducao: emProducao, minDesde: minDesde, atrasada: atrasada, ncs: doDia.filter(function(c) { return c.resultado === 'nc'; }).length };
+    });
+  }
+  function qNcsAbertas() { return qual.nc.filter(function(n) { return n.status !== 'encerrada'; }); }
+  function qPendencias() {
+    var an = qSituacaoAnalises().filter(function(x) { return x.vencida; }).length;
+    var ncv = qNcsAbertas().filter(function(n) { return n.prazo && n.prazo < todayIso(); }).length;
+    var lin = qSituacaoLinhas().filter(function(x) { return x.atrasada; }).length;
+    return { analises: an, ncsVencidas: ncv, linhas: lin, total: an + ncv + lin };
+  }
+  function renderTabQualidadeBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="qualidade"]');
+    if (!b) return;
+    var n = session ? qPendencias().total : 0;
+    seloAba(b, n, 'Pendências da qualidade');
+  }
+
+  // ----- aba -----
+  function renderQualidade() {
+    var el = document.getElementById('q-conteudo');
+    if (!el || !session || !ehEscritorio()) return;
+    document.querySelectorAll('#q-areas .seg-btn').forEach(function(b) { var on = b.dataset.qarea === qUi.area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    var f = { hoje: qHtmlHoje, rec: qHtmlRec, linha: qHtmlLinha, ana: qHtmlAna, nc: qHtmlNc, plano: qHtmlPlano }[qUi.area] || qHtmlHoje;
+    el.innerHTML = f();
+  }
+  function qCard(cor, titulo, num, sub, botao) {
+    return '<div class="est-card qc-' + cor + '"><span class="est-card-k">' + titulo + '</span><span class="est-card-v">' + num + '</span><span class="est-card-s">' + sub + '</span>' + (botao || '') + '</div>';
+  }
+  function qHtmlHoje() {
+    var pend = qPendencias(), linhas = qSituacaoLinhas(), an = qSituacaoAnalises(), ncs = qNcsAbertas();
+    var rec7 = qual.rec.filter(function(r) { return qDiasDesde(r.data) <= 7; });
+    var alertas = [];
+    linhas.filter(function(x) { return x.atrasada; }).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.l.nome) + '</b>: verificação de processo atrasada (última há ' + fmtDuracao(x.minDesde) + ').'); });
+    an.filter(function(x) { return x.vencida; }).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.a.nome) + '</b>: análise vencida desde ' + escapeHtml(formatDateBR(x.prox)) + '.'); });
+    ncs.filter(function(n) { return n.prazo && n.prazo < todayIso(); }).forEach(function(n) { alertas.push('<b>NC nº ' + n.numero + '</b> (' + escapeHtml(n.descricao || '') + '): prazo vencido em ' + escapeHtml(formatDateBR(n.prazo)) + '.'); });
+    var html = '<div class="est-cards">' +
+      qCard('verde', 'Checklists de hoje', fmtInt(qual.chk.filter(function(c) { return c.data === todayIso(); }).length), linhas.filter(function(x) { return x.emProducao; }).length + ' de ' + Q_LINHAS.length + ' linhas com pré-operacional', '<button type="button" class="btn btn-primary btn-sm" data-q="novo-chk">+ Checklist de linha</button>') +
+      qCard('azul', 'Recebimentos (7 dias)', fmtInt(rec7.length), rec7.filter(function(r) { return r.resultado === 'reprovado'; }).length + ' reprovados · ' + rec7.filter(function(r) { return r.resultado === 'restricao'; }).length + ' com restrição', '<button type="button" class="btn btn-secondary btn-sm" data-q="novo-rec">+ Inspeção de recebimento</button>') +
+      qCard(pend.analises ? 'laranja' : 'roxo', 'Análises', pend.analises ? pend.analises + ' vencida' + (pend.analises > 1 ? 's' : '') : 'em dia', an.filter(function(x) { return x.hoje; }).length + ' para hoje', '<button type="button" class="btn btn-secondary btn-sm" data-q="nova-ana">+ Lançar análise</button>') +
+      qCard(ncs.length ? 'laranja' : 'verde', 'Não conformidades', fmtInt(ncs.length) + (ncs.length === 1 ? ' aberta' : ' abertas'), pend.ncsVencidas ? pend.ncsVencidas + ' com prazo vencido' : 'nenhuma com prazo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-q="nova-nc">+ Abrir NC</button>') +
+      '</div>';
+    html += alertas.length ? '<div class="est-alertas"><p class="est-alertas-t">⚠ Pendências da qualidade</p><ul>' + alertas.map(function(a) { return '<li>' + a + '</li>'; }).join('') + '</ul></div>' : '<div class="est-alertas ok">✓ Sem pendências da qualidade agora.</div>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Linhas hoje</h2></div>' + linhas.map(function(x) {
+      var pre = x.pre.length ? '✓ ' + x.pre.map(function(c) { return (c.turno || '').replace(/ \(.*\)/, '') + ' ' + c.hora; }).join(', ') : 'sem checklist hoje';
+      var proc = x.l.id === 'retornavel' ? '' : x.proc ? 'última verificação ' + x.proc.hora + (x.minDesde != null ? ' (há ' + fmtDuracao(Math.max(0, x.minDesde)) + ')' : '') : (x.emProducao ? 'nenhuma verificação de processo ainda' : '');
+      return '<div class="driver-row q-linha' + (x.atrasada ? ' atrasada' : '') + '"><span class="driver-name">' + escapeHtml(x.l.nome) +
+        '<span class="driver-sub">' + escapeHtml(pre) + (proc ? ' · ' + escapeHtml(proc) : '') + (x.ncs ? ' · ' + x.ncs + ' com não conformidade' : '') + '</span></span>' +
+        '<button type="button" class="btn-text" data-q="novo-chk" data-linha="' + x.l.id + '" data-tipo="' + (x.l.id === 'retornavel' ? 'garrafoes' : x.emProducao ? 'processo' : 'preop') + '">' + (x.l.id === 'retornavel' ? 'Checklist' : x.emProducao ? 'Verificar agora' : 'Pré-operacional') + '</button></div>';
+    }).join('') + '</section>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Plano de análises</h2></div>' + an.map(function(x) {
+      return '<div class="driver-row' + (x.vencida ? ' q-vencida' : '') + '"><span class="driver-name">' + escapeHtml(x.a.nome) +
+        '<span class="driver-sub">a cada ' + x.a.dias + (x.a.dias === 1 ? ' dia' : ' dias') + ' · ' + (x.ult ? 'última em ' + escapeHtml(formatDateBR(x.ult.data)) + (x.ult.conforme === false ? ' (não conforme)' : '') : 'nenhuma lançada') +
+        ' · ' + (x.vencida ? '<b class="alerta">vencida</b>' : 'próxima ' + escapeHtml(formatDateBR(x.prox))) + '</span></span>' +
+        '<button type="button" class="btn-text" data-q="nova-ana" data-plano="' + x.a.id + '">Lançar</button></div>';
+    }).join('') + '</section>';
+    return html;
+  }
+  function qResultadoChip(r) {
+    var m = { aprovado: ['ok', 'Aprovado'], restricao: ['aviso', 'Aprovado com restrição'], reprovado: ['falta', 'Reprovado'], conforme: ['ok', 'Conforme'], nc: ['falta', 'Não conforme'] }[r] || ['', r || ''];
+    return '<span class="q-chip ' + m[0] + '">' + escapeHtml(m[1]) + '</span>';
+  }
+  function qLista(arr, linhaHtml, vazio) {
+    var l = arr.slice().sort(function(a, b) { return String(b.em || b.data || '').localeCompare(String(a.em || a.data || '')); });
+    var mostrar = qUi.todos ? l : l.slice(0, 30);
+    return (mostrar.length ? mostrar.map(linhaHtml).join('') : '<p class="empty-state">' + vazio + '</p>') +
+      (l.length > 30 ? '<button type="button" class="btn-text" data-q="todos">' + (qUi.todos ? 'Mostrar só os últimos 30' : 'Mostrar todos (' + l.length + ')') + '</button>' : '');
+  }
+  function qHtmlRec() {
+    return '<div class="q-topo"><button type="button" class="btn btn-primary" data-q="novo-rec">+ Inspeção de recebimento</button><button type="button" class="btn btn-secondary btn-sm" data-q="csv" data-k="rec">Exportar (CSV)</button></div>' +
+      '<p class="hint">Todo insumo é inspecionado no recebimento (RDC 173/2006): itens comuns (veículo, embalagem, identificação, quantidade, laudo) e os do tipo de insumo, com a amostra sugerida pela NBR 5426. Aprovado, pode dar entrada no estoque de matéria-prima na hora; reprovado ou com restrição abre uma não conformidade.</p>' +
+      qLista(qual.rec, function(r) {
+        return '<button type="button" class="driver-row q-item" data-q="ver" data-k="rec" data-id="' + escapeHtml(r.id) + '"><span class="driver-name">' + escapeHtml(r.insumoNome || '—') +
+          '<span class="driver-sub">' + escapeHtml([formatDateBR(r.data), r.fornecedor, r.nf ? 'NF ' + r.nf : '', r.loteFornecedor ? 'lote ' + r.loteFornecedor : '', r.por].filter(Boolean).join(' · ')) + '</span></span>' + qResultadoChip(r.resultado) + '</button>';
+      }, 'Nenhuma inspeção de recebimento lançada.');
+  }
+  function qHtmlLinha() {
+    return '<div class="q-topo"><button type="button" class="btn btn-primary" data-q="novo-chk">+ Checklist de linha</button><button type="button" class="btn btn-secondary btn-sm" data-q="csv" data-k="chk">Exportar (CSV)</button></div>' +
+      '<p class="hint">Pré-operacional no início de cada turno, verificação de processo a cada 2 horas (nível, torque, vazamento, codificação, rótulo, inspeção contra a luz, CO₂, temperatura) e, nos garrafões retornáveis, triagem um a um e controle da lavagem. Item não conforme pede a ação corretiva e abre uma NC.</p>' +
+      qLista(qual.chk, function(c) {
+        var l = Q_LINHAS.find(function(x) { return x.id === c.linha; });
+        return '<button type="button" class="driver-row q-item" data-q="ver" data-k="chk" data-id="' + escapeHtml(c.id) + '"><span class="driver-name">' + escapeHtml((Q_CHECK_TIPOS[c.tipo] || {}).curto || c.tipo) + ' · ' + escapeHtml(l ? l.nome : c.linha) +
+          '<span class="driver-sub">' + escapeHtml([formatDateBR(c.data) + ' ' + (c.hora || ''), c.turno, c.produto, c.lote ? 'lote ' + c.lote : '', c.por].filter(Boolean).join(' · ')) + '</span></span>' + qResultadoChip(c.resultado) + '</button>';
+      }, 'Nenhum checklist de linha lançado.');
+  }
+  function qHtmlAna() {
+    return '<div class="q-topo"><button type="button" class="btn btn-primary" data-q="nova-ana">+ Lançar análise</button><button type="button" class="btn btn-secondary btn-sm" data-q="csv" data-k="ana">Exportar (CSV)</button></div>' +
+      '<p class="hint">Microbiológicas pelo padrão da RDC 275/2005 (100 mL): <i>E. coli</i> ausência; coliformes totais, enterococos, <i>P. aeruginosa</i> e clostrídios sulfito redutores &lt; 1 UFC. Físico-químicas com a faixa da sua água em Qualidade › Plano. A frequência de cada análise também fica no Plano.</p>' +
+      qLista(qual.ana, function(a) {
+        var p = qAnalises(true).find(function(x) { return x.id === a.planoId; });
+        return '<button type="button" class="driver-row q-item" data-q="ver" data-k="ana" data-id="' + escapeHtml(a.id) + '"><span class="driver-name">' + escapeHtml(p ? p.nome : a.planoId) +
+          '<span class="driver-sub">' + escapeHtml([formatDateBR(a.data), a.lote ? 'lote ' + a.lote : '', a.laboratorio, a.laudo ? 'laudo ' + a.laudo : '', a.por].filter(Boolean).join(' · ')) + '</span></span>' + qResultadoChip(a.conforme === false ? 'nc' : 'conforme') + '</button>';
+      }, 'Nenhuma análise lançada.');
+  }
+  function qHtmlNc() {
+    var abertas = qNcsAbertas().length;
+    return '<div class="q-topo"><button type="button" class="btn btn-primary" data-q="nova-nc">+ Abrir não conformidade</button><button type="button" class="btn btn-secondary btn-sm" data-q="csv" data-k="nc">Exportar (CSV)</button></div>' +
+      '<p class="hint">' + abertas + (abertas === 1 ? ' aberta' : ' abertas') + '. Cada NC registra a contenção (segregar, bloquear o lote, devolver), a causa, a ação corretiva, o responsável e o prazo; encerra depois de verificada a eficácia. Reclamações de clientes e recolhimentos entram aqui também.</p>' +
+      qLista(qual.nc, function(n) {
+        var venc = n.status !== 'encerrada' && n.prazo && n.prazo < todayIso();
+        return '<button type="button" class="driver-row q-item" data-q="ver-nc" data-id="' + escapeHtml(n.id) + '"><span class="driver-name">NC nº ' + n.numero + ' · ' + escapeHtml(n.descricao || '—') +
+          '<span class="driver-sub">' + escapeHtml([Q_ORIGENS[n.origem] || n.origem, formatDateBR(n.data), n.responsavel ? 'resp. ' + n.responsavel : '', n.prazo ? 'prazo ' + formatDateBR(n.prazo) : ''].filter(Boolean).join(' · ')) + (venc ? ' · <b class="alerta">prazo vencido</b>' : '') + '</span></span>' +
+          '<span class="q-chip ' + (n.status === 'encerrada' ? 'ok' : venc ? 'falta' : 'aviso') + '">' + escapeHtml(Q_STATUS_NC[n.status] || n.status) + '</span></button>';
+      }, 'Nenhuma não conformidade registrada.');
+  }
+  function qHtmlPlano() {
+    var mestre = !!session && session.role === 'admin';
+    function sec(chave, titulo) {
+      var itens = qItensDe(chave, true);
+      return '<div class="q-plano-sec"><h3 class="q-plano-t">' + escapeHtml(titulo) + '</h3>' + itens.map(function(it) {
+        var faixa = it.tipo === 'num' ? qFaixaTexto(it.min, it.max, it.unidade) : '';
+        return '<div class="driver-row q-plano-item' + (it.ativo ? '' : ' desativado') + '"><span class="driver-name">' + escapeHtml(it.texto) +
+          '<span class="driver-sub">' + [it.critico ? 'crítico' : '', it.tipo === 'num' ? 'medida (' + escapeHtml(it.unidade || '') + ')' + (faixa ? ': ' + escapeHtml(faixa) : ': sem limite definido') : '', it.tipo === 'codigo' ? 'lê o código de barras' : '', it.ativo ? '' : 'desativado'].filter(Boolean).join(' · ') + '</span></span>' +
+          (mestre ? (it.tipo === 'num' ? '<button type="button" class="btn-text" data-q="plano-lim" data-chave="' + escapeHtml(chave) + '" data-item="' + escapeHtml(it.id) + '">Limites</button>' : '') +
+            '<button type="button" class="btn-text' + (it.ativo ? ' danger' : '') + '" data-q="plano-ativo" data-item="' + escapeHtml(it.id) + '">' + (it.ativo ? 'Desativar' : 'Ativar') + '</button>' : '') + '</div>';
+      }).join('') + (mestre ? '<button type="button" class="btn-text" data-q="plano-novo" data-chave="' + escapeHtml(chave) + '">+ Item</button>' : '') + '</div>';
+    }
+    var html = '<p class="hint">' + (mestre ? 'Ajuste o plano de qualidade: desative o que não se aplica, inclua itens e defina os limites das medidas (valores fora do limite ficam não conformes). As mudanças valem para os próximos registros.' : 'Plano de qualidade em uso (só a senha mestre altera).') + '</p>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Recebimento de insumos</h2></div>' + sec('rec:comum', 'Todos os insumos') +
+      Object.keys(Q_ITENS).filter(function(k) { return k.indexOf('rec:') === 0 && k !== 'rec:comum'; }).map(function(k) { return sec(k, k.slice(4)); }).join('') + '</section>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Checklist de linha</h2></div>' + sec('preop', Q_CHECK_TIPOS.preop.nome) + sec('processo', Q_CHECK_TIPOS.processo.nome) + sec('garrafoes', Q_CHECK_TIPOS.garrafoes.nome) + '</section>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Análises</h2></div>' + qAnalises(true).map(function(a) {
+      return '<div class="driver-row q-plano-item' + (a.ativo ? '' : ' desativado') + '"><span class="driver-name">' + escapeHtml(a.nome) + '<span class="driver-sub">a cada ' + a.dias + (a.dias === 1 ? ' dia' : ' dias') + (a.ativo ? '' : ' · desativada') + '</span></span>' +
+        (mestre ? '<button type="button" class="btn-text" data-q="plano-freq" data-plano="' + a.id + '">Frequência</button><button type="button" class="btn-text' + (a.ativo ? ' danger' : '') + '" data-q="plano-ana-ativo" data-plano="' + a.id + '">' + (a.ativo ? 'Desativar' : 'Ativar') + '</button>' : '') + '</div>';
+    }).join('') +
+      '<div class="q-plano-sec"><h3 class="q-plano-t">Faixa físico-química da sua água</h3>' + Q_FQ.map(function(p) {
+        var l = qLimiteFq(p.id), fx = qFaixaTexto(l.min, l.max, p.unidade);
+        return '<div class="driver-row q-plano-item"><span class="driver-name">' + escapeHtml(p.nome) + '<span class="driver-sub">' + (fx ? escapeHtml(fx) : 'sem faixa definida') + '</span></span>' + (mestre ? '<button type="button" class="btn-text" data-q="plano-fq" data-param="' + p.id + '">Faixa</button>' : '') + '</div>';
+      }).join('') + '</div></section>';
+    return html;
+  }
+
+  // ----- folha (formulários) -----
+  function qAbrir(titulo, corpo, botao) {
+    document.getElementById('q-sheet-title').textContent = titulo;
+    document.getElementById('q-form-body').innerHTML = corpo;
+    var b = document.getElementById('btn-q-submit');
+    b.textContent = botao || 'Salvar'; b.classList.toggle('hidden', botao === false); b.disabled = false;
+    document.getElementById('q-form-error').classList.add('hidden');
+    document.getElementById('q-sheet-overlay').classList.remove('hidden');
+    document.getElementById('q-form-body').scrollTop = 0;
+  }
+  function qFechar() { document.getElementById('q-sheet-overlay').classList.add('hidden'); qUi.sheet = null; }
+  function qErro(msg) { var e = document.getElementById('q-form-error'); e.textContent = msg; e.classList.remove('hidden'); }
+  function qRespHtml() {
+    return qPorSenha() ? '<p class="hint">Ao salvar, assine com a sua senha de 4 números (Qualidade).</p>'
+      : '<label>Responsável <span class="req">*</span><input type="text" id="q-resp" maxlength="60" autocomplete="off" /></label>';
+  }
+  function qItemHtml(it, i) {
+    var crit = it.critico ? '<span class="q-crit" title="Item crítico">crítico</span>' : '';
+    var faixa = it.tipo === 'num' ? qFaixaTexto(it.min, it.max, it.unidade) : '';
+    var campo;
+    if (it.tipo === 'num') campo = '<input type="number" step="any" inputmode="decimal" class="q-num" data-item="' + it.id + '" aria-label="' + escapeHtml(it.texto) + '" /><span class="q-un">' + escapeHtml(it.unidade) + '</span>';
+    else if (it.tipo === 'codigo') campo = '<input type="text" inputmode="numeric" class="q-cod" data-item="' + it.id + '" placeholder="Leia ou digite o código" autocomplete="off" />';
+    else campo = '<span class="q-op" role="radiogroup" aria-label="' + escapeHtml(it.texto) + '">' + ['c', 'nc', 'na'].map(function(v) {
+      return '<button type="button" class="q-op-b q-' + v + '" data-item="' + it.id + '" data-v="' + v + '" aria-pressed="false">' + (v === 'c' ? 'C' : v === 'nc' ? 'NC' : 'N/A') + '</button>';
+    }).join('') + '</span>';
+    return '<div class="q-it" data-item="' + it.id + '"><div class="q-it-t">' + (i + 1) + '. ' + escapeHtml(it.texto) + ' ' + crit + (faixa ? '<span class="q-faixa">' + escapeHtml(faixa) + '</span>' : '') + '</div>' +
+      '<div class="q-it-c">' + campo + '</div><div class="q-it-msg hidden"></div>' +
+      '<input type="text" class="q-acao hidden" data-item="' + it.id + '" maxlength="160" placeholder="Ação corretiva tomada (obrigatório no não conforme)" /></div>';
+  }
+  // Lê as respostas dos itens e diz o que ficou não conforme.
+  function qLerItens(itens) {
+    var resp = {}, val = {}, acoes = {}, ncs = [], falta = [];
+    itens.forEach(function(it) {
+      var box = document.querySelector('#q-form-body .q-it[data-item="' + it.id + '"]');
+      if (!box) return;
+      var acao = (box.querySelector('.q-acao') || {}).value || '';
+      if (it.tipo === 'num') {
+        var v = box.querySelector('.q-num').value;
+        if (v === '') { resp[it.id] = 'na'; return; }
+        val[it.id] = Number(v);
+        var fora = qForaLimite(v, it.min, it.max);
+        resp[it.id] = fora ? 'nc' : 'c';
+        if (fora) ncs.push({ item: it, acao: acao.trim(), valor: Number(v) });
+      } else if (it.tipo === 'codigo') {
+        var cod = box.querySelector('.q-cod').value.trim();
+        if (!cod) { resp[it.id] = 'na'; return; }
+        val[it.id] = cod;
+        var p = produtoDoCodigo(cod);
+        resp[it.id] = p ? 'c' : 'nc';
+        if (!p) ncs.push({ item: it, acao: acao.trim(), valor: cod });
+      } else {
+        var sel = box.querySelector('.q-op-b[aria-pressed="true"]');
+        if (!sel) { falta.push(it); return; }
+        resp[it.id] = sel.dataset.v;
+        if (sel.dataset.v === 'nc') ncs.push({ item: it, acao: acao.trim() });
+      }
+      if (acao.trim()) acoes[it.id] = acao.trim();
+    });
+    return { resp: resp, val: val, acoes: acoes, ncs: ncs, falta: falta };
+  }
+  function qAtualizarItem(box) {
+    if (!box) return;
+    var id = box.dataset.item, it = (qUi.sheet && qUi.sheet.itens || []).find(function(x) { return x.id === id; });
+    if (!it) return;
+    var nc = false, msg = '';
+    if (it.tipo === 'num') { var v = box.querySelector('.q-num').value; nc = qForaLimite(v, it.min, it.max); if (nc) msg = 'Fora do limite (' + qFaixaTexto(it.min, it.max, it.unidade) + ')'; }
+    else if (it.tipo === 'codigo') { var cod = box.querySelector('.q-cod').value.trim(); if (cod) { var p = produtoDoCodigo(cod); nc = !p; msg = p ? '✓ ' + p.nome : 'Código não cadastrado em nenhum produto'; } }
+    else { var s = box.querySelector('.q-op-b[aria-pressed="true"]'); nc = !!s && s.dataset.v === 'nc'; }
+    box.classList.toggle('nc', nc);
+    var m = box.querySelector('.q-it-msg'); m.textContent = msg; m.classList.toggle('hidden', !msg); m.classList.toggle('ok', !nc);
+    box.querySelector('.q-acao').classList.toggle('hidden', !nc);
+    if (qUi.sheet && qUi.sheet.modo === 'rec') qSugerirResultado();
+  }
+  function qOpcoesInsumos(sel) {
+    var ins = (mp.insumos || []).slice().sort(compararInsumos);
+    var grupos = {};
+    ins.forEach(function(i) { var g = (i.area === 'garrafoes' ? 'Garrafões · ' : '') + (i.grupo || 'Outros'); (grupos[g] = grupos[g] || []).push(i); });
+    return '<option value="">Escolha o insumo</option>' + Object.keys(grupos).map(function(g) {
+      return '<optgroup label="' + escapeHtml(g) + '">' + grupos[g].map(function(i) { return '<option value="' + escapeHtml(i.id) + '"' + (i.id === sel ? ' selected' : '') + '>' + escapeHtml(i.nome) + '</option>'; }).join('') + '</optgroup>';
+    }).join('') + '<option value="__outro">Outro (digitar)</option>';
+  }
+  function qGrupoOpcoes() { return Object.keys(Q_ITENS).filter(function(k) { return k.indexOf('rec:') === 0 && k !== 'rec:comum'; }).map(function(k) { return k.slice(4); }); }
+  function abrirQRec() {
+    qUi.sheet = { modo: 'rec', itens: [] };
+    var fornecedores = []; qual.rec.forEach(function(r) { if (r.fornecedor && fornecedores.indexOf(r.fornecedor) < 0) fornecedores.push(r.fornecedor); });
+    qAbrir('Inspeção de recebimento',
+      '<label>Insumo <span class="req">*</span><select id="q-ins">' + qOpcoesInsumos('') + '</select></label>' +
+      '<div class="row-2 hidden" id="q-outro"><label>Nome do insumo <span class="req">*</span><input type="text" id="q-ins-nome" maxlength="80" /></label><label>Tipo<select id="q-ins-grupo"><option value="">Outros</option>' + qGrupoOpcoes().map(function(g) { return '<option>' + escapeHtml(g) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="row-2"><label>Fornecedor <span class="req">*</span><input type="text" id="q-forn" list="q-fornecedores" maxlength="80" autocomplete="off" /></label><label>Nota fiscal<input type="text" id="q-nf" maxlength="20" autocomplete="off" /></label></div>' +
+      '<datalist id="q-fornecedores">' + fornecedores.map(function(f) { return '<option value="' + escapeHtml(f) + '"></option>'; }).join('') + '</datalist>' +
+      '<div class="row-2"><label>Lote do fornecedor<input type="text" id="q-lote" maxlength="40" autocomplete="off" /></label><label>Data<input type="date" id="q-data" value="' + todayIso() + '" /></label></div>' +
+      '<div class="row-2"><label>Quantidade recebida <span class="req">*</span><input type="number" min="0" step="any" inputmode="decimal" id="q-qtd" /></label><label>Unidade<input type="text" id="q-un" maxlength="10" value="un" /></label></div>' +
+      '<p class="hint" id="q-amostra-hint">Informe a quantidade para ver a amostra sugerida.</p>' +
+      '<div class="row-2"><label>Unidades inspecionadas<input type="number" min="0" step="1" inputmode="numeric" id="q-insp" /></label><label>Com defeito<input type="number" min="0" step="1" inputmode="numeric" id="q-def" /></label></div>' +
+      '<div id="q-itens"><p class="hint">Escolha o insumo para ver o checklist.</p></div>' +
+      '<div class="row-2"><label>Resultado <span class="req">*</span><select id="q-res"><option value="aprovado">Aprovado</option><option value="restricao">Aprovado com restrição</option><option value="reprovado">Reprovado</option></select></label>' +
+      '<label id="q-destino-l" class="hidden">Destino <span class="req">*</span><select id="q-destino"><option value="devolvido">Devolvido ao fornecedor</option><option value="segregado">Segregado aguardando decisão</option></select></label></div>' +
+      '<p class="hint" id="q-res-hint"></p>' +
+      '<label class="check-row" id="q-entrada-l"><input type="checkbox" id="q-entrada" checked /> Dar entrada no estoque de matéria-prima (recebimento)</label>' +
+      '<label>Observações <span class="opt">(opcional)</span><input type="text" id="q-obs" maxlength="200" autocomplete="off" /></label>' + qRespHtml(), 'Salvar inspeção');
+  }
+  function qAtualizarRec() {
+    var sel = document.getElementById('q-ins').value, outro = sel === '__outro';
+    document.getElementById('q-outro').classList.toggle('hidden', !outro);
+    var ins = outro ? null : insumoPorId(sel);
+    var grupo = outro ? document.getElementById('q-ins-grupo').value : ins ? ins.grupo : '';
+    if (ins) document.getElementById('q-un').value = ins.unidade || 'un';
+    document.getElementById('q-entrada-l').classList.toggle('hidden', !ins);
+    var chave = sel ? (outro ? 'outro:' + grupo : sel) : '';
+    if (qUi.sheet.chaveItens !== chave) {
+      qUi.sheet.chaveItens = chave;
+      qUi.sheet.grupo = grupo;
+      qUi.sheet.itens = sel ? qItensRec(grupo) : [];
+      document.getElementById('q-itens').innerHTML = sel ? '<h3 class="q-plano-t">Checklist · ' + escapeHtml(grupo || 'insumo') + ' (C = conforme, NC = não conforme)</h3>' + qUi.sheet.itens.map(qItemHtml).join('') : '<p class="hint">Escolha o insumo para ver o checklist.</p>';
+    }
+    var q = Number(document.getElementById('q-qtd').value) || 0, am = qAmostra(q);
+    document.getElementById('q-amostra-hint').textContent = q ? 'Amostra sugerida (NBR 5426, nível II): inspecionar ' + fmtInt(am) + ' ' + (document.getElementById('q-un').value || 'un') + (q > am ? ' de ' + fmtInt(q) + '.' : ' (o lote todo).') : 'Informe a quantidade para ver a amostra sugerida.';
+    var insp = document.getElementById('q-insp');
+    if (!insp.value && am) insp.placeholder = String(am);
+    var res = document.getElementById('q-res').value;
+    document.getElementById('q-destino-l').classList.toggle('hidden', res !== 'reprovado');
+    var ent = document.getElementById('q-entrada');
+    if (res === 'reprovado') ent.checked = false;
+    ent.disabled = res === 'reprovado';
+  }
+  function qSugerirResultado() {
+    var lido = qLerItens(qUi.sheet.itens || []);
+    var critico = lido.ncs.some(function(n) { return n.item.critico; });
+    var def = Number(document.getElementById('q-def').value) || 0;
+    var sug = critico ? 'reprovado' : (lido.ncs.length || def) ? 'restricao' : 'aprovado';
+    if (!qUi.sheet.resManual) document.getElementById('q-res').value = sug;
+    document.getElementById('q-res-hint').textContent = critico ? 'Item crítico não conforme: o sugerido é reprovar o lote.' : lido.ncs.length ? lido.ncs.length + ' item(ns) não conforme(s): aprovado com restrição (ou reprove).' : '';
+    qAtualizarRec();
+  }
+  function salvarQRec() {
+    var sel = document.getElementById('q-ins').value, outro = sel === '__outro';
+    var ins = outro ? null : insumoPorId(sel);
+    var nome = outro ? document.getElementById('q-ins-nome').value.trim() : ins ? ins.nome : '';
+    var forn = document.getElementById('q-forn').value.trim(), q = Number(document.getElementById('q-qtd').value);
+    if (!sel || !nome) return qErro('Escolha (ou digite) o insumo.');
+    if (!forn) return qErro('Informe o fornecedor.');
+    if (!(q > 0)) return qErro('Informe a quantidade recebida.');
+    var lido = qLerItens(qUi.sheet.itens);
+    if (lido.falta.length) return qErro('Responda todos os itens do checklist (falta: ' + lido.falta[0].texto + ').');
+    var semAcao = lido.ncs.filter(function(n) { return !n.acao; });
+    if (semAcao.length) return qErro('Escreva a ação corretiva do item não conforme: ' + semAcao[0].item.texto + '.');
+    var res = document.getElementById('q-res').value;
+    var respEl = document.getElementById('q-resp');
+    if (respEl && !respEl.value.trim()) return qErro('Informe o responsável.');
+    qAssinar(respEl ? respEl.value.trim() : '', 'recebimento', function(quem) {
+      var agora = new Date().toISOString(), id = qNovoId(), data = document.getElementById('q-data').value || todayIso();
+      var reg = { data: data, insumoId: ins ? ins.id : '', insumoNome: nome, grupo: qUi.sheet.grupo || '', fornecedor: forn, nf: document.getElementById('q-nf').value.trim(),
+        loteFornecedor: document.getElementById('q-lote').value.trim(), quantidade: q, unidade: document.getElementById('q-un').value.trim() || 'un',
+        amostra: qAmostra(q), inspecionadas: Number(document.getElementById('q-insp').value) || 0, defeitos: Number(document.getElementById('q-def').value) || 0,
+        respostas: lido.resp, valores: lido.val, acoes: lido.acoes, resultado: res, destino: res === 'reprovado' ? document.getElementById('q-destino').value : '',
+        obs: document.getElementById('q-obs').value.trim(), por: quem.nome, porId: quem.id, em: agora, ncId: '' };
+      var ops = [], entrar = !!ins && res !== 'reprovado' && document.getElementById('q-entrada').checked;
+      if (res !== 'aprovado' || lido.ncs.length) {
+        var ncId = qNovoId(); reg.ncId = ncId;
+        ops.push({ op: 'set', k: 'nc', id: ncId, data: { numero: qProximaNc(), origem: 'recebimento', ref: id, data: data, status: 'aberta', gravidade: res === 'reprovado' ? 'alta' : 'media',
+          descricao: nome + ' (' + forn + (reg.nf ? ', NF ' + reg.nf : '') + '): ' + (res === 'reprovado' ? 'lote reprovado' : 'aprovado com restrição') + (lido.ncs.length ? ' — ' + lido.ncs.map(function(n) { return n.item.texto; }).join('; ') : (reg.defeitos ? ' — ' + reg.defeitos + ' unidade(s) com defeito' : '')),
+          fornecedor: forn, lote: reg.loteFornecedor, contencao: res === 'reprovado' ? (reg.destino === 'devolvido' ? 'Lote devolvido ao fornecedor' : 'Lote segregado aguardando decisão') : lido.ncs.map(function(n) { return n.acao; }).filter(Boolean).join('; '),
+          causa: '', acaoCorretiva: '', responsavel: '', prazo: addDiasIso(data, 7), criadoEm: agora, por: quem.nome } });
+      }
+      reg.entradaMp = entrar;
+      ops.unshift({ op: 'set', k: 'rec', id: id, data: reg });
+      var btn = document.getElementById('btn-q-submit'); btn.disabled = true;
+      qGravar(ops).then(function() {
+        if (!entrar) return null;
+        return mpGravar([{ op: 'set', col: MP_COL.movs, id: null, data: { tipo: 'entrada', insumoId: ins.id, insumoNome: ins.nome, unidade: ins.unidade || '', area: areaDe(ins),
+          quantidade: arred3(q), data: data, em: agora, obs: 'inspeção de recebimento ' + (res === 'restricao' ? '(aprovado com restrição)' : '(aprovado)'), nf: reg.nf, fornecedor: forn, criadoEm: agora, inspecaoId: id } }]);
+      }).then(function() {
+        btn.disabled = false; qFechar();
+        showToast('Inspeção salva: ' + (res === 'aprovado' ? 'aprovado' : res === 'restricao' ? 'aprovado com restrição (NC aberta)' : 'reprovado (NC aberta)') + (entrar ? '; entrada no estoque de matéria-prima.' : '.'));
+      }).catch(function(err) { btn.disabled = false; console.error('qualidade', err); qErro('Não foi possível salvar agora. Tente novamente.'); });
+    });
+  }
+  function abrirQChk(linha, tipo) {
+    var t = tipo || (linha === 'retornavel' ? 'garrafoes' : 'preop');
+    qUi.sheet = { modo: 'chk', tipo: t, itens: qItensDe(t) };
+    var prods = produtosOrdenados();
+    qAbrir('Checklist de linha',
+      '<div class="row-2"><label>Tipo <span class="req">*</span><select id="q-tipo">' + Object.keys(Q_CHECK_TIPOS).map(function(k) { return '<option value="' + k + '"' + (k === t ? ' selected' : '') + '>' + escapeHtml(Q_CHECK_TIPOS[k].nome) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Linha <span class="req">*</span><select id="q-linha">' + Q_LINHAS.map(function(l) { return '<option value="' + l.id + '"' + (l.id === (linha || (t === 'garrafoes' ? 'retornavel' : 'pet')) ? ' selected' : '') + '>' + escapeHtml(l.nome) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="row-2"><label>Turno <span class="req">*</span><select id="q-turno">' + Q_TURNOS.map(function(x) { return '<option>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Data e hora<span class="q-dh"><input type="date" id="q-data" value="' + todayIso() + '" /><input type="time" id="q-hora" value="' + qHoraAgora() + '" /></span></label></div>' +
+      '<div class="row-2"><label>Produto em envase<select id="q-prod"><option value="">—</option>' + prods.map(function(p) { return '<option>' + escapeHtml(p.nome) + '</option>'; }).join('') + '<option>Garrafão 20L</option><option>Garrafão 10L</option></select></label>' +
+      '<label>Lote<input type="text" id="q-lote" maxlength="30" autocomplete="off" /></label></div>' +
+      '<div id="q-itens"></div>' +
+      '<label>Observações <span class="opt">(opcional)</span><input type="text" id="q-obs" maxlength="200" autocomplete="off" /></label>' + qRespHtml(), 'Salvar checklist');
+    qRenderItensChk();
+    var hora = new Date().getHours(), turnoSel = document.getElementById('q-turno');
+    turnoSel.selectedIndex = hora >= 5 && hora < 13 ? 0 : hora >= 13 && hora < 21 ? 1 : 2;
+  }
+  function qRenderItensChk() {
+    document.getElementById('q-itens').innerHTML = '<h3 class="q-plano-t">' + escapeHtml(Q_CHECK_TIPOS[qUi.sheet.tipo].nome) + ' (C = conforme, NC = não conforme)</h3>' +
+      '<div class="q-todos"><button type="button" class="btn-text" data-q="tudo-c">Marcar todos como conforme</button></div>' + qUi.sheet.itens.map(qItemHtml).join('');
+  }
+  function salvarQChk() {
+    var lido = qLerItens(qUi.sheet.itens);
+    if (lido.falta.length) return qErro('Responda todos os itens (falta: ' + lido.falta[0].texto + ').');
+    var semAcao = lido.ncs.filter(function(n) { return !n.acao; });
+    if (semAcao.length) return qErro('Escreva a ação corretiva do item não conforme: ' + semAcao[0].item.texto + '.');
+    var respEl = document.getElementById('q-resp');
+    if (respEl && !respEl.value.trim()) return qErro('Informe o responsável.');
+    qAssinar(respEl ? respEl.value.trim() : '', 'checklist de linha', function(quem) {
+      var agora = new Date().toISOString(), id = qNovoId(), data = document.getElementById('q-data').value || todayIso();
+      var linha = document.getElementById('q-linha').value, l = Q_LINHAS.find(function(x) { return x.id === linha; });
+      var reg = { tipo: qUi.sheet.tipo, linha: linha, turno: document.getElementById('q-turno').value, data: data, hora: document.getElementById('q-hora').value || qHoraAgora(),
+        produto: document.getElementById('q-prod').value, lote: document.getElementById('q-lote').value.trim(), respostas: lido.resp, valores: lido.val, acoes: lido.acoes,
+        resultado: lido.ncs.length ? 'nc' : 'conforme', obs: document.getElementById('q-obs').value.trim(), por: quem.nome, porId: quem.id, em: agora, ncId: '' };
+      var ops = [];
+      if (lido.ncs.length) {
+        var ncId = qNovoId(); reg.ncId = ncId;
+        ops.push({ op: 'set', k: 'nc', id: ncId, data: { numero: qProximaNc(), origem: 'linha', ref: id, data: data, status: 'aberta', gravidade: lido.ncs.some(function(n) { return n.item.critico; }) ? 'alta' : 'media',
+          descricao: (l ? l.nome : linha) + ' · ' + Q_CHECK_TIPOS[reg.tipo].curto + ': ' + lido.ncs.map(function(n) { return n.item.texto + (n.valor != null ? ' (' + n.valor + (n.item.unidade ? ' ' + n.item.unidade : '') + ')' : ''); }).join('; '),
+          produto: reg.produto, lote: reg.lote, contencao: lido.ncs.map(function(n) { return n.acao; }).join('; '), causa: '', acaoCorretiva: '', responsavel: '', prazo: addDiasIso(data, 3), criadoEm: agora, por: quem.nome } });
+      }
+      ops.unshift({ op: 'set', k: 'chk', id: id, data: reg });
+      var btn = document.getElementById('btn-q-submit'); btn.disabled = true;
+      qGravar(ops).then(function() { btn.disabled = false; qFechar(); showToast('Checklist salvo' + (lido.ncs.length ? ': ' + lido.ncs.length + ' não conformidade(s), NC aberta.' : ': tudo conforme.')); })
+        .catch(function(err) { btn.disabled = false; console.error('qualidade', err); qErro('Não foi possível salvar agora. Tente novamente.'); });
+    });
+  }
+  function abrirQAna(planoId) {
+    var lista = qAnalises();
+    var pid = planoId || (lista[0] && lista[0].id);
+    qUi.sheet = { modo: 'ana', planoId: pid };
+    qAbrir('Lançar análise',
+      '<label>Análise <span class="req">*</span><select id="q-plano">' + lista.map(function(a) { return '<option value="' + a.id + '"' + (a.id === pid ? ' selected' : '') + '>' + escapeHtml(a.nome) + '</option>'; }).join('') + '</select></label>' +
+      '<div class="row-2"><label>Data da coleta <span class="req">*</span><input type="date" id="q-data" value="' + todayIso() + '" /></label><label>Lote / ponto<input type="text" id="q-lote" maxlength="40" autocomplete="off" /></label></div>' +
+      '<div class="row-2"><label>Laboratório<input type="text" id="q-lab" maxlength="60" list="q-labs" placeholder="Interno ou nome do laboratório" autocomplete="off" /></label><label>Nº do laudo<input type="text" id="q-laudo" maxlength="30" autocomplete="off" /></label></div>' +
+      '<datalist id="q-labs"><option value="Laboratório interno"></option>' + qual.ana.map(function(a) { return a.laboratorio; }).filter(function(x, i, arr) { return x && arr.indexOf(x) === i && x !== 'Laboratório interno'; }).map(function(x) { return '<option value="' + escapeHtml(x) + '"></option>'; }).join('') + '</datalist>' +
+      '<div id="q-params"></div>' +
+      '<label>Observações <span class="opt">(opcional)</span><input type="text" id="q-obs" maxlength="200" autocomplete="off" /></label>' + qRespHtml(), 'Salvar análise');
+    qRenderParams();
+  }
+  function qRenderParams() {
+    var a = qAnalises(true).find(function(x) { return x.id === document.getElementById('q-plano').value; }) || {};
+    qUi.sheet.planoId = a.id; qUi.sheet.tipoAna = a.tipo;
+    var h;
+    if (a.tipo === 'micro') h = '<h3 class="q-plano-t">Resultado (UFC ou NMP em 100 mL; 0 = ausência)</h3>' + Q_MICRO.map(function(p) {
+      return '<div class="q-param"><span>' + escapeHtml(p.nome) + '<small>' + (p.id === 'ecoli' ? 'padrão: ausência' : 'padrão: < 1') + '</small></span><input type="number" min="0" step="any" inputmode="decimal" class="q-pv" data-param="' + p.id + '" value="0" /></div>';
+    }).join('');
+    else if (a.tipo === 'fq') h = '<h3 class="q-plano-t">Resultado</h3>' + Q_FQ.map(function(p) {
+      var l = qLimiteFq(p.id), fx = qFaixaTexto(l.min, l.max, p.unidade);
+      return '<div class="q-param"><span>' + escapeHtml(p.nome) + (p.unidade ? ' (' + escapeHtml(p.unidade) + ')' : '') + '<small>' + (fx ? 'faixa: ' + escapeHtml(fx) : 'sem faixa definida (Plano)') + '</small></span><input type="number" step="any" inputmode="decimal" class="q-pv" data-param="' + p.id + '" /></div>';
+    }).join('');
+    else h = '<label>Resultado<input type="text" id="q-res-txt" maxlength="200" autocomplete="off" placeholder="Resumo do laudo" /></label>' +
+      '<div class="segmented q-conf" role="radiogroup" aria-label="Conforme?"><button type="button" class="seg-btn active" data-q="conf" data-v="sim" aria-pressed="true">Conforme</button><button type="button" class="seg-btn" data-q="conf" data-v="nao" aria-pressed="false">Não conforme</button></div>';
+    document.getElementById('q-params').innerHTML = h;
+  }
+  function salvarQAna() {
+    var tipo = qUi.sheet.tipoAna, res = {}, fora = [];
+    document.querySelectorAll('#q-params .q-pv').forEach(function(inp) {
+      if (inp.value === '') return;
+      var v = Number(inp.value), p = inp.dataset.param;
+      res[p] = v;
+      if (tipo === 'micro' && v > 0) fora.push((Q_MICRO.find(function(x) { return x.id === p; }) || {}).nome || p);
+      if (tipo === 'fq') { var l = qLimiteFq(p); if (qForaLimite(v, l.min, l.max)) fora.push((Q_FQ.find(function(x) { return x.id === p; }) || {}).nome || p); }
+    });
+    if (tipo === 'micro' && Object.keys(res).length < Q_MICRO.length) return qErro('Preencha os 5 parâmetros microbiológicos (0 = ausência).');
+    if (tipo === 'fq' && !Object.keys(res).length) return qErro('Preencha ao menos um parâmetro.');
+    var conforme = tipo === 'outro' ? !!document.querySelector('#q-params [data-q="conf"][data-v="sim"][aria-pressed="true"]') : !fora.length;
+    var respEl = document.getElementById('q-resp');
+    if (respEl && !respEl.value.trim()) return qErro('Informe o responsável.');
+    qAssinar(respEl ? respEl.value.trim() : '', 'análise', function(quem) {
+      var agora = new Date().toISOString(), id = qNovoId(), data = document.getElementById('q-data').value || todayIso();
+      var a = qAnalises(true).find(function(x) { return x.id === qUi.sheet.planoId; }) || { nome: qUi.sheet.planoId };
+      var reg = { planoId: qUi.sheet.planoId, tipo: tipo, data: data, lote: document.getElementById('q-lote').value.trim(), laboratorio: document.getElementById('q-lab').value.trim(),
+        laudo: document.getElementById('q-laudo').value.trim(), resultados: res, resultadoTexto: (document.getElementById('q-res-txt') || {}).value || '', conforme: conforme, foraLimite: fora,
+        obs: document.getElementById('q-obs').value.trim(), por: quem.nome, porId: quem.id, em: agora, ncId: '' };
+      var ops = [];
+      if (!conforme) {
+        var ncId = qNovoId(); reg.ncId = ncId;
+        ops.push({ op: 'set', k: 'nc', id: ncId, data: { numero: qProximaNc(), origem: 'analise', ref: id, data: data, status: 'aberta', gravidade: tipo === 'micro' ? 'alta' : 'media',
+          descricao: a.nome + ': fora do padrão' + (fora.length ? ' — ' + fora.join(', ') : '') + (reg.lote ? ' (lote ' + reg.lote + ')' : ''), lote: reg.lote,
+          contencao: tipo === 'micro' ? 'Bloquear o lote, recoletar e investigar' : '', causa: '', acaoCorretiva: '', responsavel: '', prazo: addDiasIso(data, tipo === 'micro' ? 2 : 5), criadoEm: agora, por: quem.nome } });
+      }
+      ops.unshift({ op: 'set', k: 'ana', id: id, data: reg });
+      var btn = document.getElementById('btn-q-submit'); btn.disabled = true;
+      qGravar(ops).then(function() { btn.disabled = false; qFechar(); showToast('Análise salva: ' + (conforme ? 'conforme.' : 'NÃO conforme — NC aberta.')); })
+        .catch(function(err) { btn.disabled = false; console.error('qualidade', err); qErro('Não foi possível salvar agora. Tente novamente.'); });
+    });
+  }
+  function abrirQNc(id) {
+    var n = id ? qual.nc.find(function(x) { return x.id === id; }) : null;
+    qUi.sheet = { modo: 'nc', id: n ? n.id : null };
+    var enc = n && n.status === 'encerrada';
+    function v(k) { return escapeHtml((n && n[k]) || ''); }
+    qAbrir(n ? 'NC nº ' + n.numero : 'Abrir não conformidade',
+      (n ? '<p class="hint">' + escapeHtml((Q_ORIGENS[n.origem] || n.origem) + ' · aberta em ' + formatDateBR(n.data) + (n.por ? ' por ' + n.por : '')) + (n.encerradaEm ? ' · encerrada em ' + escapeHtml(formatDateTimeBR(n.encerradaEm)) + ' por ' + escapeHtml(n.encerradaPor || '') : '') + '</p>' : '') +
+      (!n ? '<div class="row-2"><label>Origem <span class="req">*</span><select id="q-origem">' + ['reclamacao', 'auditoria', 'recebimento', 'linha', 'analise', 'outra'].map(function(k) { return '<option value="' + k + '">' + escapeHtml(Q_ORIGENS[k]) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Data<input type="date" id="q-data" value="' + todayIso() + '" /></label></div>' : '') +
+      '<label>Descrição <span class="req">*</span><textarea id="q-desc" rows="3" maxlength="400"' + (enc ? ' disabled' : '') + '>' + v('descricao') + '</textarea></label>' +
+      '<div class="row-2"><label>Produto<input type="text" id="q-prod" maxlength="60" value="' + v('produto') + '"' + (enc ? ' disabled' : '') + ' /></label><label>Lote<input type="text" id="q-lote" maxlength="40" value="' + v('lote') + '"' + (enc ? ' disabled' : '') + ' /></label></div>' +
+      '<div class="row-2"><label>Gravidade<select id="q-grav"' + (enc ? ' disabled' : '') + '>' + [['baixa', 'Baixa'], ['media', 'Média'], ['alta', 'Alta (segurança do alimento)']].map(function(g) { return '<option value="' + g[0] + '"' + ((n && n.gravidade) === g[0] || (!n && g[0] === 'media') ? ' selected' : '') + '>' + g[1] + '</option>'; }).join('') + '</select></label>' +
+      '<label>Status<select id="q-status"' + (enc ? ' disabled' : '') + '>' + ['aberta', 'andamento', 'encerrada'].map(function(k) { return '<option value="' + k + '"' + ((n ? n.status : 'aberta') === k ? ' selected' : '') + '>' + Q_STATUS_NC[k] + '</option>'; }).join('') + '</select></label></div>' +
+      '<label>Contenção / ação imediata<input type="text" id="q-cont" maxlength="200" value="' + v('contencao') + '"' + (enc ? ' disabled' : '') + ' placeholder="Ex.: segregar o lote, bloquear, devolver, recolher" /></label>' +
+      '<label>Causa<input type="text" id="q-causa" maxlength="200" value="' + v('causa') + '"' + (enc ? ' disabled' : '') + ' placeholder="Por que aconteceu (5 porquês)" /></label>' +
+      '<label>Ação corretiva<input type="text" id="q-acao" maxlength="200" value="' + v('acaoCorretiva') + '"' + (enc ? ' disabled' : '') + ' placeholder="O que vai ser feito para não repetir" /></label>' +
+      '<div class="row-2"><label>Responsável<input type="text" id="q-respnc" maxlength="60" value="' + v('responsavel') + '"' + (enc ? ' disabled' : '') + ' /></label><label>Prazo<input type="date" id="q-prazo" value="' + v('prazo') + '"' + (enc ? ' disabled' : '') + ' /></label></div>' +
+      '<label>Verificação da eficácia <span class="opt">(para encerrar)</span><input type="text" id="q-eficacia" maxlength="200" value="' + v('eficacia') + '"' + (enc ? ' disabled' : '') + ' placeholder="Como foi confirmado que resolveu" /></label>' +
+      (n && n.ref ? '<p class="hint">Registro de origem: ' + escapeHtml(Q_ORIGENS[n.origem] || '') + ' de ' + escapeHtml(formatDateBR(n.data)) + '.</p>' : '') +
+      (enc ? '' : qRespHtml()), enc ? false : (n ? 'Salvar' : 'Abrir NC'));
+  }
+  function salvarQNc() {
+    var s = qUi.sheet, n = s.id ? qual.nc.find(function(x) { return x.id === s.id; }) : null;
+    var desc = document.getElementById('q-desc').value.trim(), status = document.getElementById('q-status').value;
+    if (!desc) return qErro('Descreva a não conformidade.');
+    if (status === 'encerrada' && (!document.getElementById('q-acao').value.trim() || !document.getElementById('q-eficacia').value.trim())) return qErro('Para encerrar, preencha a ação corretiva e a verificação da eficácia.');
+    var respEl = document.getElementById('q-resp');
+    if (respEl && !respEl.value.trim()) return qErro('Informe o responsável pelo registro.');
+    qAssinar(respEl ? respEl.value.trim() : '', status === 'encerrada' ? 'encerrar NC' : 'não conformidade', function(quem) {
+      var agora = new Date().toISOString();
+      var d = { descricao: desc, produto: document.getElementById('q-prod').value.trim(), lote: document.getElementById('q-lote').value.trim(), gravidade: document.getElementById('q-grav').value,
+        status: status, contencao: document.getElementById('q-cont').value.trim(), causa: document.getElementById('q-causa').value.trim(), acaoCorretiva: document.getElementById('q-acao').value.trim(),
+        responsavel: document.getElementById('q-respnc').value.trim(), prazo: document.getElementById('q-prazo').value, eficacia: document.getElementById('q-eficacia').value.trim(), atualizadoEm: agora, atualizadoPor: quem.nome };
+      if (status === 'encerrada') { d.encerradaEm = agora; d.encerradaPor = quem.nome; }
+      var op = n ? { op: 'update', k: 'nc', id: n.id, data: d }
+        : { op: 'set', k: 'nc', id: qNovoId(), data: Object.assign({ numero: qProximaNc(), origem: document.getElementById('q-origem').value, ref: '', data: document.getElementById('q-data').value || todayIso(), criadoEm: agora, por: quem.nome }, d) };
+      var btn = document.getElementById('btn-q-submit'); btn.disabled = true;
+      qGravar([op]).then(function() { btn.disabled = false; qFechar(); showToast(n ? (status === 'encerrada' ? 'NC encerrada.' : 'NC atualizada.') : 'NC aberta.'); })
+        .catch(function(err) { btn.disabled = false; console.error('qualidade', err); qErro('Não foi possível salvar agora. Tente novamente.'); });
+    });
+  }
+  function abrirQVer(k, id) {
+    var r = qual[k].find(function(x) { return x.id === id; });
+    if (!r) return;
+    qUi.sheet = { modo: 'ver' };
+    function row(a, b) { return b ? '<div class="resumo-row"><span class="resumo-k">' + a + '</span><span class="resumo-v">' + escapeHtml(String(b)) + '</span></div>' : ''; }
+    var itens = [], titulo = '', topo = '';
+    if (k === 'rec') {
+      titulo = 'Recebimento · ' + r.insumoNome;
+      topo = row('Data', formatDateBR(r.data)) + row('Fornecedor', r.fornecedor) + row('Nota fiscal', r.nf) + row('Lote do fornecedor', r.loteFornecedor) + row('Quantidade', fmtNumQ(r.quantidade) + ' ' + (r.unidade || '')) +
+        row('Amostra', (r.inspecionadas || r.amostra) + ' inspecionadas' + (r.defeitos ? ', ' + r.defeitos + ' com defeito' : '')) + row('Resultado', { aprovado: 'Aprovado', restricao: 'Aprovado com restrição', reprovado: 'Reprovado' }[r.resultado] + (r.destino ? ' (' + (r.destino === 'devolvido' ? 'devolvido ao fornecedor' : 'segregado') + ')' : '')) +
+        row('Estoque de matéria-prima', r.entradaMp ? 'entrada lançada' : '') + row('Observações', r.obs) + row('Assinado por', r.por + ' em ' + formatDateTimeBR(r.em));
+      itens = qItensRec(r.grupo);
+    } else if (k === 'chk') {
+      var l = Q_LINHAS.find(function(x) { return x.id === r.linha; });
+      titulo = (Q_CHECK_TIPOS[r.tipo] || {}).curto || 'Checklist';
+      topo = row('Linha', l ? l.nome : r.linha) + row('Quando', formatDateBR(r.data) + ' ' + r.hora + ' · ' + r.turno) + row('Produto', r.produto) + row('Lote', r.lote) + row('Resultado', r.resultado === 'nc' ? 'Não conforme' : 'Conforme') + row('Observações', r.obs) + row('Assinado por', r.por + ' em ' + formatDateTimeBR(r.em));
+      itens = qItensDe(r.tipo, true);
+    } else if (k === 'ana') {
+      var p = qAnalises(true).find(function(x) { return x.id === r.planoId; });
+      titulo = 'Análise';
+      topo = row('Análise', p ? p.nome : r.planoId) + row('Coleta', formatDateBR(r.data)) + row('Lote / ponto', r.lote) + row('Laboratório', r.laboratorio) + row('Laudo', r.laudo) +
+        Object.keys(r.resultados || {}).map(function(pid) { var m = Q_MICRO.concat(Q_FQ).find(function(x) { return x.id === pid; }); return row(m ? m.nome : pid, fmtNumQ(r.resultados[pid]) + (m && m.unidade ? ' ' + m.unidade : '') + (r.tipo === 'micro' ? (r.resultados[pid] > 0 ? ' (fora do padrão)' : ' (ok)') : '')); }).join('') +
+        row('Resultado', r.resultadoTexto) + row('Conclusão', r.conforme === false ? 'Não conforme' + (r.foraLimite && r.foraLimite.length ? ': ' + r.foraLimite.join(', ') : '') : 'Conforme') + row('Observações', r.obs) + row('Assinado por', r.por + ' em ' + formatDateTimeBR(r.em));
+    }
+    var lista = itens.filter(function(it) { return r.respostas && r.respostas[it.id]; }).map(function(it) {
+      var v = r.respostas[it.id], val = r.valores && r.valores[it.id] != null ? ' · ' + r.valores[it.id] + (it.unidade ? ' ' + it.unidade : '') : '';
+      return '<div class="q-ver-it ' + v + '"><span>' + escapeHtml(it.texto) + escapeHtml(val) + (r.acoes && r.acoes[it.id] ? '<small>Ação: ' + escapeHtml(r.acoes[it.id]) + '</small>' : '') + '</span><b>' + (v === 'c' ? 'C' : v === 'nc' ? 'NC' : 'N/A') + '</b></div>';
+    }).join('');
+    qAbrir(titulo, '<div class="pedido-resumo">' + topo + '</div>' + (lista ? '<h3 class="q-plano-t">Itens</h3>' + lista : '') + (r.ncId ? '<button type="button" class="btn btn-secondary btn-sm" data-q="ver-nc" data-id="' + escapeHtml(r.ncId) + '">Ver a não conformidade</button>' : ''), false);
+  }
+  // ----- plano (senha mestre) -----
+  function qSalvarPlano(patch, msg) {
+    var pl = Object.assign({}, qPlano());
+    delete pl.id;
+    Object.keys(patch).forEach(function(k) { pl[k] = Object.assign({}, pl[k] || {}, patch[k]); });
+    pl.atualizadoEm = new Date().toISOString();
+    return qGravar([{ op: 'set', k: 'cfg', id: 'plano', data: pl }]).then(function() { if (msg) showToast(msg); })
+      .catch(function(err) { console.error('qualidade plano', err); showToast('Não foi possível salvar o plano agora.'); });
+  }
+  function abrirQPlanoNum(titulo, campos, salvar) {
+    qUi.sheet = { modo: 'plano', salvar: salvar };
+    qAbrir(titulo, campos, 'Salvar');
+  }
+  // ----- eventos -----
+  document.getElementById('q-areas').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-qarea]');
+    if (!b) return;
+    qUi.area = b.dataset.qarea; qUi.todos = false; renderQualidade();
+  });
+  function qCsv(k) {
+    var linhas = [], cab;
+    if (k === 'rec') { cab = ['data', 'insumo', 'fornecedor', 'nf', 'lote', 'quantidade', 'unidade', 'inspecionadas', 'defeitos', 'resultado', 'destino', 'por', 'em']; qual.rec.forEach(function(r) { linhas.push([r.data, r.insumoNome, r.fornecedor, r.nf, r.loteFornecedor, r.quantidade, r.unidade, r.inspecionadas, r.defeitos, r.resultado, r.destino, r.por, r.em]); }); }
+    else if (k === 'chk') { cab = ['data', 'hora', 'tipo', 'linha', 'turno', 'produto', 'lote', 'resultado', 'itens nao conformes', 'por']; qual.chk.forEach(function(c) { linhas.push([c.data, c.hora, c.tipo, c.linha, c.turno, c.produto, c.lote, c.resultado, Object.keys(c.respostas || {}).filter(function(x) { return c.respostas[x] === 'nc'; }).join(' '), c.por]); }); }
+    else if (k === 'ana') { cab = ['data', 'analise', 'lote', 'laboratorio', 'laudo', 'resultados', 'conforme', 'por']; qual.ana.forEach(function(a) { linhas.push([a.data, a.planoId, a.lote, a.laboratorio, a.laudo, JSON.stringify(a.resultados || {}), a.conforme === false ? 'não' : 'sim', a.por]); }); }
+    else { cab = ['numero', 'data', 'origem', 'descricao', 'produto', 'lote', 'gravidade', 'status', 'contencao', 'causa', 'acao corretiva', 'responsavel', 'prazo', 'eficacia', 'encerrada em']; qual.nc.forEach(function(n) { linhas.push([n.numero, n.data, n.origem, n.descricao, n.produto, n.lote, n.gravidade, n.status, n.contencao, n.causa, n.acaoCorretiva, n.responsavel, n.prazo, n.eficacia, n.encerradaEm]); }); }
+    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(csvEscape).join(';'); }).join('\n');
+    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'qualidade-' + { rec: 'recebimentos', chk: 'checklists', ana: 'analises', nc: 'nao-conformidades' }[k] + '-' + todayIso() + '.csv');
+  }
+  document.getElementById('tab-qualidade').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-q]');
+    if (!b || b.closest('#q-sheet-overlay')) return;
+    var a = b.dataset.q, mestre = !!session && session.role === 'admin';
+    if (a === 'novo-rec') abrirQRec();
+    else if (a === 'novo-chk') abrirQChk(b.dataset.linha, b.dataset.tipo);
+    else if (a === 'nova-ana') abrirQAna(b.dataset.plano);
+    else if (a === 'nova-nc') abrirQNc(null);
+    else if (a === 'ver') abrirQVer(b.dataset.k, b.dataset.id);
+    else if (a === 'ver-nc') abrirQNc(b.dataset.id);
+    else if (a === 'todos') { qUi.todos = !qUi.todos; renderQualidade(); }
+    else if (a === 'csv') qCsv(b.dataset.k);
+    else if (!mestre) return;
+    else if (a === 'plano-ativo') { var des = {}; des[b.dataset.item] = !(qPlano().desativados || {})[b.dataset.item]; qSalvarPlano({ desativados: des }); }
+    else if (a === 'plano-ana-ativo') { var dA = {}; dA[b.dataset.plano] = !(qPlano().anaDesativadas || {})[b.dataset.plano]; qSalvarPlano({ anaDesativadas: dA }); }
+    else if (a === 'plano-lim') {
+      var it = qItensDe(b.dataset.chave, true).find(function(x) { return x.id === b.dataset.item; });
+      abrirQPlanoNum('Limites · ' + it.texto, '<p class="hint">Valor fora do limite fica não conforme e abre uma NC. Deixe em branco para não limitar.</p><div class="row-2"><label>Mínimo (' + escapeHtml(it.unidade) + ')<input type="number" step="any" id="q-min" value="' + (it.min != null ? it.min : '') + '" /></label><label>Máximo (' + escapeHtml(it.unidade) + ')<input type="number" step="any" id="q-max" value="' + (it.max != null ? it.max : '') + '" /></label></div>',
+        function() { var l = {}; l[it.id] = { min: document.getElementById('q-min').value, max: document.getElementById('q-max').value }; return qSalvarPlano({ limites: l }, 'Limites salvos.'); });
+    } else if (a === 'plano-fq') {
+      var p = Q_FQ.find(function(x) { return x.id === b.dataset.param; }), lf = qLimiteFq(p.id);
+      abrirQPlanoNum('Faixa · ' + p.nome, '<p class="hint">Faixa esperada da sua água (pela análise da fonte). Fora dela, a análise fica não conforme.</p><div class="row-2"><label>Mínimo<input type="number" step="any" id="q-min" value="' + (lf.min != null ? lf.min : '') + '" /></label><label>Máximo<input type="number" step="any" id="q-max" value="' + (lf.max != null ? lf.max : '') + '" /></label></div>',
+        function() { var f = {}; f[p.id] = { min: document.getElementById('q-min').value, max: document.getElementById('q-max').value }; return qSalvarPlano({ fq: f }, 'Faixa salva.'); });
+    } else if (a === 'plano-freq') {
+      var an = qAnalises(true).find(function(x) { return x.id === b.dataset.plano; });
+      abrirQPlanoNum('Frequência · ' + an.nome, '<label>A cada quantos dias<input type="number" min="1" step="1" id="q-dias" value="' + an.dias + '" /></label>',
+        function() { var d = Math.max(1, Math.round(Number(document.getElementById('q-dias').value) || 0)); var fr = {}; fr[an.id] = d; return qSalvarPlano({ freq: fr }, 'Frequência salva.'); });
+    } else if (a === 'plano-novo') {
+      var chave = b.dataset.chave;
+      abrirQPlanoNum('Novo item', '<label>Item <span class="req">*</span><input type="text" id="q-it-txt" maxlength="160" /></label><div class="row-2"><label>Tipo<select id="q-it-tipo"><option value="ok">Conforme / não conforme</option><option value="num">Medida (número)</option></select></label><label>Unidade<input type="text" id="q-it-un" maxlength="10" placeholder="Ex.: °C, mL" /></label></div>' +
+        '<div class="row-2"><label>Mínimo<input type="number" step="any" id="q-min" /></label><label>Máximo<input type="number" step="any" id="q-max" /></label></div><label class="check-row"><input type="checkbox" id="q-it-crit" /> Item crítico (não conforme reprova)</label>',
+        function() {
+          var txt = document.getElementById('q-it-txt').value.trim();
+          if (!txt) { qErro('Escreva o item.'); return null; }
+          var ex = {}, atuais = ((qPlano().extras || {})[chave]) || [];
+          var novo = { id: 'x-' + uid(), texto: txt, tipo: document.getElementById('q-it-tipo').value, unidade: document.getElementById('q-it-un').value.trim(), critico: document.getElementById('q-it-crit').checked };
+          var mn = document.getElementById('q-min').value, mx = document.getElementById('q-max').value;
+          if (mn !== '') novo.min = Number(mn); if (mx !== '') novo.max = Number(mx);
+          ex[chave] = atuais.concat([novo]);
+          return qSalvarPlano({ extras: ex }, 'Item incluído no plano.');
+        });
+    }
+  });
+  var qForm = document.getElementById('q-form-body');
+  qForm.addEventListener('click', function(e) {
+    var op = e.target.closest('.q-op-b');
+    if (op) {
+      op.parentNode.querySelectorAll('.q-op-b').forEach(function(x) { x.setAttribute('aria-pressed', x === op ? 'true' : 'false'); });
+      qAtualizarItem(op.closest('.q-it')); return;
+    }
+    var b = e.target.closest('[data-q]');
+    if (!b) return;
+    if (b.dataset.q === 'tudo-c') { qForm.querySelectorAll('.q-op-b.q-c').forEach(function(x) { x.click(); }); return; }
+    if (b.dataset.q === 'conf') { b.parentNode.querySelectorAll('.seg-btn').forEach(function(x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); return; }
+    if (b.dataset.q === 'ver-nc') { abrirQNc(b.dataset.id); return; }
+  });
+  qForm.addEventListener('input', function(e) {
+    if (e.target.classList.contains('q-num') || e.target.classList.contains('q-cod')) qAtualizarItem(e.target.closest('.q-it'));
+    if (qUi.sheet && qUi.sheet.modo === 'rec' && /^(q-qtd|q-def|q-un)$/.test(e.target.id)) qSugerirResultado();
+  });
+  qForm.addEventListener('change', function(e) {
+    if (!qUi.sheet) return;
+    if (qUi.sheet.modo === 'rec') { if (e.target.id === 'q-res') qUi.sheet.resManual = true; if (/^(q-ins|q-ins-grupo|q-res)$/.test(e.target.id)) qAtualizarRec(); }
+    if (qUi.sheet.modo === 'chk' && e.target.id === 'q-tipo') { qUi.sheet.tipo = e.target.value; qUi.sheet.itens = qItensDe(e.target.value); qRenderItensChk(); if (e.target.value === 'garrafoes') document.getElementById('q-linha').value = 'retornavel'; }
+    if (qUi.sheet.modo === 'ana' && e.target.id === 'q-plano') qRenderParams();
+  });
+  document.getElementById('q-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var s = qUi.sheet;
+    if (!s) return;
+    if (s.modo === 'rec') salvarQRec();
+    else if (s.modo === 'chk') salvarQChk();
+    else if (s.modo === 'ana') salvarQAna();
+    else if (s.modo === 'nc') salvarQNc();
+    else if (s.modo === 'plano') { var pr = s.salvar(); if (pr && pr.then) pr.then(qFechar); }
+  });
+  document.getElementById('btn-close-q-sheet').addEventListener('click', qFechar);
+  document.getElementById('btn-q-cancel').addEventListener('click', qFechar);
+  document.getElementById('q-sheet-overlay').addEventListener('click', function(e) { if (e.target === document.getElementById('q-sheet-overlay')) qFechar(); });
+  setInterval(function() { if (session && !document.hidden) { renderTabQualidadeBadge(); if (ui.tab === 'qualidade' && qUi.area === 'hoje' && !qUi.sheet) renderQualidade(); } }, 60000);
+
+
+  // ---------- Início: o dia num olhar (indicadores de cada área + atalhos) ----------
+  // Inspirado nas telas iniciais dos ERPs (Omie, SAP Fiori, TOTVS): cada cartão mostra o número que importa e
+  // leva para a aba; os atalhos abrem direto as ações mais usadas. Só aparecem as áreas que a senha pode ver.
+  function iconeDaAba(t) { var i = document.querySelector('#admin-tabs .seg-btn[data-tab="' + t + '"] .tab-ico'); return i ? i.innerHTML : ''; }
+  var INI_ATALHOS = [
+    { tab: 'cargas', txt: 'Nova carga', fn: function() { openCargaForm(null); } },
+    { tab: 'estoque', txt: 'Entrada de produção', fn: function() { document.getElementById('btn-new-entrada').click(); } },
+    { tab: 'producao', txt: 'Ordem de produção', fn: function() { abrirOpForm(null); } },
+    { tab: 'materia', txt: 'Recebimento de insumo', fn: function() { abrirMovForm('entrada', 'producao'); } },
+    { tab: 'qualidade', txt: 'Checklist de linha', fn: function() { abrirQChk(); } },
+    { tab: 'qualidade', txt: 'Inspeção de recebimento', fn: function() { abrirQRec(); } },
+    { tab: 'salas', txt: 'Reservar sala', fn: function() { abrirSalaNova('ph8', null, todayIso()); } }
+  ];
+  function renderInicio() {
+    var el = document.getElementById('ini-tiles');
+    if (!el || !session || !ehEscritorio()) return;
+    var perm = abasPermitidas(), hoje = todayIso(), h = new Date().getHours(), tiles = [];
+    document.getElementById('ini-saud').textContent = (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + '!';
+    document.getElementById('ini-data').textContent = rotuloDiaLongo(hoje).replace(/^Hoje, /, '') + ' · o que precisa de atenção hoje';
+    var atr = 0, ph = 0, via = 0, semFat = 0;
+    cargas.forEach(function(c) { var k = cargaStatusKey(c); if (k === 'atrasada') atr++; else if (k === 'hoje') ph++; else if (k === 'concluida' && faseViagem(c) === 'viagem') via++; if (k !== 'concluida' && !c.faturamentoOk) semFat++; });
+    tiles.push({ tab: 'cargas', t: 'Cargas', v: atr + ph, u: 'para carregar hoje', s: [atr ? atr + (atr === 1 ? ' atrasada' : ' atrasadas') : '', via ? via + ' em viagem' : '', semFat ? semFat + ' sem ok do faturamento' : ''].filter(Boolean).join(' · ') || 'nada pendente', alerta: atr > 0 });
+    var nEst = 0; try { nEst = alertasEstoque(planoEstoque()).length; } catch (e) {}
+    tiles.push({ tab: 'estoque', t: 'Estoque', v: nEst, u: nEst === 1 ? 'alerta de estoque' : 'alertas de estoque', s: nEst ? 'abaixo do mínimo ou faltando para as cargas' : 'tudo acima do mínimo', alerta: nEst > 0 });
+    var ops = [], fOp = 0; try { ops = analisarOrdens(); fOp = ops.filter(function(a) { return a.faltas.length; }).length; } catch (e) {}
+    tiles.push({ tab: 'producao', t: 'Produção', v: ops.length, u: ops.length === 1 ? 'ordem aberta' : 'ordens abertas', s: fOp ? fOp + ' com falta de matéria-prima' : (ops.length ? 'matéria-prima ok' : 'nenhuma ordem aberta'), alerta: fOp > 0 });
+    var baixo = 0; try { baixo = linhasMateria('producao').concat(linhasMateria('garrafoes')).filter(function(l) { return l.est; }).length; } catch (e) {}
+    tiles.push({ tab: 'materia', t: 'Matéria-prima', v: baixo, u: baixo === 1 ? 'insumo abaixo do mínimo' : 'insumos abaixo do mínimo', s: baixo ? 'confira e programe a compra' : 'insumos acima do mínimo (ou sem contagem)', alerta: baixo > 0 });
+    var qp = { total: 0, analises: 0 }, nca = 0; try { qp = qPendencias(); nca = qNcsAbertas().length; } catch (e) {}
+    tiles.push({ tab: 'qualidade', t: 'Qualidade', v: qp.total, u: qp.total === 1 ? 'pendência' : 'pendências', s: nca + (nca === 1 ? ' NC aberta' : ' NCs abertas') + ' · ' + qp.analises + (qp.analises === 1 ? ' análise vencida' : ' análises vencidas'), alerta: qp.total > 0 });
+    var reun = salasAtivas().filter(function(r) { return r.data === hoje && minDe(r.fim) > agoraMin(); }).sort(function(a, b) { return minDe(a.inicio) - minDe(b.inicio); });
+    tiles.push({ tab: 'salas', t: 'Salas de reunião', v: reun.length, u: reun.length === 1 ? 'reunião ainda hoje' : 'reuniões ainda hoje', s: reun[0] ? 'próxima ' + reun[0].inicio + ' · ' + salaPorId(reun[0].sala).nome + ' · ' + (reun[0].assunto || '') : 'salas livres' });
+    if (perm.indexOf('fretes') >= 0) {
+      var fa = 0, fv = 0, fap = 0, fc = 0;
+      try { motoristas.forEach(function(m) { var rf = resumoFretesMotorista(m); fa += rf.nApagar; fv += rf.apagar; fap += rf.nAprovar || 0; fc += rf.nConfirmar; }); } catch (e) {}
+      tiles.push({ tab: 'fretes', t: 'Fretes', v: fap, u: fap === 1 ? 'aguardando a sua aprovação' : 'aguardando a sua aprovação', s: fa + (fa === 1 ? ' a pagar' : ' a pagar') + ' (' + fmtBRL(fv) + ')' + (fc ? ' · ' + fc + ' a confirmar' : ''), alerta: fap > 0 });
+    }
+    var ag = 0; try { ag = agEntradasDoDia(hoje).length; } catch (e) {}
+    tiles.push({ tab: 'agenda', t: 'Agenda dos retornáveis', v: ag, u: ag === 1 ? 'agendamento hoje' : 'agendamentos hoje', s: 'linha dos garrafões 10 L e 20 L' });
+    el.innerHTML = tiles.filter(function(x) { return perm.indexOf(x.tab) >= 0; }).map(function(x) {
+      return '<button type="button" class="ini-tile' + (x.alerta ? ' alerta' : '') + '" data-ir="' + x.tab + '"><span class="ini-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + iconeDaAba(x.tab).replace(/^<svg[^>]*>|<\/svg>$/g, '') + '</svg></span>' +
+        '<span class="ini-k">' + escapeHtml(x.t) + '</span><span class="ini-v">' + fmtInt(x.v) + '<small>' + escapeHtml(x.u) + '</small></span><span class="ini-s">' + escapeHtml(x.s) + '</span><span class="ini-ir" aria-hidden="true">›</span></button>';
+    }).join('');
+    document.getElementById('ini-atalhos').innerHTML = INI_ATALHOS.filter(function(a) { return perm.indexOf(a.tab) >= 0; }).map(function(a, i) {
+      return '<button type="button" class="ini-atalho" data-atalho="' + i + '">+ ' + escapeHtml(a.txt) + '</button>';
+    }).join('');
+  }
+  document.getElementById('tab-inicio').addEventListener('click', function(e) {
+    var t = e.target.closest('[data-ir]');
+    if (t) { setTab(t.dataset.ir); return; }
+    var a = e.target.closest('[data-atalho]');
+    if (a) { var at = INI_ATALHOS[Number(a.dataset.atalho)]; if (at) at.fn(); }
   });
 
   // ---------- pagers: faixa de números (Cadastros) ----------
@@ -11742,7 +13236,8 @@
           '<button class="btn-text" data-action="cancel-remove-membro">Cancelar</button></div>';
       }
       var chips = (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
-        (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '');
+        (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '') +
+        (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
@@ -11760,6 +13255,9 @@
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
     document.getElementById('f-equipe-fin').checked = m ? !!m.financeiro : false;
     document.getElementById('f-equipe-log').checked = m ? !!m.logistica : false;
+    document.getElementById('f-equipe-gestao').checked = m ? !!m.gestao : false;
+    document.getElementById('f-equipe-qual').checked = m ? !!m.qualidade : false;
+    document.getElementById('f-equipe-aprovafrete').checked = m ? !!m.aprovaFrete : false;
     document.getElementById('equipe-form-error').classList.add('hidden');
     document.getElementById('equipe-sheet-overlay').classList.remove('hidden');
     setTimeout(function() { document.getElementById(kind === 'add' ? 'f-equipe-nome' : 'f-equipe-pin').focus(); }, 30);
@@ -11800,17 +13298,18 @@
     var pin = document.getElementById('f-equipe-pin').value;
     var fat = document.getElementById('f-equipe-fat').checked, conf = document.getElementById('f-equipe-conf').checked;
     var fin = document.getElementById('f-equipe-fin').checked, logi = document.getElementById('f-equipe-log').checked;
+    var gest = document.getElementById('f-equipe-gestao').checked, qualid = document.getElementById('f-equipe-qual').checked, aprovF = document.getElementById('f-equipe-aprovafrete').checked;
     var err = document.getElementById('equipe-form-error');
     var fail = function(msg) { err.textContent = msg; err.classList.remove('hidden'); };
     if (!editingMembroId && !nome) return fail('Informe o nome.');
     if ((!editingMembroId || pin) && !/^[0-9]{4}$/.test(pin)) return fail('A senha precisa ter 4 números.');
-    if (!fat && !conf && !fin && !logi) return fail('Marque o que essa pessoa faz: faturamento, conferência, financeiro ou logística.');
+    if (!fat && !conf && !fin && !logi && !gest && !qualid && !aprovF) return fail('Marque o que essa pessoa faz: faturamento, conferência, financeiro, logística, diretoria/gestão ou qualidade.');
     if (!editingMembroId && equipe.some(function(m) { return normNome(m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
     (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
       // Duas pessoas com a mesma senha: não daria para saber de quem é o ok.
       if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
-      var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi };
+      var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF };
       if (hash) patch.pinHash = hash;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch)
@@ -12085,6 +13584,8 @@
     subscribeAgenda();
     subscribeMateria();
     subscribeMarcas();
+    subscribeSalas();
+    subscribeQualidade();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;

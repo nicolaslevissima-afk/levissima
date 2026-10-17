@@ -22,7 +22,7 @@
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){
+@media not all{
   :root:not([data-theme="light"]){
     --bg:#08171F; --surface:#0F2533; --ink:#E3EEF3; --muted:#8CA5B4; --line:#1E3C4F;
     --water:#48A9D8; --water-soft:#123A50; --water-deep:#7CC6EA;
@@ -45,7 +45,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Barlow",s
 .prod .num{font-size:1.25rem}
 .prod[aria-pressed="true"]{background:var(--water-deep);color:#fff}
 :root[data-theme="dark"] .prod[aria-pressed="true"]{color:#08171F}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .prod[aria-pressed="true"]{color:#08171F}}
+@media not all{:root:not([data-theme="light"]) .prod[aria-pressed="true"]{color:#08171F}}
 .prod small{font-weight:500;font-size:.85rem;opacity:.85}
 h1,h2,.num{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -101,7 +101,7 @@ textarea{min-height:42px;resize:vertical}
 .linha-botoes{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
 .btn{border:0;border-radius:10px;padding:10px 18px;font-weight:600;cursor:pointer;background:var(--water-deep);color:#fff}
 :root[data-theme="dark"] .btn{color:#08171F}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn{color:#08171F}}
+@media not all{:root:not([data-theme="light"]) .btn{color:#08171F}}
 .btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
 .msg{font-size:.92rem}
 .msg.erro{color:var(--red)} .msg.ok{color:var(--green)}
