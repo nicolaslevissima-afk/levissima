@@ -452,6 +452,43 @@
     .mpf-row .mpf-ins { grid-column: 1 / -1; }
     .mpf-row.sem-base { grid-template-columns: minmax(0, 1fr) 36px; }
   }
+  /* ---- marcas: logo na frente do produto e cor de cada produto ---- */
+  .pc-verde { --pc-bg: #43B02A; --pc-fg: #10200C; }
+  .pc-roxo { --pc-bg: #702082; --pc-fg: #FFFFFF; }
+  .pc-azul { --pc-bg: #001489; --pc-fg: #FFFFFF; }
+  .pc-laranja { --pc-bg: #FF6A13; --pc-fg: #1C2A2E; }
+  .pc-vermelho { --pc-bg: #C8102E; --pc-fg: #FFFFFF; }
+  .pc-azul-claro { --pc-bg: #6CACE4; --pc-fg: #0B2341; }
+  .pc-roxo-claro { --pc-bg: #B98BD6; --pc-fg: #2A0F33; }
+  .pc-branco { --pc-bg: #FFFFFF; --pc-fg: #1C2A2E; }
+  .mk-logo { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 24px; height: 24px; border-radius: 6px; background: #FFFFFF; box-shadow: 0 0 0 1px rgba(28, 42, 46, 0.16); overflow: hidden;
+    --lv-s1: #125A9E; --lv-s2: #134785; --lv-s3: #13366D; --lv-s4: #122657; }
+  .mk-logo img { width: 100%; height: 100%; object-fit: contain; padding: 2px; display: block; }
+  .mk-logo svg { width: 19px; height: 15px; display: block; }
+  .mk-ini { font-family: var(--font-display); font-size: 0.625rem; font-weight: 800; color: #1C2A2E; letter-spacing: 0.02em; }
+  .ptag { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 2px 8px 2px 2px; border-radius: 8px; background: var(--pc-bg); color: var(--pc-fg); font-weight: 600; line-height: 1.2; vertical-align: middle; }
+  .ptag.pc-branco { box-shadow: inset 0 0 0 1px #C9C8D2; }
+  .ptag:not(:has(.mk-logo)) { padding-left: 8px; }
+  .ptag-nome { min-width: 0; overflow-wrap: anywhere; }
+  .ptag-n { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; }
+  .carga-prods { display: flex; flex-wrap: wrap; gap: 4px; }
+  .carga-prods .ptag { font-size: 0.75rem; }
+  .det-itens .ptag { font-size: 0.8125rem; }
+  .conf-tab .ptag { font-size: 0.8125rem; }
+  .marca-row .mk-logo { width: 36px; height: 36px; border-radius: 8px; }
+  .marca-row .mk-logo svg { width: 29px; height: 22px; }
+  .marca-row .mk-ini { font-size: 0.8125rem; }
+  .marca-cores { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 2px; font-size: 0.75rem; font-weight: 600; }
+  /* lançamento e conclusão do carregamento: logo na frente; com quantidade, a linha fica na cor do produto */
+  .pt-nome { display: flex; align-items: center; gap: 6px; }
+  .pt-txt { min-width: 0; }
+  @media (max-width: 559px) { .pt-nome { gap: 5px; } .pt-nome .mk-logo { width: 20px; height: 20px; border-radius: 5px; } .pt-nome .mk-logo svg { width: 16px; height: 13px; } }
+  .pt-row.pcor.has-qtd { background: var(--pc-bg); color: var(--pc-fg); border-radius: 8px; padding-left: 5px; padding-right: 5px; border-bottom-color: transparent; margin-bottom: 2px; }
+  .pt-row.pcor.has-qtd.pc-branco { box-shadow: inset 0 0 0 1px #C9C8D2; }
+  .pt-row.pcor.has-qtd .pt-nome, .pt-row.pcor.has-qtd .pt-unid, .pt-row.pcor.has-qtd .pt-num { color: inherit; }
+  .pt-row.pcor.has-qtd .pt-unid.alerta { color: inherit; font-weight: 700; text-decoration: underline; }
+  .pt-row.pcor.has-qtd input[type="number"] { background: #FFFFFF; color: #1C2A2E; border-color: rgba(28, 42, 46, 0.35); }
+  .pt-row.pcor.has-qtd input.pt-fil:not(.pt-adjusted) { color: #63677A; }
   .driver-sub.alerta, .pt-unid.alerta, b.alerta { color: var(--laranja-texto); }
   .tab-alerta { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; vertical-align: 1px; }
   .est-form-head, .est-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 96px; gap: 8px; align-items: center; }
@@ -955,6 +992,13 @@
       <button type="button" class="btn btn-secondary btn-sm" id="btn-add-produto">+ Adicionar produto</button>
     </section>
 
+    <section class="drivers-admin" id="marcas-admin">
+      <div class="section-head"><h2 class="section-title">Marcas: cores e logos</h2></div>
+      <p class="hint">Cada produto aparece com o <b>logo da marca</b> na frente do nome e, quando lançado, destacado na <b>cor do produto</b>: no lançamento da carga, no quadro, na conclusão do carregamento (expedição), na dupla conferência e na ordem de carregamento. Envie o logo de cada marca (PNG ou JPG; o app guarda uma cópia pequena).</p>
+      <div id="marcas-list"></div>
+      <input type="file" id="f-marca-logo" accept="image/*" class="hidden" aria-label="Logo da marca" />
+    </section>
+
     <section class="drivers-admin" id="drivers-admin">
       <div class="section-head"><h2 class="section-title">Motoristas cadastrados</h2></div>
       <p class="hint">Toque em <b>Abrir</b> para ver a página do motorista: dados e acesso, fretes a pagar e documentos do motorista e do caminhão.</p>
@@ -983,7 +1027,7 @@
       <p class="field-hint" id="pagers-status"></p>
       <p class="form-error hidden" id="pagers-error"></p>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-save-pagers">Salvar pagers</button>
-      <label class="check-row" style="margin-top:14px"><input type="checkbox" id="f-exigir-dupla" /> Exigir a <b>dupla conferência por código de barras</b> (duas pessoas, sem divergência) para concluir o carregamento</label>
+      <p class="hint" style="margin-top:14px">A <b>dupla conferência por código de barras</b> (duas pessoas, sem divergência) é <b>obrigatória</b> para concluir o carregamento. Se a carga mudar depois, a conferência tem que ser refeita.</p>
     </section>
 
     <section class="drivers-admin" id="acesso-admin">
@@ -2192,6 +2236,7 @@
     loadLocalFretes();
     loadLocalAgenda();
     loadLocalMp();
+    loadLocalMarcas();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -2712,6 +2757,7 @@
     { marca: 'Colina Azul', slug: 'colina-azul', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'] },
     { marca: 'Betel', slug: 'betel', itens: ['510ml-natural', '1500ml-natural'] },
     { marca: 'New Mania', slug: 'new-mania', itens: ['510ml-natural'] },
+    { marca: 'Bom Coração', slug: 'bom-coracao', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'] },
     { marca: 'Bulnez', slug: 'bulnez', itens: ['510ml-natural', '1500ml-natural'],
       palete: { '1500ml-natural': { unidade: 'fardos', unidadesPorPalete: 108, tipoChapatex: 'fileira', unidadesPorFileira: 27 } } }
   ];
@@ -3147,6 +3193,7 @@
     renderStorageNote();
     renderCargasSection();
     renderProdutosAdmin();
+    renderMarcasAdmin();
     renderEquipeAdmin();
     renderAcessoAdmin();
     renderPagersAdmin();
@@ -4132,6 +4179,7 @@
       '<div class="carga-card-body">' +
         '<div class="carga-top"><span class="carga-driver-name">' + escapeHtml(c.motorista || '—') + '</span>' + pager + '</div>' +
         '<div class="carga-clientes-line">' + escapeHtml(cargaClientesResumo(c) || '—') + '</div>' +
+        cargaProdutosHtml(c) +
         (esperaAtual(c) != null ? '<div class="carga-sub espera' + (esperaAtual(c) >= ESPERA_LONGA_MIN ? ' longa' : '') + '">No pátio há ' + fmtDuracao(esperaAtual(c)) + '</div>' : '') +
         viagemInfo +
         '<div class="carga-figs"><span class="figure-wood"><b>' + fmtInt(c.totalPaletes) + '</b>' + palavraPaletes(c.totalPaletes) + '</span>' +
@@ -4201,7 +4249,7 @@
         var meta = [cl.numeroDocumento ? docLabel(cl.numeroDocumento) + ' ' + formatDocument(cl.numeroDocumento) : '', cl.pedidoNf ? 'Pedido/NF ' + cl.pedidoNf : '', cl.destino ? 'Destino ' + cl.destino : ''].filter(Boolean).join(' · ');
         var itens = (cl.itens || []).map(function(it) {
           var av = avisoItem(it);
-          return '<span>' + escapeHtml(it.produtoNome || '—') + '</span>' +
+          return '<span>' + produtoTagHtml(it.produtoNome || '—') + '</span>' +
             '<span class="n">' + escapeHtml(qtdUnidade(it.quantidade, it.unidade || '')) + '</span>' +
             '<span class="n figure-wood">' + fmtInt(it.paletes) + ' pal</span>' +
             '<span class="n figure-teal">' + fmtInt(it.chapatex) + ' chx</span>' +
@@ -5836,8 +5884,8 @@
           (c.paletesManual ? ' title="Calculado: ' + c.paletesAuto + '"' : '') + ' aria-label="Paletes de ' + nome + '" />'
         : '<span class="pt-num" id="' + escapeHtml(rid('pal', cl, p.id)) + '">' + (has ? fmtInt(c.paletes) : '–') + '</span>';
       var u = unidLinha(p, c);
-      return '<div class="pt-row' + (has ? ' has-qtd' : '') + '" id="' + escapeHtml(rid('row', cl, p.id)) + '">' +
-        '<span class="pt-nome">' + nome + '<span class="pt-unid' + (u.alerta ? ' alerta' : '') + '" id="' + escapeHtml(rid('unid', cl, p.id)) + '">' + escapeHtml(u.texto) + '</span></span>' +
+      return '<div class="pt-row pcor pc-' + corDoProduto(p.nome) + (has ? ' has-qtd' : '') + '" id="' + escapeHtml(rid('row', cl, p.id)) + '">' +
+        '<span class="pt-nome">' + logoMarcaHtml(marcaDoTexto(p.nome)) + '<span class="pt-txt">' + nome + '<span class="pt-unid' + (u.alerta ? ' alerta' : '') + '" id="' + escapeHtml(rid('unid', cl, p.id)) + '">' + escapeHtml(u.texto) + '</span></span></span>' +
         '<input type="number" min="0" step="1" inputmode="numeric" class="' + prefix + '-qtd-input"' + attrs + ' value="' + escapeHtml(q) + '" placeholder="0" aria-label="Quantidade de ' + nome + ' em ' + escapeHtml(unidadeDe(p)) + '" />' +
         filCell + palCell +
         '<span class="pt-num chx" id="' + escapeHtml(rid('chx', cl, p.id)) + '">' + (has ? fmtInt(c.chapatex) : '–') + '</span>' +
@@ -6549,7 +6597,7 @@
   var cargaConcludeId = null;
   function openCargaConclude(carga) {
     if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
-    if (ajustes.exigirDupla && !duplaOk(carga)) { showToast('Antes de concluir, faça a dupla conferência por código de barras (sem divergência).'); abrirConferencia(carga.id); return; }
+    if (!duplaOk(carga)) { showToast(duplaMudou(carga) ? 'A carga mudou depois da dupla conferência: refaça a conferência antes de concluir.' : 'Antes de concluir, faça a dupla conferência por código de barras (sem divergência).'); abrirConferencia(carga.id); return; }
     cargaConcludeId = carga.id;
     function row(k, v) { return '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + escapeHtml(v) + '</span></div>'; }
     document.getElementById('cgc-resumo').innerHTML =
@@ -6681,6 +6729,12 @@
     var clientesOut = cgcEditor.toOut();
     if (!conferente) { errEl.textContent = porSenha ? 'Digite a senha do conferente.' : 'Informe o nome do conferente.'; errEl.classList.remove('hidden'); return; }
     if (!clientesOut.some(function(cl) { return cl.itens.length; })) { errEl.textContent = 'Confira ao menos um produto com quantidade.'; errEl.classList.remove('hidden'); return; }
+    var dupC = (findCarga(cargaConcludeId) || {}).dupla || {};
+    var espOut = esperadoConferencia({ clientes: clientesOut });
+    if (!dupC.r1 || !dupC.r2 || !lidosBatem(dupC.r1.lidos, espOut) || !lidosBatem(dupC.r2.lidos, espOut)) {
+      errEl.textContent = 'Os paletes não batem com a dupla conferência por código de barras. Corrija as quantidades ou refaça a conferência.';
+      errEl.classList.remove('hidden'); return;
+    }
     if (!sigCgcMotorista.isSatisfied()) { errEl.textContent = 'Colete a assinatura do motorista antes de concluir.'; errEl.classList.remove('hidden'); return; }
     if (!sigCgcConferente.isSatisfied()) { errEl.textContent = 'Colete a assinatura do conferente antes de concluir.'; errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
@@ -7608,7 +7662,7 @@
       ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2);
       y += 36;
       (cl.itens || []).forEach(function(it) {
-        txtFit(ctx, it.produtoNome || '—', L, y, 500, R_DISP, 30, 20, qCol - L - 220, RC.ink, 'left'); // espaço para "200 fardos"
+        desenharProdutoOrdem(ctx, it.produtoNome || '—', L, y, qCol - L - 220); // espaço para "200 fardos"
         txt(ctx, qtdUnidade(it.quantidade, it.unidade || ''), qCol, y, rFont(600, 28, R_MONO), RC.ink, 'right');
         txt(ctx, fmtInt(it.paletes), palCol, y, rFont(600, 30, R_MONO), RC.wood, 'right');
         txt(ctx, fmtInt(it.chapatex), chCol, y, rFont(600, 30, R_MONO), RC.teal, 'right');
@@ -7690,7 +7744,7 @@
     return canvas;
   }
   function renderOrdem(c) {
-    return loadReceiptFonts().then(function() {
+    return loadReceiptFonts().then(carregarLogosCanvas).then(function() {
       return Promise.all([loadSignatureImage(c.assinaturaMotorista), loadSignatureImage(c.assinaturaConferente)]);
     }).then(function(sigs) {
       var canvas = paintOrdem(c, sigs);
@@ -9709,7 +9763,8 @@
   // o código diz o produto (Cadastros › Produtos › Códigos de barras) e o app compara com os paletes do pedido.
   // São duas conferências, feitas por pessoas diferentes (cada uma com a senha de 4 números de conferente).
   // Fica gravado na carga em "dupla": { r1: { lidos, log, por, porId, em, ok, divergencias }, r2: {…} }.
-  // Em Cadastros › Pagers e carregamento dá para exigir a dupla conferência antes de concluir o carregamento.
+  // A dupla conferência é obrigatória para concluir o carregamento (16/10/2026) e só vale enquanto os paletes lidos
+  // batem com os da carga: se a carga for editada depois (ou os paletes mudarem na conclusão), tem que refazer.
   var ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js';
   var conf = { cargaId: null, rodada: 1, lidos: {}, log: [], pendente: null, stream: null, detector: null, zxing: null, loop: null, pausaAte: 0, ultimo: null };
   function chaveCodigo(c) {
@@ -9728,14 +9783,26 @@
     });
     return m;
   }
+  // Os paletes lidos nas duas conferências ainda batem com os da carga?
+  function lidosBatem(lidos, esp) {
+    var ks = Object.keys(esp).concat(Object.keys(lidos || {}));
+    return ks.every(function(k) { return ((lidos || {})[k] || 0) === (esp[k] || 0); });
+  }
+  function duplaMudou(c) {
+    var d = (c && c.dupla) || {};
+    if (!(d.r1 && d.r2 && d.r1.ok && d.r2.ok)) return false;
+    var esp = esperadoConferencia(c);
+    return !lidosBatem(d.r1.lidos, esp) || !lidosBatem(d.r2.lidos, esp);
+  }
   function situacaoDupla(c) {
     var d = c.dupla || {};
+    if (d.r1 && d.r2 && duplaMudou(c)) return { cls: 'pend', txt: '⚠ A carga mudou depois da dupla conferência · refazer', feita: true, divergencia: true };
     if (d.r1 && d.r2) return (d.r1.ok && d.r2.ok) ? { cls: 'ok', txt: '✓ Dupla conferência: ' + d.r1.por + ' e ' + d.r2.por, feita: true }
       : { cls: 'pend', txt: '⚠ Dupla conferência com divergência', feita: true, divergencia: true };
     if (d.r1) return { cls: 'pend', txt: d.r1.ok ? '◐ 1ª conferência ok (' + d.r1.por + ') · falta a 2ª' : '⚠ 1ª conferência com divergência · falta a 2ª', feita: false };
     return { cls: 'pend', txt: '○ Dupla conferência por código de barras', feita: false };
   }
-  function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r2 && d.r1.ok && d.r2.ok); }
+  function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r2 && d.r1.ok && d.r2.ok) && !duplaMudou(c); }
   function duplaCardHtml(c, id) {
     if (c.status === 'concluida') return '';
     var s = situacaoDupla(c);
@@ -9792,10 +9859,10 @@
         var p = findProduto(pid), nome = p ? p.nome : pid, e = esp[pid] || 0;
         if (conf.rodada === 0) {
           var a = ((d.r1 || {}).lidos || {})[pid] || 0, b = ((d.r2 || {}).lidos || {})[pid] || 0;
-          return '<tr><td>' + escapeHtml(nome) + '</td><td>' + fmtInt(e) + '</td><td class="' + (a === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(a) + '</td><td class="' + (b === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(b) + '</td></tr>';
+          return '<tr><td>' + produtoTagHtml(nome) + '</td><td>' + fmtInt(e) + '</td><td class="' + (a === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(a) + '</td><td class="' + (b === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(b) + '</td></tr>';
         }
         var l = mostrar[pid] || 0, cls = l === e ? 'conf-ok' : l > e ? 'conf-dif' : '';
-        return '<tr><td>' + escapeHtml(nome) + (p && !(p.codigosBarras || []).length ? '<span class="est-sub">sem código de barras cadastrado</span>' : '') + '</td><td>' + fmtInt(e) + '</td>' +
+        return '<tr><td>' + produtoTagHtml(nome) + (p && !(p.codigosBarras || []).length ? '<span class="est-sub">sem código de barras cadastrado</span>' : '') + '</td><td>' + fmtInt(e) + '</td>' +
           '<td class="' + cls + '">' + fmtInt(l) + (l === e ? ' ✓' : l > e ? ' (' + fmtInt(l - e) + ' a mais)' : '') + '</td>' +
           '<td>' + (l ? '<button type="button" class="btn-text" data-conf="menos" data-produto="' + escapeHtml(pid) + '" aria-label="Tirar uma leitura de ' + escapeHtml(nome) + '">−1</button>' : '') +
             (e > l ? '<button type="button" class="btn-text" data-conf="mais" data-produto="' + escapeHtml(pid) + '" aria-label="Contar um palete sem ler o código">+1</button>' : '') + '</td></tr>';
@@ -11452,15 +11519,193 @@
       .catch(function(err) { btn.disabled = false; console.error('produção/matéria-prima', err); erroMpSheet('Não foi possível salvar agora. Tente novamente.'); });
   });
 
-  // ---------- pagers: faixa de números (Cadastros) ----------
-  document.getElementById('f-exigir-dupla').addEventListener('change', function(e) {
-    var v = e.target.checked;
-    saveAjustes({ exigirDupla: v }).then(function() { showToast(v ? 'Dupla conferência obrigatória para concluir o carregamento.' : 'Dupla conferência deixou de ser obrigatória.'); })
-      .catch(function(x) { console.error('ajustes', x); e.target.checked = !v; showToast('Não foi possível salvar agora.'); });
+
+  // ---------- marcas: cor de cada produto e logo de cada marca ----------
+  // Cores combinadas em 16/10/2026: Levíssima natural verde, Levíssima com gás roxo, Colina Azul natural azul,
+  // Colina Azul com gás laranja, Betel vermelho, Bom Coração natural azul-claro, Bom Coração com gás roxo-claro.
+  // Bulnez (e as marcas sem cor combinada) ficam em branco. Os produtos de copo, 6L e 10L da Levíssima são "natural".
+  // O logo de cada marca fica na coleção "marcas" (id = marca), enviado em Cadastros › Marcas; sem logo enviado,
+  // a Levíssima usa o símbolo dela e as outras marcas mostram as iniciais.
+  var CORES_MARCA = {
+    'levissima': { natural: 'verde', gas: 'roxo' },
+    'colina-azul': { natural: 'azul', gas: 'laranja' },
+    'betel': { natural: 'vermelho', gas: 'vermelho' },
+    'bom-coracao': { natural: 'azul-claro', gas: 'roxo-claro' }
+  };
+  // fundo e texto (contraste conferido); as mesmas no tema escuro, porque é a cor do produto
+  var COR_PRODUTO_HEX = {
+    verde: ['#43B02A', '#10200C'], roxo: ['#702082', '#FFFFFF'], azul: ['#001489', '#FFFFFF'], laranja: ['#FF6A13', '#1C2A2E'],
+    vermelho: ['#C8102E', '#FFFFFF'], 'azul-claro': ['#6CACE4', '#0B2341'], 'roxo-claro': ['#B98BD6', '#2A0F33'], branco: ['#FFFFFF', '#1C2A2E']
+  };
+  var NOME_COR = { verde: 'verde', roxo: 'roxo', azul: 'azul', laranja: 'laranja', vermelho: 'vermelho', 'azul-claro': 'azul-claro', 'roxo-claro': 'roxo-claro', branco: 'branco' };
+  var marcasDocs = {}; // marca -> { marca, logo (imagem pequena em data URL), atualizadoEm }
+  var LOCAL_MARCAS_KEY = 'levissima-marcas-v1';
+  function listaMarcas() { return [{ marca: 'Levíssima', slug: 'levissima' }].concat(MARCAS_V3.map(function(m) { return { marca: m.marca, slug: m.slug }; })); }
+  function ehGas(nome) { return normNome(nome).indexOf('gas') !== -1; }
+  function corDaMarca(slug, gas) { var c = CORES_MARCA[slug]; return c ? (gas ? c.gas : c.natural) : 'branco'; }
+  function corDoProduto(nome) { return corDaMarca(marcaDoTexto(nome), ehGas(nome)); }
+  function iniciaisMarca(slug) {
+    var n = nomeMarca(slug).split(/\s+/).filter(function(w) { return w.length > 2; }); // "Casa de Mãe" -> CM
+    return (n.length > 1 ? n[0].charAt(0) + n[1].charAt(0) : (n[0] || '?').slice(0, 2)).toUpperCase();
+  }
+  function logoMarcaHtml(slug) {
+    var d = marcasDocs[slug];
+    if (d && d.logo) return '<span class="mk-logo"><img src="' + escapeHtml(d.logo) + '" alt="" /></span>';
+    if (slug === 'levissima') return '<span class="mk-logo mk-lv"><svg viewBox="356.7 194.1 128.4 99.0" aria-hidden="true" focusable="false"><use href="#lv-simb"/></svg></span>';
+    return '<span class="mk-logo mk-ini" aria-hidden="true">' + escapeHtml(iniciaisMarca(slug)) + '</span>';
+  }
+  // Etiqueta do produto: logo da marca + nome, na cor do produto (extra: html depois do nome, ex. "3 pal").
+  function produtoTagHtml(nome, extra) {
+    var slug = marcaDoTexto(nome);
+    return '<span class="ptag pc-' + corDoProduto(nome) + '" title="' + escapeHtml(nomeMarca(slug)) + '">' + logoMarcaHtml(slug) +
+      '<span class="ptag-nome">' + escapeHtml(nome || '—') + '</span>' + (extra || '') + '</span>';
+  }
+  // Produtos da carga (somando os clientes), na ordem do cadastro, para o quadro da expedição.
+  function produtosDaCarga(c) {
+    var m = {}, ks = [];
+    (c.clientes || []).forEach(function(cl) {
+      (cl.itens || []).forEach(function(it) {
+        var k = it.produtoId || it.produtoNome;
+        if (!k) return;
+        if (!m[k]) { var p = findProduto(it.produtoId); m[k] = { nome: it.produtoNome || (p && p.nome) || '—', pal: 0, ordem: ordemDe(p) }; ks.push(k); }
+        m[k].pal += Number(it.paletes) || 0;
+      });
+    });
+    return ks.map(function(k) { return m[k]; }).sort(function(a, b) { return a.ordem - b.ordem; });
+  }
+  function cargaProdutosHtml(c) {
+    var l = produtosDaCarga(c);
+    if (!l.length) return '';
+    return '<div class="carga-prods">' + l.map(function(x) { return produtoTagHtml(x.nome, '<span class="ptag-n">' + fmtInt(x.pal) + ' pal</span>'); }).join('') + '</div>';
+  }
+  // ----- ordem de carregamento (documento): faixa na cor do produto, com o logo -----
+  var logosImg = {}; // marca -> imagem carregada do logo
+  function carregarLogosCanvas() {
+    return Promise.all(Object.keys(marcasDocs).map(function(slug) {
+      var d = marcasDocs[slug];
+      if (!d || !d.logo) { delete logosImg[slug]; return null; }
+      if (logosImg[slug] && logosImg[slug].src === d.logo) return null;
+      return new Promise(function(res) {
+        var im = new Image();
+        im.onload = function() { logosImg[slug] = im; res(); };
+        im.onerror = function() { res(); };
+        im.src = d.logo;
+      });
+    }));
+  }
+  function caminhoArredondado(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r); ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h); ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r); ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+  function desenharLogoCanvas(ctx, slug, x, y, t) {
+    ctx.fillStyle = '#FFFFFF'; caminhoArredondado(ctx, x, y, t, t, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(28, 42, 46, 0.18)'; ctx.lineWidth = 2; ctx.stroke();
+    var im = logosImg[slug];
+    if (im && im.naturalWidth) {
+      var k = Math.min((t - 6) / im.naturalWidth, (t - 6) / im.naturalHeight), w = im.naturalWidth * k, h = im.naturalHeight * k;
+      ctx.drawImage(im, x + (t - w) / 2, y + (t - h) / 2, w, h);
+    } else if (slug === 'levissima') {
+      var alt = t * 0.62;
+      desenharSimbolo(ctx, x + (t - 128.33 * alt / 99.02) / 2, y + (t - alt) / 2, alt);
+    } else {
+      txt(ctx, iniciaisMarca(slug), x + t / 2, y + t * 0.66, rFont(800, Math.round(t * 0.42), R_DISP), '#1C2A2E', 'center');
+    }
+  }
+  function desenharProdutoOrdem(ctx, nome, x, y, maxW) {
+    var slug = marcaDoTexto(nome), cor = COR_PRODUTO_HEX[corDoProduto(nome)] || COR_PRODUTO_HEX.branco;
+    var h = 38, top = y - 29, t = 30;
+    ctx.fillStyle = cor[0]; caminhoArredondado(ctx, x - 8, top, maxW + 8, h, 10); ctx.fill();
+    if (cor[0] === '#FFFFFF') { ctx.strokeStyle = '#C9C8D2'; ctx.lineWidth = 2; ctx.stroke(); }
+    desenharLogoCanvas(ctx, slug, x - 4, top + 4, t);
+    txtFit(ctx, nome, x + t + 6, y, 600, R_DISP, 28, 18, maxW - t - 14, cor[1], 'left');
+  }
+  // ----- dados -----
+  function loadLocalMarcas() {
+    try { marcasDocs = JSON.parse(localStorage.getItem(LOCAL_MARCAS_KEY) || '{}') || {}; } catch (e) { marcasDocs = {}; }
+  }
+  function subscribeMarcas() {
+    db.collection('marcas').onSnapshot(function(snap) {
+      var m = {};
+      snap.docs.forEach(function(d) { m[d.id] = d.data(); });
+      marcasDocs = m;
+      if (session) render();
+    }, function(err) { console.error('marcas error', err); });
+  }
+  function salvarMarca(slug, patch) {
+    patch.atualizadoEm = new Date().toISOString();
+    if (mode === 'db' && db) return db.collection('marcas').doc(slug).set(Object.assign({}, marcasDocs[slug] || {}, patch));
+    marcasDocs[slug] = Object.assign({}, marcasDocs[slug] || {}, patch);
+    try { localStorage.setItem(LOCAL_MARCAS_KEY, JSON.stringify(marcasDocs)); } catch (e) {}
+    render();
+    return Promise.resolve();
+  }
+  // Reduz a imagem (lado maior até 160 px) e devolve em data URL — fica pequena para ir junto com os dados.
+  function reduzirLogo(file) {
+    return new Promise(function(res, rej) {
+      var fr = new FileReader();
+      fr.onerror = function() { rej(new Error('leitura')); };
+      fr.onload = function() {
+        var im = new Image();
+        im.onerror = function() { rej(new Error('imagem')); };
+        im.onload = function() {
+          var k = Math.min(1, 160 / Math.max(im.naturalWidth || 1, im.naturalHeight || 1));
+          var cv = document.createElement('canvas');
+          cv.width = Math.max(1, Math.round(im.naturalWidth * k)); cv.height = Math.max(1, Math.round(im.naturalHeight * k));
+          cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+          var url = cv.toDataURL('image/png');
+          if (url.length > 150000) url = cv.toDataURL('image/jpeg', 0.9);
+          res(url);
+        };
+        im.src = fr.result;
+      };
+      fr.readAsDataURL(file);
+    });
+  }
+  // ----- Cadastros › Marcas -----
+  var marcaLogoSlug = null;
+  function renderMarcasAdmin() {
+    var el = document.getElementById('marcas-list');
+    if (!el) return;
+    el.innerHTML = listaMarcas().map(function(m) {
+      var temLogo = !!(marcasDocs[m.slug] && marcasDocs[m.slug].logo);
+      var cores = CORES_MARCA[m.slug];
+      var amostra = cores
+        ? (cores.natural === cores.gas
+            ? '<span class="ptag pc-' + cores.natural + '">' + escapeHtml(NOME_COR[cores.natural]) + '</span>'
+            : '<span class="ptag pc-' + cores.natural + '">natural: ' + escapeHtml(NOME_COR[cores.natural]) + '</span><span class="ptag pc-' + cores.gas + '">com gás: ' + escapeHtml(NOME_COR[cores.gas]) + '</span>')
+        : '<span class="ptag pc-branco">branco</span>';
+      return '<div class="driver-row marca-row">' + logoMarcaHtml(m.slug) +
+        '<span class="driver-name">' + escapeHtml(m.marca) + '<span class="marca-cores">' + amostra + '</span>' +
+          '<span class="produto-regra">' + (temLogo ? 'logo enviado' : (m.slug === 'levissima' ? 'usando o símbolo da Levíssima' : 'sem logo: aparecem as iniciais')) + '</span></span>' +
+        '<button class="btn-text" data-marca="logo" data-slug="' + escapeHtml(m.slug) + '">' + (temLogo ? 'Trocar logo' : 'Enviar logo') + '</button>' +
+        (temLogo ? '<button class="btn-text danger" data-marca="tirar" data-slug="' + escapeHtml(m.slug) + '">Tirar</button>' : '') + '</div>';
+    }).join('');
+  }
+  document.getElementById('marcas-list').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-marca]');
+    if (!b) return;
+    var slug = b.dataset.slug;
+    if (b.dataset.marca === 'logo') { marcaLogoSlug = slug; var inp = document.getElementById('f-marca-logo'); inp.value = ''; inp.click(); return; }
+    if (b.dataset.marca === 'tirar') {
+      salvarMarca(slug, { marca: nomeMarca(slug), logo: '' }).then(function() { showToast('Logo de ' + nomeMarca(slug) + ' retirado.'); })
+        .catch(function(err) { console.error('marca', err); showToast('Não foi possível salvar agora.'); });
+    }
   });
+  document.getElementById('f-marca-logo').addEventListener('change', function(e) {
+    var file = e.target.files && e.target.files[0], slug = marcaLogoSlug;
+    if (!file || !slug) return;
+    if (!/^image\//.test(file.type)) { showToast('Escolha uma imagem (PNG ou JPG).'); return; }
+    reduzirLogo(file).then(function(url) { return salvarMarca(slug, { marca: nomeMarca(slug), logo: url }); })
+      .then(function() { showToast('Logo de ' + nomeMarca(slug) + ' salvo.'); })
+      .catch(function(err) { console.error('marca', err); showToast('Não foi possível usar essa imagem. Tente outra (PNG ou JPG).'); });
+  });
+
+  // ---------- pagers: faixa de números (Cadastros) ----------
   function renderPagersAdmin() {
-    var ex = document.getElementById('f-exigir-dupla');
-    if (ex) ex.checked = !!ajustes.exigirDupla;
     var de = document.getElementById('f-pager-de'), ate = document.getElementById('f-pager-ate');
     if (document.activeElement !== de) de.value = ajustes.pagerDe;
     if (document.activeElement !== ate) ate.value = ajustes.pagerAte;
@@ -11839,6 +12084,7 @@
     subscribeForcaVendas();
     subscribeAgenda();
     subscribeMateria();
+    subscribeMarcas();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
