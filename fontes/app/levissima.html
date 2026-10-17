@@ -546,6 +546,106 @@
   .oc-tl li.neg { border-left-color: var(--danger); }
   .oc-tl li span { color: var(--muted); }
   .oc-tl-pend b { color: var(--muted); }
+  /* ---------- Plano de metas ---------- */
+  .mt-sala { background: linear-gradient(180deg, #FFF8E6 0%, #FFFFFF 100%); border: 1px solid #EBD9A6; border-radius: 14px; padding: 12px; margin: 0 0 14px; }
+  .mt-tr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-top: 8px; }
+  .mt-tr { display: grid; grid-template-columns: 36px minmax(0, 1fr); grid-template-areas: "ico t" "ico p"; column-gap: 8px; align-items: center; text-align: left; background: #FFFFFF; border: 1px solid #EBD9A6; border-radius: 10px; padding: 8px 10px; font: inherit; color: var(--ink); cursor: pointer; min-height: 56px; }
+  .mt-tr[tabindex="-1"] { cursor: default; }
+  .mt-tr-ico { grid-area: ico; width: 36px; height: 36px; border-radius: 50%; background: #F6E3A8; color: #8A6410; display: flex; align-items: center; justify-content: center; }
+  .mt-tr-ico svg { width: 20px; height: 20px; }
+  .mt-tr-t { grid-area: t; font-size: 0.8125rem; font-weight: 700; line-height: 1.2; }
+  .mt-tr-p { grid-area: p; font-size: 0.75rem; color: #8A6410; font-weight: 600; }
+  .mt-tr.a-qualidade .mt-tr-ico { background: rgba(112, 32, 130, 0.14); color: #702082; }
+  .mt-tr.a-perdas .mt-tr-ico { background: rgba(255, 106, 19, 0.16); color: #B5470A; }
+  .mt-tr.a-manutencao .mt-tr-ico { background: rgba(0, 20, 137, 0.12); color: #001489; }
+  .mt-tr.a-logistica .mt-tr-ico { background: rgba(67, 176, 42, 0.16); color: #2D7A1C; }
+  .mt-tr.a-inovacao .mt-tr-ico { background: rgba(0, 150, 160, 0.14); color: #0B6E75; }
+  .mt-recorde { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #FFF6DD; border: 1px solid #EBD9A6; border-radius: 10px; padding: 10px 12px; margin: 0 0 12px; font-size: 0.875rem; font-weight: 600; }
+  .mt-recorde span { flex: 1 1 220px; }
+  .mt-mesnav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 0 12px; }
+  .mt-mesnav b { font-size: 1rem; }
+  .mt-mesnav button[disabled] { opacity: 0.35; cursor: default; }
+  .mt-ild { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: center; background: var(--card); border: 1px solid var(--line); border-left: 6px solid var(--line); border-radius: 12px; padding: 12px 14px; margin: 0 0 10px; }
+  .mt-ild.f-super, .mt-ild.f-meta { border-left-color: #43B02A; }
+  .mt-ild.f-min { border-left-color: #FF6A13; }
+  .mt-ild.f-abaixo { border-left-color: rgb(var(--danger-rgb)); }
+  .mt-ild-num { font-family: var(--font-mono); font-size: 2.5rem; font-weight: 700; line-height: 1; display: flex; flex-direction: column; align-items: center; }
+  .mt-ild-num small { font-family: inherit; font-size: 0.6875rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .mt-ild-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .mt-ild-txt > span { font-size: 0.8125rem; color: var(--muted); }
+  .mt-trava { font-weight: 700; font-size: 0.8125rem !important; border-radius: 8px; padding: 4px 8px; align-self: flex-start; }
+  .mt-trava.ok { background: rgba(67, 176, 42, 0.14); color: var(--verde-texto) !important; }
+  .mt-trava.no { background: rgba(var(--danger-rgb), 0.12); color: var(--danger) !important; }
+  .mt-trava.aviso { background: rgba(255, 106, 19, 0.14); color: var(--laranja-texto) !important; }
+  .mt-hist { grid-column: 1 / -1; display: flex; align-items: flex-end; gap: 6px; height: 64px; margin-top: 8px; }
+  .mt-hist-c { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 2px; }
+  .mt-hist-c i { display: block; width: 100%; max-width: 34px; border-radius: 4px 4px 0 0; background: var(--line); }
+  .mt-hist-c i.f-super, .mt-hist-c i.f-meta { background: #43B02A; }
+  .mt-hist-c i.f-min { background: #FF6A13; }
+  .mt-hist-c i.f-abaixo { background: rgb(var(--danger-rgb)); }
+  .mt-hist-c small { font-size: 0.625rem; color: var(--muted); text-transform: uppercase; }
+  .mt-hist-c.on small { color: var(--ink); font-weight: 700; }
+  .mt-seg { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; margin: 0 0 14px; font-size: 0.875rem; background: var(--card); }
+  .mt-seg.ok { border-color: rgba(67, 176, 42, 0.5); }
+  .mt-seg.ok span { color: var(--verde-texto); font-weight: 600; }
+  .mt-seg.no { border-color: rgb(var(--danger-rgb)); }
+  .mt-seg.no span { color: var(--danger); font-weight: 700; }
+  .mt-pilar { margin: 0 0 16px; }
+  .mt-pilar-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; border-bottom: 3px solid #43B02A; padding-bottom: 4px; margin-bottom: 8px; }
+  .mt-pilar.p-qual .mt-pilar-h { border-bottom-color: #702082; }
+  .mt-pilar.p-efic .mt-pilar-h { border-bottom-color: #FF6A13; }
+  .mt-pilar-h h3 { margin: 0; font-size: 0.9375rem; }
+  .mt-pilar-h span { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+  .mt-ind { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0 0 8px; }
+  .mt-ind-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .mt-ind-n { font-weight: 700; font-size: 0.875rem; min-width: 0; }
+  .mt-ind-n small { display: block; font-weight: 400; font-size: 0.6875rem; color: var(--muted); margin-top: 1px; }
+  .mt-ind-v { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; white-space: nowrap; }
+  .mt-ind-v small { font-family: inherit; font-size: 0.6875rem; font-weight: 600; color: var(--muted); }
+  .mt-barra { position: relative; height: 8px; border-radius: 99px; background: #EEEEF2; margin: 8px 0 6px; overflow: visible; }
+  .mt-barra i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 99px; background: var(--line); }
+  .mt-ind.f-super .mt-barra i, .mt-ind.f-meta .mt-barra i { background: #43B02A; }
+  .mt-ind.f-min .mt-barra i { background: #FF6A13; }
+  .mt-ind.f-abaixo .mt-barra i { background: rgb(var(--danger-rgb)); }
+  .mt-barra b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: 0.35; }
+  .mt-ind-niv { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.75rem; color: var(--muted); }
+  .q-chip.mt-c-super { background: #43B02A; color: #10200C; }
+  .q-chip.mt-c-meta { background: rgba(67, 176, 42, 0.16); color: var(--verde-texto); }
+  .q-chip.mt-c-min { background: rgba(255, 106, 19, 0.16); color: var(--laranja-texto); }
+  .q-chip.mt-c-abaixo { background: rgba(var(--danger-rgb), 0.14); color: var(--danger); }
+  .mt-gat { font-size: 0.625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #702082; border: 1px solid rgba(112, 32, 130, 0.45); border-radius: 99px; padding: 0 6px; vertical-align: 1px; white-space: nowrap; }
+  .mt-aviso { background: rgba(255, 106, 19, 0.1); border: 1px solid rgba(255, 106, 19, 0.4); border-radius: 10px; padding: 9px 12px; font-size: 0.8125rem; }
+  .mt-linhas { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; margin-bottom: 8px; }
+  .mt-linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 0.875rem; }
+  .mt-linha small { grid-column: 1 / -1; color: var(--muted); font-size: 0.75rem; }
+  .mt-linha-oee { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; }
+  .mt-lanc { margin: 0 0 8px; }
+  .mt-prev { background: #F3F7F1; border-radius: 10px; padding: 9px 12px; font-size: 0.8125rem; margin: 4px 0 10px; }
+  .mt-pl-p { margin: 14px 0 6px; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 4px; border-bottom: 3px solid #43B02A; }
+  .mt-pl-p.p-qual { border-bottom-color: #702082; }
+  .mt-pl-p.p-efic { border-bottom-color: #FF6A13; }
+  .mt-pl-p.p-seg { border-bottom-color: var(--line); }
+  .mt-pl-ind { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .mt-pl-n b { font-size: 0.875rem; }
+  .mt-pl-n small { display: block; color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+  .mt-pl-niv { display: grid; grid-template-columns: 52px repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .mt-pl-niv span { background: #F6F7F4; border-radius: 8px; padding: 5px 8px; font-size: 0.8125rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mt-pl-niv small { display: block; font-size: 0.625rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .mt-pl-niv .field-hint { font-weight: 400; }
+  #mt-conteudo .section-head .btn { flex-shrink: 0; white-space: nowrap; }
+  @media (min-width: 760px) { .mt-pl-ind { grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr); align-items: center; } }
+  @media (min-width: 1100px) { .mt-pilares { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; } }
+  .mt-metodo { margin-top: 16px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--card); font-size: 0.875rem; }
+  .mt-metodo summary { font-weight: 700; cursor: pointer; }
+  .mt-metodo p { margin: 8px 0; }
+  .mt-hist-man { border: 1px dashed var(--line); border-radius: 10px; padding: 8px 10px; margin: 8px 0; }
+  .mt-hist-man summary { font-weight: 600; font-size: 0.875rem; cursor: pointer; }
+  .mt-p-ind { border-bottom: 1px solid var(--line); padding: 6px 0 8px; }
+  .mt-p-ind b { font-size: 0.8125rem; }
+  .mt-p-ind b small { font-weight: 400; color: var(--muted); }
+  .mt-p-cels { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .mt-p-cels label { font-size: 0.6875rem; margin: 4px 0 0; }
+  .mt-p-cels input { padding: 8px 6px; }
   .oc-filtros { margin-top: 2px; }
   label.sub-campo { margin-left: 26px; font-size: 0.8125rem; }
   /* ---- participantes e convites das salas ---- */
@@ -1075,6 +1175,7 @@
       <button type="button" class="seg-btn" data-tab="agenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h3M8 17h6"/></svg></span><span class="tab-txt">Agenda</span></button>
       <button type="button" class="seg-btn" data-tab="salas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="1.5"/><path d="M12 15v5M8 20h8M7 9h6"/></svg></span><span class="tab-txt">Salas</span></button>
       <button type="button" class="seg-btn" data-tab="qualidade"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="tab-txt">Qualidade</span></button>
+      <button type="button" class="seg-btn" data-tab="metas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span class="tab-txt">Metas</span></button>
       <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
       <button type="button" class="seg-btn" data-tab="cadastros"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="tab-txt">Cadastros</span></button>
       <button type="button" class="seg-btn" data-tab="rh"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><span class="tab-txt">RH</span></button>
@@ -1302,6 +1403,17 @@
     <div id="q-conteudo"></div>
   </div>
 
+  <div class="tab-panel hidden" id="tab-metas">
+    <p class="tagline">Plano de metas de produção: produtividade e qualidade juntas, com a sala de troféus.</p>
+    <nav class="segmented q-areas" id="mt-areas" aria-label="Áreas do plano de metas">
+      <button type="button" class="seg-btn" data-mtarea="painel">Painel</button>
+      <button type="button" class="seg-btn" data-mtarea="turnos">Turnos (OEE)</button>
+      <button type="button" class="seg-btn" data-mtarea="lanc">Lançamentos</button>
+      <button type="button" class="seg-btn" data-mtarea="plano">Plano e método</button>
+    </nav>
+    <div id="mt-conteudo"></div>
+  </div>
+
   <div class="tab-panel hidden" id="tab-compras">
     <div id="oc-conteudo"></div>
   </div>
@@ -1427,6 +1539,7 @@
     <p class="tagline" style="margin-top:4px">Escolha o que você vai usar agora.</p>
     <div class="mod-cards" id="setor-modulos"></div>
     <button type="button" class="btn btn-secondary cp-setor-btn" id="btn-cp-setor">Criar a minha senha de 4 números</button>
+    <div id="setor-metas" class="hidden"></div>
   </div>
 </div>
 
@@ -2670,6 +2783,7 @@
     loadLocalSup();
     loadLocalCompras();
     loadLocalAgOnline();
+    loadLocalMetas();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -4311,6 +4425,7 @@
       return '<a class="mod-card" href="' + linkModulo(m.id) + '">' + iconeMod(m.id) + '<b>' + escapeHtml(m.nome) + '</b><span>' + escapeHtml(m.desc) + '</span>' +
         (m.nivel === 'gerir' ? '<span class="mod-nivel-tag">Você gerencia</span>' : '') + '</a>';
     }).join('') : '<p class="empty-state">A sua senha ainda não abre nenhum módulo. Peça à diretoria.</p>';
+    setTimeout(mtLigarSetor, 0); // metas do mês e apontamento de turno (liberado para os setores em 17/10/2026)
   }
   // depois do login: se a pessoa veio de um módulo (ou do QR de uma máquina), volta para lá
   function moduloPedido() {
@@ -5353,10 +5468,10 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'compras', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
-  function abasPermitidas() { return session && session.role === 'equipe' ? ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'compras'] : TABS; }
+  function abasPermitidas() { return session && session.role === 'equipe' ? ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras'] : TABS; }
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
@@ -5377,6 +5492,7 @@
     if (ui.tab === 'salas') { salasUi.rolou = null; renderSalas(); }
     if (ui.tab === 'qualidade') renderQualidade();
     if (ui.tab === 'compras') renderCompras();
+    if (ui.tab === 'metas') renderMetas();
     if (ui.tab === 'inicio') renderInicio();
     var ativa = document.querySelector('#admin-tabs .seg-btn.active');
     if (ativa && ativa.scrollIntoView && window.innerWidth < 1100) { try { ativa.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
@@ -15538,6 +15654,652 @@
     });
   }
 
+  // ---------- Plano de metas de produção: produtividade e qualidade juntas (proposta de 17/10/2026) ----------
+  // Cada indicador tem três níveis (mínimo, meta e superação) e um peso. A nota vai de 0 (abaixo do mínimo) a 60 no
+  // mínimo, 100 na meta e 120 na superação; o Índice Levíssima de Desempenho (ILD) é a média ponderada das notas.
+  // Trava: com acidente com afastamento, ou com SAC ou análises abaixo do mínimo, a premiação do mês fica travada
+  // (produtividade não conta sem segurança e qualidade). As metas mudam por versão ("vale a partir de"), sem
+  // reescrever os meses que já passaram.
+  // Referências: OEE (Nakajima/JIPM: classe mundial 85% = 90% × 95% × 99%; envase de bebidas costuma ficar entre 60% e
+  // 70%, com alvo realista de 78% a 82% em 12 meses), cumprimento do plano de manutenção (90% ou mais é classe
+  // mundial), reclamações por milhão de unidades (7 a 10 nas melhores envasadoras), Hoshin Kanri e PDCA.
+  // Coleção metas: 'plano' (versões dos níveis e pesos, velocidade das linhas), 'trofeus', 'mes-AAAA-MM'
+  // (lançamentos do mês) e 'turno-*' (apontamentos de turno para o OEE).
+  var MT_COL = 'metas';
+  var metasDocs = [];
+  var mtUi = { area: 'painel', mes: '' };
+  var MT_MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  var MT_TROFEUS_PADRAO = [
+    { id: 'tr-prod-ago', titulo: 'Recorde de produção', periodo: 'Agosto de 2026', area: 'producao' },
+    { id: 'tr-prod-set', titulo: 'Recorde de produção', periodo: 'Setembro de 2026', area: 'producao' },
+    { id: 'tr-sac-set', titulo: 'Recorde de redução de SAC', periodo: 'Setembro de 2026', area: 'qualidade' },
+    { id: 'tr-perdas-set', titulo: 'Recorde de redução de perdas', periodo: 'Setembro de 2026', area: 'perdas' },
+    { id: 'tr-prev-set', titulo: 'Recorde de preventiva fora do horário produtivo', periodo: 'Setembro de 2026', area: 'manutencao' },
+    { id: 'tr-carreg-out', titulo: 'Recorde de carregamentos em 24 horas', periodo: 'Outubro de 2026', area: 'logistica' },
+    { id: 'tr-inov-2026', titulo: 'Recorde de investimento em tecnologia e inovação', periodo: '2026', area: 'inovacao' }
+  ];
+  var MT_AREAS_TR = { producao: 'Produção', qualidade: 'Qualidade', perdas: 'Perdas', manutencao: 'Manutenção', logistica: 'Logística', inovacao: 'Inovação', seguranca: 'Segurança', outro: 'Outro' };
+  var MT_PILARES = [
+    { id: 'prod', nome: 'Produtividade' },
+    { id: 'qual', nome: 'Qualidade' },
+    { id: 'efic', nome: 'Perdas e manutenção' }
+  ];
+  // dir 1: quanto maior, melhor; dir -1: quanto menor, melhor. padrao: [mínimo, meta, superação] (null = a definir)
+  var MT_IND = [
+    { id: 'producao', pilar: 'prod', nome: 'Produção do mês', un: 'paletes', dir: 1, fonte: 'auto', dec: 0, peso: 15, padrao: null, ajuda: 'Entradas de produção do mês (aba Estoque), em paletes. Sugestão: mínimo = média dos 3 últimos meses, meta = recorde, superação = recorde + 5%.' },
+    { id: 'oee', pilar: 'prod', nome: 'OEE das linhas', un: '%', dir: 1, fonte: 'turno', dec: 1, peso: 15, padrao: [65, 75, 80], ajuda: 'Disponibilidade × performance × qualidade, pelos apontamentos de turno (precisa da velocidade nominal de cada linha).' },
+    { id: 'aderencia', pilar: 'prod', nome: 'Ordens de produção no prazo', un: '%', dir: 1, fonte: 'auto', dec: 0, peso: 5, padrao: [90, 95, 98], ajuda: 'OPs programadas para o mês e concluídas até a data programada.' },
+    { id: 'carreg24', pilar: 'prod', nome: 'Carregamentos em 24 horas (melhor marca do mês)', un: 'cargas', dir: 1, fonte: 'auto', dec: 0, peso: 5, padrao: null, ajuda: 'Maior número de cargas concluídas em 24 horas seguidas no mês.' },
+    { id: 'sac', pilar: 'qual', nome: 'Reclamações de clientes (SAC)', un: 'reclamações', dir: -1, fonte: 'mes', dec: 0, peso: 15, padrao: null, trava: true, ajuda: 'Reclamações procedentes no mês, lançadas em “Lançamentos do mês”.' },
+    { id: 'analises', pilar: 'qual', nome: 'Análises e verificações no prazo', un: '%', dir: 1, fonte: 'auto', dec: 0, peso: 10, padrao: [95, 100, 100], trava: true, ajuda: 'Análises do plano da Qualidade feitas no mês ÷ previstas pela frequência de cada uma.' },
+    { id: 'ncs', pilar: 'qual', nome: 'Não conformidades tratadas no prazo', un: '%', dir: 1, fonte: 'auto', dec: 0, peso: 5, padrao: [80, 90, 100], ajuda: 'NCs com prazo no mês encerradas até o prazo.' },
+    { id: 'refugo', pilar: 'qual', nome: 'Refugo na linha', un: '%', dir: -1, fonte: 'turno', dec: 2, peso: 5, padrao: [1, 0.5, 0.3], ajuda: 'Refugo ÷ produção, pelos apontamentos de turno.' },
+    { id: 'perdas', pilar: 'efic', nome: 'Perdas de embalagens', un: '%', dir: -1, fonte: 'auto', dec: 2, peso: 10, padrao: [1.5, 1, 0.7], ajuda: 'Perdas e avarias lançadas na Matéria-prima ÷ consumo das OPs concluídas (preformas, tampas, rótulos, caixas).' },
+    { id: 'prevFora', pilar: 'efic', nome: 'Preventiva fora do horário produtivo', un: '%', dir: 1, fonte: 'mes', dec: 0, peso: 10, padrao: [70, 80, 90], ajuda: 'Horas de preventiva feitas fora do horário de produção ÷ horas de preventiva do mês.' },
+    { id: 'prevPlano', pilar: 'efic', nome: 'Plano de preventiva cumprido', un: '%', dir: 1, fonte: 'mes', dec: 0, peso: 5, padrao: [80, 90, 100], ajuda: 'Preventivas feitas ÷ planejadas no mês (90% ou mais é classe mundial).' }
+  ];
+  var MT_FONTES = { auto: 'automático', turno: 'apontamentos de turno', mes: 'lançamento do mês', manual: 'lançado à mão' };
+  // linhas do OEE, com a velocidade nominal combinada com o Nicolas em 17/10/2026 (a senha mestre muda em Plano e método)
+  var MT_LINHAS = [
+    { id: 'l1', nome: 'Linha 1', un: 'fardos', vel: 360 },
+    { id: 'l2', nome: 'Linha 2', un: 'fardos', vel: 1500 },
+    { id: 'g6', nome: 'Linha 6 L', un: 'galões', vel: 900 },
+    { id: 'g10', nome: 'Linha 10 L', un: 'galões', vel: 700 },
+    { id: 'copo', nome: 'Copos', un: 'caixas', vel: 50, porMaquina: true }
+  ];
+  function mtLinha(id) { return MT_LINHAS.find(function(l) { return l.id === id; }) || { id: id, nome: String(id || ''), un: 'unidades', vel: 0 }; }
+  var MT_PARADAS = [['quebra', 'Quebra ou manutenção corretiva'], ['setup', 'Troca de produto ou ajuste (setup)'], ['outros', 'Falta de material, energia ou outros']];
+
+  function mtChaveLocal() { return 'levissima-metas-v1'; }
+  function loadLocalMetas() { try { metasDocs = JSON.parse(localStorage.getItem(mtChaveLocal()) || '[]') || []; } catch (e) { metasDocs = []; } }
+  function subscribeMetas() {
+    if (!ehEscritorio()) return;
+    db.collection(MT_COL).onSnapshot(function(snap) {
+      metasDocs = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      if (session) { if (ui.tab === 'metas') renderMetas(); if (ui.tab === 'inicio') renderInicio(); mtAgendarResumo(); }
+    }, function(err) { console.error(MT_COL, err); });
+  }
+  function mtGravar(id, data, op) {
+    if (mode === 'db' && db) { var ref = db.collection(MT_COL).doc(id); return op === 'delete' ? ref.delete() : op === 'update' ? ref.update(data) : ref.set(data); }
+    var i = metasDocs.findIndex(function(x) { return x.id === id; });
+    if (op === 'delete') { if (i >= 0) metasDocs.splice(i, 1); }
+    else if (op === 'update') { if (i >= 0) metasDocs[i] = Object.assign({}, metasDocs[i], data); }
+    else { var novo = Object.assign({ id: id }, data); if (i >= 0) metasDocs[i] = novo; else metasDocs.push(novo); }
+    try { localStorage.setItem(mtChaveLocal(), JSON.stringify(metasDocs)); } catch (e) {}
+    renderMetas();
+    return Promise.resolve();
+  }
+  function mtDoc(id) { return metasDocs.find(function(x) { return x.id === id; }) || null; }
+  function mtMesAtual() { return todayIso().slice(0, 7); }
+  function mtMesNome(m) { var p = String(m).split('-'); return MT_MESES[Number(p[1]) - 1] + ' de ' + p[0]; }
+  function mtMesNomeCap(m) { var s = mtMesNome(m); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function mtMesMais(m, n) { var p = String(m).split('-'), a = Number(p[0]), mm = Number(p[1]) - 1 + n; a += Math.floor(mm / 12); mm = ((mm % 12) + 12) % 12; return a + '-' + (mm < 9 ? '0' : '') + (mm + 1); }
+  function mtDiasNoMes(m) { var p = String(m).split('-'); return new Date(Number(p[0]), Number(p[1]), 0).getDate(); }
+  function mtFmt(v, ind) {
+    if (v == null || isNaN(v)) return '—';
+    var d = ind ? ind.dec : 1;
+    var s = Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: d });
+    return ind && ind.un === '%' ? s + '%' : s;
+  }
+  function mtIndPorId(id) { return MT_IND.find(function(x) { return x.id === id; }) || null; }
+  function mtPlano() { return mtDoc('plano') || { versoes: [], linhas: {} }; }
+  function mtVersaoDoMes(m) {
+    var vs = (mtPlano().versoes || []).filter(function(v) { return v.desde <= m; }).sort(function(a, b) { return String(b.desde).localeCompare(String(a.desde)) || String(b.em || '').localeCompare(String(a.em || '')); });
+    return vs[0] || null;
+  }
+  function mtNiveis(m) {
+    var v = mtVersaoDoMes(m), out = {};
+    MT_IND.forEach(function(ind) {
+      var n = v && v.niveis && v.niveis[ind.id] !== undefined ? v.niveis[ind.id] : ind.padrao;
+      var w = v && v.pesos && v.pesos[ind.id] != null ? Number(v.pesos[ind.id]) : ind.peso;
+      out[ind.id] = { n: n && n.length === 3 && n.every(function(x) { return x != null && !isNaN(x); }) ? n.map(Number) : null, peso: w };
+    });
+    return out;
+  }
+  function mtVelocidade(linha) { var l = (mtPlano().linhas || {})[linha]; return l && Number(l.vel) > 0 ? Number(l.vel) : (mtLinha(linha).vel || 0); }
+  // velocidade do turno: a gravada no apontamento ou a da linha (nos copos, vezes as máquinas rodando)
+  function mtVelTurno(t) { if (Number(t.vel) > 0) return Number(t.vel); var v = mtVelocidade(t.linha); return mtLinha(t.linha).porMaquina ? v * (Number(t.maquinas) || 1) : v; }
+  function mtTrofeus() { var d = mtDoc('trofeus'); return d && d.lista ? d.lista : MT_TROFEUS_PADRAO; }
+  function mtTurnos(m) { return metasDocs.filter(function(x) { return x.tipo === 'turno' && (!m || String(x.data).slice(0, 7) === m); }); }
+  function mtNum(v) { return v === '' || v == null || isNaN(Number(v)) ? null : Number(v); }
+  // fração (0,885) → "88,5%" (arredonda a meia casa para cima, sem o erro do ponto flutuante)
+  function mtPct(f) { return f == null || isNaN(f) ? '—' : (Math.round(f * 1000 + 1e-7) / 10).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%'; }
+
+  // ----- cálculo dos indicadores de um mês -----
+  function mtOeeDe(lista) {
+    var tp = 0, util = 0, boa = 0, ref = 0, par = 0, temVel = false, rh = 0, th = 0;
+    lista.forEach(function(t) {
+      var p = t.paradas || {}, pm = (Number(p.quebra) || 0) + (Number(p.setup) || 0) + (Number(p.outros) || 0);
+      var b = Number(t.boa) || 0, r = Number(t.refugo) || 0, h = Number(t.planejadoH) || 0, vel = mtVelTurno(t);
+      boa += b; ref += r; par += pm;
+      if (vel > 0 && h > 0) { temVel = true; tp += h; util += b / vel; rh += r / vel; th += (b + r) / vel; }
+    });
+    // refugo em horas de máquina: as linhas contam em fardos, galões ou caixas
+    var refugo = th > 0 ? rh / th * 100 : (boa + ref > 0 ? ref / (boa + ref) * 100 : null);
+    return { oee: temVel && tp > 0 ? Math.min(100, util / tp * 100) : null, refugo: refugo, boa: boa, refugoQ: ref, paradasMin: par };
+  }
+  function mtOeePartes(t) {
+    var p = t.paradas || {}, pm = (Number(p.quebra) || 0) + (Number(p.setup) || 0) + (Number(p.outros) || 0);
+    var h = Number(t.planejadoH) || 0, vel = mtVelTurno(t), b = Number(t.boa) || 0, r = Number(t.refugo) || 0;
+    if (!(h > 0)) return null;
+    var oper = Math.max(0, h * 60 - pm) / 60, A = oper / h, P = vel > 0 && oper > 0 ? Math.min(1, (b + r) / (oper * vel)) : null, Q = b + r > 0 ? b / (b + r) : null;
+    return { A: A, P: P, Q: Q, oee: P != null && Q != null ? A * P * Q * 100 : null, paradas: pm };
+  }
+  function mtProducaoPaletes(m) {
+    var tot = 0, tem = false;
+    estoqueMovs.forEach(function(x) {
+      if (x.tipo !== 'entrada' || String(x.data).slice(0, 7) !== m) return;
+      var p = findProduto(x.produtoId), upp = p ? Number(p.unidadesPorPalete) : 0;
+      if (upp > 0) { tot += (Number(x.quantidade) || 0) / upp; tem = true; }
+    });
+    return tem ? tot : null;
+  }
+  function mtCarreg24(m) {
+    var ts = cargas.filter(function(c) { return c.status === 'concluida' && c.concluidoEm; }).map(function(c) { return new Date(c.concluidoEm).getTime(); })
+      .filter(function(t) { var d = new Date(t); return !isNaN(t) && (d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1)) === m; }).sort(function(a, b) { return a - b; });
+    if (!ts.length) return null;
+    var mx = 0, j = 0;
+    for (var i = 0; i < ts.length; i++) { while (ts[i] - ts[j] >= 86400000) j++; mx = Math.max(mx, i - j + 1); }
+    return mx;
+  }
+  function mtAderencia(m) {
+    var hoje = todayIso(), ok = 0, n = 0;
+    mp.ordens.forEach(function(o) {
+      if (String(o.data).slice(0, 7) !== m || o.status === 'cancelada') return;
+      if (o.status === 'concluida') { n++; var fe = o.dataProducao || String(o.concluidoEm || '').slice(0, 10); if (fe && fe <= o.data) ok++; }
+      else if (o.data < hoje) n++;
+    });
+    return n ? ok / n * 100 : null;
+  }
+  function mtAnalises(m) {
+    var hoje = todayIso(), ini = m + '-01', fimMes = m + '-' + String(mtDiasNoMes(m)), fim = fimMes < hoje ? fimMes : hoje;
+    if (ini > hoje) return null;
+    if (!qual.ana.some(function(x) { return String(x.data) <= fim; })) return null; // antes de lançar análises no app: sem dado
+    var dias = Math.round((new Date(fim + 'T12:00:00') - new Date(ini + 'T12:00:00')) / 86400000) + 1, prev = 0, feitas = 0;
+    try {
+      qAnalises().forEach(function(a) {
+        var d = Number(a.dias) || 0; if (!(d > 0)) return;
+        var esp = Math.floor(dias / d); if (!esp) return;
+        var f = qual.ana.filter(function(x) { return x.planoId === a.id && String(x.data).slice(0, 7) === m; }).length;
+        prev += esp; feitas += Math.min(esp, f);
+      });
+    } catch (e) { return null; }
+    return prev ? feitas / prev * 100 : null;
+  }
+  function mtNcs(m) {
+    var hoje = todayIso(), ok = 0, n = 0;
+    qual.nc.forEach(function(x) {
+      if (!x.prazo || String(x.prazo).slice(0, 7) !== m) return;
+      if (x.status === 'encerrada') { n++; if (String(x.encerradaEm || '').slice(0, 10) <= x.prazo) ok++; }
+      else if (x.prazo < hoje) n++;
+    });
+    return n ? ok / n * 100 : null;
+  }
+  function mtPerdas(m) {
+    var un = {}, perda = 0, cons = 0;
+    mp.insumos.forEach(function(i) { if ((i.unidade || 'un') === 'un') un[i.id] = true; });
+    mp.movs.forEach(function(x) { if (x.tipo === 'perda' && un[x.insumoId] && String(x.data || x.em || '').slice(0, 7) === m) perda += Number(x.quantidade) || 0; });
+    mp.ordens.forEach(function(o) {
+      if (o.status !== 'concluida' || String(o.dataProducao || o.concluidoEm || '').slice(0, 7) !== m) return;
+      (o.consumo || []).forEach(function(c) { if (un[c.insumoId]) cons += Number(c.qtd) || 0; });
+    });
+    return cons > 0 ? perda / cons * 100 : null;
+  }
+  function mtValores(m) {
+    var md = mtDoc('mes-' + m) || {}, man = md.manual || {}, oe = mtOeeDe(mtTurnos(m)), v = {}, f = {};
+    var auto = {
+      producao: mtProducaoPaletes(m), oee: oe.oee, aderencia: mtAderencia(m), carreg24: mtCarreg24(m),
+      sac: mtNum(md.sac), analises: mtAnalises(m), ncs: mtNcs(m), refugo: oe.refugo, perdas: mtPerdas(m),
+      prevFora: mtNum(md.prevHoras) > 0 && mtNum(md.prevHorasFora) != null ? Math.min(100, md.prevHorasFora / md.prevHoras * 100) : null,
+      prevPlano: mtNum(md.prevPlanejadas) > 0 && mtNum(md.prevFeitas) != null ? Math.min(100, md.prevFeitas / md.prevPlanejadas * 100) : null
+    };
+    MT_IND.forEach(function(ind) {
+      if (mtNum(man[ind.id]) != null) { v[ind.id] = Number(man[ind.id]); f[ind.id] = 'manual'; }
+      else { v[ind.id] = auto[ind.id]; f[ind.id] = ind.fonte; }
+    });
+    return { v: v, f: f, acidentes: mtNum(md.acidentes), md: md, oee: oe };
+  }
+  function mtNota(v, n, dir) {
+    if (v == null || isNaN(v) || !n) return null;
+    var x = dir * v, mi = dir * n[0], me = dir * n[1], su = dir * n[2];
+    if (x < mi) return 0;
+    if (x < me) return 60 + 40 * (me === mi ? 1 : (x - mi) / (me - mi));
+    if (su === me) return 100;
+    if (x < su) return 100 + 20 * (x - me) / (su - me);
+    return 120;
+  }
+  function mtFaixa(nota) { return nota == null ? 'sem' : nota >= 120 ? 'super' : nota >= 100 ? 'meta' : nota >= 60 ? 'min' : 'abaixo'; }
+  var MT_FAIXA_TXT = { super: 'superação', meta: 'meta batida', min: 'acima do mínimo', abaixo: 'abaixo do mínimo', sem: 'sem dado' };
+  function mtResultado(m) {
+    var val = mtValores(m), niv = mtNiveis(m), soma = 0, pesos = 0, porPilar = {}, inds = [];
+    MT_IND.forEach(function(ind) {
+      var nv = niv[ind.id], nota = mtNota(val.v[ind.id], nv.n, ind.dir);
+      inds.push({ ind: ind, v: val.v[ind.id], fonte: val.f[ind.id], n: nv.n, peso: nv.peso, nota: nota });
+      if (nota != null && nv.peso > 0) {
+        soma += nota * nv.peso; pesos += nv.peso;
+        var pp = porPilar[ind.pilar] || (porPilar[ind.pilar] = { soma: 0, pesos: 0 });
+        pp.soma += nota * nv.peso; pp.pesos += nv.peso;
+      }
+    });
+    var trava = [];
+    if (val.acidentes != null && val.acidentes > 0) trava.push(val.acidentes + (val.acidentes === 1 ? ' acidente' : ' acidentes') + ' com afastamento');
+    inds.forEach(function(x) { if (x.ind.trava && x.nota === 0) trava.push(x.ind.nome.toLowerCase() + ' abaixo do mínimo'); });
+    return { mes: m, ild: pesos ? soma / pesos : null, pesos: pesos, inds: inds, porPilar: porPilar, trava: trava, acidentes: val.acidentes, val: val };
+  }
+
+  // ----- tela -----
+  function mtTrofeuHtml(t, podeEditar) {
+    return '<button type="button" class="mt-tr a-' + escapeHtml(t.area || 'outro') + '"' + (podeEditar ? ' data-mt="trofeu" data-id="' + escapeHtml(t.id) + '"' : ' tabindex="-1"') + '>' +
+      '<span class="mt-tr-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span>' +
+      '<span class="mt-tr-t">' + escapeHtml(t.titulo) + '</span><span class="mt-tr-p">' + escapeHtml(t.periodo || '') + '</span></button>';
+  }
+  function mtRecordes(m) {
+    // mês atual passou o melhor mês anterior registrado no app? sugere o troféu (só a senha mestre registra)
+    if (!ehMestre()) return [];
+    var out = [], tr = mtTrofeus();
+    [['producao', 'Recorde de produção', 'producao'], ['carreg24', 'Recorde de carregamentos em 24 horas', 'logistica']].forEach(function(c) {
+      var atual = mtValores(m).v[c[0]];
+      if (atual == null) return;
+      var melhor = null, mesMelhor = '';
+      for (var i = 1; i <= 24; i++) { var mm = mtMesMais(m, -i), x = mtValores(mm).v[c[0]]; if (x != null && (melhor == null || x > melhor)) { melhor = x; mesMelhor = mm; } }
+      var per = mtMesNomeCap(m);
+      if (melhor != null && atual > melhor && !tr.some(function(t) { return t.titulo === c[1] && t.periodo === per; }))
+        out.push({ titulo: c[1], periodo: per, area: c[2], txt: per + ' já passou o recorde: ' + mtFmt(atual, mtIndPorId(c[0])) + ' ' + mtIndPorId(c[0]).un + ' (antes: ' + mtFmt(melhor, mtIndPorId(c[0])) + ' em ' + mtMesNome(mesMelhor) + ').' });
+    });
+    return out;
+  }
+  function mtBarraHtml(nota) {
+    var w = nota == null ? 0 : Math.max(2, Math.min(100, nota / 120 * 100));
+    return '<div class="mt-barra" aria-hidden="true"><i style="width:' + w.toFixed(1) + '%"></i><b style="left:50%"></b><b style="left:83.33%"></b></div>';
+  }
+  function mtNiveisTxt(x) {
+    if (!x.n) return 'meta a definir (Plano)';
+    var u = x.ind.un === '%' ? '' : ' ' + x.ind.un, f = function(v) { return mtFmt(v, x.ind); };
+    var pre = x.ind.dir < 0 ? 'até ' : '';
+    return 'mín. ' + pre + f(x.n[0]) + ' · meta ' + pre + f(x.n[1]) + (x.n[2] !== x.n[1] ? ' · superação ' + pre + f(x.n[2]) : '') + u;
+  }
+  function mtHistHtml(m) { var l = []; for (var i = 5; i >= 0; i--) { var mm = mtMesMais(m, -i); l.push({ mes: mm, ild: mtResultado(mm).ild }); } return mtHistHtmlDe(l, m); }
+  function mtHistHtmlDe(lista, m) {
+    return '<div class="mt-hist" aria-label="Últimos 6 meses">' + lista.map(function(x) {
+      var mm = x.mes, v = x.ild, h = v == null ? 0 : Math.max(4, Math.min(100, v / 120 * 100));
+      return '<span class="mt-hist-c' + (mm === m ? ' on' : '') + '" title="' + escapeHtml(mtMesNomeCap(mm) + ': ' + (v == null ? 'sem dados' : Math.round(v) + ' pontos')) + '"><i class="f-' + mtFaixa(v) + '" style="height:' + h.toFixed(0) + '%"></i><small>' + MT_MESES[Number(mm.slice(5)) - 1].slice(0, 3) + '</small></span>';
+    }).join('') + '</div>';
+  }
+  function mtHtmlResultado(r, hist, setor) {
+    var fx = mtFaixa(r.ild), h = '';
+    h += '<div class="mt-ild f-' + fx + '"><div class="mt-ild-num">' + (r.ild == null ? '—' : Math.round(r.ild)) + '<small>pontos</small></div>' +
+      '<div class="mt-ild-txt"><b>Índice Levíssima de Desempenho</b><span>' + (r.ild == null ? 'Sem dados ainda neste mês.' : escapeHtml(MT_FAIXA_TXT[fx]) + ' · meta 100 · superação 120') + '</span>' +
+      (r.trava.length ? '<span class="mt-trava no">Premiação travada: ' + escapeHtml(r.trava.join('; ')) + '</span>'
+        : r.acidentes == null ? '<span class="mt-trava aviso">Lance a segurança do mês para liberar a premiação.</span>'
+        : '<span class="mt-trava ok">Premiação liberada: segurança e qualidade dentro do mínimo.</span>') + '</div>' + hist + '</div>';
+    h += '<div class="mt-seg' + (r.acidentes > 0 ? ' no' : r.acidentes === 0 ? ' ok' : '') + '"><b>Segurança (pré-requisito)</b><span>' + (r.acidentes == null ? 'acidentes com afastamento: não lançado' : r.acidentes === 0 ? 'nenhum acidente com afastamento' : r.acidentes + (r.acidentes === 1 ? ' acidente' : ' acidentes') + ' com afastamento') + '</span></div>';
+    h += '<div class="mt-pilares">';
+    MT_PILARES.forEach(function(p) {
+      var pp = r.porPilar[p.id], np = pp && pp.pesos ? pp.soma / pp.pesos : null, peso = r.inds.filter(function(x) { return x.ind.pilar === p.id; }).reduce(function(s, x) { return s + (Number(x.peso) || 0); }, 0);
+      h += '<section class="mt-pilar p-' + p.id + '"><div class="mt-pilar-h"><h3>' + escapeHtml(p.nome) + '</h3><span>peso ' + peso + (np != null ? ' · nota ' + Math.round(np) : '') + '</span></div>';
+      r.inds.filter(function(x) { return x.ind.pilar === p.id; }).forEach(function(x) {
+        var fxi = x.n ? mtFaixa(x.nota) : 'sem';
+        var chip = !x.n ? '<span class="q-chip">sem meta</span>' : x.v == null ? '<span class="q-chip">sem dado</span>' : '<span class="q-chip mt-c-' + fxi + '">' + escapeHtml(MT_FAIXA_TXT[fxi]) + '</span>';
+        h += '<div class="mt-ind f-' + fxi + '"><div class="mt-ind-top"><span class="mt-ind-n">' + escapeHtml(x.ind.nome) + (x.ind.trava ? ' <span class="mt-gat" title="Abaixo do mínimo trava a premiação">gatilho</span>' : '') +
+          '<small>' + escapeHtml(MT_FONTES[x.fonte] || x.fonte) + ' · peso ' + x.peso + '</small></span><span class="mt-ind-v">' + mtFmt(x.v, x.ind) + (x.v != null && x.ind.un !== '%' ? '<small> ' + escapeHtml(x.ind.un) + '</small>' : '') + '</span></div>' +
+          mtBarraHtml(x.n ? x.nota : null) + '<div class="mt-ind-niv"><span>' + escapeHtml(mtNiveisTxt(x)) + '</span>' + chip + '</div></div>';
+      });
+      h += '</section>';
+    });
+    h += '</div>';
+    h += '<p class="field-hint">Nota de cada indicador: 0 abaixo do mínimo, 60 no mínimo, 100 na meta e 120 na superação. O índice é a média das notas pelos pesos (só entram os indicadores com meta e com dado no mês).' + (setor ? '' : ' Veja o método em “Plano e método”.') + '</p>';
+    return h;
+  }
+  function mtHtmlPainel() {
+    var m = mtUi.mes, r = mtResultado(m), tr = mtTrofeus(), mestre = ehMestre(), h = '';
+    h += '<section class="mt-sala"><div class="section-head"><h3 class="q-plano-t" style="margin:0">Sala de troféus</h3><span class="count-chip">' + tr.length + '</span>' + (mestre ? '<button type="button" class="btn-text" data-mt="trofeu-novo" style="margin-left:auto">+ Troféu</button>' : '') + '</div>' +
+      '<div class="mt-tr-grid">' + tr.map(function(t) { return mtTrofeuHtml(t, mestre); }).join('') + '</div></section>';
+    mtRecordes(m).forEach(function(s, i) {
+      h += '<div class="mt-recorde"><span>🏆 ' + escapeHtml(s.txt) + '</span><button type="button" class="btn btn-primary btn-sm" data-mt="recorde" data-i="' + i + '">Registrar troféu</button></div>';
+    });
+    h += '<div class="mt-mesnav"><button type="button" class="btn-text" data-mt="mes" data-n="-1" aria-label="Mês anterior">◀ Anterior</button><b>' + escapeHtml(mtMesNomeCap(m)) + '</b>' +
+      '<button type="button" class="btn-text" data-mt="mes" data-n="1" aria-label="Próximo mês"' + (m >= mtMesAtual() ? ' disabled' : '') + '>Próximo ▶</button></div>';
+    h += mtHtmlResultado(r, mtHistHtml(m));
+    return h;
+  }
+  function mtHtmlTurnos() {
+    var m = mtUi.mes, lista = mtTurnos(m).sort(function(a, b) { return (String(b.data) + b.turno).localeCompare(String(a.data) + a.turno); }), h = '';
+    h += '<div class="mt-mesnav"><button type="button" class="btn-text" data-mt="mes" data-n="-1">◀ Anterior</button><b>' + escapeHtml(mtMesNomeCap(m)) + '</b><button type="button" class="btn-text" data-mt="mes" data-n="1"' + (m >= mtMesAtual() ? ' disabled' : '') + '>Próximo ▶</button></div>';
+    h += '<div class="section-head"><p class="hint" style="margin:0">No fim de cada turno, o líder aponta o tempo planejado, as paradas, a produção boa e o refugo de cada linha. Daí sai o OEE.</p><button type="button" class="btn btn-primary btn-sm sp-nova" data-mt="turno-novo">+ Apontar turno</button></div>';
+    var semVel = MT_LINHAS.filter(function(l) { return !mtVelocidade(l.id) && lista.some(function(t) { return t.linha === l.id; }); });
+    if (semVel.length) h += '<p class="mt-aviso">Falta a velocidade nominal de ' + escapeHtml(semVel.map(function(l) { return l.nome; }).join(', ')) + ' (em “Plano e método”). Sem ela não dá para calcular a performance e o OEE.</p>';
+    h += '<h3 class="q-plano-t">OEE por linha no mês</h3><div class="mt-linhas">' + MT_LINHAS.map(function(l) {
+      var ts = lista.filter(function(t) { return t.linha === l.id; });
+      if (!ts.length) return '';
+      var o = mtOeeDe(ts), par = { quebra: 0, setup: 0, outros: 0 };
+      ts.forEach(function(t) { MT_PARADAS.forEach(function(p) { par[p[0]] += Number((t.paradas || {})[p[0]]) || 0; }); });
+      var maior = MT_PARADAS.slice().sort(function(a, b) { return par[b[0]] - par[a[0]]; })[0];
+      return '<div class="mt-linha"><b>' + escapeHtml(l.nome) + '</b><span class="mt-linha-oee">' + (o.oee == null ? '—' : mtFmt(o.oee, { dec: 1, un: '%' })) + '</span>' +
+        '<small>' + ts.length + (ts.length === 1 ? ' turno' : ' turnos') + ' · ' + fmtInt(o.boa) + ' ' + l.un + ' bons · refugo ' + (o.refugo == null ? '—' : mtFmt(o.refugo, { dec: 2, un: '%' })) + ' · paradas ' + fmtDuracao(o.paradasMin) + (o.paradasMin ? ' (mais: ' + escapeHtml(maior[1].toLowerCase()) + ')' : '') + '</small></div>';
+    }).join('') + '</div>';
+    if (!lista.length) h += '<p class="empty-state">Nenhum turno apontado em ' + escapeHtml(mtMesNome(m)) + '.</p>';
+    h += '<h3 class="q-plano-t">Apontamentos (' + lista.length + ')</h3>' + lista.map(function(t) {
+      var pt = mtOeePartes(t), l = mtLinha(t.linha);
+      var pct = mtPct;
+      return '<div class="driver-row mt-turno"><span class="driver-name">' + escapeHtml(formatDateBR(t.data).slice(0, 5) + ' · ' + String(t.turno || '').replace(/ \(.*\)$/, '') + ' · ' + l.nome + (l.porMaquina && t.maquinas ? ' (' + t.maquinas + (Number(t.maquinas) === 1 ? ' máquina)' : ' máquinas)') : '')) +
+        '<span class="driver-sub">' + (pt && pt.oee != null ? 'OEE ' + mtPct(pt.oee / 100) + ' · ' : '') + 'disp. ' + pct(pt && pt.A) + ' · perf. ' + pct(pt && pt.P) + ' · qual. ' + pct(pt && pt.Q) + ' · ' + fmtInt(t.boa) + ' ' + escapeHtml(l.un) + ' · paradas ' + fmtDuracao(pt ? pt.paradas : 0) + ' · ' + escapeHtml(t.por || '') + '</span></span>' +
+        '<button type="button" class="btn-text" data-mt="turno" data-id="' + escapeHtml(t.id) + '">Corrigir</button>' + (ehMestre() ? '<button type="button" class="btn-text danger" data-mt="turno-del" data-id="' + escapeHtml(t.id) + '">Excluir</button>' : '') + '</div>';
+    }).join('');
+    return h;
+  }
+  function mtHtmlLanc() {
+    var m = mtUi.mes, md = mtDoc('mes-' + m), r = mtResultado(m), h = '';
+    h += '<div class="mt-mesnav"><button type="button" class="btn-text" data-mt="mes" data-n="-1">◀ Anterior</button><b>' + escapeHtml(mtMesNomeCap(m)) + '</b><button type="button" class="btn-text" data-mt="mes" data-n="1"' + (m >= mtMesAtual() ? ' disabled' : '') + '>Próximo ▶</button></div>';
+    h += '<p class="hint">O que o app ainda não mede sozinho: segurança, SAC e preventiva. Para meses antes do app (ex.: os recordes de agosto e setembro), dá para lançar também os indicadores automáticos.</p>';
+    var linha = function(k, v) { return '<div class="driver-row"><span class="driver-name">' + escapeHtml(k) + '</span><b>' + v + '</b></div>'; };
+    var n = function(x) { return x == null ? '<span class="field-hint">não lançado</span>' : fmtInt(x); };
+    h += '<div class="mt-lanc">' + linha('Acidentes com afastamento', n(mtNum(md && md.acidentes))) + linha('Reclamações de clientes (SAC)', n(mtNum(md && md.sac))) +
+      linha('Horas de preventiva / fora do horário produtivo', md && mtNum(md.prevHoras) != null ? fmtInt(md.prevHoras) + ' h / ' + fmtInt(md.prevHorasFora || 0) + ' h' : '<span class="field-hint">não lançado</span>') +
+      linha('Preventivas feitas / planejadas', md && mtNum(md.prevPlanejadas) != null ? fmtInt(md.prevFeitas || 0) + ' de ' + fmtInt(md.prevPlanejadas) : '<span class="field-hint">não lançado</span>');
+    var man = (md && md.manual) || {}, ks = Object.keys(man).filter(function(k) { return mtNum(man[k]) != null && mtIndPorId(k); });
+    if (ks.length) h += ks.map(function(k) { var ind = mtIndPorId(k); return linha(ind.nome + ' (lançado à mão)', escapeHtml(mtFmt(man[k], ind) + (ind.un === '%' ? '' : ' ' + ind.un))); }).join('');
+    h += '</div>';
+    h += md && md.em ? '<p class="field-hint">Lançado por ' + escapeHtml(md.por || '—') + ' em ' + escapeHtml(formatDateTimeBR(md.em)) + (md.obs ? ' · ' + escapeHtml(md.obs) : '') + '</p>' : '';
+    h += '<button type="button" class="btn btn-primary" data-mt="lanc">' + (md ? 'Corrigir lançamentos de ' : 'Lançar ') + escapeHtml(mtMesNome(m)) + '</button>';
+    if (r.ild != null) h += '<p class="field-hint" style="margin-top:10px">Índice de ' + escapeHtml(mtMesNome(m)) + ': ' + Math.round(r.ild) + ' pontos.</p>';
+    return h;
+  }
+  function mtHtmlPlano() {
+    var m = mtMesAtual(), niv = mtNiveis(m), v = mtVersaoDoMes(m), mestre = ehMestre(), h = '';
+    var soma = MT_IND.reduce(function(s, ind) { return s + (Number(niv[ind.id].peso) || 0); }, 0);
+    h += '<div class="section-head"><h3 class="q-plano-t" style="margin:0">Metas em vigor</h3>' + (mestre ? '<button type="button" class="btn btn-primary btn-sm sp-nova" data-mt="plano-editar">Editar metas</button>' : '') + '</div>';
+    h += '<p class="field-hint">' + (v ? 'Versão que vale desde ' + escapeHtml(mtMesNome(v.desde)) + (v.por ? ', por ' + escapeHtml(v.por) : '') : 'Metas sugeridas (ainda não confirmadas pela senha mestre)') + ' · soma dos pesos: ' + soma + '</p>';
+    MT_PILARES.forEach(function(p) {
+      h += '<h4 class="mt-pl-p p-' + p.id + '">' + escapeHtml(p.nome) + '</h4>';
+      MT_IND.filter(function(ind) { return ind.pilar === p.id; }).forEach(function(ind) {
+        var x = niv[ind.id], u = ind.un === '%' ? '' : ' ' + ind.un, pre = ind.dir < 0 ? '≤ ' : '≥ ';
+        var c = function(i) { return x.n ? escapeHtml(pre + mtFmt(x.n[i], ind) + u) : '<span class="field-hint">a definir</span>'; };
+        h += '<div class="mt-pl-ind"><div class="mt-pl-n"><b>' + escapeHtml(ind.nome) + '</b>' + (ind.trava ? ' <span class="mt-gat">gatilho</span>' : '') + '<small>' + escapeHtml(ind.ajuda) + '</small></div>' +
+          '<div class="mt-pl-niv"><span><small>Peso</small>' + x.peso + '</span><span><small>Mínimo</small>' + c(0) + '</span><span><small>Meta</small>' + c(1) + '</span><span><small>Superação</small>' + c(2) + '</span></div></div>';
+      });
+    });
+    h += '<h4 class="mt-pl-p p-seg">Segurança (pré-requisito, sem peso)</h4><div class="mt-pl-ind"><div class="mt-pl-n"><b>Acidentes com afastamento</b><small>Qualquer acidente com afastamento trava a premiação do mês.</small></div><div class="mt-pl-niv"><span><small>Meta</small>0</span></div></div>';
+    h += '<div class="section-head" style="margin-top:16px"><h3 class="q-plano-t" style="margin:0">Velocidade nominal das linhas</h3>' + (mestre ? '<button type="button" class="btn-text" data-mt="linhas">Editar</button>' : '') + '</div>';
+    h += MT_LINHAS.map(function(l) { var vel = mtVelocidade(l.id); return '<div class="driver-row"><span class="driver-name">' + escapeHtml(l.nome) + '</span><b>' + (vel ? fmtInt(vel) + ' ' + escapeHtml(l.un) + '/h' + (l.porMaquina ? ' por máquina' : '') : '<span class="field-hint">a definir</span>') + '</b></div>'; }).join('');
+    h += '<p class="field-hint">Velocidade nominal (o máximo que a linha faz por hora), na unidade em que a linha conta a produção; nos copos, por máquina rodando. É a base da performance do OEE.</p>';
+    h += '<details class="mt-metodo"><summary>Como o plano funciona (método e referências)</summary>' +
+      '<p><b>Produtividade e qualidade andam juntas.</b> O índice só sobe de verdade quando a linha produz mais <i>e</i> com menos refugo, menos perdas e sem reclamação. Os gatilhos (SAC e análises no prazo) e a segurança travam a premiação: produzir mais com qualidade fora do mínimo não conta.</p>' +
+      '<p><b>Três níveis por indicador.</b> Mínimo (o que já se faz bem), meta (o recorde ou o alvo do ano) e superação (o desafio). Nota 0, 60, 100 e 120, com proporção entre eles. O índice é a média ponderada; 100 = meta batida.</p>' +
+      '<p><b>OEE</b> = disponibilidade × performance × qualidade (Nakajima, JIPM). Classe mundial: 85% (90% × 95% × 99%). Em envase de bebidas, o comum é 60% a 70% e o alvo realista, 78% a 82% em 12 meses (10 a 15 pontos de ganho por ano). Por isso a meta começa em 75% e sobe por versão.</p>' +
+      '<p><b>Manutenção:</b> cumprir 90% ou mais do plano de preventiva é classe mundial; preventiva fora do horário produtivo protege a disponibilidade da linha.</p>' +
+      '<p><b>Reclamações:</b> as melhores envasadoras ficam entre 7 e 10 reclamações por milhão de unidades. Aqui a meta é em número de reclamações procedentes por mês, a partir do recorde de setembro.</p>' +
+      '<p><b>Rotina (Hoshin Kanri e PDCA):</b> 10 minutos no início de cada turno com o painel na TV (o que aconteceu ontem, paradas, refugo, segurança); reunião semanal de produção e qualidade com as maiores perdas do Pareto e as ações; fechamento no 1º dia útil do mês com troféus e reconhecimento. As metas são revistas a cada trimestre, em nova versão.</p>' +
+      '<p><b>Premiação:</b> o índice pode ser a base de um programa de participação nos resultados (Lei 10.101/2000), combinado com a comissão de empregados ou o sindicato. Vale validar com o RH e o jurídico.</p></details>';
+    return h;
+  }
+  function renderMetas() {
+    var el = document.getElementById('mt-conteudo');
+    if (!el || !session || !ehEscritorio()) return;
+    if (!mtUi.mes) mtUi.mes = mtMesAtual();
+    document.querySelectorAll('#mt-areas .seg-btn').forEach(function(b) { var on = b.dataset.mtarea === mtUi.area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    el.innerHTML = ({ painel: mtHtmlPainel, turnos: mtHtmlTurnos, lanc: mtHtmlLanc, plano: mtHtmlPlano }[mtUi.area] || mtHtmlPainel)();
+    mtAgendarResumo();
+  }
+  document.getElementById('mt-areas').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mtarea]');
+    if (!b) return;
+    mtUi.area = b.dataset.mtarea; renderMetas();
+  });
+  document.getElementById('mt-conteudo').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mt]');
+    if (!b || b.disabled) return;
+    var a = b.dataset.mt;
+    if (a === 'mes') { var nm = mtMesMais(mtUi.mes, Number(b.dataset.n)); if (nm <= mtMesAtual()) { mtUi.mes = nm; renderMetas(); } }
+    else if (a === 'trofeu-novo') mtAbrirTrofeu(null);
+    else if (a === 'trofeu') mtAbrirTrofeu(mtTrofeus().find(function(t) { return t.id === b.dataset.id; }) || null);
+    else if (a === 'recorde') { var s = mtRecordes(mtUi.mes)[Number(b.dataset.i)]; if (s) mtAbrirTrofeu(null, s); }
+    else if (a === 'turno-novo') mtAbrirTurno(null);
+    else if (a === 'turno') mtAbrirTurno(mtDoc(b.dataset.id));
+    else if (a === 'turno-del') {
+      var t = mtDoc(b.dataset.id);
+      if (!t || !ehMestre()) return;
+      if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Confirmar exclusão'; return; }
+      mtGravar(t.id, null, 'delete').then(function() { showToast('Apontamento excluído.'); }).catch(function(err) { console.error(err); showToast('Não foi possível agora.'); });
+    }
+    else if (a === 'lanc') mtAbrirLancamento(mtUi.mes);
+    else if (a === 'plano-editar') mtAbrirPlano();
+    else if (a === 'linhas') mtAbrirLinhas();
+  });
+  // assinatura: a senha mestre assina direto; a equipe assina com a senha de 4 números de quem tem a função
+  function mtAssinar(funcao, funcaoTexto, titulo, semCadastro, feito) {
+    if (ehMestre()) { feito({ id: '', nome: quemSessao() }); return; }
+    openPinDialog({ funcao: funcao, funcaoTexto: funcaoTexto, titulo: titulo, hint: 'Assine com a sua senha de 4 números.', semCadastro: semCadastro, onOk: feito });
+  }
+  function mtAbrirTrofeu(t, pre) {
+    if (!ehMestre()) return;
+    var x = t || pre || {};
+    gerAbrir({
+      titulo: t ? 'Troféu' : 'Novo troféu', botao: 'Salvar',
+      html: '<label>Conquista <span class="req">*</span><input type="text" id="mt-tr-tit" maxlength="80" value="' + escapeHtml(x.titulo || '') + '" placeholder="Ex.: Recorde de produção" autocomplete="off" /></label>' +
+        '<label>Quando <span class="req">*</span><input type="text" id="mt-tr-per" maxlength="40" value="' + escapeHtml(x.periodo || '') + '" placeholder="Ex.: Outubro de 2026" autocomplete="off" /></label>' +
+        '<label>Área<select id="mt-tr-area">' + Object.keys(MT_AREAS_TR).map(function(k) { return '<option value="' + k + '"' + ((x.area || 'producao') === k ? ' selected' : '') + '>' + MT_AREAS_TR[k] + '</option>'; }).join('') + '</select></label>' +
+        (t ? '<button type="button" class="btn-text danger" data-ger="remover">Tirar este troféu da sala</button>' : ''),
+      acao: function(k, btn) {
+        if (k !== 'remover' || !t) return;
+        if (btn.dataset.ok !== '1') { btn.dataset.ok = '1'; btn.textContent = 'Toque de novo para confirmar'; return; }
+        mtGravar('trofeus', { lista: mtTrofeus().filter(function(y) { return y.id !== t.id; }), em: new Date().toISOString(), por: quemSessao() }, 'set').then(function() { gerFechar(); showToast('Troféu retirado.'); });
+      },
+      salvar: function() {
+        var tit = gerVal('mt-tr-tit'), per = gerVal('mt-tr-per');
+        if (!tit || !per) return gerErro('Informe a conquista e quando foi.');
+        var novo = { id: t ? t.id : 'tr-' + uid(), titulo: tit, periodo: per, area: document.getElementById('mt-tr-area').value };
+        var lista = mtTrofeus().slice(), i = lista.findIndex(function(y) { return y.id === novo.id; });
+        if (i >= 0) lista[i] = novo; else lista.push(novo);
+        return mtGravar('trofeus', { lista: lista, em: new Date().toISOString(), por: quemSessao() }, 'set').then(function() { showToast(t ? 'Troféu salvo.' : '🏆 Troféu na sala!'); });
+      }
+    });
+  }
+  function mtAbrirTurno(t) {
+    var linhaPadrao = (t && t.linha) || 'l1', p = (t && t.paradas) || {}, ehSetor = !!session && session.role === 'setor';
+    function maquinas() { return Math.max(1, Math.min(20, Math.round(numCampo(gerVal('mt-t-maq')) || 1))); }
+    function prev() {
+      var lin = document.getElementById('mt-t-linha').value, L = mtLinha(lin), vel = mtVelocidade(lin) * (L.porMaquina ? maquinas() : 1);
+      document.getElementById('mt-t-maq-box').classList.toggle('hidden', !L.porMaquina);
+      document.querySelectorAll('#ger-form-body .mt-t-un').forEach(function(x) { x.textContent = L.un; });
+      var x = { linha: lin, vel: vel, planejadoH: numCampo(gerVal('mt-t-h')), boa: numCampo(gerVal('mt-t-boa')), refugo: numCampo(gerVal('mt-t-ref')) || 0, paradas: {} };
+      MT_PARADAS.forEach(function(pp) { x.paradas[pp[0]] = numCampo(gerVal('mt-t-' + pp[0])) || 0; });
+      var pt = x.planejadoH > 0 && x.boa != null ? mtOeePartes(x) : null, el = document.getElementById('mt-t-prev');
+      var pct = mtPct;
+      el.innerHTML = !pt ? 'Preencha o tempo planejado e a produção para ver o OEE.' : !vel ? 'Disponibilidade ' + pct(pt.A) + ' · qualidade ' + pct(pt.Q) + '. <b>Falta a velocidade nominal da linha</b> (Plano e método) para a performance e o OEE.'
+        : 'Disponibilidade ' + pct(pt.A) + ' × performance ' + pct(pt.P) + ' × qualidade ' + pct(pt.Q) + ' = <b>OEE ' + pct(pt.oee / 100) + '</b>';
+    }
+    gerAbrir({
+      titulo: t ? 'Corrigir apontamento de turno' : 'Apontamento de turno', botao: 'Assinar e salvar',
+      html: '<div class="row-2"><label>Data <span class="req">*</span><input type="date" id="mt-t-data" value="' + escapeHtml(t ? t.data : todayIso()) + '" max="' + todayIso() + '" /></label>' +
+        '<label>Turno <span class="req">*</span><select id="mt-t-turno">' + Q_TURNOS.slice(0, 3).map(function(x) { return '<option' + (t && t.turno === x ? ' selected' : '') + '>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label></div>' +
+        '<label>Linha <span class="req">*</span><select id="mt-t-linha">' + MT_LINHAS.map(function(l) { return '<option value="' + l.id + '"' + (linhaPadrao === l.id ? ' selected' : '') + '>' + escapeHtml(l.nome) + '</option>'; }).join('') + '</select></label>' +
+        '<label id="mt-t-maq-box" class="hidden">Máquinas rodando <span class="req">*</span><input type="number" id="mt-t-maq" min="1" max="20" step="1" inputmode="numeric" value="' + escapeHtml(t && t.maquinas ? String(t.maquinas) : '1') + '" /></label>' +
+        '<label>Tempo planejado de produção (horas) <span class="req">*</span><input type="number" id="mt-t-h" min="0.5" max="24" step="0.25" inputmode="decimal" value="' + escapeHtml(t ? String(t.planejadoH) : '8') + '" /></label>' +
+        '<p class="field-label">Paradas não planejadas (minutos)</p>' + MT_PARADAS.map(function(pp) { return '<label>' + escapeHtml(pp[1]) + '<input type="number" id="mt-t-' + pp[0] + '" min="0" max="1440" step="1" inputmode="numeric" value="' + escapeHtml(p[pp[0]] != null ? String(p[pp[0]]) : '0') + '" /></label>'; }).join('') +
+        '<div class="row-2"><label>Produção boa (<span class="mt-t-un">fardos</span>) <span class="req">*</span><input type="number" id="mt-t-boa" min="0" step="1" inputmode="numeric" value="' + escapeHtml(t ? String(t.boa) : '') + '" /></label>' +
+        '<label>Refugo (<span class="mt-t-un">fardos</span>) <input type="number" id="mt-t-ref" min="0" step="1" inputmode="numeric" value="' + escapeHtml(t ? String(t.refugo || 0) : '0') + '" /></label></div>' +
+        '<p class="mt-prev" id="mt-t-prev"></p>' +
+        '<label>Observação <span class="opt">(opcional: principal parada, troca de produto…)</span><input type="text" id="mt-t-obs" maxlength="160" value="' + escapeHtml(t ? t.obs || '' : '') + '" autocomplete="off" /></label>' +
+        (ehSetor ? '<label>Seu nome <span class="req">*</span><input type="text" id="mt-t-nome" maxlength="60" autocomplete="off" /></label>' : ''),
+      depois: prev, input: prev, change: prev,
+      salvar: function() {
+        var data = gerVal('mt-t-data'), turno = document.getElementById('mt-t-turno').value, linha = document.getElementById('mt-t-linha').value;
+        var h = numCampo(gerVal('mt-t-h')), boa = numCampo(gerVal('mt-t-boa')), ref = numCampo(gerVal('mt-t-ref')) || 0, par = {}, totPar = 0;
+        MT_PARADAS.forEach(function(pp) { var v = numCampo(gerVal('mt-t-' + pp[0])) || 0; par[pp[0]] = Math.max(0, Math.round(v)); totPar += par[pp[0]]; });
+        if (!data || data > todayIso()) return gerErro('Informe a data do turno (até hoje).');
+        if (!(h > 0) || h > 24) return gerErro('Tempo planejado entre 0,5 e 24 horas.');
+        if (totPar > h * 60) return gerErro('As paradas passam do tempo planejado.');
+        if (boa == null || boa < 0) return gerErro('Informe a produção boa.');
+        if (ehSetor && !gerVal('mt-t-nome')) return gerErro('Informe o seu nome.');
+        if (ref < 0) return gerErro('Refugo não pode ser negativo.');
+        if (mtTurnos().some(function(x) { return (!t || x.id !== t.id) && x.data === data && x.turno === turno && x.linha === linha; })) return gerErro('Esse turno já foi apontado nesta linha. Toque em “Corrigir” na lista.');
+        var L = mtLinha(linha), maq = L.porMaquina ? maquinas() : null;
+        var rec = { tipo: 'turno', data: data, turno: turno, linha: linha, un: L.un, planejadoH: h, paradas: par, boa: Math.round(boa), refugo: Math.round(ref), vel: mtVelocidade(linha) * (maq || 1), obs: gerVal('mt-t-obs') };
+        if (maq) rec.maquinas = maq;
+        var assinar = ehSetor ? function(feito) { feito({ id: '', nome: gerVal('mt-t-nome') + (session.nome ? ' · ' + session.nome : '') }); }
+          : function(feito) { mtAssinar('nome', 'é da equipe', 'Assinar o apontamento', 'Ninguém da equipe tem senha de 4 números em Cadastros › Equipe.', feito); };
+        assinar(function(mm) {
+          var agora = new Date().toISOString();
+          Object.assign(rec, t ? { corrigidoPor: mm.nome, corrigidoEm: agora, por: t.por, porId: t.porId || '', em: t.em } : { por: mm.nome, porId: mm.id || '', em: agora });
+          mtGravar(t ? t.id : 'turno-' + uid(), rec, 'set').then(function() { gerFechar(); showToast('Turno apontado.'); }).catch(function(err) { console.error(err); gerErro('Não foi possível salvar agora.'); });
+        });
+        return false;
+      }
+    });
+  }
+  function mtAbrirLancamento(m) {
+    var md = mtDoc('mes-' + m) || {}, man = md.manual || {};
+    var campo = function(id, rot, v, extra) { return '<label>' + rot + '<input type="number" id="' + id + '" min="0" step="any" inputmode="decimal" value="' + escapeHtml(v != null ? String(v) : '') + '"' + (extra || '') + ' /></label>'; };
+    gerAbrir({
+      titulo: 'Lançamentos de ' + mtMesNome(m), botao: 'Assinar e salvar',
+      html: '<p class="field-label">Segurança e qualidade</p><div class="row-2">' + campo('mt-l-acid', 'Acidentes com afastamento', md.acidentes) + campo('mt-l-sac', 'Reclamações de clientes (SAC)', md.sac) + '</div>' +
+        '<p class="field-label">Manutenção preventiva</p><div class="row-2">' + campo('mt-l-ph', 'Horas de preventiva no mês', md.prevHoras) + campo('mt-l-phf', 'Dessas, fora do horário produtivo', md.prevHorasFora) + '</div>' +
+        '<div class="row-2">' + campo('mt-l-pp', 'Preventivas planejadas', md.prevPlanejadas) + campo('mt-l-pf', 'Preventivas feitas', md.prevFeitas) + '</div>' +
+        '<details class="mt-hist-man"' + (Object.keys(man).length ? ' open' : '') + '><summary>Histórico ou correção dos indicadores automáticos</summary><p class="field-hint">Preencha só para meses antes do app (ou para corrigir): o valor digitado vale no lugar do automático. Deixe em branco para usar o do app.</p>' +
+        MT_IND.filter(function(ind) { return ind.fonte !== 'mes'; }).map(function(ind) { return campo('mt-l-m-' + ind.id, escapeHtml(ind.nome) + ' (' + escapeHtml(ind.un) + ')', man[ind.id]); }).join('') + '</details>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mt-l-obs" maxlength="200" value="' + escapeHtml(md.obs || '') + '" autocomplete="off" /></label>',
+      salvar: function() {
+        var g = function(id) { var v = numCampo(gerVal(id)); return v == null ? null : v; };
+        var rec = { mes: m, acidentes: g('mt-l-acid'), sac: g('mt-l-sac'), prevHoras: g('mt-l-ph'), prevHorasFora: g('mt-l-phf'), prevPlanejadas: g('mt-l-pp'), prevFeitas: g('mt-l-pf'), manual: {}, obs: gerVal('mt-l-obs') };
+        if ([rec.acidentes, rec.sac, rec.prevHoras, rec.prevHorasFora, rec.prevPlanejadas, rec.prevFeitas].some(function(v) { return v != null && v < 0; })) return gerErro('Os números não podem ser negativos.');
+        if (rec.prevHorasFora != null && rec.prevHoras != null && rec.prevHorasFora > rec.prevHoras) return gerErro('As horas fora do horário produtivo passam do total de preventiva.');
+        if (rec.prevFeitas != null && rec.prevPlanejadas == null) return gerErro('Informe também as preventivas planejadas.');
+        if (rec.prevHorasFora != null && rec.prevHoras == null) return gerErro('Informe também as horas de preventiva do mês.');
+        MT_IND.filter(function(ind) { return ind.fonte !== 'mes'; }).forEach(function(ind) { var v = g('mt-l-m-' + ind.id); if (v != null) rec.manual[ind.id] = v; });
+        var pctRuim = Object.keys(rec.manual).some(function(k) { return mtIndPorId(k).un === '%' && (rec.manual[k] < 0 || rec.manual[k] > 100); });
+        if (pctRuim) return gerErro('Percentuais entre 0 e 100.');
+        mtAssinar('gestao', 'é da diretoria / gestão', 'Assinar os lançamentos', 'Ninguém com “Diretoria / gestão” em Cadastros › Equipe.', function(mm) {
+          rec.por = mm.nome; rec.em = new Date().toISOString();
+          mtGravar('mes-' + m, rec, 'set').then(function() { gerFechar(); showToast('Lançamentos de ' + mtMesNome(m) + ' salvos.'); }).catch(function(err) { console.error(err); gerErro('Não foi possível salvar agora.'); });
+        });
+        return false;
+      }
+    });
+  }
+  function mtAbrirPlano() {
+    if (!ehMestre()) return;
+    var niv = mtNiveis(mtMesAtual()), meses = [mtMesAtual(), mtMesMais(mtMesAtual(), 1), mtMesMais(mtMesAtual(), 2)];
+    var cel = function(id, v) { return '<input type="number" id="' + id + '" step="any" inputmode="decimal" value="' + escapeHtml(v != null ? String(v) : '') + '" />'; };
+    gerAbrir({
+      titulo: 'Editar metas', botao: 'Salvar nova versão',
+      html: '<label>Vale a partir de<select id="mt-p-desde">' + meses.map(function(mm) { return '<option value="' + mm + '">' + escapeHtml(mtMesNomeCap(mm)) + '</option>'; }).join('') + '</select></label>' +
+        '<p class="field-hint">Os meses anteriores continuam com as metas da época. Para indicador “quanto menor, melhor” (SAC, refugo, perdas), o mínimo é o maior número aceito. Deixe os três em branco para deixar sem meta.</p>' +
+        MT_PILARES.map(function(p) {
+          return '<p class="field-label">' + escapeHtml(p.nome) + '</p>' + MT_IND.filter(function(ind) { return ind.pilar === p.id; }).map(function(ind) {
+            var x = niv[ind.id];
+            return '<div class="mt-p-ind"><b>' + escapeHtml(ind.nome) + ' <small>(' + escapeHtml(ind.un) + (ind.dir < 0 ? ', quanto menor, melhor' : '') + ')</small></b><div class="mt-p-cels">' +
+              '<label>Peso' + cel('mt-p-w-' + ind.id, x.peso) + '</label><label>Mínimo' + cel('mt-p-0-' + ind.id, x.n ? x.n[0] : null) + '</label><label>Meta' + cel('mt-p-1-' + ind.id, x.n ? x.n[1] : null) + '</label><label>Superação' + cel('mt-p-2-' + ind.id, x.n ? x.n[2] : null) + '</label></div></div>';
+          }).join('');
+        }).join(''),
+      salvar: function() {
+        var niveis = {}, pesos = {}, erro = '';
+        MT_IND.forEach(function(ind) {
+          if (erro) return;
+          var w = numCampo(gerVal('mt-p-w-' + ind.id)), n = [0, 1, 2].map(function(i) { return numCampo(gerVal('mt-p-' + i + '-' + ind.id)); });
+          if (w == null || w < 0 || w > 100) { erro = ind.nome + ': peso entre 0 e 100.'; return; }
+          pesos[ind.id] = w;
+          var vazios = n.filter(function(v) { return v == null; }).length;
+          if (vazios === 3) { niveis[ind.id] = null; return; }
+          if (vazios) { erro = ind.nome + ': preencha mínimo, meta e superação (ou deixe os três em branco).'; return; }
+          var ok = ind.dir > 0 ? n[0] <= n[1] && n[1] <= n[2] : n[0] >= n[1] && n[1] >= n[2];
+          if (!ok) { erro = ind.nome + ': ' + (ind.dir > 0 ? 'o mínimo deve ser menor ou igual à meta, e a meta menor ou igual à superação.' : 'quanto menor, melhor: o mínimo é o maior número, depois a meta, depois a superação.'); return; }
+          if (ind.un === '%' && n.some(function(v) { return v < 0 || v > 100; })) { erro = ind.nome + ': percentual entre 0 e 100.'; return; }
+          niveis[ind.id] = n;
+        });
+        if (erro) return gerErro(erro);
+        if (!Object.keys(pesos).some(function(k) { return pesos[k] > 0; })) return gerErro('Ao menos um indicador precisa de peso.');
+        var pl = mtPlano(), desde = document.getElementById('mt-p-desde').value, agora = new Date().toISOString();
+        var versoes = (pl.versoes || []).filter(function(v) { return v.desde !== desde; }).concat([{ desde: desde, niveis: niveis, pesos: pesos, em: agora, por: quemSessao() }]);
+        return mtGravar('plano', Object.assign({}, pl, { versoes: versoes, atualizadoEm: agora }), 'set').then(function() { showToast('Metas salvas (valem a partir de ' + mtMesNome(desde) + ').'); });
+      }
+    });
+  }
+  function mtAbrirLinhas() {
+    if (!ehMestre()) return;
+    gerAbrir({
+      titulo: 'Velocidade nominal das linhas', botao: 'Salvar',
+      html: '<p class="field-hint">O máximo que cada linha faz por hora, na unidade em que ela conta a produção. Nos copos, por máquina rodando.</p>' +
+        MT_LINHAS.map(function(l) { var v = mtVelocidade(l.id); return '<label>' + escapeHtml(l.nome) + ' (' + escapeHtml(l.un) + '/h' + (l.porMaquina ? ' por máquina' : '') + ')<input type="number" id="mt-v-' + l.id + '" min="0" step="1" inputmode="numeric" value="' + (v ? v : '') + '" /></label>'; }).join(''),
+      salvar: function() {
+        var linhas = {}, erro = '';
+        MT_LINHAS.forEach(function(l) { var v = numCampo(gerVal('mt-v-' + l.id)); if (v != null && v < 0) erro = 'Velocidade não pode ser negativa.'; if (v) linhas[l.id] = { vel: Math.round(v) }; });
+        if (erro) return gerErro(erro);
+        var pl = mtPlano();
+        return mtGravar('plano', Object.assign({}, pl, { versoes: pl.versoes || [], linhas: linhas, atualizadoEm: new Date().toISOString() }), 'set').then(function() { showToast('Velocidades salvas.'); });
+      }
+    });
+  }
+  // ----- resumo para os setores da fábrica: eles não leem estoque, cargas e qualidade, então o escritório publica o
+  // resultado do mês (doc resumo-AAAA-MM) sempre que os números mudam -----
+  var mtUltimoResumo = '', mtResumoTimer = null;
+  function mtEstavel(o) {
+    if (Array.isArray(o)) return '[' + o.map(mtEstavel).join(',') + ']';
+    if (o && typeof o === 'object') return '{' + Object.keys(o).filter(function(k) { return o[k] !== undefined; }).sort().map(function(k) { return JSON.stringify(k) + ':' + mtEstavel(o[k]); }).join(',') + '}';
+    return JSON.stringify(o === undefined ? null : o);
+  }
+  function mtResumoDoc(m) {
+    var r = mtResultado(m), rd = function(v) { return v == null || isNaN(v) ? null : Math.round(v * 100) / 100; }, hist = [];
+    for (var i = 5; i >= 1; i--) { var mm = mtMesMais(m, -i); hist.push({ mes: mm, ild: rd(mtResultado(mm).ild) }); }
+    hist.push({ mes: m, ild: rd(r.ild) });
+    return { mes: m, ild: rd(r.ild), trava: r.trava, acidentes: r.acidentes, hist: hist,
+      inds: r.inds.map(function(x) { return { id: x.ind.id, v: rd(x.v), f: x.fonte, n: x.n, p: x.peso, nota: rd(x.nota) }; }) };
+  }
+  function mtPublicarResumo() {
+    if (!session || !ehEscritorio() || mode !== 'db' || !db) return;
+    var m = mtMesAtual(), novo = mtResumoDoc(m), chave = mtEstavel(novo), atual = mtDoc('resumo-' + m);
+    if (chave === mtUltimoResumo) return;
+    if (atual) { var a = Object.assign({}, atual); delete a.id; delete a.atualizadoEm; if (mtEstavel(a) === chave) { mtUltimoResumo = chave; return; } }
+    mtUltimoResumo = chave;
+    db.collection(MT_COL).doc('resumo-' + m).set(Object.assign({}, novo, { atualizadoEm: new Date().toISOString() })).catch(function(err) { console.error('resumo das metas', err); mtUltimoResumo = ''; });
+  }
+  function mtAgendarResumo() { clearTimeout(mtResumoTimer); mtResumoTimer = setTimeout(function() { try { mtPublicarResumo(); } catch (e) { console.error(e); } }, 1500); }
+  function mtResultadoDeResumo(d) {
+    var porId = {}, r = { mes: d.mes, ild: d.ild, trava: d.trava || [], acidentes: d.acidentes == null ? null : d.acidentes, inds: [], porPilar: {} };
+    (d.inds || []).forEach(function(x) { porId[x.id] = x; });
+    MT_IND.forEach(function(ind) {
+      var x = porId[ind.id] || {}, it = { ind: ind, v: x.v == null ? null : x.v, fonte: x.f || ind.fonte, n: x.n || null, peso: x.p != null ? x.p : ind.peso, nota: x.nota == null ? null : x.nota };
+      r.inds.push(it);
+      if (it.nota != null && it.peso > 0) { var pp = r.porPilar[ind.pilar] || (r.porPilar[ind.pilar] = { soma: 0, pesos: 0 }); pp.soma += it.nota * it.peso; pp.pesos += it.peso; }
+    });
+    return r;
+  }
+  var mtSetorLigado = false;
+  function mtLigarSetor() {
+    var box = document.getElementById('setor-metas');
+    if (!box) return;
+    if (!session || session.role !== 'setor' || mode !== 'db' || !db) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    renderMetasSetor();
+    if (mtSetorLigado) return;
+    mtSetorLigado = true;
+    db.collection(MT_COL).onSnapshot(function(snap) {
+      metasDocs = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      renderMetasSetor();
+    }, function(err) { console.error('metas (setor)', err); });
+  }
+  function renderMetasSetor() {
+    var box = document.getElementById('setor-metas');
+    if (!box || !session || session.role !== 'setor') return;
+    var m = mtMesAtual(), d = mtDoc('resumo-' + m), tr = mtTrofeus(), h = '';
+    h += '<h2 class="section-title" style="margin-top:26px">Metas do mês</h2>';
+    h += '<section class="mt-sala"><div class="section-head"><h3 class="q-plano-t" style="margin:0">Sala de troféus</h3><span class="count-chip">' + tr.length + '</span></div><div class="mt-tr-grid">' + tr.map(function(t) { return mtTrofeuHtml(t, false); }).join('') + '</div></section>';
+    if (d) h += '<div class="mt-mesnav"><b>' + escapeHtml(mtMesNomeCap(m)) + '</b><span class="field-hint">atualizado ' + escapeHtml(formatDateTimeBR(d.atualizadoEm)) + '</span></div>' + mtHtmlResultado(mtResultadoDeResumo(d), mtHistHtmlDe(d.hist || [], m), true);
+    else h += '<p class="field-hint">O resultado do mês aparece aqui assim que o escritório abrir o app.</p>';
+    var ts = mtTurnos(m).sort(function(a, b) { return (String(b.data) + b.turno).localeCompare(String(a.data) + a.turno); }).slice(0, 8);
+    h += '<div class="section-head" style="margin-top:14px"><h3 class="q-plano-t" style="margin:0">Apontamentos de turno</h3><button type="button" class="btn btn-primary btn-sm sp-nova" data-mt="turno-novo" style="margin-left:auto">+ Apontar turno</button></div>';
+    h += ts.length ? ts.map(function(t) {
+      var pt = mtOeePartes(t), l = mtLinha(t.linha);
+      return '<div class="driver-row mt-turno"><span class="driver-name">' + escapeHtml(formatDateBR(t.data).slice(0, 5) + ' · ' + String(t.turno || '').replace(/ \(.*\)$/, '') + ' · ' + l.nome) +
+        '<span class="driver-sub">' + (pt && pt.oee != null ? 'OEE ' + mtPct(pt.oee / 100) + ' · ' : '') + fmtInt(t.boa) + ' ' + escapeHtml(l.un) + ' · paradas ' + fmtDuracao(pt ? pt.paradas : 0) + ' · ' + escapeHtml(t.por || '') + '</span></span></div>';
+    }).join('') : '<p class="field-hint">Nenhum turno apontado neste mês.</p>';
+    box.innerHTML = h;
+  }
+  document.getElementById('setor-metas').addEventListener('click', function(e) { var b = e.target.closest('[data-mt]'); if (b && b.dataset.mt === 'turno-novo') mtAbrirTurno(null); });
+  function mtResumoInicio() {
+    var r = mtResultado(mtMesAtual());
+    return { v: r.ild == null ? 0 : Math.round(r.ild), sem: r.ild == null, trava: r.trava, tr: mtTrofeus().length };
+  }
+
   // ---------- Início: o dia num olhar (indicadores de cada área + atalhos) ----------
   // Inspirado nas telas iniciais dos ERPs (Omie, SAP Fiori, TOTVS): cada cartão mostra o número que importa e
   // leva para a aba; os atalhos abrem direto as ações mais usadas. Só aparecem as áreas que a senha pode ver.
@@ -15576,6 +16338,8 @@
       alerta: baixo > 0 || sr.p.vencidos > 0 || sr.p.atrasadas > 0 });
     var qp = { total: 0, analises: 0 }, nca = 0; try { qp = qPendencias(); nca = qNcsAbertas().length; } catch (e) {}
     tiles.push({ tab: 'qualidade', t: 'Qualidade', v: qp.total, u: qp.total === 1 ? 'pendência' : 'pendências', s: nca + (nca === 1 ? ' NC aberta' : ' NCs abertas') + ' · ' + qp.analises + (qp.analises === 1 ? ' análise vencida' : ' análises vencidas'), alerta: qp.total > 0 });
+    var mr = { v: 0, sem: true, trava: [], tr: 0 }; try { mr = mtResumoInicio(); mtAgendarResumo(); } catch (e) {}
+    tiles.push({ tab: 'metas', t: 'Metas do mês', v: mr.v, u: mr.sem ? 'sem dados ainda' : 'pontos no índice (meta 100)', s: (mr.trava.length ? 'premiação travada · ' : '') + mr.tr + (mr.tr === 1 ? ' troféu' : ' troféus') + ' na sala', alerta: mr.trava.length > 0 });
     var reun = salasAtivas().filter(function(r) { return r.data === hoje && minDe(r.fim) > agoraMin(); }).sort(function(a, b) { return minDe(a.inicio) - minDe(b.inicio); });
     tiles.push({ tab: 'salas', t: 'Salas de reunião', v: reun.length, u: reun.length === 1 ? 'reunião ainda hoje' : 'reuniões ainda hoje', s: reun[0] ? 'próxima ' + reun[0].inicio + ' · ' + salaPorId(reun[0].sala).nome + ' · ' + (reun[0].assunto || '') : 'salas livres' });
     if (perm.indexOf('fretes') >= 0) {
@@ -16004,6 +16768,7 @@
     subscribeCompras();
     subscribeCadastroPedidos();
     subscribeAgOnline();
+    subscribeMetas();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
