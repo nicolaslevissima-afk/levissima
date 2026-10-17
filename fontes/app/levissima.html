@@ -503,6 +503,79 @@
   .ini-v small { font-family: var(--font-display); font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
   .ini-s { grid-area: s; font-size: 0.8125rem; color: var(--muted); line-height: 1.3; }
   .ini-ir { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; color: var(--muted); }
+  /* ---- recado em destaque (mural) ---- */
+  .mural { position: relative; z-index: 30; display: flex; align-items: center; gap: 12px; padding: 12px 44px 12px 16px; margin: 0;
+    background: linear-gradient(100deg, #2D7A1C 0%, #43B02A 38%, #702082 100%); color: #FFFFFF; box-shadow: 0 2px 10px rgba(28, 42, 46, 0.25); overflow: hidden; }
+  .mural::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%); transform: translateX(-100%); animation: mural-brilho 4.5s ease-in-out 0.6s infinite; pointer-events: none; }
+  @keyframes mural-brilho { 0% { transform: translateX(-100%); } 45%, 100% { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) { .mural::after { animation: none; display: none; } }
+  .mural-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); display: inline-flex; align-items: center; justify-content: center; color: #FFE27A; }
+  .mural-ico svg { width: 24px; height: 24px; }
+  .mural-txt { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 0.9375rem; line-height: 1.3; letter-spacing: 0.02em; text-transform: uppercase; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+  .mural-x { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.16); color: #FFFFFF; font-size: 0.875rem; cursor: pointer; }
+  @media (min-width: 1100px) { .mural { padding: 14px 56px 14px 24px; justify-content: center; } .mural-txt { font-size: 1.0625rem; } }
+  /* ---- estoque por local, cronograma de saída e suprimentos ---- */
+  .est-leg.ok { background: rgba(67, 176, 42, 0.14); color: var(--verde-texto); }
+  .est-locais { margin: 2px 0 10px; }
+  .est-loc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+  .est-loc { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 12px; font-family: var(--font-display); font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
+  .est-loc.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .est-loc b { margin-left: 6px; font-family: var(--font-mono); font-size: 0.75rem; background: rgba(67, 176, 42, 0.22); border-radius: 999px; padding: 0 6px; }
+  .pt-unid.est-loc-tot { color: var(--verde-texto); font-weight: 600; }
+  .loc-tab th { white-space: normal; min-width: 72px; }
+  .loc-tab tr.loc-total td { font-weight: 700; background: rgba(99, 103, 122, 0.08); }
+  .sp-nova { margin-left: auto; }
+  .sp-marca { margin: 0 0 14px; }
+  .sp-marca-t { display: flex; align-items: center; gap: 8px; font-weight: 700; margin: 0 0 6px; }
+  .sp-marca-t small { color: var(--muted); font-weight: 400; }
+  .sp-per { background: transparent; border: 0; padding: 0; font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; white-space: nowrap; }
+  .sp-tab td.ok { background: rgba(67, 176, 42, 0.13); color: var(--verde-texto); font-weight: 700; }
+  .sp-tab td.sem { color: var(--muted); }
+  .sp-tab td:first-child { text-align: left; white-space: nowrap; }
+  .sp-tab .est-sub.alerta { color: var(--laranja-texto); font-weight: 700; }
+  .sp-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--pc-bg); box-shadow: 0 0 0 1px rgba(28, 42, 46, 0.3); margin-right: 6px; vertical-align: 0; }
+  .sp-produzir { border: 1px solid var(--line); border-left: 4px solid var(--danger); border-radius: 8px; padding: 10px 12px; margin: 0 0 12px; background: var(--card); }
+  .sp-produzir ul { margin: 0 0 8px; padding: 0; list-style: none; }
+  .sp-produzir li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 0; border-bottom: 1px solid var(--line); font-size: 0.875rem; }
+  .sp-produzir li small { color: var(--muted); }
+  .sp-row { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 0 0 8px; background: var(--card); }
+  .sp-row-t { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 600; font-size: 0.875rem; }
+  .sp-row-t small { color: var(--muted); font-weight: 400; font-size: 0.75rem; text-align: right; }
+  .sp-in { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 6px; font-size: 0.8125rem; }
+  .sp-in input { width: 72px; text-align: right; font-family: var(--font-mono); padding: 8px; margin-top: 0 !important; }
+  .sp-l { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; font-weight: 400; }
+  .sp-g { display: inline-flex; align-items: center; gap: 4px; }
+  .sp-g-x { width: 30px; height: 30px; font-size: 0.75rem; }
+  .sp-acoes { display: flex; flex-wrap: wrap; gap: 16px; margin: 6px 0 4px; }
+  .mp-areas { flex-wrap: wrap; }
+  .mp-areas .seg-btn { padding: 9px 4px; font-size: 0.8125rem; min-width: 33%; }
+  @media (min-width: 560px) { .mp-areas .seg-btn { min-width: 0; } }
+  .sup-dia { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+  .sup-dia small { text-transform: none; letter-spacing: 0; font-weight: 600; font-size: 0.75rem; }
+  .ag-num { color: var(--muted); font-weight: 400; font-family: var(--font-mono); }
+  .ag-it { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; font-size: 0.8125rem; padding: 5px 0; border-top: 1px dashed var(--line); margin-top: 4px; }
+  .ag-espec { font-size: 0.8125rem; white-space: pre-line; background: rgba(99, 103, 122, 0.08); border-radius: 6px; padding: 6px 8px; margin-top: 6px; line-height: 1.4; }
+  .ag-espec-d { grid-column: 1 / -1; font-size: 0.8125rem; margin-top: 2px; }
+  .ag-espec-d summary { cursor: pointer; color: var(--muted); font-weight: 600; }
+  .sup-aviso { color: var(--laranja-texto); font-weight: 600; font-size: 0.8125rem; margin: 6px 0 0; }
+  .sup-aviso.falta { color: var(--danger); }
+  .sup-filtro { display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; flex: 1; }
+  .sup-filtro select { flex: 1; margin-top: 0 !important; }
+  .sup-nec .driver-name { flex: 1; min-width: 200px; }
+  .laudo-row .driver-name { flex: 1; min-width: 200px; }
+  .forn-ins { max-height: 280px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px 8px; margin: 4px 0 12px; }
+  .forn-ins .check-row { padding: 3px 0; }
+  .field-label { font-size: 0.875rem; font-weight: 600; margin: 8px 0 4px; }
+  .ag-linha { display: grid; grid-template-columns: minmax(0, 1fr) 104px 40px; gap: 6px; align-items: center; margin: 0 0 8px; }
+  .ag-linha select, .ag-linha input { margin-top: 0 !important; min-width: 0; }
+  .ck-row { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.8125rem; }
+  .ck-row select { margin-top: 0 !important; }
+  .ck-row.nc select { border-color: var(--danger); color: var(--danger); font-weight: 700; }
+  .agc-it { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 0 0 8px; background: var(--card); }
+  .agc-it.div { border-color: var(--laranja); box-shadow: inset 4px 0 0 var(--laranja); }
+  .agc-it .row-2 { flex-wrap: wrap; }
+  .agc-it .row-2 label { flex: 1; min-width: 110px; }
+  @media (max-width: 559px) { .ck-row { grid-template-columns: minmax(0, 1fr) 128px; } }
   /* ---- qualidade ---- */
   .q-areas { margin: 0 0 14px; }
   .q-areas .seg-btn { padding: 9px 4px; font-size: 0.8125rem; }
@@ -812,6 +885,11 @@
   .lv-s1 { fill: var(--lv-s1); } .lv-s2 { fill: var(--lv-s2); } .lv-s3 { fill: var(--lv-s3); } .lv-s4 { fill: var(--lv-s4); }
   .lv-p { fill: var(--lv-p); } .lv-t { fill: var(--lv-t); }
   .lock-sub { text-align: center; color: var(--muted); font-size: 0.875rem; margin: 4px 0 22px; }
+  .lock-time { text-align: center; margin: 0 0 28px; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; line-height: 1.25;
+    background: linear-gradient(100deg, #2D7A1C, #43B02A 45%, #702082); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .lock-label { text-align: center; font-size: 1rem !important; font-weight: 600; color: var(--ink) !important; margin-top: 8px; }
+  .lock-label input { text-align: center; font-size: 1.125rem; letter-spacing: 0.08em; }
+  #lock-login-form #btn-login-submit { width: 100%; }
   .drivers-admin { margin: 28px 0 40px; padding-top: 18px; border-top: 1px solid var(--line); }
   .driver-row { display: flex; align-items: center; gap: 14px; padding: 10px 2px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
   .driver-name { flex: 1; font-weight: 600; min-width: 100px; }
@@ -888,10 +966,12 @@
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><g id="lv-simb"><path class="lv-s1" d="M423.06 207.32C411.61 207.32 400.50 212 392.50 220.19L392.48 220.18L391.41 221.33C387.82 225.20 382.73 227.41 377.45 227.41C371.58 227.41 366.16 224.81 362.60 220.32C362.08 219.47 361.17 218.95 360.17 218.95C358.96 218.95 357.94 219.69 357.52 220.89L357.36 221.38C356.93 224.33 356.72 227.36 356.72 230.40C356.72 264.98 384.85 293.12 419.44 293.12C423.30 293.12 427.16 292.76 430.94 292.06L431.55 291.90C435.87 291.03 440.01 289.50 443.84 287.36C457.37 279.81 465.77 265.51 465.77 250.03C465.77 226.48 446.61 207.32 423.06 207.32M392.85 224.75L393.89 223.61C401.34 215.39 411.97 210.67 423.06 210.67C444.76 210.67 462.42 228.33 462.42 250.03C462.42 264.30 454.67 277.48 442.21 284.43C438.51 286.5 434.51 287.94 430.28 288.73L429.80 288.86C426.41 289.46 422.92 289.76 419.44 289.76C386.71 289.76 360.08 263.13 360.08 230.40C360.08 227.91 360.23 225.44 360.52 223.05C364.79 227.96 370.90 230.76 377.45 230.76C383.10 230.76 388.66 228.56 392.79 224.70L392.85 224.75"/><path class="lv-s2" d="M429.48 202.91C418.03 202.91 406.93 207.59 398.92 215.78L398.91 215.77L397.83 216.93C394.23 220.79 389.14 223.01 383.87 223.01C378.01 223.01 372.58 220.40 369.01 215.91C368.5 215.05 367.59 214.55 366.59 214.55C365.29 214.55 364.14 215.44 363.85 216.68L363.79 216.98C363.36 219.96 363.14 222.99 363.14 226C363.14 260.57 391.27 288.71 425.85 288.71C429.73 288.71 433.59 288.35 437.37 287.65L437.95 287.50C442.27 286.63 446.41 285.10 450.26 282.95C463.80 275.40 472.20 261.10 472.20 245.63C472.20 222.07 453.04 202.91 429.48 202.91M399.30 220.32L400.31 219.20C407.76 210.98 418.39 206.27 429.48 206.27C451.19 206.27 468.84 223.92 468.84 245.63C468.84 259.89 461.10 273.07 448.63 280.02C444.92 282.09 440.92 283.54 436.71 284.32L436.23 284.45C432.82 285.05 429.32 285.35 425.85 285.35C393.12 285.35 366.5 258.73 366.5 226C366.5 223.57 366.64 221.16 366.94 218.64C371.22 223.56 377.33 226.36 383.87 226.36C389.53 226.36 395.10 224.15 399.23 220.27L399.30 220.32"/><path class="lv-s3" d="M435.91 198.50C424.51 198.50 413.43 203.16 405.43 211.29L405.41 211.27L404.26 212.52C400.66 216.38 395.57 218.60 390.30 218.60C384.43 218.60 379.01 215.99 375.44 211.50C374.92 210.65 374.02 210.14 373.02 210.14C371.99 210.14 371.08 210.69 370.58 211.59L370.51 211.55L370.21 212.57C369.78 215.54 369.57 218.58 369.57 221.58C369.57 256.17 397.70 284.30 432.28 284.30C436.14 284.30 440.01 283.95 443.80 283.24L444.41 283.08C448.72 282.21 452.85 280.69 456.69 278.54C470.22 271 478.62 256.70 478.62 241.22C478.62 217.66 459.46 198.50 435.91 198.50M405.56 216.09L406.73 214.80C414.19 206.57 424.82 201.85 435.91 201.85C457.61 201.85 475.26 219.51 475.26 241.22C475.26 255.48 467.52 268.66 455.06 275.62C451.35 277.68 447.35 279.12 443.14 279.91L442.67 280.04C439.27 280.64 435.78 280.94 432.28 280.94C399.55 280.94 372.92 254.32 372.92 221.58C372.92 219.14 373.07 216.71 373.37 214.24C377.65 219.15 383.76 221.95 390.30 221.95C395.88 221.95 401.38 219.80 405.49 216.02L405.56 216.09"/><path class="lv-s4" d="M481.69 236.81C481.69 251.07 473.95 264.26 461.48 271.21C457.78 273.28 453.78 274.72 449.57 275.51L449.08 275.64C445.66 276.24 442.17 276.54 438.71 276.54C405.98 276.54 379.35 249.91 379.35 217.17C379.35 214.73 379.5 212.31 379.80 209.82C384.06 214.75 390.17 217.55 396.72 217.55C402.37 217.55 407.94 215.34 412.07 211.48L412.13 211.52L413.16 210.39C420.61 202.17 431.24 197.45 442.34 197.45C464.04 197.45 481.69 215.11 481.69 236.81M442.34 194.10C430.82 194.10 419.66 198.83 411.64 207.10L411.63 207.10L410.68 208.11C407.08 211.98 402 214.19 396.72 214.19C390.86 214.19 385.43 211.58 381.87 207.09C381.34 206.24 380.44 205.73 379.45 205.73C378.14 205.73 376.99 206.62 376.71 207.85L376.64 208.16C376.21 211.12 376 214.16 376 217.17C376 251.76 404.13 279.89 438.71 279.89C442.56 279.89 446.42 279.54 450.23 278.84L450.85 278.67C455.16 277.80 459.29 276.28 463.11 274.14C476.64 266.59 485.05 252.29 485.05 236.81C485.05 213.26 465.89 194.10 442.34 194.10"/></g><g id="lv-pal"><path class="lv-p" d="M234.98 310.37L228.62 310.37L228.62 370.08L267.23 370.08L267.23 364.20L234.98 364.20ZM234.98 310.37"/><path class="lv-p" d="M276.96 342.05L307.34 342.05L307.34 336.17L276.96 336.17L276.96 316.25L307.34 316.25L307.34 310.37L270.60 310.37L270.60 370.08L312.08 370.08L312.08 364.20L276.96 364.20ZM276.96 342.05"/><path class="lv-p" d="M335.92 361.66L317.33 310.37L310.60 310.37L332.85 370.08L338.90 370.08L361.23 310.37L354.66 310.37ZM335.92 361.66"/><path class="lv-p" d="M363.80 370.08L370.17 370.08L370.17 310.37L363.80 310.37ZM363.80 370.08"/><path class="lv-p" d="M484.17 370.08L490.53 370.08L490.53 310.37L484.17 310.37ZM484.17 370.08"/><path class="lv-p" d="M528.60 361.23L507.26 310.37L499.86 310.37L499.86 370.08L506.23 370.08L506.23 322.87L525.53 369.19L525.89 370.08L531.32 370.08L550.75 322.94L550.75 370.08L557.12 370.08L557.12 310.37L549.71 310.37ZM528.60 361.23"/><path class="lv-p" d="M403.83 336.83L402.42 336.54C393.41 334.71 385.62 333.12 385.62 325.57C385.62 317.69 393.26 314.90 399.80 314.90C410.11 314.90 416.23 319.69 416.60 328.03L416.64 328.86L423.01 328.86L422.97 327.96C422.42 315.92 413.98 309.01 399.80 309.01C389.58 309.01 379.26 314.13 379.26 325.57C379.26 337.87 391.09 340.32 399.76 342.10L400.66 342.29C409.99 344.19 418.04 345.83 418.04 354C418.04 363.12 408.58 365.55 402.99 365.55C402.34 365.55 401.71 365.53 401.07 365.50L399.57 365.43L399.57 371.33L400.93 371.39C401.61 371.42 402.30 371.44 402.99 371.44C410.94 371.44 424.41 367.77 424.41 354C424.41 341.05 412.51 338.61 403.83 336.83"/><path class="lv-p" d="M456.17 336.83L454.75 336.54C445.74 334.70 437.95 333.12 437.95 325.57C437.95 317.69 445.59 314.90 452.14 314.90C462.44 314.90 468.56 319.69 468.94 328.04L468.97 328.86L475.35 328.86L475.30 327.96C474.75 315.92 466.31 309.01 452.14 309.01C441.91 309.01 431.59 314.13 431.59 325.57C431.59 337.86 443.42 340.31 452.09 342.10L453 342.29C462.32 344.19 470.37 345.83 470.37 354C470.37 363.12 460.91 365.55 455.32 365.55C454.67 365.55 454.04 365.53 453.40 365.50L451.90 365.43L451.90 371.33L453.27 371.39C453.94 371.42 454.62 371.44 455.32 371.44C463.28 371.44 476.74 367.77 476.74 354C476.74 341.05 464.85 338.61 456.17 336.83"/><path class="lv-p" d="M589.57 310.37L583.80 310.37L559.80 370.08L566.64 370.08L586.75 318.98L606.33 370.08L613.15 370.08ZM589.57 310.37"/><path class="lv-p" d="M363.92 306.59L369.90 306.59L377.86 298.26L369.44 298.26ZM363.92 306.59"/><path class="lv-p" d="M607.84 315.23C608.62 315.23 609.31 315.18 609.31 314.25C609.31 313.50 608.63 313.36 607.99 313.36L606.75 313.36L606.75 315.23ZM606.75 318.63L605.83 318.63L605.83 312.59L608.13 312.59C609.56 312.59 610.27 313.11 610.27 314.31C610.27 315.39 609.59 315.86 608.70 315.97L610.42 318.63L609.39 318.63L607.80 316.01L606.75 316.01ZM607.85 319.98C610.23 319.98 612.10 318.12 612.10 315.60C612.10 313.11 610.23 311.24 607.85 311.24C605.46 311.24 603.58 313.11 603.58 315.60C603.58 318.12 605.46 319.98 607.85 319.98M602.53 315.60C602.53 312.59 604.97 310.37 607.85 310.37C610.71 310.37 613.15 312.59 613.15 315.60C613.15 318.63 610.71 320.85 607.85 320.85C604.97 320.85 602.53 318.63 602.53 315.60"/></g><g id="lv-lin"><path class="lv-t" d="M278.32 381.48L280.44 381.48L277.90 384.22L276.60 384.22ZM277.90 386.71L277.86 386.71L275.94 394.46L279.78 394.46ZM276.85 385.54L278.98 385.54L283.08 400.10L281.30 400.10L280.15 395.91L275.55 395.91L274.48 400.10L272.69 400.10ZM276.85 385.54"/><path class="lv-t" d="M298.45 400.22L297.21 400.22L297.21 397.95L297.17 397.95C296.75 399.60 295.44 400.46 293.83 400.46C289.50 400.46 289.17 396.14 289.17 392.73C289.17 389.33 289.77 385.25 293.99 385.25C296.76 385.25 298.35 387.06 298.32 389.78L296.69 389.78C296.67 387.99 295.91 386.75 294.07 386.71C290.88 386.65 290.84 390.30 290.84 392.78C290.84 395 290.73 398.86 293.60 399C296.59 399.14 296.86 396.40 296.84 394.08L293.60 394.08L293.60 392.63L298.45 392.63ZM298.45 400.22"/><path class="lv-t" d="M306.41 385.54L308.02 385.54L308.02 396.01C308 397.16 308.20 399 310.78 399C313.36 399 313.55 397.16 313.53 396.01L313.53 385.54L315.15 385.54L315.15 396.59C315.15 399.19 313.42 400.46 310.78 400.46C308.14 400.46 306.41 399.19 306.41 396.59ZM306.41 385.54"/><path class="lv-t" d="M326.96 386.71L326.92 386.71L325.01 394.46L328.85 394.46ZM325.92 385.54L328.05 385.54L332.15 400.10L330.37 400.10L329.22 395.91L324.62 395.91L323.55 400.10L321.76 400.10ZM325.92 385.54"/><path class="lv-t" d="M357.69 385.54L360.53 385.54L360.53 400.10L358.92 400.10L358.92 388.10C358.92 387.48 358.96 386.88 358.92 386.26L358.88 386.26C358.70 387.12 358.57 387.66 358.43 388.22L355.39 400.10L353.46 400.10L350.41 388.05C350.28 387.55 350.16 387.06 349.99 386.26L349.95 386.26C349.95 386.88 349.99 387.52 349.99 388.14L349.99 400.10L348.37 400.10L348.37 385.54L351.23 385.54L354.08 396.90C354.24 397.52 354.32 398.12 354.39 399.06L354.43 399.06C354.53 398.32 354.63 397.60 354.80 396.88ZM357.69 385.54"/><path class="lv-t" d="M368.76 400.10L368.76 385.54L370.37 385.54L370.37 400.10ZM368.76 400.10"/><path class="lv-t" d="M385.86 385.54L387.47 385.54L387.47 400.10L384.83 400.10L380.75 388.46C380.52 387.80 380.34 387.14 380.21 386.26L380.17 386.26C380.19 387 380.21 387.76 380.21 388.5L380.21 400.10L378.60 400.10L378.60 385.54L381.22 385.54L385.35 397.47C385.53 397.91 385.67 398.38 385.86 399.06L385.90 399.06C385.88 398.53 385.86 397.97 385.86 397.42ZM385.86 385.54"/><path class="lv-t" d="M395.25 400.10L395.25 385.54L402.53 385.54L402.53 387L396.86 387L396.86 391.82L402.18 391.82L402.18 393.27L396.86 393.27L396.87 398.65L402.57 398.65L402.57 400.10ZM395.25 400.10"/><path class="lv-t" d="M411.66 392.24L414.20 392.24C414.95 392.22 417.05 392.11 417.01 389.56C416.98 387.06 415.01 387 413.92 387L411.66 387ZM411.66 400.10L410.04 400.10L410.04 385.54L413.79 385.54C416.84 385.54 418.78 386.34 418.68 389.70C418.62 391.41 417.58 392.63 415.89 392.86L415.89 392.90C417.77 393.08 418.23 393.68 418.47 395.62C418.53 396.71 418.62 397.78 418.78 398.86C418.84 399.14 418.96 399.78 419.34 399.78L419.34 400.10L417.46 400.10C417.11 399.17 416.96 397.37 416.96 396.40C416.96 394.94 416.37 393.70 414.47 393.70L411.66 393.70ZM411.66 400.10"/><path class="lv-t" d="M430.50 386.71L430.46 386.71L428.54 394.46L432.39 394.46ZM429.45 385.54L431.59 385.54L435.69 400.10L433.90 400.10L432.76 395.91L428.16 395.91L427.08 400.10L425.30 400.10ZM429.45 385.54"/><path class="lv-t" d="M442.34 400.10L442.34 385.54L443.95 385.54L443.95 398.65L449.90 398.65L449.90 400.10ZM442.34 400.10"/><path class="lv-t" d="M473.75 385.54L475.36 385.54L475.36 400.10L472.72 400.10L468.64 388.46C468.41 387.80 468.23 387.14 468.10 386.26L468.06 386.26C468.08 387 468.10 387.76 468.10 388.5L468.10 400.10L466.49 400.10L466.49 385.54L469.11 385.54L473.25 397.47C473.42 397.91 473.56 398.38 473.75 399.06L473.79 399.06C473.77 398.53 473.75 397.97 473.75 397.42ZM473.75 385.54"/><path class="lv-t" d="M487.12 386.71L487.08 386.71L485.16 394.46L489.01 394.46ZM486.07 385.54L488.21 385.54L492.31 400.10L490.52 400.10L489.38 395.91L484.78 395.91L483.71 400.10L481.92 400.10ZM486.07 385.54"/><path class="lv-t" d="M496.57 385.54L505.72 385.54L505.72 387L501.95 387L501.95 400.10L500.34 400.10L500.34 387L496.57 387ZM496.57 385.54"/><path class="lv-t" d="M512.41 385.54L514.03 385.54L514.03 396.01C514.01 397.16 514.20 399 516.78 399C519.37 399 519.56 397.16 519.54 396.01L519.54 385.54L521.15 385.54L521.15 396.59C521.15 399.19 519.42 400.46 516.78 400.46C514.14 400.46 512.41 399.19 512.41 396.59ZM512.41 385.54"/><path class="lv-t" d="M530.83 392.24L533.38 392.24C534.14 392.22 536.23 392.11 536.19 389.56C536.16 387.06 534.19 387 533.11 387L530.83 387ZM530.83 400.10L529.23 400.10L529.23 385.54L532.97 385.54C536.02 385.54 537.96 386.34 537.86 389.70C537.80 391.41 536.76 392.63 535.07 392.86L535.07 392.90C536.95 393.08 537.42 393.68 537.65 395.62C537.71 396.71 537.81 397.78 537.96 398.86C538.02 399.14 538.14 399.78 538.52 399.78L538.52 400.10L536.64 400.10C536.29 399.17 536.14 397.37 536.14 396.40C536.14 394.94 535.55 393.70 533.65 393.70L530.83 393.70ZM530.83 400.10"/><path class="lv-t" d="M549.68 386.71L549.64 386.71L547.72 394.46L551.57 394.46ZM548.64 385.54L550.77 385.54L554.87 400.10L553.08 400.10L551.94 395.91L547.33 395.91L546.27 400.10L544.48 400.10ZM548.64 385.54"/><path class="lv-t" d="M561.52 400.10L561.52 385.54L563.14 385.54L563.14 398.65L569.08 398.65L569.08 400.10ZM561.52 400.10"/></g></defs></svg>
 
+<div id="mural" class="mural hidden" role="status" aria-live="polite"></div>
+
 <div id="lock-screen" class="lock-wrap">
   <div class="lock-card">
+    <p class="lock-time">Você faz parte do melhor time!</p>
     <h1 class="lock-title"><span class="brand brand-lg"><svg class="brand-logo" viewBox="228.6 194.1 384.5 206.4" role="img" aria-label="LEVÍSSIMA — Água Mineral Natural"><use href="#lv-simb"/><use href="#lv-pal"/><use href="#lv-lin"/></svg></span></h1>
-    <p class="lock-sub">Cargas, entregas, manutenção, uniformes e estoque</p>
     <div id="lock-loading" class="hidden"><p class="hint">Carregando…</p></div>
     <form id="lock-setup-form" class="hidden" novalidate>
       <p class="hint">Primeiro acesso: crie a senha mestre (acesso completo — escritório, cadastros e pesquisas).</p>
@@ -905,8 +985,7 @@
       <button type="submit" class="btn btn-primary" id="btn-setup-submit">Criar senha e entrar</button>
     </form>
     <form id="lock-login-form" class="hidden" novalidate>
-      <p class="hint">Digite a sua senha. Motoristas: a senha que a empresa cadastrou para você. Escritório: a senha da equipe ou a senha mestre. Setores da fábrica: a senha do seu setor.</p>
-      <label>Senha
+      <label class="lock-label">Digite sua senha
         <input type="password" id="login-senha" autocomplete="current-password" autofocus />
       </label>
       <p class="form-error hidden" id="login-error"></p>
@@ -991,7 +1070,7 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-estoque">
-    <p class="tagline">A <b>entrada de produção</b> (ou a ordem de produção concluída) soma no estoque, as cargas carregadas tiram e a <b>contagem</b> acerta o saldo. O <b>saldo futuro</b> é o que sobra depois das cargas programadas, dia a dia.</p>
+    <p class="tagline">A <b>entrada de produção</b> (ou a ordem de produção concluída) soma no estoque, as cargas carregadas tiram e a <b>contagem por local</b> acerta o saldo. O <b>saldo futuro</b> é o que sobra depois das cargas e do <b>cronograma de saída</b>, dia a dia.</p>
     <div class="est-cards" id="estoque-cards"></div>
     <div class="est-alertas hidden" id="estoque-alertas" role="status"></div>
     <section class="drivers-admin" aria-label="Saldo por produto">
@@ -999,10 +1078,20 @@
       <p class="hint">Em paletes (embaixo, na unidade do produto). <span class="est-leg baixo">laranja</span> abaixo do mínimo · <span class="est-leg neg">vermelho</span> falta produto.</p>
       <div id="estoque-tabela"></div>
     </section>
+    <section class="drivers-admin" id="sp-sec" aria-label="Cronograma de saída">
+      <div class="section-head"><h2 class="section-title">Cronograma de saída</h2><span class="count-chip" id="sp-n"></span><button type="button" class="btn btn-primary btn-sm sp-nova" data-sp="nova">+ Programar saída</button></div>
+      <p class="hint">O que cada marca carrega em cada período, em paletes. A cor mostra o saldo do produto depois do período: <span class="est-leg ok">verde</span> atende · <span class="est-leg baixo">laranja</span> fica abaixo do mínimo · <span class="est-leg neg">vermelho</span> falta produto. Carga lançada para o mesmo produto dentro do período abate a programação (não conta duas vezes).</p>
+      <div id="sp-conteudo"></div>
+    </section>
     <section class="drivers-admin hidden" id="estoque-dias-sec" aria-label="Saldo futuro por dia">
       <div class="section-head"><h2 class="section-title">Saldo futuro por dia</h2></div>
-      <p class="hint">Quanto sobra no fim de cada dia, depois das cargas programadas. Embaixo do saldo, o que sai no dia. Carga atrasada conta como de hoje; pedidos da força de vendas também entram.</p>
+      <p class="hint">Quanto sobra no fim de cada dia, depois das cargas programadas e do cronograma de saída (no primeiro dia de cada período). Embaixo do saldo, o que sai no dia. Carga atrasada conta como de hoje; pedidos da força de vendas também entram.</p>
       <div id="estoque-dias"></div>
+    </section>
+    <section class="drivers-admin" id="est-locais-sec" aria-label="Estoque por local">
+      <div class="section-head"><h2 class="section-title">Estoque por local</h2></div>
+      <p class="hint" id="est-locais-hint"></p>
+      <div id="est-locais-tab"></div>
     </section>
     <section class="drivers-admin" aria-label="Últimos lançamentos do estoque">
       <div class="section-head"><h2 class="section-title">Últimos lançamentos</h2></div>
@@ -1077,10 +1166,14 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-materia">
-    <nav class="segmented" id="mp-area-tabs" aria-label="Área da matéria-prima">
+    <nav class="segmented mp-areas" id="mp-area-tabs" aria-label="Área da matéria-prima">
       <button type="button" class="seg-btn" data-area="producao">Produção</button>
       <button type="button" class="seg-btn" data-area="garrafoes">Garrafões 10L e 20L</button>
+      <button type="button" class="seg-btn" data-area="recebimentos">Recebimentos</button>
+      <button type="button" class="seg-btn" data-area="fornecedores">Fornecedores</button>
+      <button type="button" class="seg-btn" data-area="laudos">Laudos</button>
     </nav>
+    <div id="mp-std">
     <p class="tagline" id="mp-tagline"></p>
     <div class="est-cards" id="mp-cards"></div>
     <div class="est-alertas hidden" id="mp-alertas" role="status"></div>
@@ -1108,6 +1201,8 @@
       <div id="mp-insumos-list"></div>
       <button type="button" class="btn btn-secondary btn-sm" data-mp="ins-novo">+ Adicionar insumo</button>
     </section>
+    </div>
+    <div id="sup-conteudo" class="hidden"></div>
   </div>
 
   <div class="tab-panel hidden" id="tab-salas">
@@ -1167,6 +1262,16 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-cadastros">
+    <section class="drivers-admin" id="mural-admin">
+      <div class="section-head"><h2 class="section-title">Recado em destaque</h2></div>
+      <p class="hint">Aparece no alto do app, assim que a pessoa entra, para todos os acessos: escritório, motoristas, força de vendas e setores da fábrica.</p>
+      <label>Texto do recado
+        <textarea id="f-mural-texto" rows="2" maxlength="200"></textarea>
+      </label>
+      <label class="check-row"><input type="checkbox" id="f-mural-ativo" /> Mostrar o recado para todos</label>
+      <p class="form-error hidden" id="mural-error"></p>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-mural-salvar">Salvar recado</button>
+    </section>
     <section class="drivers-admin" id="produtos-admin">
       <div class="section-head"><h2 class="section-title">Produtos cadastrados</h2></div>
       <p class="hint">Os produtos aparecem no lançamento das cargas nesta ordem. Ao digitar a quantidade, paletes e chapatex são calculados sozinhos pela regra de cada produto.</p>
@@ -1647,6 +1752,10 @@
       <label>Estoque mínimo em paletes <span class="opt" id="f-produto-minimo-padrao"></span>
         <input type="number" id="f-produto-minimo" min="0" step="1" inputmode="numeric" />
       </label>
+      <label class="check-row"><input type="checkbox" id="f-produto-pronto" /> Comprado pronto de terceiro (não é produzido aqui: não usa matéria-prima nem ordem de produção)</label>
+      <label>Fornecedor do produto pronto <span class="opt">(opcional)</span>
+        <input type="text" id="f-produto-fornpronto" maxlength="80" autocomplete="off" />
+      </label>
       <label>Códigos de barras <span class="opt">(do fardo/caixa, DUN-14 e etiqueta do palete; separe com vírgula)</span>
         <input type="text" id="f-produto-codigos" autocomplete="off" inputmode="numeric" placeholder="Ex.: 7898123456789, 17898123456786" />
       </label>
@@ -1800,6 +1909,22 @@
   </div>
 </div>
 
+<div class="sheet-overlay hidden" id="ger-sheet-overlay">
+  <div class="sheet">
+    <div class="sheet-header">
+      <h2 id="ger-sheet-title"></h2>
+      <button class="icon-btn" id="btn-close-ger-sheet" aria-label="Fechar">✕</button>
+    </div>
+    <form id="ger-form" novalidate>
+      <div id="ger-form-body"></div>
+      <p class="form-error hidden" id="ger-form-error"></p>
+      <div class="sheet-actions">
+        <button type="button" class="btn btn-secondary" id="btn-ger-cancel">Fechar</button>
+        <button type="submit" class="btn btn-primary" id="btn-ger-submit">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
 <div class="sheet-overlay hidden" id="carga-sheet-overlay">
   <div class="sheet">
     <div class="sheet-header">
@@ -1971,6 +2096,7 @@
       <label>Data
         <input type="date" id="f-est-data" />
       </label>
+      <div class="est-locais hidden" id="est-locais"></div>
       <div class="est-form-head"><span>Produto</span><span>Paletes</span><span id="est-qtd-head">Quantidade</span></div>
       <div id="est-form-rows" class="est-rows"></div>
       <label>Observações <span class="opt">(opcional)</span>
@@ -2459,6 +2585,7 @@
     loadLocalMarcas();
     loadLocalSalas();
     loadLocalQualidade();
+    loadLocalSup();
     atualizarRastreiosLocais();
     adminConfigLoaded = true;
     motoristasLoaded = true;
@@ -3426,6 +3553,8 @@
     renderSalas();
     renderQualidade();
     renderTabQualidadeBadge();
+    renderTabMateriaBadge();
+    renderMuralAdmin();
     renderInicio();
     renderRH();
     renderPesquisasTab();
@@ -5207,6 +5336,8 @@
       unidadesPorFileira: parseInt(document.getElementById('f-produto-upf').value, 10),
       ordem: parseInt(document.getElementById('f-produto-ordem').value, 10),
       estoqueMinimo: document.getElementById('f-produto-minimo').value,
+      compradoPronto: document.getElementById('f-produto-pronto').checked,
+      fornecedorPronto: document.getElementById('f-produto-fornpronto').value.trim(),
       codigosBarras: document.getElementById('f-produto-codigos').value.split(/[\s,;]+/).map(function(x) { return x.trim(); }).filter(Boolean)
     };
   }
@@ -5249,6 +5380,8 @@
     document.getElementById('f-produto-ordem').value = p ? (ordemDe(p) < 9999 ? ordemDe(p) : '') : maxOrdem + 1;
     document.getElementById('f-produto-minimo').value = p && p.estoqueMinimo !== undefined && p.estoqueMinimo !== null ? p.estoqueMinimo : '';
     document.getElementById('f-produto-codigos').value = ((p && p.codigosBarras) || []).join(', ');
+    document.getElementById('f-produto-pronto').checked = !!(p && p.compradoPronto);
+    document.getElementById('f-produto-fornpronto').value = (p && p.fornecedorPronto) || '';
     atualizarMinimoPadrao();
     document.getElementById('produto-form-error').classList.add('hidden');
     updateProdutoFormRegra();
@@ -5280,6 +5413,7 @@
       unidadesPorFileira: v.tipoChapatex === 'fileira' ? v.unidadesPorFileira : 0,
       ordem: v.ordem >= 1 ? v.ordem : maxOrdem + 1,
       estoqueMinimo: v.estoqueMinimo === '' || isNaN(Number(v.estoqueMinimo)) ? null : Math.max(0, Math.round(Number(v.estoqueMinimo))),
+      compradoPronto: !!v.compradoPronto, fornecedorPronto: v.compradoPronto ? v.fornecedorPronto : '',
       codigosBarras: v.codigosBarras
     };
     var repetido = null;
@@ -9821,28 +9955,31 @@
       if (!d || d < hoje) d = hoje; // atrasada: conta como de hoje
       (porDia[d] = porDia[d] || []).push(c);
     });
+    var prev = spPrevisaoPorDia(hoje); // cronograma de saída (o que ainda não virou carga)
+    Object.keys(prev).forEach(function(d) { if (!porDia[d]) porDia[d] = []; });
     var dias = Object.keys(porDia).sort();
     var linhas = produtosOrdenados().map(function(p) {
       var e = estoqueDe(p.id, null), min = minimoDe(p);
-      var saldo = e ? e.estoque : null, programado = 0, alerta = null, falta = null;
+      var saldo = e ? e.estoque : null, programado = 0, cron = 0, alerta = null, falta = null;
       function abaixo(q) { var v = emPaletes(p, q); return min !== null && v !== null && v < min; }
       if (e && (e.estoque < 0 || abaixo(e.estoque))) alerta = { dia: null, saldo: e.estoque };
       if (e && e.estoque < 0) falta = alerta;
       var cols = dias.map(function(d) {
-        var saida = porDia[d].reduce(function(a, c) { return a + quantidadeNaCarga(c, p.id); }, 0);
-        programado += saida;
+        var doCron = (prev[d] && prev[d][p.id]) || 0;
+        var saida = porDia[d].reduce(function(a, c) { return a + quantidadeNaCarga(c, p.id); }, 0) + doCron;
+        programado += saida; cron += doCron;
         if (saldo !== null) {
           saldo -= saida;
           if (!alerta && saida && (saldo < 0 || abaixo(saldo))) alerta = { dia: d, saldo: saldo };
           if (!falta && saida && saldo < 0) falta = { dia: d, saldo: saldo };
         }
-        return { dia: d, saida: saida, saldo: saldo };
+        return { dia: d, saida: saida, saldo: saldo, cron: doCron };
       });
       if (falta) alerta = falta; // faltar produto para uma carga é mais grave que ficar abaixo do mínimo
-      return { p: p, e: e, min: min, atual: e ? e.estoque : null, programado: programado, futuro: e ? e.estoque - programado : null, cols: cols, alerta: alerta,
+      return { p: p, e: e, min: min, atual: e ? e.estoque : null, programado: programado, cron: cron, futuro: e ? e.estoque - programado : null, cols: cols, alerta: alerta,
         marca: marcaDoTexto(p.nome), abaixo: abaixo };
     });
-    return { hoje: hoje, dias: dias, porDia: porDia, linhas: linhas };
+    return { hoje: hoje, dias: dias, porDia: porDia, linhas: linhas, prev: prev };
   }
   function alertasEstoque(plano) { return (plano || planoEstoque()).linhas.filter(function(l) { return !!l.alerta; }); }
   function classeSaldo(l, q) { return q === null ? '' : q < 0 ? 'neg' : l.abaixo(q) ? 'baixo' : ''; }
@@ -9880,6 +10017,7 @@
     var palAtual = comSaldo.reduce(function(a, l) { return a + (emPaletes(l.p, l.atual) || 0); }, 0);
     var palFuturo = comSaldo.reduce(function(a, l) { return a + (emPaletes(l.p, l.futuro) || 0); }, 0);
     var nCargas = plano.dias.reduce(function(a, d) { return a + plano.porDia[d].length; }, 0);
+    var temCron = linhas.some(function(l) { return l.cron > 0; });
     var ultCont = estoqueMovs.filter(function(m) { return m.tipo === 'contagem'; }).sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); })[0];
     document.getElementById('estoque-cards').innerHTML =
       '<div class="est-card c-entrada"><span class="est-card-k">1 · Entrada de produção</span>' +
@@ -9892,9 +10030,9 @@
         '<button type="button" class="btn btn-secondary btn-sm" data-est="contagem">Contagem (acertar o saldo)</button></div>' +
       '<div class="est-card c-futuro' + (alertas.length ? ' alerta' : '') + '"><span class="est-card-k">3 · Saldo futuro</span>' +
         '<span class="est-card-v">' + (comSaldo.length ? fmtPal(palFuturo) + ' pal' : '—') + '</span>' +
-        '<span class="est-card-s">' + (nCargas ? 'depois de ' + nCargas + (nCargas === 1 ? ' carga programada' : ' cargas programadas') : 'nenhuma carga programada') +
+        '<span class="est-card-s">' + (nCargas ? 'depois de ' + nCargas + (nCargas === 1 ? ' carga programada' : ' cargas programadas') + (temCron ? ' e do cronograma de saída' : '') : temCron ? 'depois do cronograma de saída' : 'nenhuma carga programada') +
           (alertas.length ? ' · <b>' + alertas.length + (alertas.length === 1 ? ' produto abaixo do mínimo' : ' produtos abaixo do mínimo') + '</b>' : '') + '</span>' +
-        (nCargas ? '<button type="button" class="btn btn-secondary btn-sm" data-est="dias">Ver dia a dia</button>' : '') + '</div>';
+        (nCargas || temCron ? '<button type="button" class="btn btn-secondary btn-sm" data-est="dias">Ver dia a dia</button>' : '') + '</div>';
     // alertas
     var al = document.getElementById('estoque-alertas');
     if (!alertas.length) { al.classList.add('hidden'); al.innerHTML = ''; }
@@ -9909,7 +10047,7 @@
     if (!linhas.length) { el.innerHTML = '<p class="empty-state">Nenhum produto cadastrado.</p>'; }
     else {
       var marcaAtual = null;
-      el.innerHTML = '<table class="resumo-table est-table"><thead><tr><th scope="col">Produto</th><th scope="col">Saldo em estoque</th><th scope="col">Cargas programadas</th><th scope="col">Saldo futuro</th></tr></thead><tbody>' +
+      el.innerHTML = '<table class="resumo-table est-table"><thead><tr><th scope="col">Produto</th><th scope="col">Saldo em estoque</th><th scope="col">Saídas programadas</th><th scope="col">Saldo futuro</th></tr></thead><tbody>' +
         linhas.map(function(l) {
           var grupo = '';
           if (l.marca !== marcaAtual) { marcaAtual = l.marca; grupo = '<tr class="est-grupo"><td colspan="4">' + escapeHtml(nomeMarca(l.marca)) + '</td></tr>'; }
@@ -9917,7 +10055,7 @@
           function sub(q) { return emPaletes(l.p, q) === null ? '' : '<span class="est-sub">' + escapeHtml(qtdUnidade(q, u)) + '</span>'; }
           var nome = '<td>' + escapeHtml(l.p.nome) + '<span class="est-sub">' +
             escapeHtml((l.min !== null ? 'mínimo ' + fmtInt(l.min) + ' pal' : 'sem mínimo') + (l.e ? '' : ' · sem contagem')) + '</span></td>';
-          var prog = l.programado ? '<td>− ' + escapeHtml(palTexto(l.p, l.programado)) + sub(l.programado) + '</td>' : '<td>—</td>';
+          var prog = l.programado ? '<td>− ' + escapeHtml(palTexto(l.p, l.programado)) + sub(l.programado) + (l.cron ? '<span class="est-sub">' + escapeHtml(palCurto(l.p, l.cron)) + ' pal do cronograma</span>' : '') + '</td>' : '<td>—</td>';
           return grupo + '<tr>' + nome + celSaldo(l, l.atual, l.e ? sub(l.atual) : '') + prog + celSaldo(l, l.futuro, l.e ? sub(l.futuro) : '') + '</tr>';
         }).join('') + '</tbody></table>';
     }
@@ -9928,7 +10066,7 @@
     sec.classList.remove('hidden');
     var MAX_DIAS = 10, dias = plano.dias.slice(0, MAX_DIAS);
     box.innerHTML = '<div class="est-dias-wrap"><table class="est-dias"><thead><tr><th scope="col">Produto<span class="est-sub">em paletes</span></th><th scope="col">Agora</th>' +
-      dias.map(function(d) { var n = plano.porDia[d].length; return '<th scope="col">' + escapeHtml(rotuloDia(d, plano.hoje)) + '<span class="est-sub">' + n + (n === 1 ? ' carga' : ' cargas') + '</span></th>'; }).join('') +
+      dias.map(function(d) { var n = plano.porDia[d].length, cr = plano.prev && plano.prev[d]; return '<th scope="col">' + escapeHtml(rotuloDia(d, plano.hoje)) + '<span class="est-sub">' + (n ? n + (n === 1 ? ' carga' : ' cargas') + (cr ? ' + cronograma' : '') : 'cronograma') + '</span></th>'; }).join('') +
       '</tr></thead><tbody>' + visiveis.map(function(l) {
         var info = [l.min !== null ? 'mínimo ' + fmtInt(l.min) : '', l.e ? '' : 'sem contagem'].filter(Boolean).join(' · ');
         return '<tr><td>' + escapeHtml(l.p.nome) + (info ? '<span class="est-sub">' + escapeHtml(info) + '</span>' : '') + '</td>' +
@@ -9949,7 +10087,10 @@
   });
   function renderEstoque() {
     renderProdutosResumo();
-    renderEstoquePainel(planoEstoque());
+    var planoE = planoEstoque();
+    renderEstoquePainel(planoE);
+    renderCronogramaSaida(planoE);
+    renderEstoqueLocais();
     var movs = estoqueMovs.slice().sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); }).slice(0, 30);
     document.getElementById('estoque-movs').innerHTML = movs.length ? movs.map(function(m) {
       if (confirmDeleteMov === m.id) {
@@ -9980,7 +10121,7 @@
     var contagem = tipo === 'contagem';
     document.getElementById('estoque-sheet-title').textContent = contagem ? 'Contagem do estoque' : 'Entrada de produção';
     document.getElementById('estoque-form-hint').textContent = contagem
-      ? 'Informe quanto há agora no estoque (só os produtos contados). A partir daqui, o app soma a produção e desconta as cargas carregadas.'
+      ? 'Conte cada local e informe o que há em cada um (só os produtos contados). O saldo do produto passa a ser a soma dos locais; a partir daqui, o app soma a produção e desconta as cargas carregadas.'
       : 'Informe o que foi produzido e entrou no estoque. Pode digitar em paletes: a quantidade é calculada pelo padrão do produto.';
     document.getElementById('est-qtd-head').textContent = contagem ? 'Contado agora' : 'Quantidade';
     document.getElementById('btn-estoque-submit').textContent = contagem ? 'Salvar contagem' : 'Salvar entrada';
@@ -9988,15 +10129,17 @@
     document.getElementById('f-est-obs').value = '';
     document.getElementById('est-form-rows').innerHTML = produtosOrdenados().map(function(p) {
       var pid = escapeHtml(p.id), u = unidadeDe(p);
-      return '<div class="est-row"><span class="pt-nome">' + escapeHtml(p.nome) + '<span class="pt-unid">' + escapeHtml(u) + (p.unidadesPorPalete ? ' · palete de ' + fmtInt(p.unidadesPorPalete) : '') + '</span></span>' +
-        '<input type="number" min="0" step="1" inputmode="numeric" class="est-pal" data-produto="' + pid + '" placeholder="0" aria-label="Paletes de ' + escapeHtml(p.nome) + '" />' +
+      return '<div class="est-row"><span class="pt-nome">' + escapeHtml(p.nome) + '<span class="pt-unid">' + escapeHtml(u) + (p.unidadesPorPalete ? ' · palete de ' + fmtInt(p.unidadesPorPalete) : '') + '</span>' + (contagem ? '<span class="pt-unid est-loc-tot" data-produto="' + pid + '"></span>' : '') + '</span>' +
+        '<input type="number" min="0" step="0.5" inputmode="decimal" class="est-pal" data-produto="' + pid + '" placeholder="0" aria-label="Paletes de ' + escapeHtml(p.nome) + '" />' +
         '<input type="number" min="0" step="1" inputmode="numeric" class="est-qtd" data-produto="' + pid + '" placeholder="' + (contagem ? '—' : '0') + '" aria-label="Quantidade de ' + escapeHtml(p.nome) + ' em ' + escapeHtml(u) + '" />' +
         '</div>';
     }).join('');
+    estCont = contagem ? { local: locaisEstoque()[0].id, valores: {} } : null;
+    renderEstLocais();
     document.getElementById('estoque-form-error').classList.add('hidden');
     document.getElementById('estoque-sheet-overlay').classList.remove('hidden');
   }
-  function closeEstoqueForm() { document.getElementById('estoque-sheet-overlay').classList.add('hidden'); }
+  function closeEstoqueForm() { document.getElementById('estoque-sheet-overlay').classList.add('hidden'); estCont = null; }
   document.getElementById('btn-new-entrada').addEventListener('click', function() { openEstoqueForm('entrada'); });
   document.getElementById('btn-close-estoque-sheet').addEventListener('click', closeEstoqueForm);
   document.getElementById('btn-estoque-cancel').addEventListener('click', closeEstoqueForm);
@@ -10009,8 +10152,8 @@
     if (!t.classList.contains('est-pal')) return;
     var p = findProduto(t.dataset.produto);
     var q = document.querySelector('#est-form-rows .est-qtd[data-produto="' + t.dataset.produto + '"]');
-    var pal = parseInt(t.value, 10);
-    if (q) q.value = (!isNaN(pal) && pal >= 0 && p && p.unidadesPorPalete) ? String(pal * p.unidadesPorPalete) : '';
+    var pal = numCampo(t.value); // pode ser meio palete (0,5)
+    if (q) q.value = (pal !== null && pal >= 0 && p && p.unidadesPorPalete) ? String(Math.round(pal * p.unidadesPorPalete)) : '';
   });
   document.getElementById('estoque-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -10018,8 +10161,9 @@
     var contagem = estoqueTipo === 'contagem';
     var agora = new Date().toISOString(), data = document.getElementById('f-est-data').value || todayIso();
     var obs = document.getElementById('f-est-obs').value.trim();
-    var lista = [];
-    document.querySelectorAll('#est-form-rows .est-qtd').forEach(function(inp) {
+    var porLocal = contagem && !!estCont;
+    var lista = porLocal ? contagemPorLocal({ data: data, em: agora, obs: obs, criadoEm: agora }) : [];
+    if (!porLocal) document.querySelectorAll('#est-form-rows .est-qtd').forEach(function(inp) {
       if (inp.value === '') return;
       var q = Math.floor(Number(inp.value));
       if (isNaN(q) || q < 0 || (!contagem && q === 0)) return;
@@ -11073,6 +11217,7 @@
       var q = Number(it.quantidade) || 0;
       if (q <= 0) return;
       var chave = garrafoes ? chaveGarrafao(it.itemId) : it.produtoId;
+      if (!garrafoes) { var pp = findProduto(it.produtoId); if (pp && pp.compradoPronto) return; } // comprado pronto: sem matéria-prima
       var ficha = fichaDe(chave);
       if (!ficha.length) { semFicha.push(it.nome || it.produtoNome || chave); return; }
       var p = garrafoes ? null : findProduto(it.produtoId);
@@ -11305,6 +11450,10 @@
     document.querySelectorAll('#mp-area-tabs .seg-btn').forEach(function(b) {
       var on = b.dataset.area === area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
+    var supArea = SUP_AREAS.indexOf(area) >= 0;
+    document.getElementById('mp-std').classList.toggle('hidden', supArea);
+    document.getElementById('sup-conteudo').classList.toggle('hidden', !supArea);
+    if (supArea) { renderSuprimentos(area); return; }
     document.getElementById('mp-tagline').innerHTML = garr
       ? 'Garrafões de <b>10L e 20L</b> (Levíssima, Americana e Colina Azul) são feitos na hora do pedido: não têm ordem de produção. No fim do dia, lance o <b>fechamento</b> com o que foi vendido e os insumos saem do estoque pela ficha de cada garrafão.'
       : 'Saldo = contagem + <b>recebimentos</b> − perdas − o que as <b>ordens de produção</b> concluídas consumiram. As ordens abertas reservam a matéria-prima.';
@@ -11407,7 +11556,8 @@
       }
       var extra = [m.fornecedor, m.nf ? 'NF ' + m.nf : '', m.obs].filter(Boolean).join(' · ');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml((ins ? ins.nome : m.insumoNome) || '—') +
-          '<span class="driver-tel">' + escapeHtml(formatDateTimeBR(m.em) + ' · ' + (TIPOS_MOV_MP[m.tipo] || m.tipo) + (extra ? ' · ' + extra : '')) + '</span></span>' +
+          '<span class="driver-tel">' + escapeHtml(formatDateTimeBR(m.em) + ' · ' + (TIPOS_MOV_MP[m.tipo] || m.tipo) + (extra ? ' · ' + extra : '')) + '</span>' +
+          ((m.detalhe || []).length ? '<span class="driver-sub">' + escapeHtml(m.detalhe.map(function(d) { return d.descricao; }).join(' · ')) + '</span>' : '') + '</span>' +
         '<span class="mov-qtd' + (m.tipo === 'entrada' ? ' figure-teal' : '') + '">' + (m.tipo === 'contagem' ? '= ' : m.tipo === 'entrada' ? '+ ' : '− ') + escapeHtml(fmtMp(m.quantidade, u)) + '</span>' +
         '<button class="btn-text danger" data-mp="mov-excluir" data-id="' + escapeHtml(m.id) + '">Excluir</button></div>';
     }).join('') : '<p class="empty-state">Nenhum lançamento ainda. Comece pela contagem.</p>') +
@@ -11507,21 +11657,21 @@
     return itens;
   }
   // ordem de produção: nova ou editar
-  function abrirOpForm(o) {
+  function abrirOpForm(o, pre) {
     var prods = produtosOrdenados();
     if (!prods.length) { showToast('Cadastre os produtos primeiro.'); return; }
     var qt = {};
-    ((o && o.itens) || []).forEach(function(it) { qt[it.produtoId] = Number(it.quantidade) || 0; });
+    (((o || pre) && (o || pre).itens) || []).forEach(function(it) { qt[it.produtoId] = Number(it.quantidade) || 0; });
     var marca = null;
     var rows = prods.map(function(p) {
       var g = '', mk = marcaDoTexto(p.nome);
       if (mk !== marca) { marca = mk; g = '<p class="mp-grupo">' + escapeHtml(nomeMarca(mk)) + '</p>'; }
-      return g + linhaProdutoHtml(p, qt[p.id] || 0, fichaDe(p.id).length ? '' : ' · <b class="alerta">sem ficha</b>');
+      return g + linhaProdutoHtml(p, qt[p.id] || 0, p.compradoPronto ? ' · <b class="alerta">comprado pronto</b>' : fichaDe(p.id).length ? '' : ' · <b class="alerta">sem ficha</b>');
     }).join('');
     abrirMpSheet({
       modo: 'op', id: o ? o.id : null, ordem: o || null, titulo: o ? 'Editar OP nº ' + o.numero : 'Nova ordem de produção', botao: o ? 'Salvar ordem' : 'Lançar ordem',
-      html: '<div class="row-2"><label>Produzir em <span class="req">*</span><input type="date" id="mp-op-data" value="' + escapeHtml((o && o.data) || todayIso()) + '" /></label>' +
-        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="mp-op-obs" maxlength="200" value="' + escapeHtml((o && o.obs) || '') + '" /></label></div>' +
+      html: '<div class="row-2"><label>Produzir em <span class="req">*</span><input type="date" id="mp-op-data" value="' + escapeHtml((o && o.data) || (pre && pre.data) || todayIso()) + '" /></label>' +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="mp-op-obs" maxlength="200" value="' + escapeHtml((o && o.obs) || (pre && pre.obs) || '') + '" /></label></div>' +
         '<p class="hint">Digite em paletes ou na unidade do produto. A matéria-prima é calculada pela ficha técnica e conferida no estoque, logo abaixo.</p>' +
         '<div class="est-form-head"><span>Produto</span><span>Paletes</span><span>Quantidade</span></div><div class="est-rows">' + rows + '</div>' +
         '<div class="section-head"><h2 class="section-title">Matéria-prima desta ordem</h2></div><div id="mp-vivo"></div>'
@@ -11562,7 +11712,7 @@
       modo: 'mov', tipo: tipo, area: area, titulo: titulos[tipo] + (area === 'garrafoes' ? ' · garrafões' : ''), botao: tipo === 'contagem' ? 'Salvar contagem' : 'Salvar',
       html: '<p class="hint">' + escapeHtml(dicas[tipo]) + '</p>' +
         '<div class="row-2"><label>Data<input type="date" id="mp-mov-data" value="' + escapeHtml(todayIso()) + '" /></label>' +
-        (tipo === 'entrada' ? '<label>Nota fiscal <span class="opt">(opcional)</span><input type="text" id="mp-mov-nf" maxlength="30" /></label></div><label>Fornecedor <span class="opt">(opcional)</span><input type="text" id="mp-mov-forn" maxlength="80" /></label>'
+        (tipo === 'entrada' ? '<label>Nota fiscal <span class="opt">(opcional)</span><input type="text" id="mp-mov-nf" maxlength="30" /></label></div><label>Fornecedor <span class="opt">(opcional)</span><input type="text" id="mp-mov-forn" maxlength="80" list="mp-forn-list" autocomplete="off" /></label><datalist id="mp-forn-list">' + nomesFornecedoresCadastro().map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>'
           : '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mp-mov-obs" maxlength="120" /></label></div>') +
         '<div class="mp-rows">' + rows + '</div>' +
         (tipo === 'entrada' ? '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mp-mov-obs" maxlength="120" /></label>' : '')
@@ -11581,7 +11731,16 @@
         '<label>Grupo<input type="text" id="mp-ins-grupo" list="mp-grupos-list" maxlength="40" value="' + escapeHtml(ins ? ins.grupo || '' : '') + '" /></label></div>' +
         '<datalist id="mp-grupos-list">' + grupos.map(function(g) { return '<option value="' + escapeHtml(g) + '">'; }).join('') + '</datalist>' +
         '<div class="row-2"><label>Estoque mínimo <span class="opt">(na unidade; avisa abaixo dele)</span><input type="number" id="mp-ins-min" min="0" step="any" inputmode="decimal" value="' + escapeHtml(ins && ins.minimo ? String(ins.minimo) : '') + '" /></label>' +
-        '<label>Área<select id="mp-ins-area"><option value="producao"' + (a === 'producao' ? ' selected' : '') + '>Produção (ordens)</option><option value="garrafoes"' + (a === 'garrafoes' ? ' selected' : '') + '>Garrafões 10L e 20L</option></select></label></div>'
+        '<label>Área<select id="mp-ins-area"><option value="producao"' + (a === 'producao' ? ' selected' : '') + '>Produção (ordens)</option><option value="garrafoes"' + (a === 'garrafoes' ? ' selected' : '') + '>Garrafões 10L e 20L</option></select></label></div>' +
+        '<label>Especificação técnica <span class="opt">(o que conferir no recebimento; aparece no agendamento e na conferência da carga)</span><textarea id="mp-ins-espec" rows="5">' + escapeHtml((ins && ins.especificacao) || '') + '</textarea></label>' +
+        '<button type="button" class="btn-text" id="mp-ins-espec-sug">Usar a sugestão para este grupo de insumo</button>' +
+        '<label class="check-row"><input type="checkbox" id="mp-ins-laudo"' + (ins && ins.exigeLaudoLote ? ' checked' : '') + ' /> Exige certificado (laudo) do lote em cada entrega</label>'
+    });
+    var bs = document.getElementById('mp-ins-espec-sug');
+    if (bs) bs.addEventListener('click', function() {
+      var g = document.getElementById('mp-ins-grupo').value.trim(), t = document.getElementById('mp-ins-espec'), sug = ESPEC_SUGERIDA[g];
+      if (!sug) { showToast('Sem sugestão para o grupo “' + (g || 'vazio') + '”: escreva a especificação.'); return; }
+      t.value = t.value.trim() ? t.value.trim() + '\n' + sug : sug;
     });
   }
   // ficha técnica de um produto ou garrafão (só a senha mestre)
@@ -11764,7 +11923,8 @@
       if (mp.insumos.some(function(i) { return i.id !== s.id && normNome(i.nome) === normNome(nome); })) return erroMpSheet('Já existe um insumo com esse nome.');
       var min = numCampo(document.getElementById('mp-ins-min').value);
       var dIns = { nome: nome, unidade: document.getElementById('mp-ins-un').value, grupo: document.getElementById('mp-ins-grupo').value.trim(),
-        minimo: min && min > 0 ? arred3(min) : 0, area: document.getElementById('mp-ins-area').value, atualizadoEm: agora };
+        minimo: min && min > 0 ? arred3(min) : 0, area: document.getElementById('mp-ins-area').value, atualizadoEm: agora,
+        especificacao: document.getElementById('mp-ins-espec') ? document.getElementById('mp-ins-espec').value.trim() : '', exigeLaudoLote: !!(document.getElementById('mp-ins-laudo') && document.getElementById('mp-ins-laudo').checked) };
       var idIns = s.id;
       if (!idIns) { idIns = 'ins-' + (slug(nome) || uid()); if (insumoPorId(idIns)) idIns += '-' + uid().slice(-4); dIns.criadoEm = agora; }
       ops.push({ op: s.id ? 'update' : 'set', col: MP_COL.insumos, id: idIns, data: dIns });
@@ -12760,9 +12920,9 @@
     }).join('') + '<option value="__outro">Outro (digitar)</option>';
   }
   function qGrupoOpcoes() { return Object.keys(Q_ITENS).filter(function(k) { return k.indexOf('rec:') === 0 && k !== 'rec:comum'; }).map(function(k) { return k.slice(4); }); }
-  function abrirQRec() {
-    qUi.sheet = { modo: 'rec', itens: [] };
-    var fornecedores = []; qual.rec.forEach(function(r) { if (r.fornecedor && fornecedores.indexOf(r.fornecedor) < 0) fornecedores.push(r.fornecedor); });
+  function abrirQRec(pre) {
+    qUi.sheet = { modo: 'rec', itens: [], ag: pre && pre.ag ? pre.ag : null };
+    var fornecedores = nomesFornecedoresCadastro(); qual.rec.forEach(function(r) { if (r.fornecedor && fornecedores.indexOf(r.fornecedor) < 0) fornecedores.push(r.fornecedor); });
     qAbrir('Inspeção de recebimento',
       '<label>Insumo <span class="req">*</span><select id="q-ins">' + qOpcoesInsumos('') + '</select></label>' +
       '<div class="row-2 hidden" id="q-outro"><label>Nome do insumo <span class="req">*</span><input type="text" id="q-ins-nome" maxlength="80" /></label><label>Tipo<select id="q-ins-grupo"><option value="">Outros</option>' + qGrupoOpcoes().map(function(g) { return '<option>' + escapeHtml(g) + '</option>'; }).join('') + '</select></label></div>' +
@@ -12778,6 +12938,22 @@
       '<p class="hint" id="q-res-hint"></p>' +
       '<label class="check-row" id="q-entrada-l"><input type="checkbox" id="q-entrada" checked /> Dar entrada no estoque de matéria-prima (recebimento)</label>' +
       '<label>Observações <span class="opt">(opcional)</span><input type="text" id="q-obs" maxlength="200" autocomplete="off" /></label>' + qRespHtml(), 'Salvar inspeção');
+    if (pre) qPreencherRec(pre);
+  }
+  // Inspeção aberta pela entrega agendada (Matéria-prima › Recebimentos): já vem com insumo, fornecedor, NF, lote e quantidade.
+  function qPreencherRec(pre) {
+    var sel = document.getElementById('q-ins');
+    if (pre.insumoId && sel.querySelector('option[value="' + pre.insumoId + '"]')) sel.value = pre.insumoId;
+    function pon(id, v) { var el = document.getElementById(id); if (el && v !== undefined && v !== null && v !== '') el.value = v; }
+    pon('q-forn', pre.fornecedor); pon('q-nf', pre.nf); pon('q-lote', pre.lote); pon('q-qtd', pre.quantidade);
+    qAtualizarRec();
+    pon('q-un', pre.unidade);
+    if (pre.ag) {
+      document.getElementById('q-forn').readOnly = true; sel.disabled = true;
+      var a = agPorId(pre.ag.agId);
+      document.getElementById('q-form-body').insertAdjacentHTML('afterbegin', '<p class="hint">Entrega nº ' + escapeHtml(String(a ? a.numero : '')) + ' (Matéria-prima › Recebimentos): ao salvar, a entrega é atualizada e, se aprovado, o insumo entra no estoque.</p>');
+    }
+    qAtualizarRec();
   }
   function qAtualizarRec() {
     var sel = document.getElementById('q-ins').value, outro = sel === '__outro';
@@ -12827,6 +13003,7 @@
     var res = document.getElementById('q-res').value;
     var respEl = document.getElementById('q-resp');
     if (respEl && !respEl.value.trim()) return qErro('Informe o responsável.');
+    var agRef = qUi.sheet && qUi.sheet.ag;
     qAssinar(respEl ? respEl.value.trim() : '', 'recebimento', function(quem) {
       var agora = new Date().toISOString(), id = qNovoId(), data = document.getElementById('q-data').value || todayIso();
       var reg = { data: data, insumoId: ins ? ins.id : '', insumoNome: nome, grupo: qUi.sheet.grupo || '', fornecedor: forn, nf: document.getElementById('q-nf').value.trim(),
@@ -12848,7 +13025,9 @@
       qGravar(ops).then(function() {
         if (!entrar) return null;
         return mpGravar([{ op: 'set', col: MP_COL.movs, id: null, data: { tipo: 'entrada', insumoId: ins.id, insumoNome: ins.nome, unidade: ins.unidade || '', area: areaDe(ins),
-          quantidade: arred3(q), data: data, em: agora, obs: 'inspeção de recebimento ' + (res === 'restricao' ? '(aprovado com restrição)' : '(aprovado)'), nf: reg.nf, fornecedor: forn, criadoEm: agora, inspecaoId: id } }]);
+          quantidade: arred3(q), data: data, em: agora, obs: 'inspeção de recebimento ' + (res === 'restricao' ? '(aprovado com restrição)' : '(aprovado)'), nf: reg.nf, fornecedor: forn, criadoEm: agora, inspecaoId: id, agendamentoId: agRef ? agRef.agId : '' } }]);
+      }).then(function() {
+        return agRef ? supInspecaoFeita(agRef, id, reg, entrar) : null;
       }).then(function() {
         btn.disabled = false; qFechar();
         showToast('Inspeção salva: ' + (res === 'aprovado' ? 'aprovado' : res === 'restricao' ? 'aprovado com restrição (NC aberta)' : 'reprovado (NC aberta)') + (entrar ? '; entrada no estoque de matéria-prima.' : '.'));
@@ -13144,6 +13323,1253 @@
   setInterval(function() { if (session && !document.hidden) { renderTabQualidadeBadge(); if (ui.tab === 'qualidade' && qUi.area === 'hoje' && !qUi.sheet) renderQualidade(); } }, 60000);
 
 
+  // ---------- estoque por local, cronograma de saída e suprimentos (fornecedores, laudos e recebimentos) ----------
+  // Pedidos de 16/10/2026 (noite):
+  //  · inventário do acabado separado por ambiente (Expedição, Galpão Fonte Priscilla, Galpão Skimoni 1 e 2);
+  //  · cronograma de saída de produtos em paletes, por marca e período (palete padrão ou com outra quantidade);
+  //  · cronograma de recebimento da matéria-prima com fornecedor e especificação, ligado à conferência da carga
+  //    recebida, à inspeção da Qualidade e aos estoques;
+  //  · junto ao cadastro dos fornecedores, o arquivo de laudos com aviso de vencimento.
+  var SUP_COL = { forn: 'fornecedores', laudos: 'fornecedores-laudos', ag: 'mp-agendamentos', sp: 'saidas-programadas' };
+  var sup = { forn: [], laudos: [], ag: [], sp: [] };
+  var BUCKET_LAUDOS = 'fornecedores-laudos';
+  function supChaveLocal(k) { return 'levissima-sup-' + k + '-v1'; }
+  function loadLocalSup() {
+    Object.keys(SUP_COL).forEach(function(k) { try { sup[k] = JSON.parse(localStorage.getItem(supChaveLocal(k)) || '[]') || []; } catch (e) { sup[k] = []; } });
+  }
+  function supChaveDa(col) { var r = null; Object.keys(SUP_COL).forEach(function(k) { if (SUP_COL[k] === col) r = k; }); return r; }
+  // ops: [{ op: 'set' | 'update' | 'delete', col, id (sem id = novo), data }] — no banco, num lote só (pode misturar coleções)
+  function supGravar(ops) {
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      ops.forEach(function(o) {
+        var ref = o.id ? db.collection(o.col).doc(o.id) : db.collection(o.col).doc();
+        o.idFinal = ref.id;
+        if (o.op === 'delete') b.delete(ref); else if (o.op === 'update') b.update(ref, o.data); else b.set(ref, o.data);
+      });
+      return b.commit();
+    }
+    var outros = [];
+    ops.forEach(function(o) {
+      var k = supChaveDa(o.col);
+      if (!k) { outros.push(o); return; }
+      var id = o.id || ('local-' + uid()), i = sup[k].findIndex(function(x) { return x.id === id; });
+      o.idFinal = id;
+      if (o.op === 'delete') { if (i >= 0) sup[k].splice(i, 1); }
+      else if (o.op === 'update') { if (i >= 0) sup[k][i] = Object.assign({}, sup[k][i], o.data); }
+      else { var novo = Object.assign({ id: id }, o.data); if (i >= 0) sup[k][i] = novo; else sup[k].push(novo); }
+      try { localStorage.setItem(supChaveLocal(k), JSON.stringify(sup[k])); } catch (e) {}
+    });
+    return (outros.length ? mpGravar(outros) : Promise.resolve()).then(function() { render(); });
+  }
+  function subscribeSuprimentos() {
+    if (!ehEscritorio()) return;
+    Object.keys(SUP_COL).forEach(function(k) {
+      db.collection(SUP_COL[k]).onSnapshot(function(snap) {
+        sup[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        if (session) { renderEstoque(); renderMateria(); renderInicio(); renderTabMateriaBadge(); }
+      }, function(err) { console.error(SUP_COL[k], err); });
+    });
+  }
+  function quemSessao() { return (session && session.nome) || (session && session.role === 'admin' ? 'Senha mestre' : 'Equipe'); }
+  function diasAte(iso) { return Math.round((Date.parse(String(iso).slice(0, 10) + 'T12:00:00') - Date.parse(todayIso() + 'T12:00:00')) / 86400000); }
+  function dataCurta(iso) { return formatDateBR(iso).slice(0, 5); }
+
+  // ----- folha genérica (formulários desta parte) -----
+  var ger = null;
+  function gerAbrir(cfg) {
+    ger = cfg;
+    document.getElementById('ger-sheet-title').textContent = cfg.titulo;
+    document.getElementById('ger-form-body').innerHTML = cfg.html;
+    var b = document.getElementById('btn-ger-submit');
+    b.textContent = cfg.botao || 'Salvar'; b.disabled = false; b.classList.toggle('hidden', !cfg.salvar);
+    document.getElementById('ger-form-error').classList.add('hidden');
+    document.getElementById('ger-sheet-overlay').classList.remove('hidden');
+    document.querySelector('#ger-sheet-overlay .sheet').scrollTop = 0;
+    if (cfg.depois) cfg.depois();
+  }
+  function gerFechar() { document.getElementById('ger-sheet-overlay').classList.add('hidden'); ger = null; }
+  function gerErro(msg) { var e = document.getElementById('ger-form-error'); e.textContent = msg; e.classList.remove('hidden'); return false; }
+  function gerVal(id) { var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
+  document.getElementById('ger-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!ger || !ger.salvar) return;
+    var btn = document.getElementById('btn-ger-submit');
+    document.getElementById('ger-form-error').classList.add('hidden');
+    var r = ger.salvar();
+    if (r && r.then) {
+      btn.disabled = true;
+      r.then(function(ok) { btn.disabled = false; if (ok !== false) gerFechar(); })
+        .catch(function(err) { btn.disabled = false; console.error('salvar', err); gerErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo 15 MB).' : 'Não foi possível salvar agora. Tente novamente.'); });
+    } else if (r !== false) gerFechar();
+  });
+  document.getElementById('ger-form-body').addEventListener('click', function(e) { var b = e.target.closest('[data-ger]'); if (b && ger && ger.acao) ger.acao(b.dataset.ger, b, e); });
+  document.getElementById('ger-form-body').addEventListener('input', function(e) { if (ger && ger.input) ger.input(e.target, e); });
+  document.getElementById('ger-form-body').addEventListener('change', function(e) { if (ger && ger.change) ger.change(e.target, e); });
+  document.getElementById('btn-close-ger-sheet').addEventListener('click', gerFechar);
+  document.getElementById('btn-ger-cancel').addEventListener('click', gerFechar);
+  document.getElementById('ger-sheet-overlay').addEventListener('click', function(e) { if (e.target === this) gerFechar(); });
+
+  // =====================================================================================================
+  // ESTOQUE POR LOCAL (ambientes)
+  // A contagem de cada produto guarda quanto havia em cada local; o saldo continua sendo a soma
+  // (a produção entra e as cargas saem do total, não de um local).
+  var LOCAIS_ESTOQUE_PADRAO = [
+    { id: 'expedicao', nome: 'Expedição' },
+    { id: 'fonte-priscilla', nome: 'Galpão Fonte Priscilla' },
+    { id: 'skimoni-1', nome: 'Galpão Skimoni 1' },
+    { id: 'skimoni-2', nome: 'Galpão Skimoni 2' }
+  ];
+  function locaisEstoque() {
+    var c = mp.config.find(function(x) { return x.id === 'estoque-locais'; });
+    return c && c.itens && c.itens.length ? c.itens : LOCAIS_ESTOQUE_PADRAO;
+  }
+  function contagemAtual(pid) {
+    var c = null;
+    estoqueMovs.forEach(function(m) { if (m.produtoId === pid && m.tipo === 'contagem' && (!c || String(m.em || '') > String(c.em || ''))) c = m; });
+    return c;
+  }
+  // formulário de contagem: um local de cada vez; os valores de todos os locais ficam aqui até salvar
+  var estCont = null; // { local, valores: { local: { produtoId: { pal, qtd } } } }
+  function estGuardarLocal() {
+    if (!estCont) return;
+    var v = {};
+    document.querySelectorAll('#est-form-rows .est-qtd').forEach(function(inp) {
+      var pal = document.querySelector('#est-form-rows .est-pal[data-produto="' + inp.dataset.produto + '"]');
+      if (inp.value === '' && (!pal || pal.value === '')) return;
+      v[inp.dataset.produto] = { pal: pal ? pal.value : '', qtd: inp.value };
+    });
+    estCont.valores[estCont.local] = v;
+  }
+  function estCarregarLocal() {
+    var v = (estCont && estCont.valores[estCont.local]) || {};
+    document.querySelectorAll('#est-form-rows .est-qtd').forEach(function(inp) {
+      var x = v[inp.dataset.produto], pal = document.querySelector('#est-form-rows .est-pal[data-produto="' + inp.dataset.produto + '"]');
+      inp.value = x ? x.qtd : '';
+      if (pal) pal.value = x ? x.pal : '';
+    });
+  }
+  function estTotaisLocais() {
+    var t = {};
+    if (!estCont) return t;
+    Object.keys(estCont.valores).forEach(function(lid) {
+      var v = estCont.valores[lid];
+      Object.keys(v).forEach(function(pid) {
+        if (v[pid].qtd === '') return;
+        var x = t[pid] = t[pid] || { qtd: 0, n: 0 };
+        x.qtd += Math.max(0, Math.round(Number(v[pid].qtd) || 0)); x.n++;
+      });
+    });
+    return t;
+  }
+  function renderEstLocais() {
+    var el = document.getElementById('est-locais');
+    if (!el) return;
+    if (!estCont) { el.classList.add('hidden'); el.innerHTML = ''; return; }
+    var tot = estTotaisLocais();
+    el.classList.remove('hidden');
+    el.innerHTML = '<p class="field-hint">Inventário por local: escolha o local e digite o que há nele (em paletes; pode ser 0,5). O saldo de cada produto é a soma dos locais.</p>' +
+      '<div class="est-loc-chips" role="group" aria-label="Local da contagem">' + locaisEstoque().map(function(l) {
+        var v = estCont.valores[l.id] || {}, n = Object.keys(v).filter(function(pid) { return v[pid].qtd !== ''; }).length, on = l.id === estCont.local;
+        return '<button type="button" class="est-loc' + (on ? ' on' : '') + '" data-local="' + escapeHtml(l.id) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + escapeHtml(l.nome) + (n ? '<b>' + n + '</b>' : '') + '</button>';
+      }).join('') + '</div>';
+    document.querySelectorAll('#est-form-rows .est-loc-tot').forEach(function(s) {
+      var x = tot[s.dataset.produto], p = findProduto(s.dataset.produto);
+      s.textContent = x && x.n > 1 ? 'soma dos locais: ' + palTexto(p, x.qtd) : '';
+    });
+  }
+  document.getElementById('est-locais').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-local]');
+    if (!b || !estCont) return;
+    estGuardarLocal(); estCont.local = b.dataset.local; estCarregarLocal(); renderEstLocais();
+  });
+  document.getElementById('est-form-rows').addEventListener('input', function() { if (estCont) { estGuardarLocal(); renderEstLocais(); } });
+  // lançamentos da contagem por local (um por produto, com o total e quanto havia em cada local)
+  function contagemPorLocal(base) {
+    estGuardarLocal();
+    var lista = [], inv = 'inv' + uid();
+    produtosOrdenados().forEach(function(p) {
+      var locs = [], tot = 0, tem = false;
+      locaisEstoque().forEach(function(l) {
+        var v = (estCont.valores[l.id] || {})[p.id];
+        if (!v || v.qtd === '') return;
+        var q = Math.max(0, Math.round(Number(v.qtd) || 0));
+        tem = true; tot += q; locs.push({ id: l.id, nome: l.nome, quantidade: q });
+      });
+      if (tem) lista.push(Object.assign({ tipo: 'contagem', produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), quantidade: tot, locais: locs, inventario: inv }, base));
+    });
+    return lista;
+  }
+  // quadro "Estoque por local" (da última contagem de cada produto)
+  function renderEstoqueLocais() {
+    var sec = document.getElementById('est-locais-sec'), box = document.getElementById('est-locais-tab');
+    if (!sec || !box) return;
+    var locs = locaisEstoque().slice(), linhas = [], ultima = '', extras = {};
+    produtosOrdenados().forEach(function(p) {
+      var c = contagemAtual(p.id);
+      if (!c || !c.locais || !c.locais.length) return;
+      if (String(c.em || '') > ultima) ultima = String(c.em || '');
+      var m = {};
+      c.locais.forEach(function(l) {
+        m[l.id] = (m[l.id] || 0) + (Number(l.quantidade) || 0);
+        if (!locs.some(function(x) { return x.id === l.id; })) extras[l.id] = l.nome;
+      });
+      linhas.push({ p: p, m: m, tot: Number(c.quantidade) || 0, marca: marcaDoTexto(p.nome) });
+    });
+    Object.keys(extras).forEach(function(id) { locs.push({ id: id, nome: extras[id] }); });
+    document.getElementById('est-locais-hint').innerHTML = (ultima ? 'Da última contagem por local (' + escapeHtml(formatDateTimeBR(ultima)) + '), em paletes. ' : '') +
+      'Depois da contagem, a produção entra e as cargas saem do total do produto, não de um local.' +
+      (ehMestre() ? ' <button type="button" class="btn-text" data-sp="locais">Editar locais</button>' : '');
+    if (!linhas.length) { box.innerHTML = '<p class="empty-state">Nenhuma contagem por local ainda. Toque em “Contagem (acertar o saldo)” e escolha o local.</p>'; return; }
+    var somaLoc = {}, somaTot = 0;
+    linhas.forEach(function(l) { locs.forEach(function(x) { if (l.m[x.id] !== undefined) somaLoc[x.id] = (somaLoc[x.id] || 0) + (emPaletes(l.p, l.m[x.id]) || 0); }); somaTot += emPaletes(l.p, l.tot) || 0; });
+    var marcaAtual = null;
+    box.innerHTML = '<div class="est-dias-wrap"><table class="est-dias loc-tab"><thead><tr><th scope="col">Produto</th>' +
+      locs.map(function(x) { return '<th scope="col">' + escapeHtml(x.nome) + '</th>'; }).join('') + '<th scope="col">Total</th></tr></thead><tbody>' +
+      '<tr class="loc-total"><td>Total</td>' + locs.map(function(x) { return '<td>' + (somaLoc[x.id] !== undefined ? escapeHtml(fmtPal(somaLoc[x.id])) : '—') + '</td>'; }).join('') + '<td>' + escapeHtml(fmtPal(somaTot)) + '</td></tr>' +
+      linhas.map(function(l) {
+        var g = '';
+        if (l.marca !== marcaAtual) { marcaAtual = l.marca; g = '<tr class="est-grupo"><td colspan="' + (locs.length + 2) + '">' + escapeHtml(nomeMarca(l.marca)) + '</td></tr>'; }
+        return g + '<tr><td>' + escapeHtml(l.p.nome) + '</td>' + locs.map(function(x) { return '<td>' + (l.m[x.id] !== undefined ? escapeHtml(palCurto(l.p, l.m[x.id])) : '—') + '</td>'; }).join('') +
+          '<td><b>' + escapeHtml(palCurto(l.p, l.tot)) + '</b></td></tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+  function abrirLocaisForm() {
+    if (!ehMestre()) return;
+    gerAbrir({
+      titulo: 'Locais do estoque', botao: 'Salvar locais',
+      html: '<p class="hint">Um local por linha (ex.: Expedição, Galpão Skimoni 1). Eles aparecem na contagem por local.</p>' +
+        '<label>Locais<textarea id="ger-locais" rows="6">' + escapeHtml(locaisEstoque().map(function(l) { return l.nome; }).join('\n')) + '</textarea></label>',
+      salvar: function() {
+        var nomes = gerVal('ger-locais').split('\n').map(function(x) { return x.replace(/\s+/g, ' ').trim(); }).filter(Boolean);
+        if (!nomes.length) return gerErro('Informe ao menos um local.');
+        var atuais = locaisEstoque(), usados = {};
+        var itens = nomes.map(function(n) {
+          var a = atuais.find(function(l) { return normNome(l.nome) === normNome(n); });
+          var id = a ? a.id : (slug(n) || 'local-' + uid());
+          while (usados[id]) id += '-2';
+          usados[id] = 1;
+          return { id: id, nome: n };
+        });
+        return mpGravar([{ op: 'set', col: MP_COL.config, id: 'estoque-locais', data: { itens: itens, atualizadoEm: new Date().toISOString() } }]).then(function() { showToast('Locais salvos.'); });
+      }
+    });
+  }
+
+  // =====================================================================================================
+  // CRONOGRAMA DE SAÍDA (saidas-programadas)
+  // Por marca e período ("carrega entre 16/10 e 17/10"), em paletes: palete padrão do produto e/ou paletes com outra
+  // quantidade (ex.: 6 paletes com 175 fardos). Entra no saldo futuro do Estoque no 1º dia do período (período que
+  // já passou e não foi encerrado conta como de hoje). Uma carga lançada para o mesmo produto, com data dentro do
+  // período, abate a programação: não conta duas vezes.
+  var spUi = { marca: '', encerrados: false, confirmar: null };
+  function spQtdGrupos(p, grupos) {
+    var upp = Number(p && p.unidadesPorPalete) || 0;
+    return (grupos || []).reduce(function(a, g) { return a + (Number(g.paletes) || 0) * (Number(g.porPalete) || upp); }, 0);
+  }
+  function spPalGrupos(grupos) { return (grupos || []).reduce(function(a, g) { return a + (Number(g.paletes) || 0); }, 0); }
+  function spGruposTexto(p, grupos) {
+    var upp = Number(p && p.unidadesPorPalete) || 0;
+    return (grupos || []).filter(function(g) { return Number(g.paletes) > 0; }).map(function(g) {
+      return fmtPal(Number(g.paletes)) + (g.porPalete && Number(g.porPalete) !== upp ? ' c/ ' + fmtInt(g.porPalete) : '');
+    }).join(' + ');
+  }
+  function spAtivas() {
+    return sup.sp.filter(function(s) { return !s.encerrado && s.de; }).sort(function(a, b) {
+      return String(a.de).localeCompare(String(b.de)) || String(a.ate || '').localeCompare(String(b.ate || '')) || String(a.marca || '').localeCompare(String(b.marca || ''));
+    });
+  }
+  function spRestantes() {
+    var pool = {};
+    cargas.forEach(function(c) {
+      var d = String(c.data || '');
+      if (!d) return;
+      (c.clientes || []).forEach(function(cl) {
+        (cl.itens || []).forEach(function(it) {
+          var q = Number(it.quantidade) || 0;
+          if (!it.produtoId || q <= 0) return;
+          var m = pool[it.produtoId] = pool[it.produtoId] || {};
+          m[d] = (m[d] || 0) + q;
+        });
+      });
+    });
+    var out = [];
+    spAtivas().forEach(function(s) {
+      (s.itens || []).forEach(function(it) {
+        var p = findProduto(it.produtoId);
+        if (!p) return;
+        var total = spQtdGrupos(p, it.grupos);
+        if (total <= 0) return;
+        var m = pool[p.id] || {}, emCarga = 0, ate = s.ate || s.de;
+        Object.keys(m).sort().forEach(function(d) {
+          if (d < s.de || d > ate || emCarga >= total || m[d] <= 0) return;
+          var usa = Math.min(m[d], total - emCarga);
+          m[d] -= usa; emCarga += usa;
+        });
+        out.push({ s: s, it: it, p: p, total: total, emCarga: emCarga, restante: total - emCarga });
+      });
+    });
+    return out;
+  }
+  function spPrevisaoPorDia(hoje) {
+    var r = {};
+    spRestantes().forEach(function(x) {
+      if (x.restante <= 0) return;
+      var d = x.s.de < hoje ? hoje : x.s.de, m = r[d] = r[d] || {};
+      m[x.p.id] = (m[x.p.id] || 0) + x.restante;
+    });
+    return r;
+  }
+  // Quanto produzir para não faltar nas saídas programadas (cargas + cronograma)
+  function spFaltaDaLinha(l, hoje) {
+    if (!l.e) return null;
+    var minimo = l.atual, dia = l.atual < 0 ? hoje : null;
+    l.cols.forEach(function(c) {
+      if (c.saldo === null) return;
+      if (c.saldo < minimo) minimo = c.saldo;
+      if (!dia && c.saldo < 0) dia = c.dia;
+    });
+    if (minimo >= 0) return null;
+    var upp = Number(l.p.unidadesPorPalete) || 0, falta = -minimo, pal = upp ? Math.ceil(falta / upp - 1e-9) : null;
+    var paraMin = l.min !== null && upp ? Math.ceil((l.min * upp - minimo) / upp - 1e-9) : null;
+    return { falta: falta, qtd: upp ? pal * upp : falta, pal: pal, dia: dia, paraMin: paraMin };
+  }
+  function spSaldoNoDia(l, dia) {
+    var s = l.atual;
+    l.cols.forEach(function(c) { if (c.dia <= dia) s = c.saldo; });
+    return s;
+  }
+  function spNomeCurto(p, mk) {
+    var n = String(p.nome || ''), pre = nomeMarca(mk);
+    return mk !== 'levissima' && normNome(n).indexOf(normNome(pre)) === 0 ? n.slice(pre.length).trim() : n;
+  }
+  function ordemMarca(mk) { var i = listaMarcas().findIndex(function(m) { return m.slug === mk; }); return i < 0 ? 99 : i; }
+  function renderCronogramaSaida(plano) {
+    var box = document.getElementById('sp-conteudo');
+    if (!box) return;
+    var hoje = plano.hoje, ativas = spAtivas(), rest = spRestantes(), porLinha = {}, porItem = {};
+    plano.linhas.forEach(function(l) { porLinha[l.p.id] = l; });
+    rest.forEach(function(x) { porItem[x.s.id + '|' + x.p.id] = x; });
+    var marcas = [];
+    ativas.forEach(function(s) { if (marcas.indexOf(s.marca) < 0) marcas.push(s.marca); });
+    marcas.sort(function(a, b) { return ordemMarca(a) - ordemMarca(b); });
+    if (spUi.marca && marcas.indexOf(spUi.marca) < 0) spUi.marca = '';
+    document.getElementById('sp-n').textContent = ativas.length ? String(ativas.length) : '';
+    var h = '';
+    if (marcas.length > 1) {
+      h += '<div class="est-loc-chips sp-filtro" role="group" aria-label="Filtrar por marca">' +
+        '<button type="button" class="est-loc' + (!spUi.marca ? ' on' : '') + '" data-sp="marca" data-marca="">Todas</button>' +
+        marcas.map(function(mk) { return '<button type="button" class="est-loc' + (spUi.marca === mk ? ' on' : '') + '" data-sp="marca" data-marca="' + escapeHtml(mk) + '">' + escapeHtml(nomeMarca(mk)) + '</button>'; }).join('') + '</div>';
+    }
+    if (!ativas.length) h += '<p class="empty-state">Nenhuma saída programada. Toque em “+ Programar saída” e lance o que cada marca carrega em cada período.</p>';
+    marcas.filter(function(mk) { return !spUi.marca || spUi.marca === mk; }).forEach(function(mk) {
+      var pers = ativas.filter(function(s) { return s.marca === mk; }), pids = [];
+      pers.forEach(function(s) { (s.itens || []).forEach(function(it) { if (spPalGrupos(it.grupos) > 0 && pids.indexOf(it.produtoId) < 0) pids.push(it.produtoId); }); });
+      var prods = produtosOrdenados().filter(function(p) { return pids.indexOf(p.id) >= 0; });
+      var totPal = 0;
+      h += '<div class="sp-marca"><div class="sp-marca-t">' + logoMarcaHtml(mk) + '<span>' + escapeHtml(nomeMarca(mk)) + '</span><small>' + pers.length + (pers.length === 1 ? ' período' : ' períodos') + '</small></div>' +
+        '<div class="est-dias-wrap"><table class="est-dias sp-tab"><thead><tr><th scope="col">Produto<span class="est-sub">paletes</span></th>' +
+        pers.map(function(s) {
+          var venc = (s.ate || s.de) < hoje;
+          return '<th scope="col"><button type="button" class="sp-per" data-sp="editar" data-id="' + escapeHtml(s.id) + '" title="Editar este período">' +
+            escapeHtml(dataCurta(s.de) + (s.ate && s.ate !== s.de ? ' a ' + dataCurta(s.ate) : '')) + '</button><span class="est-sub' + (venc ? ' alerta' : '') + '">' + (venc ? 'período vencido' : escapeHtml(rotuloDia(s.de, hoje))) + '</span></th>';
+        }).join('') + '<th scope="col">Total</th></tr></thead><tbody>' +
+        prods.map(function(p) {
+          var l = porLinha[p.id], soma = 0;
+          var cels = pers.map(function(s) {
+            var it = (s.itens || []).find(function(x) { return x.produtoId === p.id; });
+            var pal = it ? spPalGrupos(it.grupos) : 0;
+            if (!pal) return '<td>—</td>';
+            soma += pal;
+            var x = porItem[s.id + '|' + p.id], dia = s.de < hoje ? hoje : s.de, cls = 'sem', tit = 'sem contagem no estoque';
+            if (l && l.e) {
+              var sal = spSaldoNoDia(l, dia);
+              cls = sal === null ? 'sem' : sal < 0 ? 'neg' : l.abaixo(sal) ? 'baixo' : 'ok';
+              tit = sal === null ? tit : sal < 0 ? 'falta ' + palTexto(p, -sal) + ' no estoque' : 'sobra ' + palTexto(p, sal) + (l.abaixo(sal) ? ' (abaixo do mínimo)' : '');
+            }
+            var det = spGruposTexto(p, it.grupos), sub = [];
+            if (det.indexOf('+') >= 0 || det.indexOf('c/') >= 0) sub.push(det);
+            if (x && x.emCarga > 0) sub.push(x.restante <= 0 ? 'já em carga' : palCurto(p, x.emCarga) + ' já em carga');
+            return '<td class="' + cls + '" title="' + escapeHtml(tit) + '">' + escapeHtml(fmtPal(pal)) + (sub.length ? '<span class="est-sub">' + escapeHtml(sub.join(' · ')) + '</span>' : '') + '</td>';
+          }).join('');
+          totPal += soma;
+          return '<tr><td><span class="sp-dot pc-' + corDoProduto(p.nome) + '" aria-hidden="true"></span>' + escapeHtml(spNomeCurto(p, mk)) + '</td>' + cels + '<td><b>' + escapeHtml(fmtPal(soma)) + '</b></td></tr>';
+        }).join('') + '</tbody></table></div><p class="field-hint">Total da ' + escapeHtml(nomeMarca(mk)) + ': ' + escapeHtml(fmtPal(totPal)) + ' paletes. Toque na data para editar ou encerrar o período.</p></div>';
+    });
+    // produzir para não faltar
+    var faltas = plano.linhas.map(function(l) { return { l: l, f: spFaltaDaLinha(l, hoje) }; }).filter(function(x) { return x.f; })
+      .sort(function(a, b) { return String(a.f.dia || '').localeCompare(String(b.f.dia || '')) || ordemDe(a.l.p) - ordemDe(b.l.p); });
+    if (faltas.length) {
+      h += '<div class="sp-produzir"><p class="est-alertas-t">⚠ Produzir para não faltar nas saídas programadas</p><ul>' + faltas.map(function(x) {
+        var f = x.f, p = x.l.p;
+        if (p.compradoPronto) return '<li><span><b>' + escapeHtml(p.nome) + '</b>: comprar ' + escapeHtml(f.pal !== null ? fmtInt(f.pal) + ' pal' : qtdUnidade(f.falta, unidadeDe(p))) +
+          ' até ' + escapeHtml(rotuloDia(f.dia, hoje).replace('Hoje', 'hoje').replace('Amanhã', 'amanhã')) + ' <small>(comprado pronto' + (p.fornecedorPronto ? ' de ' + escapeHtml(p.fornecedorPronto) : '') + ')</small></span></li>';
+        return '<li><span><b>' + escapeHtml(p.nome) + '</b>: faltam ' + escapeHtml(f.pal !== null ? fmtInt(f.pal) + ' pal' : qtdUnidade(f.falta, unidadeDe(p))) +
+          ' a partir de ' + escapeHtml(rotuloDia(f.dia, hoje).replace('Hoje', 'hoje').replace('Amanhã', 'amanhã')) +
+          (f.paraMin !== null && f.paraMin > (f.pal || 0) ? ' <small>(para terminar no mínimo: ' + fmtInt(f.paraMin) + ' pal)</small>' : '') + '</span>' +
+          '<button type="button" class="btn-text" data-sp="op" data-pid="' + escapeHtml(p.id) + '">Criar OP</button></li>';
+      }).join('') + '</ul>' + (faltas.filter(function(x) { return !x.l.p.compradoPronto; }).length > 1 ? '<button type="button" class="btn btn-secondary btn-sm" data-sp="op-todas">Criar uma OP com tudo o que falta</button>' : '') + '</div>';
+    }
+    var enc = sup.sp.filter(function(s) { return s.encerrado; }).sort(function(a, b) { return String(b.de || '').localeCompare(String(a.de || '')); });
+    if (enc.length) {
+      h += '<button type="button" class="btn-text" data-sp="encerrados">' + (spUi.encerrados ? 'Esconder encerrados' : 'Períodos encerrados (' + enc.length + ')') + '</button>';
+      if (spUi.encerrados) h += enc.slice(0, 30).map(function(s) {
+        return '<div class="driver-row"><span class="driver-name">' + escapeHtml(nomeMarca(s.marca)) + ' · ' + escapeHtml(dataCurta(s.de) + (s.ate && s.ate !== s.de ? ' a ' + dataCurta(s.ate) : '')) +
+          '<span class="driver-sub">encerrado' + (s.encerradoPor ? ' por ' + escapeHtml(s.encerradoPor) : '') + (s.encerradoEm ? ' em ' + escapeHtml(formatDateTimeBR(s.encerradoEm)) : '') + '</span></span>' +
+          '<button class="btn-text" data-sp="reabrir" data-id="' + escapeHtml(s.id) + '">Reabrir</button></div>';
+      }).join('');
+    }
+    box.innerHTML = h;
+  }
+  function spOpDeFaltas(pids) {
+    var plano = planoEstoque(), itens = [], primeiro = null;
+    plano.linhas.forEach(function(l) {
+      if ((pids && pids.indexOf(l.p.id) < 0) || l.p.compradoPronto) return;
+      var f = spFaltaDaLinha(l, plano.hoje);
+      if (!f) return;
+      itens.push({ produtoId: l.p.id, produtoNome: l.p.nome, unidade: unidadeDe(l.p), quantidade: f.qtd });
+      if (!primeiro || f.dia < primeiro) primeiro = f.dia;
+    });
+    if (!itens.length) { showToast('Nada faltando para as saídas programadas.'); return; }
+    var data = primeiro && primeiro > plano.hoje ? addDiasIso(primeiro, -1) : plano.hoje;
+    abrirOpForm(null, { itens: itens, data: data, obs: 'Para o cronograma de saída' });
+  }
+  document.getElementById('tab-estoque').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-sp]');
+    if (!b) return;
+    var a = b.dataset.sp, s = b.dataset.id ? sup.sp.find(function(x) { return x.id === b.dataset.id; }) : null;
+    if (a === 'nova') spAbrir(null, spUi.marca || 'levissima');
+    else if (a === 'editar' && s) spAbrir(s);
+    else if (a === 'marca') { spUi.marca = b.dataset.marca || ''; renderEstoque(); }
+    else if (a === 'encerrados') { spUi.encerrados = !spUi.encerrados; renderEstoque(); }
+    else if (a === 'reabrir' && s) supGravar([{ op: 'update', col: SUP_COL.sp, id: s.id, data: { encerrado: false, atualizadoEm: new Date().toISOString() } }]).then(function() { showToast('Período reaberto.'); }).catch(falhaSup);
+    else if (a === 'op') spOpDeFaltas([b.dataset.pid]);
+    else if (a === 'op-todas') spOpDeFaltas(null);
+    else if (a === 'locais') abrirLocaisForm();
+  });
+  function falhaSup(err) { console.error('suprimentos', err); showToast('Não foi possível salvar agora. Tente novamente.'); }
+  function marcasComProdutos() {
+    var ms = [];
+    produtosOrdenados().forEach(function(p) { var mk = marcaDoTexto(p.nome); if (ms.indexOf(mk) < 0) ms.push(mk); });
+    return ms.sort(function(a, b) { return ordemMarca(a) - ordemMarca(b); });
+  }
+  // formulário: programar saída (nova ou editar)
+  function spAbrir(s, marcaPadrao) {
+    var mk = s ? s.marca : (marcaPadrao || 'levissima'), modelo = {};
+    ((s && s.itens) || []).forEach(function(it) {
+      var p = findProduto(it.produtoId), upp = Number(p && p.unidadesPorPalete) || 0, pad = 0, outros = [];
+      (it.grupos || []).forEach(function(g) {
+        if (!g.porPalete || Number(g.porPalete) === upp) pad += Number(g.paletes) || 0;
+        else outros.push({ pal: String(g.paletes), por: String(g.porPalete) });
+      });
+      modelo[it.produtoId] = { pad: pad ? String(pad) : '', outros: outros };
+    });
+    var hoje = todayIso();
+    gerAbrir({
+      titulo: s ? 'Editar saída programada' : 'Programar saída', botao: s ? 'Salvar' : 'Programar',
+      modelo: modelo, marca: mk,
+      html: '<p class="hint">O que a marca carrega no período, em paletes. Use “palete padrão” para o palete normal do produto e “outro palete” quando o palete sai com outra quantidade (ex.: 6 paletes com 175 fardos).</p>' +
+        '<label>Marca<select id="sp-marca">' + marcasComProdutos().map(function(m) { return '<option value="' + escapeHtml(m) + '"' + (m === mk ? ' selected' : '') + '>' + escapeHtml(nomeMarca(m)) + '</option>'; }).join('') + '</select></label>' +
+        '<div class="row-2"><label>Carrega a partir de <span class="req">*</span><input type="date" id="sp-de" value="' + escapeHtml(s ? s.de : hoje) + '" /></label>' +
+        '<label>Até <span class="req">*</span><input type="date" id="sp-ate" value="' + escapeHtml(s ? (s.ate || s.de) : addDiasIso(hoje, 1)) + '" /></label></div>' +
+        '<div id="sp-linhas"></div>' +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="sp-obs" maxlength="200" value="' + escapeHtml((s && s.obs) || '') + '" /></label>' +
+        (s ? '<div class="sp-acoes" id="sp-acoes"></div>' : ''),
+      depois: function() { spRenderLinhas(); spRenderAcoes(s); },
+      change: function(t) { if (t.id === 'sp-marca') { spLerLinhas(); ger.marca = t.value; spRenderLinhas(); } },
+      input: function(t) { if (t.closest('#sp-linhas')) { spLerLinhas(); spAtualizarTotais(); } },
+      acao: function(a, b) {
+        if (a === 'g-add') { spLerLinhas(); var m = ger.modelo[b.dataset.pid] = ger.modelo[b.dataset.pid] || { pad: '', outros: [] }; m.outros.push({ pal: '', por: '' }); spRenderLinhas(); }
+        else if (a === 'g-rem') { spLerLinhas(); var m2 = ger.modelo[b.dataset.pid]; if (m2) m2.outros.splice(Number(b.dataset.i), 1); spRenderLinhas(); }
+        else if (a === 'encerrar' && s) supGravar([{ op: 'update', col: SUP_COL.sp, id: s.id, data: { encerrado: true, encerradoEm: new Date().toISOString(), encerradoPor: quemSessao() } }]).then(function() { gerFechar(); showToast('Período encerrado: não conta mais no saldo futuro.'); }).catch(falhaSup);
+        else if (a === 'excluir') { spUi.confirmar = s.id; spRenderAcoes(s); }
+        else if (a === 'excluir-nao') { spUi.confirmar = null; spRenderAcoes(s); }
+        else if (a === 'excluir-ok' && s) { spUi.confirmar = null; supGravar([{ op: 'delete', col: SUP_COL.sp, id: s.id }]).then(function() { gerFechar(); showToast('Saída programada excluída.'); }).catch(falhaSup); }
+      },
+      salvar: function() {
+        spLerLinhas();
+        var de = gerVal('sp-de'), ate = gerVal('sp-ate') || de, marca = ger.marca, itens = [], erro = '';
+        if (!de) return gerErro('Informe a data em que começa a carregar.');
+        if (ate < de) return gerErro('A data “até” não pode ser antes do início.');
+        produtosOrdenados().forEach(function(p) {
+          if (marcaDoTexto(p.nome) !== marca) return;
+          var m = ger.modelo[p.id];
+          if (!m) return;
+          var upp = Number(p.unidadesPorPalete) || 0, grupos = [], pad = numCampo(m.pad);
+          if (pad !== null && pad > 0) grupos.push({ paletes: pad, porPalete: null });
+          m.outros.forEach(function(o) {
+            var pal = numCampo(o.pal), por = numCampo(o.por);
+            if (pal === null || pal <= 0) return;
+            if (por === null || por <= 0) { erro = 'Informe quantos ' + unidadeDe(p) + ' vão em cada palete de ' + p.nome + '.'; return; }
+            grupos.push({ paletes: pal, porPalete: por === upp ? null : Math.round(por) });
+          });
+          if (grupos.length) itens.push({ produtoId: p.id, produtoNome: p.nome, grupos: grupos });
+        });
+        if (erro) return gerErro(erro);
+        if (!itens.length) return gerErro('Informe os paletes de ao menos um produto.');
+        var dup = sup.sp.find(function(x) { return !x.encerrado && x.marca === marca && x.de === de && (x.ate || x.de) === ate && (!s || x.id !== s.id); });
+        if (dup) return gerErro('Já existe saída programada da ' + nomeMarca(marca) + ' nesse período. Edite a que já existe.');
+        var agora = new Date().toISOString(), dados = { marca: marca, de: de, ate: ate, itens: itens, obs: gerVal('sp-obs'), atualizadoEm: agora };
+        if (!s) { dados.criadoEm = agora; dados.criadoPor = quemSessao(); dados.encerrado = false; }
+        return supGravar([{ op: s ? 'update' : 'set', col: SUP_COL.sp, id: s ? s.id : null, data: dados }]).then(function() {
+          showToast(s ? 'Saída programada salva.' : 'Saída programada: ' + nomeMarca(marca) + ', ' + dataCurta(de) + (ate !== de ? ' a ' + dataCurta(ate) : '') + '.');
+        });
+      }
+    });
+  }
+  function spRenderAcoes(s) {
+    var el = document.getElementById('sp-acoes');
+    if (!el || !s) return;
+    el.innerHTML = spUi.confirmar === s.id
+      ? '<div class="driver-confirm">Excluir esta saída programada?<button type="button" class="btn-text danger" data-ger="excluir-ok">Excluir</button><button type="button" class="btn-text" data-ger="excluir-nao">Manter</button></div>'
+      : '<button type="button" class="btn-text" data-ger="encerrar">Encerrar período (já saiu ou não vai sair)</button><button type="button" class="btn-text danger" data-ger="excluir">Excluir</button>';
+  }
+  function spRenderLinhas() {
+    var box = document.getElementById('sp-linhas');
+    if (!box || !ger) return;
+    var prods = produtosOrdenados().filter(function(p) { return marcaDoTexto(p.nome) === ger.marca; });
+    box.innerHTML = prods.map(function(p) {
+      var m = ger.modelo[p.id] || { pad: '', outros: [] }, upp = Number(p.unidadesPorPalete) || 0, u = unidadeDe(p), pid = escapeHtml(p.id);
+      return '<div class="sp-row" data-pid="' + pid + '"><div class="sp-row-t"><span><span class="sp-dot pc-' + corDoProduto(p.nome) + '" aria-hidden="true"></span>' + escapeHtml(p.nome) + '</span><small class="sp-tot" data-pid="' + pid + '"></small></div>' +
+        '<div class="sp-in"><label class="sp-l">Palete padrão' + (upp ? ' (' + fmtInt(upp) + ' ' + escapeHtml(u) + ')' : '') +
+          '<input type="number" min="0" step="0.5" inputmode="decimal" class="sp-pad" data-pid="' + pid + '" value="' + escapeHtml(m.pad) + '" placeholder="0" aria-label="Paletes padrão de ' + escapeHtml(p.nome) + '" /></label>' +
+        m.outros.map(function(o, i) {
+          return '<span class="sp-g"><input type="number" min="0" step="0.5" inputmode="decimal" class="sp-g-pal" data-pid="' + pid + '" data-i="' + i + '" value="' + escapeHtml(o.pal) + '" placeholder="pal" aria-label="Paletes" />' +
+            '<span>pal c/</span><input type="number" min="1" step="1" inputmode="numeric" class="sp-g-por" data-pid="' + pid + '" data-i="' + i + '" value="' + escapeHtml(o.por) + '" placeholder="' + escapeHtml(u) + '" aria-label="' + escapeHtml(u) + ' por palete" />' +
+            '<button type="button" class="icon-btn sp-g-x" data-ger="g-rem" data-pid="' + pid + '" data-i="' + i + '" aria-label="Tirar">✕</button></span>';
+        }).join('') +
+        '<button type="button" class="btn-text" data-ger="g-add" data-pid="' + pid + '">+ outro palete</button></div></div>';
+    }).join('') || '<p class="empty-state">Nenhum produto desta marca.</p>';
+    spAtualizarTotais();
+  }
+  function spLerLinhas() {
+    if (!ger || !ger.modelo) return;
+    document.querySelectorAll('#sp-linhas .sp-row').forEach(function(r) {
+      var pid = r.dataset.pid, m = ger.modelo[pid] = ger.modelo[pid] || { pad: '', outros: [] };
+      var pad = r.querySelector('.sp-pad');
+      m.pad = pad ? pad.value : '';
+      m.outros = [];
+      r.querySelectorAll('.sp-g-pal').forEach(function(inp) {
+        var por = r.querySelector('.sp-g-por[data-i="' + inp.dataset.i + '"]');
+        m.outros.push({ pal: inp.value, por: por ? por.value : '' });
+      });
+    });
+  }
+  function spAtualizarTotais() {
+    if (!ger || !ger.modelo) return;
+    document.querySelectorAll('#sp-linhas .sp-tot').forEach(function(el) {
+      var p = findProduto(el.dataset.pid), m = ger.modelo[el.dataset.pid];
+      if (!p || !m) { el.textContent = ''; return; }
+      var upp = Number(p.unidadesPorPalete) || 0, pal = 0, qtd = 0, pad = numCampo(m.pad);
+      if (pad) { pal += pad; qtd += pad * upp; }
+      m.outros.forEach(function(o) { var a = numCampo(o.pal), b = numCampo(o.por); if (a) { pal += a; qtd += a * (b || upp); } });
+      el.textContent = pal ? fmtPal(pal) + ' pal = ' + qtdUnidade(Math.round(qtd), unidadeDe(p)) : '';
+    });
+  }
+
+  // =====================================================================================================
+  // SUPRIMENTOS: fornecedores, laudos e cronograma de recebimento (aba Matéria-prima)
+  var SUP_AREAS = ['recebimentos', 'fornecedores', 'laudos'];
+  var supUi = { busca: '', inativos: false, laudoForn: '', laudoHist: false, espec: {}, agHist: false, confirmar: null };
+  var LAUDO_TIPOS = [
+    { id: 'migracao', nome: 'Laudo de migração (embalagem em contato com alimento)' },
+    { id: 'coa', nome: 'Certificado de análise do lote', porLote: true },
+    { id: 'micro', nome: 'Laudo microbiológico' },
+    { id: 'licenca-sanitaria', nome: 'Licença sanitária / alvará de funcionamento' },
+    { id: 'licenca-ambiental', nome: 'Licença ambiental' },
+    { id: 'fispq', nome: 'FISPQ / FDS (produto químico)' },
+    { id: 'ficha-tecnica', nome: 'Ficha técnica do produto' },
+    { id: 'registro', nome: 'Registro ou notificação na Anvisa' },
+    { id: 'certificacao', nome: 'Certificação ou auditoria (ISO, FSSC, BPF)' },
+    { id: 'outro', nome: 'Outro documento' }
+  ];
+  function laudoTipo(id) { return LAUDO_TIPOS.find(function(t) { return t.id === id; }) || { id: id, nome: id || 'Laudo' }; }
+  var SITUACOES_FORN = { homologado: 'Homologado', avaliacao: 'Em avaliação', bloqueado: 'Bloqueado' };
+  // Sugestão de especificação por tipo de insumo (os "__" são para completar com o valor combinado com o fornecedor)
+  var ESPEC_SUGERIDA = {
+    'Pré-formas': 'Peso: __ g (tolerância ± __ g)\nGargalo: __ (ex.: PCO 1881)\nCor: __\nPET grau alimentício (laudo de migração em dia)\nSem bolhas, pontos pretos, rebarbas ou gargalo deformado',
+    'Tampas': 'Gargalo compatível: __\nCor: __\nLacre de segurança íntegro\nPE/PP grau alimentício (laudo de migração em dia)\nTorque de abertura: __',
+    'Lacres': 'Tipo e medida: __\nCor: __\nMaterial grau alimentício',
+    'Rótulos': 'Arte aprovada (marca, composição química, fonte, lote e validade, código de barras)\nMedidas: __ × __ mm\nMaterial: __\nCódigo de barras legível',
+    'Copos': 'Volume: __ ml\nPeso: __ g\nPP/PS grau alimentício (laudo de migração em dia)\nSem trincas nem deformação; empilham sem travar',
+    'Embalagem': 'Medidas: __\nEspessura ou gramatura: __\nSem rasgos, emendas ou umidade',
+    'Gás carbônico': 'CO2 grau alimentício (pureza mínima 99,9%)\nCertificado de análise do lote em cada entrega',
+    'Higienização': 'Produto com registro ou notificação na Anvisa\nFISPQ (FDS) atualizada\nConcentração de uso: __\nDentro da validade, embalagem lacrada'
+  };
+  function fornPorId(id) { for (var i = 0; i < sup.forn.length; i++) if (sup.forn[i].id === id) return sup.forn[i]; return null; }
+  function fornAtivos() { return sup.forn.filter(function(f) { return f.ativo !== false; }).sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); }); }
+  function fornDoInsumo(insId) { return fornAtivos().filter(function(f) { return (f.insumos || []).indexOf(insId) >= 0; }); }
+  function nomesFornecedoresCadastro() { return fornAtivos().map(function(f) { return f.nome; }); }
+  // ----- laudos -----
+  function laudoChave(l) { var t = laudoTipo(l.tipo); return [l.fornecedorId, l.tipo, l.insumoId || '', t.porLote ? (l.lote || l.id) : ''].join('|'); }
+  function laudosAtuais() {
+    var m = {};
+    sup.laudos.forEach(function(l) {
+      var k = laudoChave(l), a = m[k];
+      if (!a || (String(l.validade || '') + '|' + String(l.enviadoEm || '')) > (String(a.validade || '') + '|' + String(a.enviadoEm || ''))) m[k] = l;
+    });
+    return m;
+  }
+  function laudoSituacao(l, atuais) {
+    atuais = atuais || laudosAtuais();
+    if (atuais[laudoChave(l)] !== l) return { k: 'hist', txt: 'substituído por um mais novo', cls: '' };
+    if (!l.validade) return { k: 'sem', txt: 'sem validade', cls: '' };
+    var d = diasAte(l.validade), av = Number(l.avisarDias) || 30;
+    if (d < 0) return { k: 'vencido', txt: 'vencido há ' + (-d) + (d === -1 ? ' dia' : ' dias'), cls: 'falta' };
+    if (d === 0) return { k: 'vence', txt: 'vence hoje', cls: 'falta' };
+    if (d <= av) return { k: 'vence', txt: 'vence em ' + d + (d === 1 ? ' dia' : ' dias'), cls: 'aviso' };
+    return { k: 'ok', txt: 'válido até ' + formatDateBR(l.validade), cls: 'ok' };
+  }
+  function resumoLaudosForn(fid, atuais) {
+    atuais = atuais || laudosAtuais();
+    var r = { vencido: 0, vence: 0, ok: 0, sem: 0, total: 0, vencidos: [] };
+    sup.laudos.forEach(function(l) {
+      if (l.fornecedorId !== fid) return;
+      var s = laudoSituacao(l, atuais);
+      if (s.k === 'hist') return;
+      r.total++; r[s.k]++;
+      if (s.k === 'vencido') r.vencidos.push(laudoTipo(l.tipo).nome);
+    });
+    return r;
+  }
+  function laudosEmAlerta() {
+    var at = laudosAtuais();
+    return sup.laudos.map(function(l) { return { l: l, s: laudoSituacao(l, at), f: fornPorId(l.fornecedorId) }; })
+      .filter(function(x) { return x.f && x.f.ativo !== false && (x.s.k === 'vencido' || x.s.k === 'vence'); })
+      .sort(function(a, b) { return String(a.l.validade).localeCompare(String(b.l.validade)); });
+  }
+  function enviarLaudo(id, dados, file) {
+    if (!file || mode !== 'db' || !sbCliente) return supGravar([{ op: 'set', col: SUP_COL.laudos, id: id, data: dados }]);
+    return prepararArquivo(file).then(function(a) {
+      if (a.blob.size > 15 * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; throw e; }
+      var caminho = (dados.fornecedorId || 'sem-fornecedor') + '/' + id + '.' + a.ext;
+      return sbCliente.storage.from(BUCKET_LAUDOS).upload(caminho, a.blob, { contentType: a.mime || undefined, upsert: false }).then(function(r) {
+        if (r.error) throw r.error;
+        return supGravar([{ op: 'set', col: SUP_COL.laudos, id: id, data: Object.assign({}, dados, { caminho: caminho, nomeArquivo: a.nome, mime: a.mime, tamanho: a.blob.size }) }]);
+      });
+    });
+  }
+  function abrirArquivoLaudo(l) {
+    if (!l.caminho || mode !== 'db' || !sbCliente) { showToast('Este laudo não tem arquivo anexado.'); return; }
+    var nativo = appNativo(), janela = nativo ? null : window.open('', '_blank');
+    sbCliente.storage.from(BUCKET_LAUDOS).download(l.caminho).then(function(r) {
+      if (r.error) throw r.error;
+      if (nativo) return compartilharArquivoNativo(r.data, l.nomeArquivo || 'laudo', laudoTipo(l.tipo).nome);
+      var url = URL.createObjectURL(r.data);
+      if (janela) janela.location.href = url; else window.open(url, '_blank');
+      setTimeout(function() { URL.revokeObjectURL(url); }, 120000);
+    }).catch(function(e) { if (janela) janela.close(); console.error('abrir laudo', e); showToast('Não foi possível abrir o laudo agora.'); });
+  }
+  function excluirLaudo(l) {
+    var p = l.caminho && mode === 'db' && sbCliente ? sbCliente.storage.from(BUCKET_LAUDOS).remove([l.caminho]).then(function(r) { if (r.error) throw r.error; }) : Promise.resolve();
+    return p.then(function() { return supGravar([{ op: 'delete', col: SUP_COL.laudos, id: l.id }]); });
+  }
+  // ----- agendamentos de recebimento -----
+  var AG_STATUS = {
+    agendado: { txt: 'Agendado', cls: 'apagar' }, chegou: { txt: 'Chegou · conferir', cls: 'confirmar' },
+    conferido: { txt: 'Conferido · falta inspeção', cls: 'confirmar' }, recebido: { txt: 'Recebido', cls: 'pago' },
+    recusado: { txt: 'Recusado', cls: 'falta' }, cancelado: { txt: 'Cancelado', cls: '' }
+  };
+  var CONF_REC_ITENS = [
+    { id: 'nf', texto: 'Nota fiscal confere com o pedido (insumo, quantidade e preço)' },
+    { id: 'veiculo', texto: 'Veículo limpo, sem odor, sem pragas e sem produto químico junto da carga' },
+    { id: 'volumes', texto: 'Volumes íntegros: sem avaria, umidade ou sujeira' },
+    { id: 'identificacao', texto: 'Lote e validade identificados nos volumes' },
+    { id: 'laudo', texto: 'Laudo ou certificado do lote entregue (quando exigido)' }
+  ];
+  function agAbertos() { return sup.ag.filter(function(a) { return a.status === 'agendado' || a.status === 'chegou' || a.status === 'conferido'; }); }
+  function agAtrasado(a) { return (a.status === 'agendado') && a.data < todayIso(); }
+  function agPorId(id) { return sup.ag.find(function(a) { return a.id === id; }) || null; }
+  function agProximoNumero() { return sup.ag.reduce(function(m, a) { return Math.max(m, Number(a.numero) || 0); }, 0) + 1; }
+  function cargasNoDia(d) { return cargas.filter(function(c) { return c.data === d; }).length; }
+  function agOrdenar(a, b) { return String(a.data || '').localeCompare(String(b.data || '')) || String(a.hora || '99').localeCompare(String(b.hora || '99')) || (Number(a.numero) || 0) - (Number(b.numero) || 0); }
+  // inspeção feita na Qualidade a partir do agendamento: registra no item e fecha o recebimento quando todos tiverem
+  function supInspecaoFeita(ref, inspId, reg, entrou) {
+    var a = agPorId(ref.agId);
+    if (!a) return Promise.resolve();
+    var insp = Object.assign({}, a.inspecoes || {});
+    insp[String(ref.idx)] = { id: inspId, resultado: reg.resultado, em: reg.em, por: reg.por, entrada: !!entrou, quantidade: reg.quantidade };
+    var n = (a.itens || []).length, status = a.status;
+    if (Object.keys(insp).length >= n) status = Object.keys(insp).some(function(k) { return insp[k].resultado !== 'reprovado'; }) ? 'recebido' : 'recusado';
+    return supGravar([{ op: 'update', col: SUP_COL.ag, id: a.id, data: { inspecoes: insp, status: status, atualizadoEm: new Date().toISOString() } }]);
+  }
+  // matéria-prima necessária para produzir o que falta nas saídas programadas, comparada com o estoque e as entregas
+  function supNecessidades() {
+    var plano = planoEstoque(), prodItens = [];
+    plano.linhas.forEach(function(l) { var f = spFaltaDaLinha(l, plano.hoje); if (f && f.qtd > 0) prodItens.push({ produtoId: l.p.id, produtoNome: l.p.nome, quantidade: f.qtd }); });
+    var nec = materiaisDe(prodItens, false), precisa = {}, aReceber = {};
+    nec.lista.forEach(function(m) { precisa[m.insumoId] = m.qtd; });
+    agAbertos().forEach(function(a) {
+      (a.itens || []).forEach(function(it, i) {
+        if ((a.inspecoes || {})[String(i)]) return;
+        var c = a.conferencia && a.conferencia.itens && a.conferencia.itens[i];
+        aReceber[it.insumoId] = (aReceber[it.insumoId] || 0) + (Number(c ? c.recebida : it.quantidade) || 0);
+      });
+    });
+    var linhas = insumosDaArea('producao').map(function(i) {
+      var s = saldoInsumo(i.id), r = reservadoAntes(i.id, null), disp = s === null ? null : arred3(s - r);
+      var ag = arred3(aReceber[i.id] || 0), pr = arred3(precisa[i.id] || 0), min = Number(i.minimo) || 0;
+      var proj = disp === null ? null : arred3(disp + ag - pr);
+      var sug = proj !== null ? (proj < min ? Math.ceil(min - proj) : 0) : (pr > ag ? Math.ceil(pr - ag) : 0);
+      return { i: i, disp: disp, ag: ag, pr: pr, min: min, proj: proj, sug: sug, forn: fornDoInsumo(i.id) };
+    }).filter(function(x) { return x.pr > 0 || x.ag > 0 || x.sug > 0; })
+      .sort(function(a, b) { return (b.sug > 0) - (a.sug > 0) || compararInsumos(a.i, b.i); });
+    return { linhas: linhas, semFicha: nec.semFicha, produtos: prodItens };
+  }
+  // selo da aba Matéria-prima: laudos vencidos ou vencendo + entregas atrasadas ou esperando conferência
+  function supPendencias() {
+    var la = laudosEmAlerta(), at = agAbertos().filter(agAtrasado).length, esp = agAbertos().filter(function(a) { return a.status === 'chegou' || a.status === 'conferido'; }).length;
+    return { laudos: la.length, vencidos: la.filter(function(x) { return x.s.k === 'vencido'; }).length, atrasadas: at, esperando: esp, total: la.length + at + esp };
+  }
+  function renderTabMateriaBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="materia"]');
+    if (!b) return;
+    var p = supPendencias();
+    seloAba(b, ehEscritorio() ? p.total : 0, [p.laudos ? p.laudos + ' laudo(s) vencido(s) ou vencendo' : '', p.atrasadas ? p.atrasadas + ' entrega(s) atrasada(s)' : '', p.esperando ? p.esperando + ' entrega(s) esperando conferência ou inspeção' : ''].filter(Boolean).join(' · '));
+  }
+  function supResumoInicio() {
+    var hoje = todayIso();
+    return { hoje: sup.ag.filter(function(a) { return a.data === hoje && a.status !== 'cancelado'; }).length, p: supPendencias() };
+  }
+
+  // ----- telas -----
+  function renderSuprimentos(area) {
+    var box = document.getElementById('sup-conteudo');
+    if (!box) return;
+    if (area === 'fornecedores') renderFornecedores(box);
+    else if (area === 'laudos') renderLaudos(box);
+    else renderRecebimentos(box);
+  }
+  function supCard(cls, k, v, s, botao) {
+    return '<div class="est-card ' + cls + '"><span class="est-card-k">' + k + '</span><span class="est-card-v">' + v + '</span><span class="est-card-s">' + s + '</span>' + (botao || '') + '</div>';
+  }
+  function agCardHtml(a, atuais) {
+    var st = AG_STATUS[a.status] || { txt: a.status, cls: '' }, f = fornPorId(a.fornecedorId), id = escapeHtml(a.id), hoje = todayIso();
+    var cls = agAtrasado(a) ? 'falta' : st.cls, avisos = [];
+    if (f && f.situacao === 'bloqueado') avisos.push('fornecedor bloqueado');
+    if (f && (a.status === 'agendado' || a.status === 'chegou')) { var rl = resumoLaudosForn(f.id, atuais); if (rl.vencido) avisos.push('laudo vencido: ' + rl.vencidos.join(', ')); }
+    var conf = a.conferencia || null;
+    var itens = (a.itens || []).map(function(it, i) {
+      var insp = (a.inspecoes || {})[String(i)], ci = conf && conf.itens ? conf.itens[i] : null;
+      var div = ci && Number(ci.recebida) !== Number(it.quantidade);
+      var sIt = insp ? '<span class="q-chip ' + (insp.resultado === 'reprovado' ? 'falta' : insp.resultado === 'restricao' ? 'aviso' : 'ok') + '">' + (insp.resultado === 'reprovado' ? 'reprovado' : insp.resultado === 'restricao' ? 'aprovado c/ restrição' : 'aprovado') + (insp.entrada ? ' · no estoque' : '') + '</span>'
+        : a.status === 'conferido' ? '<button type="button" class="btn-text" data-sup="ag-inspecao" data-id="' + id + '" data-idx="' + i + '">Inspeção da Qualidade</button>' : '';
+      return '<div class="ag-it"><span><b>' + escapeHtml(it.insumoNome || '—') + '</b> · ' + escapeHtml(fmtMp(it.quantidade, it.unidade)) +
+        (ci ? ' · conferido ' + escapeHtml(fmtMp(ci.recebida, it.unidade)) + (div ? ' <b class="alerta">(diferença)</b>' : '') + (ci.lote ? ' · lote ' + escapeHtml(ci.lote) : '') : '') + '</span>' + sIt + '</div>';
+    }).join('');
+    var espec = '';
+    if (supUi.espec[a.id]) {
+      espec = (a.itens || []).map(function(it) {
+        var ins = insumoPorId(it.insumoId);
+        return '<div class="ag-espec"><b>' + escapeHtml(it.insumoNome || '—') + '</b>' + (ins && ins.exigeLaudoLote ? ' · exige certificado do lote' : '') + '\n' + escapeHtml((ins && ins.especificacao) || 'Sem especificação cadastrada (a senha mestre cadastra no insumo).') + '</div>';
+      }).join('');
+    }
+    var acoes;
+    if (supUi.confirmar === 'cancelar:' + a.id) {
+      acoes = '<span>Cancelar a entrega nº ' + escapeHtml(String(a.numero || '')) + '?</span><button class="btn-text danger" data-sup="ag-cancelar-ok" data-id="' + id + '">Cancelar entrega</button><button class="btn-text" data-sup="nao">Manter</button>';
+    } else {
+      var b = [];
+      if (a.status === 'agendado') b.push('<button class="btn-text" data-sup="ag-chegou" data-id="' + id + '">Chegou</button>');
+      if (a.status === 'agendado' || a.status === 'chegou') b.push('<button class="btn-text" data-sup="ag-conferir" data-id="' + id + '"><b>Conferir carga</b></button>', '<button class="btn-text" data-sup="ag-editar" data-id="' + id + '">Editar</button>', '<button class="btn-text danger" data-sup="ag-cancelar" data-id="' + id + '">Cancelar</button>');
+      b.push('<button class="btn-text" data-sup="ag-espec" data-id="' + id + '">' + (supUi.espec[a.id] ? 'Esconder especificação' : 'Especificação') + '</button>');
+      acoes = b.join('');
+    }
+    var doc = [a.pedido ? 'pedido ' + a.pedido : '', a.nf ? 'NF ' + a.nf : '', a.transportadora || '', a.placa ? 'placa ' + a.placa : ''].filter(Boolean).join(' · ');
+    var hist = [];
+    if (a.chegada && a.chegada.em) hist.push('chegou ' + formatDateTimeBR(a.chegada.em).replace(/^.* /, '') + (a.chegada.data && a.chegada.data !== a.data ? ' (' + dataCurta(a.chegada.data) + ')' : ''));
+    if (conf) hist.push((conf.recusada ? 'recusada' : 'conferida') + ' por ' + (conf.por || '—') + (conf.divergencias ? ' · ' + conf.divergencias + (conf.divergencias === 1 ? ' diferença' : ' diferenças') : '') + (conf.ncs ? ' · ' + conf.ncs + ' item(ns) NC' : ''));
+    return '<div class="frete-item est-' + cls + ' ag-card">' +
+      '<div class="frete-top"><span><b>' + escapeHtml(a.fornecedorNome || '—') + '</b>' + (a.hora ? ' · ' + escapeHtml(a.hora) : '') + ' <small class="ag-num">nº ' + escapeHtml(String(a.numero || '')) + '</small></span>' +
+        '<span class="chip-est ' + cls + '">' + escapeHtml(agAtrasado(a) ? 'Atrasado' : st.txt) + '</span></div>' +
+      itens + (doc ? '<div class="frete-sub">' + escapeHtml(doc) + '</div>' : '') +
+      (hist.length ? '<div class="frete-sub">' + escapeHtml(hist.join(' · ')) + '</div>' : '') +
+      (conf && conf.obs ? '<div class="frete-sub">Obs. da conferência: ' + escapeHtml(conf.obs) + '</div>' : '') +
+      (a.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(a.obs) + '</div>' : '') +
+      (avisos.length ? '<div class="sup-aviso falta">⚠ ' + escapeHtml(avisos.join(' · ')) + '</div>' : '') + espec +
+      '<div class="frete-acoes">' + acoes + '</div></div>';
+  }
+  function renderRecebimentos(box) {
+    var hoje = todayIso(), ab = agAbertos().sort(agOrdenar), at = laudosAtuais();
+    var doDia = sup.ag.filter(function(a) { return a.data === hoje && a.status !== 'cancelado'; });
+    var atras = ab.filter(agAtrasado), esper = ab.filter(function(a) { return a.status === 'chegou' || a.status === 'conferido'; });
+    var prox7 = ab.filter(function(a) { return a.data > hoje && a.data <= addDiasIso(hoje, 7); });
+    var nec = supNecessidades(), sugs = nec.linhas.filter(function(x) { return x.sug > 0; });
+    var h = '<p class="tagline">Cronograma das <b>entregas de matéria-prima</b>: agende com o fornecedor, confira a carga quando chegar e faça a <b>inspeção da Qualidade</b>; o aprovado entra no estoque de matéria-prima. A sugestão de compra vem do <b>cronograma de saída</b> (o que falta produzir) e das fichas técnicas.</p>';
+    h += '<div class="est-cards">' +
+      supCard('c-entrada', 'Entregas hoje', fmtInt(doDia.length), doDia.length ? doDia.filter(function(a) { return a.status !== 'agendado'; }).length + ' já chegaram' : 'nenhuma entrega hoje', '<button type="button" class="btn btn-primary btn-sm" data-sup="ag-novo">+ Agendar entrega</button>') +
+      supCard('c-saldo', 'Próximos 7 dias', fmtInt(prox7.length), prox7.length ? (prox7.length === 1 ? 'entrega agendada' : 'entregas agendadas') : 'nada agendado na semana') +
+      supCard('c-futuro' + (atras.length || esper.length ? ' alerta' : ''), 'Pendentes', fmtInt(atras.length + esper.length), [atras.length ? atras.length + (atras.length === 1 ? ' atrasada' : ' atrasadas') : '', esper.length ? esper.length + ' esperando conferência ou inspeção' : ''].filter(Boolean).join(' · ') || 'nada pendente') +
+      '</div>';
+    if (sugs.length) h += '<div class="est-alertas" role="status"><p class="est-alertas-t">⚠ Programar compra</p><ul>' + sugs.slice(0, 8).map(function(x) {
+      return '<li><b>' + escapeHtml(x.i.nome) + '</b> ' + escapeHtml('agendar ' + fmtMp(x.sug, x.i.unidade) + (x.forn.length ? ' com ' + x.forn[0].nome : '')) + '</li>';
+    }).join('') + '</ul></div>';
+    // cronograma (agrupado por dia)
+    h += '<section class="drivers-admin" aria-label="Cronograma de entregas"><div class="section-head"><h2 class="section-title">Cronograma de entregas</h2><span class="count-chip">' + (ab.length || '') + '</span></div>';
+    if (!ab.length) h += '<p class="empty-state">Nenhuma entrega agendada. Toque em “+ Agendar entrega”.</p>';
+    var dias = [];
+    ab.forEach(function(a) { var d = agAtrasado(a) ? 'atrasadas' : a.data; if (dias.indexOf(d) < 0) dias.push(d); });
+    dias.sort(function(a, b) { return a === 'atrasadas' ? -1 : b === 'atrasadas' ? 1 : a.localeCompare(b); });
+    dias.forEach(function(d) {
+      var lista = ab.filter(function(a) { return (agAtrasado(a) ? 'atrasadas' : a.data) === d; });
+      var nc = d === 'atrasadas' ? 0 : cargasNoDia(d);
+      h += '<div class="sup-dia"><span>' + (d === 'atrasadas' ? 'Atrasadas (não chegaram no dia)' : escapeHtml(rotuloDia(d, hoje) + (d !== hoje ? '' : ' · ' + formatDateBR(d)))) + '</span>' +
+        '<small>' + lista.length + (lista.length === 1 ? ' entrega' : ' entregas') + (nc ? ' · ' + nc + (nc === 1 ? ' carga' : ' cargas') + ' na expedição' : '') + '</small></div>' +
+        lista.map(function(a) { return agCardHtml(a, at); }).join('');
+    });
+    h += '</section>';
+    // necessidade de matéria-prima
+    h += '<section class="drivers-admin" aria-label="Matéria-prima para o cronograma"><div class="section-head"><h2 class="section-title">Matéria-prima para o cronograma de saída</h2></div>' +
+      '<p class="hint">Para produzir o que falta nas saídas programadas (aba Estoque), pela ficha técnica de cada produto. Projetado = disponível + a receber − o que vai precisar.</p>';
+    if (!nec.produtos.length) h += '<p class="empty-state">Nada faltando no cronograma de saída: não precisa de matéria-prima extra.</p>';
+    else {
+      h += '<p class="field-hint">Falta produzir: ' + escapeHtml(nec.produtos.map(function(x) { var p = findProduto(x.produtoId); return x.produtoNome + ' ' + palCurto(p, x.quantidade) + ' pal'; }).join(' · ')) + '</p>';
+      if (nec.semFicha.length) h += '<p class="field-hint warn">Sem ficha técnica: ' + escapeHtml(nec.semFicha.join(', ')) + '.</p>';
+      h += nec.linhas.map(function(x) {
+        var u = x.i.unidade || '', cls = x.proj === null ? '' : x.proj < 0 ? 'falta' : x.proj < x.min ? 'aviso' : 'ok';
+        return '<div class="driver-row sup-nec"><span class="driver-name">' + escapeHtml(x.i.nome) +
+          '<span class="driver-sub">precisa ' + escapeHtml(fmtMp(x.pr, u)) + ' · disponível ' + (x.disp === null ? 'sem contagem' : escapeHtml(fmtMp(x.disp, u))) + ' · a receber ' + escapeHtml(fmtMp(x.ag, u)) + '</span>' +
+          '<span class="driver-sub">' + (x.forn.length ? 'Fornecedor: ' + escapeHtml(x.forn.map(function(f) { return f.nome + (f.prazoDias ? ' (entrega em ' + f.prazoDias + ' dias)' : ''); }).join(', ')) : '<span class="alerta">sem fornecedor cadastrado para este insumo</span>') + '</span></span>' +
+          '<span class="q-chip ' + cls + '">' + (x.proj === null ? 'sem contagem' : 'projetado ' + escapeHtml(fmtMp(x.proj, u))) + '</span>' +
+          (x.sug > 0 ? '<button class="btn-text" data-sup="ag-sugerido" data-ins="' + escapeHtml(x.i.id) + '" data-qtd="' + x.sug + '">Agendar ' + escapeHtml(fmtMp(x.sug, u)) + '</button>' : '') + '</div>';
+      }).join('');
+    }
+    h += '</section>';
+    // histórico
+    var fechados = sup.ag.filter(function(a) { return a.status === 'recebido' || a.status === 'recusado' || a.status === 'cancelado'; }).sort(function(a, b) { return -agOrdenar(a, b); });
+    h += '<section class="drivers-admin" aria-label="Entregas encerradas"><div class="section-head"><h2 class="section-title">Recebidas, recusadas e canceladas</h2></div>' +
+      (fechados.length ? (supUi.agHist ? fechados : fechados.slice(0, 10)).map(function(a) { return agCardHtml(a, at); }).join('') +
+        (fechados.length > 10 ? '<button type="button" class="btn-text" data-sup="ag-hist">' + (supUi.agHist ? 'Mostrar só as últimas' : 'Mostrar todas (' + fechados.length + ')') + '</button>' : '')
+        : '<p class="empty-state">Nenhuma entrega encerrada ainda.</p>') + '</section>';
+    box.innerHTML = h;
+  }
+  function renderFornecedores(box) {
+    var at = laudosAtuais(), todos = sup.forn.slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); });
+    var ativos = todos.filter(function(f) { return f.ativo !== false; }), busca = normNome(supUi.busca);
+    var lista = (supUi.inativos ? todos : ativos).filter(function(f) {
+      if (!busca) return true;
+      var ins = (f.insumos || []).map(function(id) { var i = insumoPorId(id); return i ? i.nome : ''; }).join(' ');
+      return normNome([f.nome, f.cnpj, f.cidade, f.contato, ins].join(' ')).indexOf(busca) >= 0;
+    });
+    var homol = ativos.filter(function(f) { return f.situacao === 'homologado'; }).length;
+    var comVenc = ativos.filter(function(f) { return resumoLaudosForn(f.id, at).vencido > 0; }).length;
+    var h = '<p class="tagline">Cadastro dos <b>fornecedores</b> de matéria-prima: o que cada um entrega, prazo de entrega, situação (homologado, em avaliação ou bloqueado) e os <b>laudos</b> (aba Laudos, ao lado).</p>' +
+      '<div class="est-cards">' +
+      supCard('c-entrada', 'Fornecedores', fmtInt(ativos.length), homol + (homol === 1 ? ' homologado' : ' homologados'), '<button type="button" class="btn btn-primary btn-sm" data-sup="forn-novo">+ Fornecedor</button>') +
+      supCard('c-saldo', 'Insumos sem fornecedor', fmtInt(insumosDaArea('producao').concat(insumosDaArea('garrafoes')).filter(function(i) { return !fornDoInsumo(i.id).length; }).length), 'cadastre quem entrega cada insumo') +
+      supCard('c-futuro' + (comVenc ? ' alerta' : ''), 'Com laudo vencido', fmtInt(comVenc), comVenc ? 'renove na aba Laudos' : 'nenhum laudo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-sup="ir-laudos">Ver laudos</button>') +
+      '</div>' +
+      '<div class="ag-ferramentas"><input type="search" id="sup-busca" placeholder="Buscar fornecedor, CNPJ, cidade ou insumo" value="' + escapeHtml(supUi.busca) + '" autocomplete="off" aria-label="Buscar fornecedor" />' +
+      '<button type="button" class="btn-text" data-sup="forn-inativos">' + (supUi.inativos ? 'Esconder inativos' : 'Ver inativos') + '</button></div>';
+    if (!lista.length) h += '<p class="empty-state">' + (todos.length ? 'Nenhum fornecedor encontrado.' : 'Nenhum fornecedor cadastrado. Toque em “+ Fornecedor”.') + '</p>';
+    h += lista.map(function(f) {
+      var id = escapeHtml(f.id), rl = resumoLaudosForn(f.id, at), sit = f.situacao || 'avaliacao';
+      var cls = f.ativo === false ? '' : sit === 'bloqueado' ? 'falta' : rl.vencido ? 'confirmar' : sit === 'homologado' ? 'pago' : 'apagar';
+      var ins = (f.insumos || []).map(function(x) { var i = insumoPorId(x); return i ? i.nome : null; }).filter(Boolean);
+      var prox = agAbertos().filter(function(a) { return a.fornecedorId === f.id; }).sort(agOrdenar)[0];
+      var chipL = !rl.total ? '<span class="q-chip aviso">sem laudos</span>' : rl.vencido ? '<span class="q-chip falta">' + rl.vencido + (rl.vencido === 1 ? ' laudo vencido' : ' laudos vencidos') + '</span>'
+        : rl.vence ? '<span class="q-chip aviso">' + rl.vence + ' vencendo</span>' : '<span class="q-chip ok">' + rl.total + (rl.total === 1 ? ' laudo em dia' : ' laudos em dia') + '</span>';
+      return '<div class="frete-item est-' + cls + '"><div class="frete-top"><span><b>' + escapeHtml(f.nome) + '</b></span><span class="chip-est ' + cls + '">' + escapeHtml(f.ativo === false ? 'Inativo' : SITUACOES_FORN[sit] || sit) + '</span></div>' +
+        '<div class="frete-sub">' + escapeHtml([f.cnpj ? 'CNPJ ' + f.cnpj : '', f.contato, f.telefone, f.email, f.cidade].filter(Boolean).join(' · ') || 'sem contato cadastrado') + '</div>' +
+        '<div class="frete-sub">' + (ins.length ? 'Entrega: ' + escapeHtml(ins.slice(0, 5).join(', ') + (ins.length > 5 ? ' e mais ' + (ins.length - 5) : '')) : '<span class="alerta">nenhum insumo marcado</span>') +
+          (f.prazoDias ? ' · prazo de entrega ' + escapeHtml(String(f.prazoDias)) + (Number(f.prazoDias) === 1 ? ' dia' : ' dias') : '') + '</div>' +
+        '<div class="frete-sub">' + chipL + (prox ? ' próxima entrega ' + escapeHtml(rotuloDia(prox.data, todayIso()) + (prox.hora ? ' ' + prox.hora : '')) : '') + '</div>' +
+        (f.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(f.obs) + '</div>' : '') +
+        '<div class="frete-acoes"><button class="btn-text" data-sup="forn-editar" data-id="' + id + '">Editar</button>' +
+          '<button class="btn-text" data-sup="forn-laudos" data-id="' + id + '">Laudos</button>' +
+          '<button class="btn-text" data-sup="laudo-novo" data-forn="' + id + '">+ Laudo</button>' +
+          (f.ativo !== false && sit !== 'bloqueado' ? '<button class="btn-text" data-sup="ag-forn" data-id="' + id + '">Agendar entrega</button>' : '') +
+          '<button class="btn-text' + (f.ativo === false ? '' : ' danger') + '" data-sup="forn-ativo" data-id="' + id + '">' + (f.ativo === false ? 'Reativar' : 'Desativar') + '</button></div></div>';
+    }).join('');
+    box.innerHTML = h;
+  }
+  function renderLaudos(box) {
+    var at = laudosAtuais(), itens = sup.laudos.map(function(l) { return { l: l, s: laudoSituacao(l, at), f: fornPorId(l.fornecedorId) }; });
+    if (supUi.laudoForn) itens = itens.filter(function(x) { return x.l.fornecedorId === supUi.laudoForn; });
+    var atuais = itens.filter(function(x) { return x.s.k !== 'hist'; }), hist = itens.filter(function(x) { return x.s.k === 'hist'; });
+    var venc = atuais.filter(function(x) { return x.s.k === 'vencido'; }), vence = atuais.filter(function(x) { return x.s.k === 'vence'; }), ok = atuais.filter(function(x) { return x.s.k === 'ok' || x.s.k === 'sem'; });
+    var semLaudo = fornAtivos().filter(function(f) { return f.situacao === 'homologado' && !resumoLaudosForn(f.id, at).total; });
+    var ordem = { vencido: 0, vence: 1, ok: 2, sem: 3, hist: 4 };
+    atuais.sort(function(a, b) { return ordem[a.s.k] - ordem[b.s.k] || String(a.l.validade || '9').localeCompare(String(b.l.validade || '9')) || String(a.f ? a.f.nome : '').localeCompare(String(b.f ? b.f.nome : ''), 'pt-BR'); });
+    var h = '<p class="tagline">Arquivo dos <b>laudos e documentos dos fornecedores</b> (PDF ou foto), com a validade de cada um. O app avisa quando falta pouco para vencer (30 dias, ou o prazo escolhido no laudo) e quando já venceu. Ao renovar, o laudo antigo vai para o histórico.</p>' +
+      '<div class="est-cards">' +
+      supCard('c-futuro' + (venc.length ? ' alerta' : ''), 'Vencidos', fmtInt(venc.length), venc.length ? 'renove com o fornecedor' : 'nenhum vencido', '<button type="button" class="btn btn-primary btn-sm" data-sup="laudo-novo">+ Adicionar laudo</button>') +
+      supCard('c-saldo' + (vence.length ? ' alerta' : ''), 'Vencem em breve', fmtInt(vence.length), vence.length ? 'peça o novo laudo' : 'nenhum perto de vencer') +
+      supCard('c-entrada', 'Em dia', fmtInt(ok.length), semLaudo.length ? semLaudo.length + (semLaudo.length === 1 ? ' homologado sem laudo' : ' homologados sem laudo') : 'documentos válidos') +
+      '</div>';
+    if (venc.length || vence.length) h += '<div class="est-alertas" role="status"><p class="est-alertas-t">⚠ Laudos vencidos ou vencendo</p><ul>' + venc.concat(vence).map(function(x) {
+      return '<li class="' + (x.s.k === 'vencido' ? 'neg' : '') + '"><b>' + escapeHtml(x.f ? x.f.nome : '—') + '</b> · ' + escapeHtml(laudoTipo(x.l.tipo).nome + (x.l.insumoNome ? ' (' + x.l.insumoNome + ')' : '') + ': ' + x.s.txt) + '</li>';
+    }).join('') + '</ul></div>';
+    h += '<div class="ag-ferramentas"><label class="sup-filtro">Fornecedor<select id="sup-laudo-forn"><option value="">Todos</option>' +
+      sup.forn.slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); }).map(function(f) { return '<option value="' + escapeHtml(f.id) + '"' + (supUi.laudoForn === f.id ? ' selected' : '') + '>' + escapeHtml(f.nome) + '</option>'; }).join('') + '</select></label></div>';
+    function linha(x) {
+      var l = x.l, id = escapeHtml(l.id), t = laudoTipo(l.tipo);
+      if (supUi.confirmar === 'laudo:' + l.id) {
+        return '<div class="driver-confirm">Excluir este laudo e o arquivo dele?<button class="btn-text danger" data-sup="laudo-excluir-ok" data-id="' + id + '">Excluir</button><button class="btn-text" data-sup="nao">Cancelar</button></div>';
+      }
+      return '<div class="driver-row laudo-row' + (x.s.k === 'vencido' ? ' q-vencida' : '') + '"><span class="driver-name">' + escapeHtml(t.nome) +
+        '<span class="driver-sub">' + escapeHtml([x.f ? x.f.nome : '(fornecedor removido)', l.insumoNome, l.descricao, l.lote ? 'lote ' + l.lote : ''].filter(Boolean).join(' · ')) + '</span>' +
+        '<span class="driver-sub">' + escapeHtml([l.emissao ? 'emitido em ' + formatDateBR(l.emissao) : '', l.validade ? 'validade ' + formatDateBR(l.validade) : '', l.nomeArquivo ? l.nomeArquivo + (l.tamanho ? ' (' + tamanhoTexto(l.tamanho) + ')' : '') : 'sem arquivo', l.enviadoPor ? 'enviado por ' + l.enviadoPor : ''].filter(Boolean).join(' · ')) + '</span></span>' +
+        '<span class="q-chip ' + x.s.cls + '">' + escapeHtml(x.s.txt) + '</span>' +
+        (l.caminho ? '<button class="btn-text" data-sup="laudo-abrir" data-id="' + id + '">Abrir</button>' : '') +
+        (x.s.k !== 'hist' ? '<button class="btn-text" data-sup="laudo-renovar" data-id="' + id + '">Renovar</button>' : '') +
+        (ehMestre() ? '<button class="btn-text danger" data-sup="laudo-excluir" data-id="' + id + '">Excluir</button>' : '') + '</div>';
+    }
+    h += atuais.length ? atuais.map(linha).join('') : '<p class="empty-state">Nenhum laudo arquivado' + (supUi.laudoForn ? ' para este fornecedor' : '') + '. Toque em “+ Adicionar laudo”.</p>';
+    if (hist.length) h += '<button type="button" class="btn-text" data-sup="laudo-hist">' + (supUi.laudoHist ? 'Esconder histórico' : 'Histórico (' + hist.length + ' substituídos)') + '</button>' + (supUi.laudoHist ? hist.map(linha).join('') : '');
+    if (!ehMestre()) h += '<p class="field-hint">Só a senha mestre exclui laudos.</p>';
+    box.innerHTML = h;
+  }
+  document.getElementById('sup-conteudo').addEventListener('input', function(e) {
+    if (e.target.id === 'sup-busca') {
+      supUi.busca = e.target.value;
+      var pos = e.target.selectionStart;
+      renderMateria();
+      var n = document.getElementById('sup-busca'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) {} }
+    }
+  });
+  document.getElementById('sup-conteudo').addEventListener('change', function(e) {
+    if (e.target.id === 'sup-laudo-forn') { supUi.laudoForn = e.target.value; renderMateria(); }
+  });
+  function irAreaMp(area) { mpUi.area = area; renderMateria(); var t = document.getElementById('tab-materia'); if (t && t.scrollIntoView) window.scrollTo(0, 0); }
+  document.getElementById('sup-conteudo').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-sup]');
+    if (!b) return;
+    var a = b.dataset.sup, id = b.dataset.id;
+    var ag = id ? agPorId(id) : null, f = id ? fornPorId(id) : null, l = id ? sup.laudos.find(function(x) { return x.id === id; }) : null;
+    if (a === 'nao') { supUi.confirmar = null; renderMateria(); }
+    else if (a === 'ag-novo') abrirAgendamento(null, null);
+    else if (a === 'ag-forn' && f) abrirAgendamento(null, { fornecedorId: f.id });
+    else if (a === 'ag-sugerido') { var fs = fornDoInsumo(b.dataset.ins); abrirAgendamento(null, { fornecedorId: fs.length ? fs[0].id : '', itens: [{ insumoId: b.dataset.ins, quantidade: Number(b.dataset.qtd) || '' }] }); }
+    else if (a === 'ag-editar' && ag) abrirAgendamento(ag, null);
+    else if (a === 'ag-espec' && ag) { supUi.espec[ag.id] = !supUi.espec[ag.id]; renderMateria(); }
+    else if (a === 'ag-chegou' && ag) {
+      var agora = new Date().toISOString();
+      supGravar([{ op: 'update', col: SUP_COL.ag, id: ag.id, data: { status: 'chegou', chegada: { em: agora, data: todayIso(), por: quemSessao() }, atualizadoEm: agora } }])
+        .then(function() { showToast('Chegada registrada: ' + ag.fornecedorNome + '.'); }).catch(falhaSup);
+    }
+    else if (a === 'ag-conferir' && ag) abrirConferenciaRecebimento(ag);
+    else if (a === 'ag-cancelar' && ag) { supUi.confirmar = 'cancelar:' + ag.id; renderMateria(); }
+    else if (a === 'ag-cancelar-ok' && ag) { supUi.confirmar = null; supGravar([{ op: 'update', col: SUP_COL.ag, id: ag.id, data: { status: 'cancelado', canceladoEm: new Date().toISOString(), canceladoPor: quemSessao() } }]).then(function() { showToast('Entrega cancelada.'); }).catch(falhaSup); }
+    else if (a === 'ag-inspecao' && ag) {
+      var i = Number(b.dataset.idx), it = (ag.itens || [])[i], ci = ag.conferencia && ag.conferencia.itens ? ag.conferencia.itens[i] : null;
+      if (!it) return;
+      abrirQRec({ ag: { agId: ag.id, idx: i }, insumoId: it.insumoId, fornecedor: ag.fornecedorNome, nf: ag.nf || '', lote: ci ? ci.lote : '', quantidade: ci ? ci.recebida : it.quantidade, unidade: it.unidade });
+    }
+    else if (a === 'ag-hist') { supUi.agHist = !supUi.agHist; renderMateria(); }
+    else if (a === 'forn-novo') abrirFornecedorForm(null);
+    else if (a === 'forn-editar' && f) abrirFornecedorForm(f);
+    else if (a === 'forn-inativos') { supUi.inativos = !supUi.inativos; renderMateria(); }
+    else if (a === 'forn-ativo' && f) supGravar([{ op: 'update', col: SUP_COL.forn, id: f.id, data: { ativo: f.ativo === false, atualizadoEm: new Date().toISOString() } }]).then(function() { showToast(f.ativo === false ? 'Fornecedor reativado.' : 'Fornecedor desativado.'); }).catch(falhaSup);
+    else if (a === 'forn-laudos' && f) { supUi.laudoForn = f.id; irAreaMp('laudos'); }
+    else if (a === 'ir-laudos') { supUi.laudoForn = ''; irAreaMp('laudos'); }
+    else if (a === 'laudo-novo') abrirLaudoForm(null, { fornecedorId: b.dataset.forn || supUi.laudoForn || '' });
+    else if (a === 'laudo-renovar' && l) abrirLaudoForm(null, { fornecedorId: l.fornecedorId, tipo: l.tipo, insumoId: l.insumoId || '', descricao: l.descricao || '', avisarDias: l.avisarDias });
+    else if (a === 'laudo-abrir' && l) abrirArquivoLaudo(l);
+    else if (a === 'laudo-excluir' && l && ehMestre()) { supUi.confirmar = 'laudo:' + l.id; renderMateria(); }
+    else if (a === 'laudo-excluir-ok' && l && ehMestre()) { supUi.confirmar = null; excluirLaudo(l).then(function() { showToast('Laudo excluído.'); }).catch(falhaSup); }
+    else if (a === 'laudo-hist') { supUi.laudoHist = !supUi.laudoHist; renderMateria(); }
+  });
+
+  // ----- formulários -----
+  function opcoesInsumosHtml(sel, preferidos) {
+    var todos = insumosDaArea('producao').concat(insumosDaArea('garrafoes'));
+    var pref = todos.filter(function(i) { return preferidos && preferidos.indexOf(i.id) >= 0; }), outros = todos.filter(function(i) { return !preferidos || preferidos.indexOf(i.id) < 0; });
+    function opt(i) { return '<option value="' + escapeHtml(i.id) + '"' + (i.id === sel ? ' selected' : '') + '>' + escapeHtml(i.nome + (i.unidade ? ' (' + i.unidade + ')' : '')) + '</option>'; }
+    return '<option value="">— escolha —</option>' + (pref.length ? '<optgroup label="Entregues por este fornecedor">' + pref.map(opt).join('') + '</optgroup><optgroup label="Outros insumos">' + outros.map(opt).join('') + '</optgroup>' : outros.map(opt).join(''));
+  }
+  function abrirFornecedorForm(f) {
+    var todos = insumosDaArea('producao').concat(insumosDaArea('garrafoes')), marc = (f && f.insumos) || [], grupo = null;
+    var lista = todos.map(function(i) {
+      var g = '';
+      if ((i.grupo || 'Outros') !== grupo) { grupo = i.grupo || 'Outros'; g = '<p class="mp-grupo">' + escapeHtml(grupo) + '</p>'; }
+      return g + '<label class="check-row"><input type="checkbox" class="forn-ins-ck" value="' + escapeHtml(i.id) + '"' + (marc.indexOf(i.id) >= 0 ? ' checked' : '') + ' /> ' + escapeHtml(i.nome) + '</label>';
+    }).join('');
+    gerAbrir({
+      titulo: f ? 'Editar fornecedor' : 'Novo fornecedor', botao: 'Salvar fornecedor',
+      html: '<label>Nome ou razão social <span class="req">*</span><input type="text" id="fo-nome" maxlength="100" value="' + escapeHtml(f ? f.nome : '') + '" /></label>' +
+        '<div class="row-2"><label>CNPJ <span class="opt">(opcional)</span><input type="text" id="fo-cnpj" maxlength="20" inputmode="numeric" value="' + escapeHtml((f && f.cnpj) || '') + '" placeholder="00.000.000/0000-00" /></label>' +
+        '<label>Situação<select id="fo-sit">' + Object.keys(SITUACOES_FORN).map(function(k) { return '<option value="' + k + '"' + (((f && f.situacao) || 'avaliacao') === k ? ' selected' : '') + '>' + SITUACOES_FORN[k] + '</option>'; }).join('') + '</select></label></div>' +
+        '<div class="row-2"><label>Contato<input type="text" id="fo-contato" maxlength="60" value="' + escapeHtml((f && f.contato) || '') + '" /></label>' +
+        '<label>Telefone<input type="tel" id="fo-tel" maxlength="30" value="' + escapeHtml((f && f.telefone) || '') + '" /></label></div>' +
+        '<div class="row-2"><label>E-mail<input type="email" id="fo-email" maxlength="80" value="' + escapeHtml((f && f.email) || '') + '" /></label>' +
+        '<label>Cidade / UF<input type="text" id="fo-cidade" maxlength="60" value="' + escapeHtml((f && f.cidade) || '') + '" /></label></div>' +
+        '<label>Prazo de entrega <span class="opt">(dias entre o pedido e a entrega)</span><input type="number" id="fo-prazo" min="0" step="1" inputmode="numeric" value="' + escapeHtml(f && f.prazoDias ? String(f.prazoDias) : '') + '" /></label>' +
+        '<p class="field-label">Insumos que entrega</p>' + (todos.length ? '<div class="forn-ins">' + lista + '</div>' : '<p class="field-hint">Nenhum insumo cadastrado ainda.</p>') +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="fo-obs" maxlength="200" value="' + escapeHtml((f && f.obs) || '') + '" /></label>',
+      salvar: function() {
+        var nome = gerVal('fo-nome').replace(/\s+/g, ' ');
+        if (!nome) return gerErro('Informe o nome do fornecedor.');
+        if (sup.forn.some(function(x) { return (!f || x.id !== f.id) && normNome(x.nome) === normNome(nome); })) return gerErro('Já existe um fornecedor com esse nome.');
+        var cnpj = gerVal('fo-cnpj'), dig = cnpj.replace(/\D/g, '');
+        if (cnpj && dig.length !== 14) return gerErro('O CNPJ tem 14 números (ou deixe em branco).');
+        if (dig.length === 14) cnpj = dig.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+        var ins = []; document.querySelectorAll('#ger-form-body .forn-ins-ck:checked').forEach(function(c) { ins.push(c.value); });
+        var prazo = numCampo(gerVal('fo-prazo')), agora = new Date().toISOString();
+        var dados = { nome: nome, cnpj: cnpj, situacao: document.getElementById('fo-sit').value, contato: gerVal('fo-contato'), telefone: gerVal('fo-tel'), email: gerVal('fo-email'),
+          cidade: gerVal('fo-cidade'), prazoDias: prazo && prazo > 0 ? Math.round(prazo) : 0, insumos: ins, obs: gerVal('fo-obs'), atualizadoEm: agora };
+        if (!f) { dados.ativo = true; dados.criadoEm = agora; dados.criadoPor = quemSessao(); }
+        return supGravar([{ op: f ? 'update' : 'set', col: SUP_COL.forn, id: f ? f.id : 'forn-' + (slug(nome) || uid()) + (f ? '' : '-' + uid().slice(-4)), data: dados }]).then(function() { showToast('Fornecedor salvo.'); });
+      }
+    });
+  }
+  function abrirLaudoForm(l, pre) {
+    pre = pre || {};
+    var forns = sup.forn.filter(function(f) { return f.ativo !== false || f.id === pre.fornecedorId; }).sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); });
+    if (!forns.length) { showToast('Cadastre o fornecedor primeiro (Matéria-prima › Fornecedores).'); return; }
+    var semArquivo = mode !== 'db' || !sbCliente;
+    gerAbrir({
+      titulo: pre.tipo ? 'Renovar laudo' : 'Adicionar laudo', botao: 'Salvar laudo',
+      html: '<label>Fornecedor <span class="req">*</span><select id="la-forn"><option value="">— escolha —</option>' + forns.map(function(f) { return '<option value="' + escapeHtml(f.id) + '"' + (f.id === pre.fornecedorId ? ' selected' : '') + '>' + escapeHtml(f.nome) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Tipo de documento <span class="req">*</span><select id="la-tipo">' + LAUDO_TIPOS.map(function(t) { return '<option value="' + t.id + '"' + ((pre.tipo || 'migracao') === t.id ? ' selected' : '') + '>' + escapeHtml(t.nome) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Insumo <span class="opt">(se o laudo é de um insumo)</span><select id="la-ins"></select></label>' +
+        '<div class="row-2"><label>Nº ou descrição <span class="opt">(opcional)</span><input type="text" id="la-desc" maxlength="80" value="' + escapeHtml(pre.descricao || '') + '" /></label>' +
+        '<label id="la-lote-l">Lote <span class="opt">(opcional)</span><input type="text" id="la-lote" maxlength="40" /></label></div>' +
+        '<div class="row-2"><label>Emissão<input type="date" id="la-emissao" /></label>' +
+        '<label>Validade <span class="req">*</span><input type="date" id="la-validade" /></label></div>' +
+        '<label class="check-row"><input type="checkbox" id="la-semval" /> Documento sem validade</label>' +
+        '<label>Avisar com quantos dias de antecedência<input type="number" id="la-avisar" min="1" max="365" step="1" inputmode="numeric" value="' + escapeHtml(String(pre.avisarDias || 30)) + '" /></label>' +
+        '<label>Arquivo (PDF ou foto) ' + (semArquivo ? '<span class="opt">(precisa de internet para anexar)</span>' : '<span class="req">*</span>') + '<input type="file" id="la-arq" accept=".pdf,application/pdf,image/*"' + (semArquivo ? ' disabled' : '') + ' /></label>',
+      depois: function() { laAtualizar(pre.insumoId || ''); },
+      change: function(t) { if (t.id === 'la-forn' || t.id === 'la-tipo' || t.id === 'la-semval') laAtualizar(document.getElementById('la-ins').value); },
+      salvar: function() {
+        var fid = document.getElementById('la-forn').value, f = fornPorId(fid), tipo = document.getElementById('la-tipo').value;
+        var semVal = document.getElementById('la-semval').checked, validade = gerVal('la-validade'), emissao = gerVal('la-emissao');
+        var arq = document.getElementById('la-arq').files[0] || null, insId = document.getElementById('la-ins').value, ins = insId ? insumoPorId(insId) : null;
+        if (!f) return gerErro('Escolha o fornecedor.');
+        if (!semVal && !validade) return gerErro('Informe a validade (ou marque “Documento sem validade”).');
+        if (emissao && validade && validade < emissao) return gerErro('A validade não pode ser antes da emissão.');
+        if (!arq && !semArquivo) return gerErro('Anexe o arquivo do laudo (PDF ou foto).');
+        var av = numCampo(gerVal('la-avisar')), id = 'ld' + uid();
+        var dados = { fornecedorId: f.id, fornecedorNome: f.nome, tipo: tipo, insumoId: ins ? ins.id : '', insumoNome: ins ? ins.nome : '', descricao: gerVal('la-desc'),
+          lote: gerVal('la-lote'), emissao: emissao, validade: semVal ? '' : validade, avisarDias: av && av > 0 ? Math.round(av) : 30,
+          enviadoEm: new Date().toISOString(), enviadoPor: quemSessao() };
+        return enviarLaudo(id, dados, arq).then(function() { showToast('Laudo arquivado' + (dados.validade ? ' (validade ' + formatDateBR(dados.validade) + ').' : '.')); });
+      }
+    });
+  }
+  function laAtualizar(insSel) {
+    var f = fornPorId(document.getElementById('la-forn').value), t = laudoTipo(document.getElementById('la-tipo').value);
+    document.getElementById('la-ins').innerHTML = '<option value="">— nenhum (vale para o fornecedor) —</option>' + opcoesInsumosHtml(insSel, f ? f.insumos || [] : []).replace('<option value="">— escolha —</option>', '');
+    document.getElementById('la-lote-l').classList.toggle('hidden', !t.porLote);
+    var sv = document.getElementById('la-semval').checked;
+    document.getElementById('la-validade').disabled = sv;
+  }
+  // agendar entrega (nova ou editar)
+  function abrirAgendamento(a, pre) {
+    pre = pre || {};
+    var forns = fornAtivos();
+    if (!forns.length) { showToast('Cadastre o fornecedor primeiro (Matéria-prima › Fornecedores).'); return; }
+    if (!insumosDaArea('producao').concat(insumosDaArea('garrafoes')).length) { showToast('Nenhum insumo cadastrado.'); return; }
+    var fid = a ? a.fornecedorId : (pre.fornecedorId || ''), hoje = todayIso();
+    var itens = a ? (a.itens || []).map(function(it) { return { insumoId: it.insumoId, quantidade: String(it.quantidade) }; }) : (pre.itens || []).map(function(it) { return { insumoId: it.insumoId, quantidade: String(it.quantidade || '') }; });
+    if (!itens.length) itens = [{ insumoId: '', quantidade: '' }];
+    gerAbrir({
+      titulo: a ? 'Editar entrega nº ' + a.numero : 'Agendar entrega de matéria-prima', botao: a ? 'Salvar' : 'Agendar',
+      itens: itens,
+      html: '<label>Fornecedor <span class="req">*</span><select id="ag-forn"><option value="">— escolha —</option>' + forns.map(function(f) {
+          return '<option value="' + escapeHtml(f.id) + '"' + (f.id === fid ? ' selected' : '') + (f.situacao === 'bloqueado' ? ' disabled' : '') + '>' + escapeHtml(f.nome + (f.situacao === 'bloqueado' ? ' (bloqueado)' : f.situacao === 'avaliacao' ? ' (em avaliação)' : '')) + '</option>';
+        }).join('') + '</select></label>' +
+        '<div class="row-2"><label>Data da entrega <span class="req">*</span><input type="date" id="ag-data" value="' + escapeHtml(a ? a.data : (pre.data || addDiasIso(hoje, 1))) + '" /></label>' +
+        '<label>Horário <span class="opt">(opcional)</span><input type="time" id="ag-hora" value="' + escapeHtml((a && a.hora) || '') + '" /></label></div>' +
+        '<div id="ag-info"></div>' +
+        '<p class="field-label">Insumos e quantidades <span class="req">*</span></p><div id="ag-itens"></div>' +
+        '<button type="button" class="btn-text" data-ger="it-add">+ outro insumo</button>' +
+        '<div class="row-2"><label>Nº do pedido <span class="opt">(opcional)</span><input type="text" id="ag-pedido" maxlength="30" value="' + escapeHtml((a && a.pedido) || '') + '" /></label>' +
+        '<label>Transportadora <span class="opt">(opcional)</span><input type="text" id="ag-transp" maxlength="60" value="' + escapeHtml((a && a.transportadora) || '') + '" /></label></div>' +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="ag-obs" maxlength="200" value="' + escapeHtml((a && a.obs) || '') + '" /></label>',
+      depois: function() { agRenderItens(); agInfo(); },
+      change: function(t) { if (t.id === 'ag-forn') { agLerItens(); agRenderItens(); agInfo(); } else if (t.id === 'ag-data') agInfo(); else if (t.classList.contains('ag-ins')) { agLerItens(); agRenderItens(); } },
+      input: function(t) { if (t.classList.contains('ag-qtd')) agLerItens(); },
+      acao: function(x, b) {
+        if (x === 'it-add') { agLerItens(); ger.itens.push({ insumoId: '', quantidade: '' }); agRenderItens(); }
+        else if (x === 'it-rem') { agLerItens(); ger.itens.splice(Number(b.dataset.i), 1); if (!ger.itens.length) ger.itens.push({ insumoId: '', quantidade: '' }); agRenderItens(); }
+      },
+      salvar: function() {
+        agLerItens();
+        var f = fornPorId(document.getElementById('ag-forn').value), data = gerVal('ag-data');
+        if (!f) return gerErro('Escolha o fornecedor.');
+        if (f.situacao === 'bloqueado') return gerErro('Fornecedor bloqueado: não dá para agendar.');
+        if (!data) return gerErro('Informe a data da entrega.');
+        var lista = [], erro = '';
+        ger.itens.forEach(function(it) {
+          var q = numCampo(it.quantidade);
+          if (!it.insumoId && !q) return;
+          var ins = insumoPorId(it.insumoId);
+          if (!ins) { erro = 'Escolha o insumo de todas as linhas (ou tire a linha).'; return; }
+          if (q === null || q <= 0) { erro = 'Informe a quantidade de ' + ins.nome + '.'; return; }
+          lista.push({ insumoId: ins.id, insumoNome: ins.nome, unidade: ins.unidade || '', quantidade: arred3(q) });
+        });
+        if (erro) return gerErro(erro);
+        if (!lista.length) return gerErro('Informe ao menos um insumo e a quantidade.');
+        var agora = new Date().toISOString();
+        var dados = { fornecedorId: f.id, fornecedorNome: f.nome, data: data, hora: gerVal('ag-hora'), itens: lista, pedido: gerVal('ag-pedido'), transportadora: gerVal('ag-transp'), obs: gerVal('ag-obs'), atualizadoEm: agora };
+        if (!a) { dados.numero = agProximoNumero(); dados.status = 'agendado'; dados.criadoEm = agora; dados.criadoPor = quemSessao(); }
+        return supGravar([{ op: a ? 'update' : 'set', col: SUP_COL.ag, id: a ? a.id : null, data: dados }]).then(function() {
+          showToast(a ? 'Entrega salva.' : 'Entrega agendada: ' + f.nome + ', ' + rotuloDia(data, todayIso()).replace('Hoje', 'hoje').replace('Amanhã', 'amanhã') + '.');
+        });
+      }
+    });
+  }
+  function agRenderItens() {
+    var box = document.getElementById('ag-itens');
+    if (!box || !ger) return;
+    var f = fornPorId(document.getElementById('ag-forn').value), pref = f ? f.insumos || [] : [];
+    box.innerHTML = ger.itens.map(function(it, i) {
+      var ins = insumoPorId(it.insumoId);
+      return '<div class="ag-linha"><select class="ag-ins" data-i="' + i + '" aria-label="Insumo">' + opcoesInsumosHtml(it.insumoId, pref) + '</select>' +
+        '<input type="number" class="ag-qtd" data-i="' + i + '" min="0" step="any" inputmode="decimal" placeholder="' + escapeHtml((ins && ins.unidade) || 'qtd') + '" value="' + escapeHtml(it.quantidade) + '" aria-label="Quantidade" />' +
+        '<button type="button" class="icon-btn" data-ger="it-rem" data-i="' + i + '" aria-label="Tirar">✕</button>' +
+        (ins && ins.especificacao ? '<details class="ag-espec-d"><summary>Especificação</summary><div class="ag-espec">' + escapeHtml(ins.especificacao) + '</div></details>' : '') + '</div>';
+    }).join('');
+  }
+  function agLerItens() {
+    if (!ger || !ger.itens) return;
+    document.querySelectorAll('#ag-itens .ag-ins').forEach(function(s) { var i = Number(s.dataset.i); if (ger.itens[i]) ger.itens[i].insumoId = s.value; });
+    document.querySelectorAll('#ag-itens .ag-qtd').forEach(function(s) { var i = Number(s.dataset.i); if (ger.itens[i]) ger.itens[i].quantidade = s.value; });
+  }
+  function agInfo() {
+    var el = document.getElementById('ag-info');
+    if (!el) return;
+    var f = fornPorId(document.getElementById('ag-forn').value), d = gerVal('ag-data'), partes = [], avisos = [];
+    if (d) {
+      var nc = cargasNoDia(d), na = agAbertos().filter(function(x) { return x.data === d && (!ger.editando || x.id !== ger.editando); }).length;
+      partes.push('No dia: ' + nc + (nc === 1 ? ' carga' : ' cargas') + ' na expedição e ' + na + (na === 1 ? ' entrega já agendada' : ' entregas já agendadas') + '.');
+    }
+    if (f) {
+      var rl = resumoLaudosForn(f.id);
+      if (rl.vencido) avisos.push('Laudo vencido: ' + rl.vencidos.join(', ') + '.');
+      if (!rl.total) avisos.push('Fornecedor sem laudo arquivado.');
+      if (f.situacao === 'avaliacao') avisos.push('Fornecedor em avaliação.');
+      if (f.prazoDias && d && diasAte(d) < Number(f.prazoDias)) avisos.push('Prazo de entrega do fornecedor: ' + f.prazoDias + ' dias.');
+    }
+    el.innerHTML = (partes.length ? '<p class="field-hint">' + escapeHtml(partes.join(' ')) + '</p>' : '') + (avisos.length ? '<p class="sup-aviso">⚠ ' + escapeHtml(avisos.join(' ')) + '</p>' : '');
+  }
+  // conferência da carga recebida
+  function supUsaSenhaConferente() { return !!session && session.role !== 'admin' && membrosCom('conferente').length > 0; }
+  function supAssinar(nome, titulo, feito) {
+    if (!supUsaSenhaConferente()) { feito({ nome: nome || quemSessao(), id: '' }); return; }
+    openPinDialog({
+      funcao: 'conferente', funcaoTexto: 'é conferente', titulo: titulo, hint: 'Assine com a sua senha de 4 números de conferente.',
+      semCadastro: 'Ninguém marcado como conferente em Cadastros › Equipe.',
+      onOk: function(m) { feito({ nome: m.nome, id: m.id }); }
+    });
+  }
+  function abrirConferenciaRecebimento(a) {
+    var f = fornPorId(a.fornecedorId), rl = f ? resumoLaudosForn(f.id) : null, exige = (a.itens || []).some(function(it) { var i = insumoPorId(it.insumoId); return i && i.exigeLaudoLote; });
+    gerAbrir({
+      titulo: 'Conferir carga · entrega nº ' + a.numero, botao: 'Salvar conferência',
+      html: '<p class="hint"><b>' + escapeHtml(a.fornecedorNome) + '</b> · agendada para ' + escapeHtml(formatDateBR(a.data) + (a.hora ? ' ' + a.hora : '')) + '. Conte o que chegou e compare com a nota. Diferença fica registrada; depois, cada insumo passa pela inspeção da Qualidade.</p>' +
+        (rl && rl.vencido ? '<p class="sup-aviso falta">⚠ Fornecedor com laudo vencido: ' + escapeHtml(rl.vencidos.join(', ')) + '. Avise a Qualidade.</p>' : '') +
+        (f && f.situacao === 'bloqueado' ? '<p class="sup-aviso falta">⚠ Fornecedor bloqueado.</p>' : '') +
+        '<div class="row-2"><label>Nota fiscal <span class="req">*</span><input type="text" id="cf-nf" maxlength="30" value="' + escapeHtml(a.nf || '') + '" autocomplete="off" /></label>' +
+        '<label>Placa <span class="opt">(opcional)</span><input type="text" id="cf-placa" maxlength="10" value="' + escapeHtml(a.placa || '') + '" autocomplete="off" /></label></div>' +
+        '<h3 class="q-plano-t">Carga e documentos</h3>' + CONF_REC_ITENS.map(function(c) {
+          return '<div class="ck-row"><span>' + escapeHtml(c.texto) + (c.id === 'laudo' && exige ? ' <b class="alerta">(exigido)</b>' : '') + '</span><select class="ck-sel" data-ck="' + c.id + '" aria-label="' + escapeHtml(c.texto) + '"><option value="">—</option><option value="c">Conforme</option><option value="nc">Não conforme</option><option value="na">Não se aplica</option></select></div>';
+        }).join('') +
+        '<h3 class="q-plano-t">Quantidades</h3>' + (a.itens || []).map(function(it, i) {
+          var ins = insumoPorId(it.insumoId);
+          return '<div class="agc-it" data-i="' + i + '"><div class="sp-row-t"><span>' + escapeHtml(it.insumoNome) + '</span><small>agendado ' + escapeHtml(fmtMp(it.quantidade, it.unidade)) + '</small></div>' +
+            '<div class="row-2"><label>Chegou <span class="req">*</span><input type="number" class="cf-qtd" data-i="' + i + '" min="0" step="any" inputmode="decimal" value="' + escapeHtml(String(it.quantidade)) + '" /></label>' +
+            '<label>Lote<input type="text" class="cf-lote" data-i="' + i + '" maxlength="40" autocomplete="off" /></label>' +
+            '<label>Validade do lote<input type="date" class="cf-val" data-i="' + i + '" /></label></div>' +
+            '<p class="field-hint cf-msg" data-i="' + i + '"></p>' +
+            (ins && ins.especificacao ? '<details class="ag-espec-d"><summary>Especificação' + (ins.exigeLaudoLote ? ' · exige certificado do lote' : '') + '</summary><div class="ag-espec">' + escapeHtml(ins.especificacao) + '</div></details>' : '') + '</div>';
+        }).join('') +
+        '<label>Observações <span class="opt">(obrigatório se houver diferença ou item não conforme)</span><input type="text" id="cf-obs" maxlength="200" autocomplete="off" /></label>' +
+        (supUsaSenhaConferente() ? '<p class="field-hint">Ao salvar, o conferente assina com a senha de 4 números.</p>' : '<label>Conferido por <span class="req">*</span><input type="text" id="cf-por" maxlength="60" autocomplete="off" /></label>') +
+        '<div class="sp-acoes"><button type="button" class="btn-text danger" data-ger="recusar">Recusar a carga (devolver ao fornecedor)</button></div>',
+      depois: function() { cfAtualizar(a); },
+      input: function() { cfAtualizar(a); },
+      change: function() { cfAtualizar(a); },
+      acao: function(x) { if (x === 'recusar') cfSalvar(a, true); },
+      salvar: function() { cfSalvar(a, false); return false; }
+    });
+  }
+  function cfAtualizar(a) {
+    document.querySelectorAll('#ger-form-body .cf-qtd').forEach(function(inp) {
+      var i = Number(inp.dataset.i), it = a.itens[i], q = numCampo(inp.value), msg = document.querySelector('#ger-form-body .cf-msg[data-i="' + i + '"]');
+      var box = inp.closest('.agc-it'), div = q !== null && Math.abs(q - Number(it.quantidade)) > 0.0005;
+      if (box) box.classList.toggle('div', div);
+      if (msg) msg.textContent = q === null ? '' : div ? (q < it.quantidade ? 'Faltaram ' + fmtMp(arred3(it.quantidade - q), it.unidade) : 'Vieram ' + fmtMp(arred3(q - it.quantidade), it.unidade) + ' a mais') + ' em relação ao agendado.' : 'Confere com o agendado.';
+    });
+    document.querySelectorAll('#ger-form-body .ck-sel').forEach(function(s) { s.closest('.ck-row').classList.toggle('nc', s.value === 'nc'); });
+  }
+  function cfSalvar(a, recusar) {
+    var nf = gerVal('cf-nf'), obs = gerVal('cf-obs'), ck = {}, falta = '', itens = [], div = 0, ncs = 0;
+    document.querySelectorAll('#ger-form-body .ck-sel').forEach(function(s) { ck[s.dataset.ck] = s.value; if (!s.value && !falta) falta = s.getAttribute('aria-label'); if (s.value === 'nc') ncs++; });
+    var erroQ = '';
+    (a.itens || []).forEach(function(it, i) {
+      var q = numCampo((document.querySelector('#ger-form-body .cf-qtd[data-i="' + i + '"]') || {}).value);
+      if (q === null || q < 0) { erroQ = 'Informe quanto chegou de ' + it.insumoNome + '.'; return; }
+      if (Math.abs(q - Number(it.quantidade)) > 0.0005) div++;
+      itens.push({ recebida: arred3(q), lote: (document.querySelector('#ger-form-body .cf-lote[data-i="' + i + '"]') || {}).value || '', validadeLote: (document.querySelector('#ger-form-body .cf-val[data-i="' + i + '"]') || {}).value || '' });
+    });
+    if (!nf && !recusar) return gerErro('Informe o número da nota fiscal.');
+    if (recusar && !obs) return gerErro('Para recusar, escreva o motivo nas observações.');
+    if (!recusar && falta) return gerErro('Responda a conferência: ' + falta + '.');
+    if (!recusar && erroQ) return gerErro(erroQ);
+    if (!recusar && (div || ncs) && !obs) return gerErro('Escreva nas observações o que houve (diferença na quantidade ou item não conforme).');
+    var porEl = document.getElementById('cf-por'), porNome = porEl ? porEl.value.trim() : '';
+    if (porEl && !porNome) return gerErro('Informe quem conferiu.');
+    supAssinar(porNome, recusar ? 'Recusar a carga' : 'Conferência da carga recebida', function(quem) {
+      var agora = new Date().toISOString();
+      var conf = { em: agora, por: quem.nome, porId: quem.id, nf: nf, placa: gerVal('cf-placa'), checklist: ck, itens: itens, divergencias: div, ncs: ncs, obs: obs, recusada: !!recusar };
+      var dados = { conferencia: conf, nf: nf, placa: gerVal('cf-placa'), status: recusar ? 'recusado' : 'conferido', atualizadoEm: agora };
+      if (!a.chegada || !a.chegada.em) dados.chegada = { em: agora, data: todayIso(), por: quem.nome };
+      var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
+      supGravar([{ op: 'update', col: SUP_COL.ag, id: a.id, data: dados }]).then(function() {
+        btn.disabled = false; gerFechar();
+        showToast(recusar ? 'Carga recusada: devolver ao fornecedor.' : 'Carga conferida' + (div ? ' com ' + div + (div === 1 ? ' diferença' : ' diferenças') : '') + '. Agora, a inspeção da Qualidade de cada insumo.');
+      }).catch(function(err) { btn.disabled = false; console.error('conferência', err); gerErro('Não foi possível salvar agora. Tente novamente.'); });
+    });
+    return false;
+  }
+
+
+
+  // ---------- recado em destaque (mural) para todos os acessos ----------
+  // Pedido de 16/10/2026: "PARABÉNS PELO RECORDE DE PRODUÇÃO, VOCÊ FAZ PARTE DESSA CONQUISTA!" em destaque ao abrir o app.
+  // Fica em mural/atual (todos os acessos leem; só a senha mestre grava, em Cadastros › Recado em destaque).
+  var mural = null, muralLigado = false, muralFechado = false;
+  var LOCAL_MURAL_KEY = 'levissima-mural-v1';
+  var TROFEU_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a4 4 0 0 1-4 4M7 5H4v2a4 4 0 0 0 4 4"/></svg>';
+  function ligarMural() {
+    if (muralLigado) { renderMural(); return; }
+    muralLigado = true;
+    if (mode === 'db' && db) {
+      db.doc('mural/atual').onSnapshot(function(snap) { mural = snap.exists ? snap.data() : null; renderMural(); renderMuralAdmin(); }, function(err) { console.error('mural', err); });
+    } else {
+      try { mural = JSON.parse(localStorage.getItem(LOCAL_MURAL_KEY) || 'null'); } catch (e) { mural = null; }
+      renderMural();
+    }
+  }
+  function renderMural() {
+    var el = document.getElementById('mural');
+    if (!el) return;
+    var m = mural, on = !!session && !!m && m.ativo !== false && !!String(m.texto || '').trim() && !muralFechado;
+    el.classList.toggle('hidden', !on);
+    document.body.classList.toggle('com-mural', on);
+    if (!on) { el.innerHTML = ''; return; }
+    el.innerHTML = '<span class="mural-ico">' + TROFEU_SVG + '</span><p class="mural-txt">' + escapeHtml(String(m.texto).trim()) + '</p>' +
+      '<button type="button" class="mural-x" aria-label="Fechar o recado">✕</button>';
+  }
+  document.getElementById('mural').addEventListener('click', function(e) { if (e.target.closest('.mural-x')) { muralFechado = true; renderMural(); } });
+  function renderMuralAdmin() {
+    var t = document.getElementById('f-mural-texto'), a = document.getElementById('f-mural-ativo');
+    if (!t || document.activeElement === t) return;
+    t.value = mural ? mural.texto || '' : '';
+    a.checked = mural ? mural.ativo !== false : true;
+  }
+  document.getElementById('btn-mural-salvar').addEventListener('click', function() {
+    var err = document.getElementById('mural-error'), texto = document.getElementById('f-mural-texto').value.replace(/\s+/g, ' ').trim(), ativo = document.getElementById('f-mural-ativo').checked;
+    if (ativo && !texto) { err.textContent = 'Escreva o recado (ou desmarque “Mostrar”).'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    var dados = { texto: texto, ativo: ativo, atualizadoEm: new Date().toISOString(), por: quemSessao() };
+    var pr = mode === 'db' && db ? db.doc('mural/atual').set(dados) : Promise.resolve().then(function() { mural = dados; try { localStorage.setItem(LOCAL_MURAL_KEY, JSON.stringify(dados)); } catch (e) {} renderMural(); });
+    pr.then(function() { muralFechado = false; showToast(ativo ? 'Recado salvo: aparece para todos.' : 'Recado escondido.'); })
+      .catch(function(e) { console.error('mural', e); err.textContent = 'Não foi possível salvar agora.'; err.classList.remove('hidden'); });
+  });
+
   // ---------- Início: o dia num olhar (indicadores de cada área + atalhos) ----------
   // Inspirado nas telas iniciais dos ERPs (Omie, SAP Fiori, TOTVS): cada cartão mostra o número que importa e
   // leva para a aba; os atalhos abrem direto as ações mais usadas. Só aparecem as áreas que a senha pode ver.
@@ -13152,6 +14578,8 @@
     { tab: 'cargas', txt: 'Nova carga', fn: function() { openCargaForm(null); } },
     { tab: 'estoque', txt: 'Entrada de produção', fn: function() { document.getElementById('btn-new-entrada').click(); } },
     { tab: 'producao', txt: 'Ordem de produção', fn: function() { abrirOpForm(null); } },
+    { tab: 'estoque', txt: 'Programar saída', fn: function() { spAbrir(null, 'levissima'); } },
+    { tab: 'materia', txt: 'Agendar entrega de insumo', fn: function() { abrirAgendamento(null, null); } },
     { tab: 'materia', txt: 'Recebimento de insumo', fn: function() { abrirMovForm('entrada', 'producao'); } },
     { tab: 'qualidade', txt: 'Checklist de linha', fn: function() { abrirQChk(); } },
     { tab: 'qualidade', txt: 'Inspeção de recebimento', fn: function() { abrirQRec(); } },
@@ -13171,7 +14599,11 @@
     var ops = [], fOp = 0; try { ops = analisarOrdens(); fOp = ops.filter(function(a) { return a.faltas.length; }).length; } catch (e) {}
     tiles.push({ tab: 'producao', t: 'Produção', v: ops.length, u: ops.length === 1 ? 'ordem aberta' : 'ordens abertas', s: fOp ? fOp + ' com falta de matéria-prima' : (ops.length ? 'matéria-prima ok' : 'nenhuma ordem aberta'), alerta: fOp > 0 });
     var baixo = 0; try { baixo = linhasMateria('producao').concat(linhasMateria('garrafoes')).filter(function(l) { return l.est; }).length; } catch (e) {}
-    tiles.push({ tab: 'materia', t: 'Matéria-prima', v: baixo, u: baixo === 1 ? 'insumo abaixo do mínimo' : 'insumos abaixo do mínimo', s: baixo ? 'confira e programe a compra' : 'insumos acima do mínimo (ou sem contagem)', alerta: baixo > 0 });
+    var sr = { hoje: 0, p: { laudos: 0, vencidos: 0, atrasadas: 0 } }; try { sr = supResumoInicio(); } catch (e) {}
+    tiles.push({ tab: 'materia', t: 'Matéria-prima', v: baixo, u: baixo === 1 ? 'insumo abaixo do mínimo' : 'insumos abaixo do mínimo',
+      s: [baixo ? 'confira e programe a compra' : 'insumos acima do mínimo (ou sem contagem)', sr.hoje ? sr.hoje + (sr.hoje === 1 ? ' entrega hoje' : ' entregas hoje') : '',
+        sr.p.atrasadas ? sr.p.atrasadas + (sr.p.atrasadas === 1 ? ' entrega atrasada' : ' entregas atrasadas') : '', sr.p.laudos ? sr.p.laudos + (sr.p.laudos === 1 ? ' laudo vencido ou vencendo' : ' laudos vencidos ou vencendo') : ''].filter(Boolean).join(' · '),
+      alerta: baixo > 0 || sr.p.vencidos > 0 || sr.p.atrasadas > 0 });
     var qp = { total: 0, analises: 0 }, nca = 0; try { qp = qPendencias(); nca = qNcsAbertas().length; } catch (e) {}
     tiles.push({ tab: 'qualidade', t: 'Qualidade', v: qp.total, u: qp.total === 1 ? 'pendência' : 'pendências', s: nca + (nca === 1 ? ' NC aberta' : ' NCs abertas') + ' · ' + qp.analises + (qp.analises === 1 ? ' análise vencida' : ' análises vencidas'), alerta: qp.total > 0 });
     var reun = salasAtivas().filter(function(r) { return r.data === hoje && minDe(r.fim) > agoraMin(); }).sort(function(a, b) { return minDe(a.inicio) - minDe(b.inicio); });
@@ -13586,9 +15018,11 @@
     subscribeMarcas();
     subscribeSalas();
     subscribeQualidade();
+    subscribeSuprimentos();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
+    setTimeout(ligarMural, 0); // recado em destaque para todos os acessos
     if (mode !== 'db') saveSession(s);
     if (mode === 'db') {
       // o tempo real também precisa do login (o banco só manda as mudanças para quem entrou)

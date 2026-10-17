@@ -11,6 +11,8 @@
 - `dados/codigos_barras_2026-10-16.sql`: códigos de barras (EAN da garrafa e DUN do pacote) de todos os produtos e a marca **Bom Coração** (5 produtos). Já carregado.
 - Coleção `marcas` (id = marca): logo de cada marca (imagem pequena), enviado em Cadastros › Marcas.
 - `migrations/0007_salas_qualidade_marcas.sql` (aplicada em 16/10/2026): `salas-reservas` e as coleções `qualidade-*` só do escritório (senha mestre e equipe); `qualidade-config` (plano) e `marcas` (logos) só a senha mestre grava.
+- `migrations/0008_suprimentos_cronograma_mural.sql` (aplicada em 17/10/2026): `saidas-programadas`, `fornecedores`, `fornecedores-laudos` e `mp-agendamentos` só do escritório (fornecedores e laudos: só a senha mestre apaga); `mural` (recado em destaque) todos os acessos leem e só a senha mestre grava; bucket **privado** `fornecedores-laudos` (escritório lê e envia, só a senha mestre apaga).
+- `dados/estoque_cronograma_insumos_2026-10-17.sql`: inventário do acabado de 16/10 por local, cronograma de saída da planilha de 16/10, pré-forma de gás separada, lâmina única dos copos, alça do 6L, 350ml comprado pronto e a contagem da matéria-prima de 05/10/2026. Já carregado.
 - Produto novo em 16/10/2026: `padrao-01b-copo-200ml-24` (Copo 200ml com 24 unidades; o de 48 passou a se chamar “Copo 200ml (48 un)”), com o DUN 27897345105012, a caixa `ins-cx-200-24` e a ficha técnica.
 - `dados/representantes_2026-10-14.sql`: os 9 representantes (Luís, Émerson, Luccas, Marcone, Ana Clara, Matheus, Mauricio, Marcelo e Renato), sem senha.
 - `dados/motoristas_terceiros_2026-10-14.sql`: Renan França, Silvestre Pereira, Sérgio Félix e Guilherme Lourençon, terceiros contratados a serviço da Levíssima (`vinculo: terceiro`), sem senha.
