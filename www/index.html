@@ -1014,6 +1014,7 @@
   .func-set { border: none; padding: 0; margin: 0 0 12px; }
   .func-set legend { font-size: 0.8125rem; color: var(--muted); margin-bottom: 8px; padding: 0; }
   .func-chip { display: inline-block; font-size: 0.6875rem; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); margin-left: 8px; font-weight: 600; vertical-align: 1px; }
+  .func-chip.cargo { color: #702082; border-color: rgba(112, 32, 130, 0.45); }
 
   .resumo-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 8px; }
   .resumo-table th { text-align: right; font-weight: 600; color: var(--muted); font-size: 0.75rem; padding: 6px 4px; border-bottom: 1px solid var(--line); }
@@ -2256,6 +2257,14 @@
       <label><span id="f-equipe-pin-text">Senha de 4 números <span class="req">*</span></span>
         <input type="password" id="f-equipe-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" />
       </label>
+      <div class="row-2">
+        <label>Cargo <span class="opt">(organograma)</span>
+          <select id="f-equipe-cargo"><option value="">—</option><option value="diretor">Diretor</option><option value="gerente">Gerente</option><option value="coordenador">Coordenador</option><option value="supervisor">Supervisor</option><option value="analista">Analista</option><option value="assistente">Assistente</option><option value="lider">Líder</option><option value="operador">Operador</option><option value="outro">Outro</option></select>
+        </label>
+        <label>Área
+          <select id="f-equipe-area"><option value="">—</option><option>Diretoria</option><option>Gestão</option><option>Comercial</option><option>Faturamento</option><option>Financeiro</option><option>Logística</option><option>Expedição</option><option>Produção</option><option>Qualidade</option><option>Manutenção</option><option>RH</option><option>Compras</option><option>Administrativo</option><option>Força de vendas</option></select>
+        </label>
+      </div>
       <fieldset class="func-set">
         <legend>O que essa pessoa faz <span class="req">*</span></legend>
         <label class="check"><input type="checkbox" id="f-equipe-fat" /> Dá o ok do faturamento</label>
@@ -2265,12 +2274,12 @@
         <label class="check"><input type="checkbox" id="f-equipe-gestao" /> Diretoria / gestão (reserva a sala Levíssima Protein)</label>
         <label class="check"><input type="checkbox" id="f-equipe-qual" /> Qualidade (assina inspeções, checklists de linha e análises)</label>
         <label class="check"><input type="checkbox" id="f-equipe-aprovafrete" /> Aprova frete com valor editado (Nicolas)</label>
-        <label class="check"><input type="checkbox" id="f-equipe-coord" /> Coordenador de setor (aprova os pedidos de compra do setor)</label>
-        <label class="sub-campo">Setores que coordena <span class="opt">(separe com vírgula; em branco = todos)</span><input type="text" id="f-equipe-setores" maxlength="120" placeholder="Ex.: Produção, Manutenção" autocomplete="off" /></label>
+        <label class="check"><input type="checkbox" id="f-equipe-coord" /> Autoriza pedidos de compra antes da cotação <span class="opt">(coordenador, supervisor e gerente já autorizam pelo cargo)</span></label>
+        <label class="sub-campo">Setores que autoriza <span class="opt">(separe com vírgula; em branco = todos)</span><input type="text" id="f-equipe-setores" maxlength="120" placeholder="Ex.: Produção, Manutenção" autocomplete="off" /></label>
         <label class="check"><input type="checkbox" id="f-equipe-compras" /> Assistente de compras (faz as cotações)</label>
-        <label class="check"><input type="checkbox" id="f-equipe-aprovacompra" /> Aprova compras (Nicolas)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-aprovacompra" /> Aprova compras na etapa final <span class="opt">(o cargo diretor já aprova)</span></label>
       </fieldset>
-      <p class="hint">Quando essa senha for digitada, o ok do faturamento ou a conferência saem no nome desta pessoa.</p>
+      <p class="hint">Quando essa senha for digitada, o ok do faturamento ou a conferência saem no nome desta pessoa. Sem senha ainda? A pessoa cria a própria em “Criar a minha senha” e a senha mestre aprova.</p>
       <p class="form-error hidden" id="equipe-form-error"></p>
       <div class="sheet-actions">
         <button type="button" class="btn btn-secondary" id="btn-equipe-cancel">Cancelar</button>
@@ -5243,7 +5252,7 @@
     var input = document.getElementById('pin-input');
     var err = document.getElementById('pin-error');
     input.value = '';
-    if (!membrosCom(opts.funcao).length) {
+    if (!(opts.permite ? equipe.filter(function(m) { return opts.permite(m) && m.pinHash; }) : membrosCom(opts.funcao)).length) {
       err.textContent = opts.semCadastro;
       err.classList.remove('hidden');
       input.disabled = true;
@@ -5272,7 +5281,7 @@
       pinChecking = false;
       if (pinCtx !== ctx) return;
       var m = equipe.find(function(x) { return x.pinHash === hash; });
-      if (!m || !m[ctx.funcao]) {
+      if (!m || !(ctx.permite ? ctx.permite(m) : m[ctx.funcao])) {
         var err = document.getElementById('pin-error');
         err.textContent = m ? 'Essa senha não é de quem ' + ctx.funcaoTexto + '.' : 'Senha não reconhecida. Tente de novo.';
         err.classList.remove('hidden');
@@ -14935,7 +14944,7 @@
 
   // ---------- Ordem de compra com assinatura em cada etapa (pedido de 16/10/2026) ----------
   // 1. Pedido (qualquer pessoa): descrição do item, quantidade e onde vai aplicar.
-  // 2. Aprovação do coordenador do setor (senha de 4 números de quem é "Coordenador de setor" em Cadastros › Equipe).
+  // 2. Autorização antes da cotação: coordenador, supervisor ou gerente (cargo em Cadastros › Equipe; pedido de 17/10/2026).
   // 3. Cotação (assistente de compras).
   // 4. Aprovação do Nicolas ("Aprova compras").
   // 5. Fechamento da entrega com quem fez o pedido.
@@ -14943,12 +14952,12 @@
   var OC_COL = 'compras-ordens';
   var ordensCompra = [];
   var OC_ETAPAS = [
-    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coordenador' }, { k: 'cotacao', nome: 'Cotação' },
-    { k: 'aprovacao', nome: 'Nicolas' }, { k: 'fechamento', nome: 'Entrega' }
+    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coord./superv.' }, { k: 'cotacao', nome: 'Cotação' },
+    { k: 'aprovacao', nome: 'Diretoria' }, { k: 'fechamento', nome: 'Entrega' }
   ];
   var OC_STATUS = {
-    pedido: { txt: 'Aguardando coordenador', cls: 'confirmar', etapa: 1 }, cotacao: { txt: 'Em cotação', cls: 'apagar', etapa: 2 },
-    aprovacao: { txt: 'Aguardando Nicolas', cls: 'aprovar', etapa: 3 }, compra: { txt: 'Aguardando entrega', cls: 'apagar', etapa: 4 },
+    pedido: { txt: 'Aguardando coordenador ou supervisor', cls: 'confirmar', etapa: 1 }, cotacao: { txt: 'Em cotação', cls: 'apagar', etapa: 2 },
+    aprovacao: { txt: 'Aguardando diretoria', cls: 'aprovar', etapa: 3 }, compra: { txt: 'Aguardando entrega', cls: 'apagar', etapa: 4 },
     fechada: { txt: 'Entregue', cls: 'pago', etapa: 5 }, reprovada: { txt: 'Reprovada', cls: 'falta', etapa: -1 }, cancelada: { txt: 'Cancelada', cls: '', etapa: -1 }
   };
   var OC_UNIDADES = ['un', 'cx', 'pct', 'kg', 'L', 'm', 'par', 'jogo', 'rolo', 'serviço'];
@@ -14981,9 +14990,10 @@
     return !l.length || l.indexOf(normNome(setor)) >= 0;
   }
   // assinatura com a senha de 4 números de quem tem a função (filtro: devolve um erro, ou nada se pode assinar)
+  // funcao: o nome do campo da equipe ('compras', 'nome') ou uma regra function(membro) (cargo)
   function ocAssinar(funcao, funcaoTexto, titulo, semCadastro, filtro, feito) {
     openPinDialog({
-      funcao: funcao, funcaoTexto: funcaoTexto, titulo: titulo, hint: 'Assine com a sua senha de 4 números.', semCadastro: semCadastro,
+      funcao: typeof funcao === 'function' ? '' : funcao, permite: typeof funcao === 'function' ? funcao : null, funcaoTexto: funcaoTexto, titulo: titulo, hint: 'Assine com a sua senha de 4 números.', semCadastro: semCadastro,
       onOk: function(m) { var erro = filtro ? filtro(m) : null; if (erro) { showToast(erro); return; } feito(m); }
     });
   }
@@ -15014,9 +15024,9 @@
     if (ocUi.confirmar === 'cancelar:' + o.id) {
       acoes.push('<span>Cancelar a OC nº ' + escapeHtml(String(o.numero)) + '?</span><button class="btn-text danger" data-oc="cancelar-ok" data-id="' + id + '">Cancelar OC</button><button class="btn-text" data-oc="nao">Manter</button>');
     } else {
-      if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Aprovar ou reprovar</b> (coordenador)</button>');
+      if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Autorizar ou reprovar</b> (coordenador ou supervisor)</button>');
       if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (compras)</button>');
-      if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (Nicolas)</button>');
+      if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (diretoria: Nicolas ou André)</button>');
       if (o.status === 'compra') {
         if (!o.compra) acoes.push('<button class="btn-text" data-oc="comprar" data-id="' + id + '">Registrar pedido ao fornecedor</button>');
         acoes.push('<button class="btn-text" data-oc="entrega" data-id="' + id + '"><b>Confirmar entrega</b> (quem pediu)</button>');
@@ -15039,9 +15049,9 @@
   }
   var OC_FILTROS = [
     { k: 'abertas', nome: 'Abertas', f: function(o) { return OC_STATUS[o.status] && OC_STATUS[o.status].etapa > 0 && o.status !== 'fechada'; } },
-    { k: 'pedido', nome: 'Coordenador', f: function(o) { return o.status === 'pedido'; } },
+    { k: 'pedido', nome: 'Coord./superv.', f: function(o) { return o.status === 'pedido'; } },
     { k: 'cotacao', nome: 'Cotação', f: function(o) { return o.status === 'cotacao'; } },
-    { k: 'aprovacao', nome: 'Nicolas', f: function(o) { return o.status === 'aprovacao'; } },
+    { k: 'aprovacao', nome: 'Diretoria', f: function(o) { return o.status === 'aprovacao'; } },
     { k: 'compra', nome: 'Entrega', f: function(o) { return o.status === 'compra'; } },
     { k: 'fechada', nome: 'Entregues', f: function(o) { return o.status === 'fechada'; } },
     { k: 'outras', nome: 'Reprovadas e canceladas', f: function(o) { return o.status === 'reprovada' || o.status === 'cancelada'; } }
@@ -15053,10 +15063,10 @@
     var urg = ocAbertas().filter(function(o) { return o.urgencia === 'urgente'; }).length;
     var filtro = OC_FILTROS.find(function(f) { return f.k === ocUi.filtro; }) || OC_FILTROS[0];
     var lista = ordensCompra.filter(filtro.f).sort(function(a, b) { return (b.urgencia === 'urgente') - (a.urgencia === 'urgente') || (Number(b.numero) || 0) - (Number(a.numero) || 0); });
-    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · aprovação do <b>coordenador do setor</b> → 3 · <b>cotação</b> (compras) → 4 · aprovação do <b>Nicolas</b> → 5 · <b>entrega conferida</b> por quem pediu.</p>' +
+    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · autorização do <b>coordenador ou supervisor</b> → 3 · <b>cotação</b> (compras) → 4 · aprovação da <b>diretoria (Nicolas ou André)</b> → 5 · <b>entrega conferida</b> por quem pediu.</p>' +
       '<div class="est-cards">' +
         supCard('c-entrada', 'Pedido de compra', fmtInt(ocAbertas().length), (ocAbertas().length === 1 ? 'ordem aberta' : 'ordens abertas') + (urg ? ' · <b>' + urg + (urg === 1 ? ' urgente' : ' urgentes') + '</b>' : ''), '<button type="button" class="btn btn-primary btn-sm" data-oc="novo">+ Novo pedido</button>') +
-        supCard('c-saldo' + (n('pedido') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('aprovacao')), n('pedido') + ' com o coordenador · ' + n('aprovacao') + ' com o Nicolas') +
+        supCard('c-saldo' + (n('pedido') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('aprovacao')), n('pedido') + ' com coordenador/supervisor · ' + n('aprovacao') + ' com a diretoria') +
         supCard('c-futuro', 'Cotação e entrega', fmtInt(n('cotacao') + n('compra')), n('cotacao') + ' em cotação · ' + n('compra') + ' aguardando entrega') +
       '</div>' +
       '<div class="est-loc-chips oc-filtros" role="group" aria-label="Filtrar ordens">' + OC_FILTROS.map(function(f) {
@@ -15093,7 +15103,7 @@
     var nomes = membrosConvidaveis().map(function(m) { return m.nome; });
     gerAbrir({
       titulo: 'Novo pedido de compra', botao: 'Enviar pedido', itens: [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }],
-      html: '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para o coordenador do setor aprovar.</p>' +
+      html: '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para um coordenador ou supervisor autorizar.</p>' +
         '<div class="row-2"><label>Setor <span class="req">*</span><select id="oc-setor"><option value="">— escolha —</option>' + SETORES_SALA.map(function(x) { return '<option>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
         '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente">Urgente</option></select></label></div>' +
         '<div id="oc-itens"></div><button type="button" class="btn-text" data-ger="it-add">+ outro item</button>' +
@@ -15129,7 +15139,7 @@
           var agora = new Date().toISOString();
           dados.pedido = quem; dados.numero = ocProximoNumero(); dados.criadoEm = agora; dados.atualizadoEm = agora;
           var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
-          ocGravar(null, dados).then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + '. Agora é com o coordenador de ' + setor + '.'); })
+          ocGravar(null, dados).then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + '. Agora é com o coordenador ou supervisor (' + setor + ').'); })
             .catch(function(err) { btn.disabled = false; falhaOc(err); });
         }
         if (membro) ocAssinar('nome', 'está na equipe', 'Assinar o pedido', '', function(m) { return m.id === membro.id ? null : 'Essa senha não é de ' + membro.nome + '.'; },
@@ -15159,29 +15169,29 @@
       });
     });
   }
-  // ----- 2 e 4. aprovação (coordenador do setor e Nicolas) -----
+  // ----- 2 e 4. autorização (coordenador, supervisor ou gerente) e aprovação da diretoria (Nicolas ou André) -----
   function abrirDecisaoOc(o, etapa) {
     var coord = etapa === 'coord', v = ocValorEscolhido(o);
     gerAbrir({
-      titulo: (coord ? 'Aprovação do coordenador' : 'Aprovação do Nicolas') + ' · OC nº ' + o.numero,
+      titulo: (coord ? 'Autorização (coordenador ou supervisor)' : 'Aprovação da diretoria') + ' · OC nº ' + o.numero,
       html: ocResumoHtml(o) + (!coord && o.cotacao ? ocCotacoesHtml(o) : '') +
         '<label>Observação <span class="opt">(obrigatória para reprovar' + (coord ? '' : ' ou pedir nova cotação') + ')</span><input type="text" id="oc-dec-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovado">Aprovar' + (v && !coord ? ' (' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + ')' : '') + '</button>' +
+        '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovado">' + (coord ? 'Autorizar' : 'Aprovar') + (v && !coord ? ' (' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + ')' : '') + '</button>' +
         (coord ? '' : '<button type="button" class="btn btn-secondary" data-ger="recotar">Pedir nova cotação</button>') +
         '<button type="button" class="btn btn-secondary oc-reprovar" data-ger="reprovado">Reprovar</button></div>' +
-        '<p class="field-hint">' + (coord ? 'Assina quem é “Coordenador de setor” em Cadastros › Equipe (e coordena ' + escapeHtml(o.setor) + ').' : 'Assina quem tem “Aprova compras (Nicolas)” em Cadastros › Equipe.') + '</p>',
+        '<p class="field-hint">' + (coord ? 'Assina um coordenador, supervisor ou gerente (cargo em Cadastros › Equipe).' : 'Assina a diretoria: Nicolas ou André (cargo diretor em Cadastros › Equipe).') + '</p>',
       acao: function(dec) {
         var obs = gerVal('oc-dec-obs');
         if ((dec === 'reprovado' || dec === 'recotar') && !obs) { gerErro(dec === 'recotar' ? 'Escreva o que precisa mudar na cotação.' : 'Escreva o motivo da reprovação.'); return; }
-        var onde = coord ? ['coordenador', 'é coordenador de setor', 'Ninguém marcado como “Coordenador de setor” em Cadastros › Equipe.', function(m) { return coordenaSetor(m, o.setor) ? null : m.nome + ' não coordena ' + o.setor + '.'; }]
-          : ['aprovaCompra', 'aprova compras', 'Ninguém marcado como “Aprova compras (Nicolas)” em Cadastros › Equipe.', null];
-        ocAssinar(onde[0], onde[1], (dec === 'aprovado' ? 'Aprovar' : dec === 'recotar' ? 'Pedir nova cotação' : 'Reprovar') + ' · OC nº ' + o.numero, onde[2], onde[3], function(m) {
+        var onde = coord ? [autorizaAntesCotacao, 'é coordenador, supervisor ou gerente', 'Ninguém com cargo de coordenador, supervisor ou gerente (e senha) em Cadastros › Equipe.', function(m) { return coordenaSetor(m, o.setor) ? null : m.nome + ' não autoriza compras de ' + o.setor + '.'; }]
+          : [aprovaCompraFinal, 'é da diretoria (Nicolas ou André)', 'Ninguém com cargo de diretor (e senha) em Cadastros › Equipe.', null];
+        ocAssinar(onde[0], onde[1], (dec === 'aprovado' ? (coord ? 'Autorizar' : 'Aprovar') : dec === 'recotar' ? 'Pedir nova cotação' : 'Reprovar') + ' · OC nº ' + o.numero, onde[2], onde[3], function(m) {
           var agora = new Date().toISOString(), ass = { nome: m.nome, id: m.id, em: agora, decisao: dec === 'recotar' ? 'recotar' : dec, obs: obs }, dados = { atualizadoEm: agora };
           if (coord) { dados.coord = ass; dados.status = dec === 'aprovado' ? 'cotacao' : 'reprovada'; }
           else { dados.aprovacao = ass; dados.status = dec === 'aprovado' ? 'compra' : dec === 'recotar' ? 'cotacao' : 'reprovada'; if (dec === 'recotar') dados.recotacoes = (o.recotacoes || []).concat([ass]); }
           ocGravar(o.id, dados).then(function() {
             gerFechar();
-            showToast(dec === 'aprovado' ? (coord ? 'Aprovado pelo coordenador: agora vai para a cotação.' : 'Compra aprovada: aguardando a entrega.') : dec === 'recotar' ? 'Voltou para a cotação.' : 'OC reprovada.');
+            showToast(dec === 'aprovado' ? (coord ? 'Autorizado por ' + m.nome + ': agora vai para a cotação.' : 'Compra aprovada por ' + m.nome + ': aguardando a entrega.') : dec === 'recotar' ? 'Voltou para a cotação.' : 'OC reprovada.');
           }).catch(falhaOc);
         });
       }
@@ -15207,7 +15217,7 @@
     while (ant.length < 3) ant.push({ fornecedor: '', valor: '', prazo: '', pagamento: '', obs: '' });
     var rec = (o.recotacoes || []).slice(-1)[0];
     gerAbrir({
-      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para o Nicolas', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
+      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para a diretoria', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
       html: ocResumoHtml(o) + (rec ? '<p class="sup-aviso">⚠ Nova cotação pedida por ' + escapeHtml(rec.nome) + ': ' + escapeHtml(rec.obs || '') + '</p>' : '') +
         '<p class="hint">O ideal são 3 cotações. Marque a escolhida (o menor preço vem marcado).</p><div id="oc-cots"></div>' +
         '<button type="button" class="btn-text" data-ger="cot-add">+ outra cotação</button>' +
@@ -15236,7 +15246,7 @@
         ocAssinar('compras', 'é assistente de compras', 'Cotação · OC nº ' + o.numero, 'Ninguém marcado como “Assistente de compras” em Cadastros › Equipe.', null, function(m) {
           var agora = new Date().toISOString();
           ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs') }, status: 'aprovacao', atualizadoEm: agora })
-            .then(function() { gerFechar(); showToast('Cotação enviada para a aprovação do Nicolas.'); }).catch(falhaOc);
+            .then(function() { gerFechar(); showToast('Cotação enviada para a aprovação da diretoria (Nicolas ou André).'); }).catch(falhaOc);
         });
         return false;
       }
@@ -15325,9 +15335,9 @@
       titulo: 'OC nº ' + o.numero + ' · ' + st.txt,
       html: ocPassosHtml(o) + ocResumoHtml(o) + ocCotacoesHtml(o) +
         '<h3 class="q-plano-t">Assinaturas</h3><ol class="oc-tl">' +
-          linha('1 · Pedido', o.pedido) + linha('2 · Coordenador', o.coord) +
+          linha('1 · Pedido', o.pedido) + linha('2 · Coordenador/supervisor', o.coord) +
           linha('3 · Cotação', o.cotacao, v ? ' · escolhida ' + v.fornecedor + ' ' + fmtBRL(Number(v.valor) || 0) : '') +
-          linha('4 · Nicolas', o.aprovacao) + (o.compra ? linha('Pedido ao fornecedor', o.compra, o.compra.previsao ? ' · previsão ' + formatDateBR(o.compra.previsao) : '') : '') +
+          linha('4 · Diretoria', o.aprovacao) + (o.compra ? linha('Pedido ao fornecedor', o.compra, o.compra.previsao ? ' · previsão ' + formatDateBR(o.compra.previsao) : '') : '') +
           linha('5 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>'
     });
   }
@@ -15443,9 +15453,10 @@
     }).catch(function(e) { console.error('foto do cadastro', e); var el = document.getElementById(alvo); if (el) el.textContent = 'Foto indisponível'; });
   }
   function abrirDecisaoSenha(x) {
-    var ja = equipe.find(function(m) { return normNome(m.nome) === normNome(x.nome); });
+    var ja = equipe.find(function(m) { return normNome(m.nome) === normNome(x.nome); }) ||
+      equipe.find(function(m) { return !m.pinHash && normNome(m.nome) === normNome(String(x.nome || '').trim().split(/\s+/)[0]); }); // cadastrado no organograma só com o primeiro nome
     var FUNCS = [['faturamento', 'Dá o ok do faturamento'], ['conferente', 'Confere o carregamento'], ['financeiro', 'Ok do financeiro'], ['logistica', 'Logística dos caminhões'],
-      ['gestao', 'Diretoria / gestão'], ['qualidade', 'Qualidade'], ['coordenador', 'Coordenador de setor'], ['compras', 'Assistente de compras']];
+      ['gestao', 'Diretoria / gestão'], ['qualidade', 'Qualidade'], ['coordenador', 'Autoriza pedidos de compra'], ['compras', 'Assistente de compras']];
     gerAbrir({
       titulo: 'Pedido de senha · ' + x.nome,
       html: '<div class="cp-comparar"><figure><span class="cp-foto-box" id="cp-ver-doc">carregando…</span><figcaption>Documento</figcaption></figure>' +
@@ -16405,16 +16416,23 @@
           '<button class="btn-text danger" data-action="confirm-remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
           '<button class="btn-text" data-action="cancel-remove-membro">Cancelar</button></div>';
       }
-      var chips = (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
+      var chips = (m.cargo ? '<span class="func-chip cargo">' + escapeHtml(cargoNome(m.cargo) + (m.area ? ' · ' + m.area : '')) + '</span>' : '') + (!m.pinHash ? '<span class="func-chip">sem senha</span>' : '') +
+        (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
         (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '') +
         (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '') +
-        (m.coordenador ? '<span class="func-chip">Coordenador' + (m.setores ? ' (' + escapeHtml(m.setores) + ')' : '') + '</span>' : '') + (m.compras ? '<span class="func-chip">Compras</span>' : '') + (m.aprovaCompra ? '<span class="func-chip">Aprova compras</span>' : '');
+        (m.coordenador ? '<span class="func-chip">Autoriza compras' + (m.setores ? ' (' + escapeHtml(m.setores) + ')' : '') + '</span>' : '') + (m.compras ? '<span class="func-chip">Compras</span>' : '') + (m.aprovaCompra ? '<span class="func-chip">Aprova compras</span>' : '');
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
     }).join('');
   }
   var editingMembroId = null;
+  // cargos do organograma (pedido de 17/10/2026): coordenador, supervisor e gerente autorizam o pedido de compra antes da
+  // cotação; diretor (Nicolas ou André) aprova a compra na etapa final
+  var CARGOS = [['diretor', 'Diretor'], ['gerente', 'Gerente'], ['coordenador', 'Coordenador'], ['supervisor', 'Supervisor'], ['analista', 'Analista'], ['assistente', 'Assistente'], ['lider', 'Líder'], ['operador', 'Operador'], ['outro', 'Outro']];
+  function cargoNome(k) { var c = CARGOS.find(function(x) { return x[0] === k; }); return c ? c[1] : ''; }
+  function autorizaAntesCotacao(m) { return !!m && (!!m.coordenador || ['coordenador', 'supervisor', 'gerente'].indexOf(m.cargo) >= 0); }
+  function aprovaCompraFinal(m) { return !!m && (!!m.aprovaCompra || m.cargo === 'diretor'); }
   function openEquipeForm(kind, m) {
     editingMembroId = m ? m.id : null;
     document.getElementById('equipe-sheet-title').textContent = kind === 'add' ? 'Adicionar pessoa' : 'Editar — ' + m.nome;
@@ -16422,6 +16440,8 @@
     document.getElementById('f-equipe-nome').value = m ? m.nome : '';
     document.getElementById('f-equipe-pin').value = '';
     document.getElementById('f-equipe-pin-text').innerHTML = kind === 'add' ? 'Senha de 4 números <span class="req">*</span>' : 'Nova senha de 4 números <span class="opt">(deixe em branco para manter)</span>';
+    document.getElementById('f-equipe-cargo').value = m && m.cargo ? m.cargo : '';
+    document.getElementById('f-equipe-area').value = m && m.area ? m.area : '';
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
     document.getElementById('f-equipe-fin').checked = m ? !!m.financeiro : false;
@@ -16476,18 +16496,19 @@
     var gest = document.getElementById('f-equipe-gestao').checked, qualid = document.getElementById('f-equipe-qual').checked, aprovF = document.getElementById('f-equipe-aprovafrete').checked;
     var coordS = document.getElementById('f-equipe-coord').checked, setoresS = document.getElementById('f-equipe-setores').value.replace(/\s+/g, ' ').trim();
     var comprasS = document.getElementById('f-equipe-compras').checked, aprovC = document.getElementById('f-equipe-aprovacompra').checked;
+    var cargo = document.getElementById('f-equipe-cargo').value, area = document.getElementById('f-equipe-area').value;
     var err = document.getElementById('equipe-form-error');
     var fail = function(msg) { err.textContent = msg; err.classList.remove('hidden'); };
     if (!editingMembroId && !nome) return fail('Informe o nome.');
     if ((!editingMembroId || pin) && !/^[0-9]{4}$/.test(pin)) return fail('A senha precisa ter 4 números.');
-    if (!fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Marque o que essa pessoa faz: faturamento, conferência, financeiro, logística, diretoria/gestão ou qualidade.');
+    if (!cargo && !fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Escolha o cargo ou marque o que essa pessoa faz.');
     if (!editingMembroId && equipe.some(function(m) { return normNome(m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
     (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
       // Duas pessoas com a mesma senha: não daria para saber de quem é o ok.
       if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
-        coordenador: coordS, setores: coordS ? setoresS : '', compras: comprasS, aprovaCompra: aprovC };
+        coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area };
       if (hash) patch.pinHash = hash;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch)

@@ -85,13 +85,107 @@
         return;
       }
       if (sb.realtime && sb.realtime.setAuth) sb.realtime.setAuth(s.access_token);
-      prontoResolver(true);
+      carregarQuem().then(function () { prontoResolver(true); });
     }).catch(function (e) {
       console.error('login', e);
       mostrarAviso('Não foi possível conferir o seu login agora. Verifique a internet e tente de novo.', true);
       prontoRejeitar({ code: 'unavailable', message: 'login' });
     });
   }
+
+  // ---------- quem está usando, pelo próprio acesso: nome, função e turno (pedido de 17/10/2026) ----------
+  // A função vem do cargo no organograma (Cadastros › Equipe) ou do cadastro de funcionários (RH); o turno, do RH.
+  // Fica em window.LEV_QUEM antes de o módulo carregar os dados, para ninguém precisar digitar quem é.
+  var quem = null;
+  function carregarQuem() {
+    var base = { nome: (ident && ident.nome) || '', papel: (ident && ident.papel) || '', funcao: '', turno: '', setor: '', cargo: '' };
+    var limite = new Promise(function (ok) { setTimeout(function () { ok(null); }, 4000); });
+    return Promise.race([sb.rpc('minha_identificacao').then(function (r) { return r && !r.error ? r.data : null; }, function () { return null; }), limite])
+      .then(function (d) {
+        quem = Object.freeze(Object.assign(base, d && typeof d === 'object' ? d : {}));
+        window.LEV_QUEM = quem.nome ? quem : null;
+      });
+  }
+
+  // ---------- fotos tiradas nos módulos: bucket privado "modulos-fotos", pasta <módulo>/ ----------
+  var BUCKET_FOTOS = 'modulos-fotos';
+  // reduz a foto do celular (até 1600 px, JPEG) antes de enviar
+  function prepararFoto(arquivo, max) {
+    max = max || 1600;
+    return new Promise(function (ok, falha) {
+      if (!arquivo || !/^image\//.test(arquivo.type || '')) { falha({ code: 'invalid_argument', message: 'não é uma foto' }); return; }
+      var url = URL.createObjectURL(arquivo), img = new Image();
+      img.onload = function () {
+        var e = Math.min(1, max / Math.max(img.naturalWidth || img.width, img.naturalHeight || img.height));
+        var c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round((img.naturalWidth || img.width) * e)); c.height = Math.max(1, Math.round((img.naturalHeight || img.height) * e));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { if (b) ok(b); else falha({ code: 'unavailable', message: 'foto' }); }, 'image/jpeg', 0.82);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); falha({ code: 'invalid_argument', message: 'não foi possível ler a foto' }); };
+      img.src = url;
+    });
+  }
+  function enviarFoto(blob, pasta) {
+    return pronto.then(function () {
+      var caminho = MODULO + '/' + String(pasta || 'fotos').replace(/[^a-z0-9-]/gi, '') + '/' + new Date().toISOString().slice(0, 7) + '/' + novoId() + '.jpg';
+      return sb.storage.from(BUCKET_FOTOS).upload(caminho, blob, { contentType: 'image/jpeg', upsert: false }).then(function (r) {
+        if (r.error) throw erroDe(r.error, 'envio da foto');
+        return caminho;
+      });
+    });
+  }
+  var urlsFotos = {};
+  function urlFoto(caminho) {
+    if (!urlsFotos[caminho]) {
+      urlsFotos[caminho] = pronto.then(function () {
+        return sb.storage.from(BUCKET_FOTOS).createSignedUrl(caminho, 3600).then(function (r) { if (r.error) throw r.error; return r.data.signedUrl; });
+      });
+      urlsFotos[caminho].catch(function () { delete urlsFotos[caminho]; });
+    }
+    return urlsFotos[caminho];
+  }
+  function verFoto(url) {
+    var o = document.createElement('div');
+    o.className = 'lev-foto-tela';
+    o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Foto');
+    o.innerHTML = '<img alt="Foto do ocorrido"><button type="button" aria-label="Fechar">×</button>';
+    o.querySelector('img').src = url;
+    o.addEventListener('click', function () { document.body.removeChild(o); });
+    document.body.appendChild(o);
+  }
+  // <img data-lev-foto="caminho"> vira a foto (link que vale 1 hora); tocar abre grande
+  function resolverFotos() {
+    Array.prototype.forEach.call(document.querySelectorAll('img[data-lev-foto]:not([data-lev-ok])'), function (img) {
+      img.setAttribute('data-lev-ok', '1');
+      urlFoto(img.getAttribute('data-lev-foto')).then(function (u) {
+        img.src = u;
+        img.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); verFoto(u); });
+      }, function () { img.alt = 'Foto indisponível'; img.classList.add('lev-foto-erro'); });
+    });
+  }
+  var fotosTimer = null;
+  function ligarFotos() {
+    var css = document.createElement('style');
+    css.textContent = '.lev-fotos{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}' +
+      '.lev-fotos img,.lev-ft img{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid #dde3ea;background:#f3f5f8;cursor:zoom-in}' +
+      '.lev-foto-erro{cursor:default!important}' +
+      '.lev-ft{position:relative;display:inline-block}' +
+      '.lev-ft-x{position:absolute;top:-8px;right:-8px;width:28px;height:28px;border-radius:50%;border:0;background:#B3261E;color:#fff;font:700 18px/28px system-ui;cursor:pointer}' +
+      '.lev-ft-add{min-height:48px}' +
+      '.lev-ab-fotos{display:flex;flex-wrap:wrap;gap:12px;align-items:center}' +
+      '.lev-quem{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;padding:12px 14px;border:1px solid #dde3ea;border-radius:12px;background:#f7f9fb}' +
+      '.lev-quem b{font-size:16px}.lev-quem span{color:#5b6b80}' +
+      '.lev-foto-tela{position:fixed;inset:0;z-index:9999;background:rgba(10,14,20,.88);display:flex;align-items:center;justify-content:center;padding:16px}' +
+      '.lev-foto-tela img{max-width:100%;max-height:100%;border-radius:8px}' +
+      '.lev-foto-tela button{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:#122657;font:700 26px/44px system-ui;cursor:pointer}';
+    document.head.appendChild(css);
+    new MutationObserver(function () { clearTimeout(fotosTimer); fotosTimer = setTimeout(resolverFotos, 60); })
+      .observe(document.body, { childList: true, subtree: true });
+    resolverFotos();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ligarFotos); else ligarFotos();
 
   // ---------- barra do LEVÍSSIMA no alto da página ----------
   var CSS = '' +
@@ -552,7 +646,11 @@
       return Promise.resolve(null);
     }
   });
-  window.LEVISSIMA = Object.freeze({ modulo: MODULO, nomeModulo: NOME_MODULO, raiz: RAIZ, voltar: voltarAoInicio });
+  window.LEVISSIMA = Object.freeze({
+    modulo: MODULO, nomeModulo: NOME_MODULO, raiz: RAIZ, voltar: voltarAoInicio,
+    quem: function () { return pronto.then(function () { return quem; }); },
+    fotos: Object.freeze({ preparar: prepararFoto, enviar: enviarFoto, url: urlFoto, ver: verFoto })
+  });
 
   iniciar();
 })();

@@ -1003,7 +1003,7 @@ function slaMin(p) { const c = cfg(); return (c.sla && c.sla[p]) || PRIORIDADES[
 function tecnicos() { return (cfg().tecnicos || []).slice().sort(byText); }
 function linhaDesc(id) { const c = cfg(); return (c.linhas && c.linhas[id] && c.linhas[id].descricao) || ''; }
 const Perfil = { get() { return LS.get('lev.perfil', null); }, set(p) { LS.set('lev.perfil', p); } };
-function perfil() { return Perfil.get() || { setor: '', nome: '' }; }
+function perfil() { const q = window.LEV_QUEM; if (q && q.nome) return { nome: q.nome, setor: q.setor || q.funcao || '', funcao: q.funcao || '', turno: q.turno || '', auto: true }; return Perfil.get() || { setor: '', nome: '' }; }
 function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão'; }
 function nomeUsuario() { return perfil().nome || ''; }
 function podeAdministrar() { return Store.mode === 'local' || Store.canAdmin || Store.isOwner; }
@@ -1171,7 +1171,7 @@ const OS = {
       n, linha: d.linha, equipId: eq ? eq.id : null,
       equipNome: eq ? eq.nome : (d.equipNome || 'Equipamento não listado'), equipTag: eq ? (eq.tag || '') : '', equipTipo: eq ? (eq.tipo || '') : '',
       prioridade: d.prioridade, parada: !!d.parada, tipo: d.tipo || 'Outro', descricao: d.descricao,
-      solicitante: { nome: d.nome || '', setor: d.setor || '' }, abertoEm: agora, abertoPorId: Store.uid || null,
+      solicitante: { nome: d.nome || '', setor: d.setor || '', funcao: d.funcao || '', turno: d.turno || '' }, abertoEm: agora, abertoPorId: Store.uid || null, fotos: d.fotos || [],
       status: 'aberto', tecnico: '', inicioEm: null, pausas: [], fechadoEm: null, solucao: null, reaberturas: 0,
       origem: d.origem || null, atualizadoEm: agora,
       eventos: [{ t: agora, tipo: 'abertura', por: d.nome || '', texto: 'Chamado aberto por ' + (d.nome || 'solicitante') + (d.setor ? ' (' + d.setor + ')' : '') + (d.parada ? ' — linha parada' : '') }]
@@ -2100,7 +2100,7 @@ function tagCard(c, o) {
     + (c.parada && !done ? '<span class="stop">' + ico('stop', 'sm') + ' Linha parada</span>' : '')
     + (o.mostraLinha ? '<span><span class="line-chip">' + esc(linhaCurto(c.linha)) + '</span></span>' : '')
     + '<span class="eq">' + esc(eqNome(c)) + '</span>'
-    + '<span class="meta">' + esc(eqTag(c) || 'sem tag') + ' · ' + esc(c.tipo || '') + '</span>'
+    + '<span class="meta">' + esc(eqTag(c) || 'sem tag') + ' · ' + esc(c.tipo || '') + ((c.fotos || []).length ? ' · 📷 ' + c.fotos.length : '') + '</span>'
     + '<span class="desc">' + esc(c.descricao) + '</span></span>'
     + '<span class="foot">' + (done
       ? '<span class="timer">' + ico('check', 'sm') + '<span>' + fmtDur(t.total) + '</span></span>'
@@ -2224,7 +2224,7 @@ function detalheChamado(c) {
     + celTempo('Aguardando', fmtDur(t.espera))
     + celTempo('Tempo total', fmtDur(t.total), { hl: true, since: done ? null : c.abertoEm, sub: done ? 'abertura → conclusão' : 'em andamento' })
     + '</div>';
-  h += '<div class="blk"><h3>Problema relatado</h3><div class="quote">' + esc(c.descricao) + '</div><p class="small ink2" style="margin-top:6px">Por ' + esc((c.solicitante && c.solicitante.nome) || '—') + (c.solicitante && c.solicitante.setor ? ' · ' + esc(c.solicitante.setor) : '') + (c.tecnico ? ' · Técnico: ' + esc(c.tecnico) : '') + '</p></div>';
+  h += '<div class="blk"><h3>Problema relatado</h3><div class="quote">' + esc(c.descricao) + '</div>' + ((c.fotos || []).length ? '<div class="lev-fotos">' + c.fotos.map((f, i) => '<img data-lev-foto="' + esc(f.caminho) + '" alt="Foto ' + (i + 1) + ' do ocorrido">').join('') + '</div>' : '') + '<p class="small ink2" style="margin-top:6px">Por ' + esc((c.solicitante && c.solicitante.nome) || '—') + (c.solicitante && c.solicitante.funcao ? ' · ' + esc(c.solicitante.funcao) : (c.solicitante && c.solicitante.setor ? ' · ' + esc(c.solicitante.setor) : '')) + (c.solicitante && c.solicitante.turno ? ' · turno ' + esc(c.solicitante.turno) : '') + (c.tecnico ? ' · Técnico: ' + esc(c.tecnico) : '') + '</p></div>';
   if (c.origem && c.origem.tipo === 'provisorio') h += '<p class="small" style="margin-top:8px">' + ico('info', 'sm') + ' Ação definitiva do chamado <button type="button" class="oslink" data-act="osn" data-n="' + c.origem.n + '">#' + num4(c.origem.n) + '</button></p>';
   if (c.status === 'cancelado') h += '<div class="blk"><h3>Motivo do cancelamento</h3><div class="quote">' + esc(c.canceladoMotivo || '—') + '</div></div>';
   if (c.solucao && c.status === 'concluido') {
@@ -2403,7 +2403,7 @@ FORMS['os-ajustar'] = async (f, btn) => {
    ===================================================================== */
 VIEWS.abrir = {
   mount(el, params) {
-    this.el = el; this.ok = null;
+    this.el = el; this.ok = null; this.fotos = [];
     const rasc = LS.get('lev.rascunho', null) || {};
     const p = perfil();
     const eqParam = params && params.equipId ? eqDe(params.equipId) : null;
@@ -2434,9 +2434,12 @@ VIEWS.abrir = {
       + fChips('tipo', 'Tipo de falha', TIPOS_FALHA, s.tipo, { ch: 'ab-tipo' })
       + fArea('ab-desc', 'Descreva o problema', s.descricao, { name: 'descricao', req: true, rows: 3, ph: 'Ex.: rótulo descolando na lateral; enchedora transbordando no bico 12', attrs: 'data-in="ab-desc"' })
       + '<div id="ab-sug"></div></div>'
-      + '<div class="step"><div class="step-h"><span class="n">5</span>Quem está abrindo</div><div class="frow">'
-      + fSel('ab-setor', 'Setor', opts(SETORES, s.setor, 'Escolha'), { name: 'setor', req: true })
-      + fText('ab-nome', 'Nome', s.nome, { name: 'nome', req: true, ph: 'Seu nome', attrs: 'autocomplete="name"' }) + '</div></div>'
+      + '<div class="step"><div class="step-h"><span class="n">5</span>Foto do ocorrido <span class="small ink2" style="font-weight:400">(opcional, até 3)</span></div><div class="lev-ab-fotos" id="ab-fotos">' + this.fotosHtml() + '</div></div>'
+      + (perfil().auto
+        ? '<div class="step"><div class="step-h"><span class="n">6</span>Quem está abrindo</div><div class="lev-quem"><b>' + esc(perfil().nome) + '</b>' + (perfil().funcao ? '<span>' + esc(perfil().funcao) + '</span>' : '') + (perfil().turno ? '<span>Turno: ' + esc(perfil().turno) + '</span>' : '') + '<span class="small">identificado pelo seu acesso</span></div></div>'
+        : '<div class="step"><div class="step-h"><span class="n">6</span>Quem está abrindo</div><div class="frow">'
+          + fSel('ab-setor', 'Setor', opts(SETORES, s.setor, 'Escolha'), { name: 'setor', req: true })
+          + fText('ab-nome', 'Nome', s.nome, { name: 'nome', req: true, ph: 'Seu nome', attrs: 'autocomplete="name"' }) + '</div></div>')
       + '<div class="btn-row"><button type="submit" class="btn pri lg"' + (Store.readOnly ? ' disabled' : '') + '>' + ico('wrench') + ' Abrir chamado</button>'
       + '<button type="button" class="btn ghost" data-act="ab-limpar">Limpar</button></div></form>';
     el.innerHTML = h;
@@ -2463,6 +2466,12 @@ VIEWS.abrir = {
     if (!res.length) { box.innerHTML = (s.descricao || '').length >= 12 ? '<p class="small muted">Nenhuma solução parecida no histórico.</p>' : ''; return; }
     box.innerHTML = '<div class="suggest"><div class="sh">' + ico('bulb') + ' Soluções anteriores parecidas</div>' + res.map(x => kcard(x, true)).join('') + '<p class="small ink2">A manutenção também vê estas sugestões dentro do chamado.</p></div>';
   },
+  fotosHtml() {
+    const f = this.fotos || [];
+    return f.map((x, i) => '<span class="lev-ft"><img src="' + x.url + '" alt="Foto ' + (i + 1) + '"><button type="button" class="lev-ft-x" data-act="ab-foto-del" data-i="' + i + '" aria-label="Tirar a foto ' + (i + 1) + '">×</button></span>').join('')
+      + (f.length < 3 ? '<label class="btn lev-ft-add">📷 ' + (f.length ? 'Outra foto' : 'Tirar foto') + '<input type="file" accept="image/*" capture="environment" data-ch="ab-foto" hidden></label>' : '');
+  },
+  renderFotos() { const b = $('#ab-fotos', this.el); if (b) b.innerHTML = this.fotosHtml(); },
   hintPrio() {
     const h = $('#ab-prio-hint', this.el); if (!h) return;
     const s = this.st;
@@ -2508,12 +2517,22 @@ INP['ab-parada'] = el => {
 INP['ab-tipo'] = el => { const v = VIEWS.abrir; v.st.tipo = el.value; v.renderSug(); v.salvarRascunho(); };
 INP['ab-desc'] = debounce(el => { const v = VIEWS.abrir; v.st.descricao = el.value; v.renderSug(); v.salvarRascunho(); }, 280);
 INP['ab-outro'] = el => { const v = VIEWS.abrir; v.st.outro = el.value; v.salvarRascunho(); };
+INP['ab-foto'] = async el => {
+  const v = VIEWS.abrir, arq = el.files && el.files[0];
+  if (!arq || !window.LEVISSIMA || !LEVISSIMA.fotos) return;
+  try {
+    const blob = await LEVISSIMA.fotos.preparar(arq);
+    v.fotos = (v.fotos || []).concat([{ blob, url: URL.createObjectURL(blob) }]).slice(0, 3);
+    v.renderFotos();
+  } catch (e) { console.error('foto', e); toast('Não foi possível usar essa foto.', 'crit'); }
+};
+ACT['ab-foto-del'] = el => { const v = VIEWS.abrir, i = +el.dataset.i, x = (v.fotos || [])[i]; if (x) { URL.revokeObjectURL(x.url); v.fotos.splice(i, 1); } v.renderFotos(); };
 ACT['ab-limpar'] = () => { LS.del('lev.rascunho'); go('abrir'); };
 ACT['ab-novo'] = () => { LS.del('lev.rascunho'); go('abrir'); };
 FORMS.abrir = async (f, btn) => {
   const v = VIEWS.abrir, s = v.st;
   const d = dadosForm(f);
-  s.descricao = d.descricao; s.setor = d.setor; s.nome = d.nome; if (d.outro != null) s.outro = d.outro;
+  const q = perfil(); s.descricao = d.descricao; if (q.auto) { s.nome = q.nome; s.setor = q.setor || q.funcao || 'Não informado'; } else { s.setor = d.setor; s.nome = d.nome; } if (d.outro != null) s.outro = d.outro;
   if (!s.linha) return toast('Escolha a linha.', 'crit');
   if (!s.equipId) return toast('Escolha o equipamento ou "Não está na lista".', 'crit');
   if (s.equipId === '__outro' && !s.outro) return toast('Escreva qual é o equipamento.', 'crit');
@@ -2522,12 +2541,17 @@ FORMS.abrir = async (f, btn) => {
   if (!s.setor || !s.nome) return toast('Informe seu setor e nome.', 'crit');
   if (!perfil().nome) Perfil.set({ setor: s.setor, nome: s.nome });
   await ocupado(btn, async () => {
+    const fotos = []; let semFoto = false;
+    for (const x of (v.fotos || [])) { try { fotos.push({ caminho: await LEVISSIMA.fotos.enviar(x.blob, 'chamados'), em: Date.now(), por: s.nome }); } catch (e) { semFoto = true; console.error('foto', e); } }
     const c = await OS.abrir({
       linha: s.linha, equipId: s.equipId === '__outro' ? null : s.equipId, equipNome: s.equipId === '__outro' ? s.outro : null,
-      prioridade: +s.prioridade, parada: s.parada, tipo: s.tipo || 'Outro', descricao: s.descricao, nome: s.nome, setor: s.setor
+      prioridade: +s.prioridade, parada: s.parada, tipo: s.tipo || 'Outro', descricao: s.descricao, nome: s.nome, setor: s.setor,
+      funcao: q.funcao || '', turno: q.turno || '', fotos
     });
+    (v.fotos || []).forEach(x => URL.revokeObjectURL(x.url)); v.fotos = [];
     v.ok = c; LS.del('lev.rascunho'); v.render(); window.scrollTo(0, 0);
-    toast('Chamado #' + num4(c.n) + ' aberto.');
+    toast('Chamado #' + num4(c.n) + ' aberto.' + (fotos.length ? ' Com ' + fotos.length + (fotos.length === 1 ? ' foto.' : ' fotos.') : ''));
+    if (semFoto) toast('Uma foto não foi enviada (sem internet?). O chamado foi aberto sem ela.', 'crit');
   }, 'Abrindo…');
 };
 
@@ -4117,7 +4141,7 @@ VIEWS.config = {
   update() {
     if (!this.el || !this.el.isConnected) return;
     const p = perfil();
-    $('#cfg-aparelho', this.el).innerHTML = '<dl class="kv"><dt>Quem usa</dt><dd>' + (p.nome ? esc(p.nome) + ' · ' + esc(p.setor) : 'não identificado') + ' <button type="button" class="btn sm ghost" data-act="perfil">Trocar</button></dd>'
+    $('#cfg-aparelho', this.el).innerHTML = '<dl class="kv"><dt>Quem usa</dt><dd>' + (p.nome ? esc(p.nome) + ' · ' + esc(p.setor) : 'não identificado') + (p.auto ? ' <span class="small muted">(pelo acesso ao LEVÍSSIMA)</span>' : ' <button type="button" class="btn sm ghost" data-act="perfil">Trocar</button>') + '</dd>'
       + '<dt>Dados</dt><dd>' + modoHtml() + '<div class="small ink2" style="margin-top:4px">' + (Store.mode === 'cloud' ? 'Banco do LEVÍSSIMA: todos com acesso ao módulo Manutenção veem os mesmos dados, ao vivo.' + (Store.readOnly ? ' Seu acesso é só de leitura.' : '') : Store.mode === 'local' ? 'Os dados ficam só neste navegador. Use o backup para levar para outro aparelho.' : 'Sem acesso ao banco agora.') + '</div></dd>'
       + '<dt>Alerta sonoro</dt><dd>' + (Avisos.som ? 'Ligado' : 'Desligado') + ' <button type="button" class="btn sm ghost" data-act="som">' + (Avisos.som ? 'Desligar' : 'Ligar') + '</button><div class="small ink2" style="margin-top:4px">Toca quando chega chamado novo, no perfil Manutenção ou no modo TV.</div></dd></dl>';
     const tecs = tecnicos();
