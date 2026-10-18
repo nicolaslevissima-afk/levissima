@@ -1053,6 +1053,13 @@
     background: linear-gradient(100deg, #2D7A1C, #43B02A 45%, #702082); -webkit-background-clip: text; background-clip: text; color: transparent; }
   .lock-label { text-align: center; font-size: 1rem !important; font-weight: 600; color: var(--ink) !important; margin-top: 8px; }
   .lock-label input { text-align: center; font-size: 1.125rem; letter-spacing: 0.08em; }
+  .lock-rosto-btn { width: 100%; margin-top: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+  .lock-rosto-btn svg { width: 22px; height: 22px; }
+  #lock-rosto { text-align: center; }
+  #lock-rosto .btn-primary { width: 100%; margin-top: 6px; }
+  #lock-rosto .btn-text { margin-top: 10px; }
+  .lock-rosto-t { font-size: 1.125rem; margin: 6px 0 4px; }
+  .so-inclui-aviso { background: #F1E5F5; color: #4A1457; border-bottom: 1px solid rgba(112, 32, 130, 0.25); padding: 8px 16px; font-size: 0.8125rem; font-weight: 600; text-align: center; }
   #lock-login-form #btn-login-submit { width: 100%; }
   .drivers-admin { margin: 28px 0 40px; padding-top: 18px; border-top: 1px solid var(--line); }
   .driver-row { display: flex; align-items: center; gap: 14px; padding: 10px 2px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
@@ -1131,6 +1138,7 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><g id="lv-simb"><path class="lv-s1" d="M423.06 207.32C411.61 207.32 400.50 212 392.50 220.19L392.48 220.18L391.41 221.33C387.82 225.20 382.73 227.41 377.45 227.41C371.58 227.41 366.16 224.81 362.60 220.32C362.08 219.47 361.17 218.95 360.17 218.95C358.96 218.95 357.94 219.69 357.52 220.89L357.36 221.38C356.93 224.33 356.72 227.36 356.72 230.40C356.72 264.98 384.85 293.12 419.44 293.12C423.30 293.12 427.16 292.76 430.94 292.06L431.55 291.90C435.87 291.03 440.01 289.50 443.84 287.36C457.37 279.81 465.77 265.51 465.77 250.03C465.77 226.48 446.61 207.32 423.06 207.32M392.85 224.75L393.89 223.61C401.34 215.39 411.97 210.67 423.06 210.67C444.76 210.67 462.42 228.33 462.42 250.03C462.42 264.30 454.67 277.48 442.21 284.43C438.51 286.5 434.51 287.94 430.28 288.73L429.80 288.86C426.41 289.46 422.92 289.76 419.44 289.76C386.71 289.76 360.08 263.13 360.08 230.40C360.08 227.91 360.23 225.44 360.52 223.05C364.79 227.96 370.90 230.76 377.45 230.76C383.10 230.76 388.66 228.56 392.79 224.70L392.85 224.75"/><path class="lv-s2" d="M429.48 202.91C418.03 202.91 406.93 207.59 398.92 215.78L398.91 215.77L397.83 216.93C394.23 220.79 389.14 223.01 383.87 223.01C378.01 223.01 372.58 220.40 369.01 215.91C368.5 215.05 367.59 214.55 366.59 214.55C365.29 214.55 364.14 215.44 363.85 216.68L363.79 216.98C363.36 219.96 363.14 222.99 363.14 226C363.14 260.57 391.27 288.71 425.85 288.71C429.73 288.71 433.59 288.35 437.37 287.65L437.95 287.50C442.27 286.63 446.41 285.10 450.26 282.95C463.80 275.40 472.20 261.10 472.20 245.63C472.20 222.07 453.04 202.91 429.48 202.91M399.30 220.32L400.31 219.20C407.76 210.98 418.39 206.27 429.48 206.27C451.19 206.27 468.84 223.92 468.84 245.63C468.84 259.89 461.10 273.07 448.63 280.02C444.92 282.09 440.92 283.54 436.71 284.32L436.23 284.45C432.82 285.05 429.32 285.35 425.85 285.35C393.12 285.35 366.5 258.73 366.5 226C366.5 223.57 366.64 221.16 366.94 218.64C371.22 223.56 377.33 226.36 383.87 226.36C389.53 226.36 395.10 224.15 399.23 220.27L399.30 220.32"/><path class="lv-s3" d="M435.91 198.50C424.51 198.50 413.43 203.16 405.43 211.29L405.41 211.27L404.26 212.52C400.66 216.38 395.57 218.60 390.30 218.60C384.43 218.60 379.01 215.99 375.44 211.50C374.92 210.65 374.02 210.14 373.02 210.14C371.99 210.14 371.08 210.69 370.58 211.59L370.51 211.55L370.21 212.57C369.78 215.54 369.57 218.58 369.57 221.58C369.57 256.17 397.70 284.30 432.28 284.30C436.14 284.30 440.01 283.95 443.80 283.24L444.41 283.08C448.72 282.21 452.85 280.69 456.69 278.54C470.22 271 478.62 256.70 478.62 241.22C478.62 217.66 459.46 198.50 435.91 198.50M405.56 216.09L406.73 214.80C414.19 206.57 424.82 201.85 435.91 201.85C457.61 201.85 475.26 219.51 475.26 241.22C475.26 255.48 467.52 268.66 455.06 275.62C451.35 277.68 447.35 279.12 443.14 279.91L442.67 280.04C439.27 280.64 435.78 280.94 432.28 280.94C399.55 280.94 372.92 254.32 372.92 221.58C372.92 219.14 373.07 216.71 373.37 214.24C377.65 219.15 383.76 221.95 390.30 221.95C395.88 221.95 401.38 219.80 405.49 216.02L405.56 216.09"/><path class="lv-s4" d="M481.69 236.81C481.69 251.07 473.95 264.26 461.48 271.21C457.78 273.28 453.78 274.72 449.57 275.51L449.08 275.64C445.66 276.24 442.17 276.54 438.71 276.54C405.98 276.54 379.35 249.91 379.35 217.17C379.35 214.73 379.5 212.31 379.80 209.82C384.06 214.75 390.17 217.55 396.72 217.55C402.37 217.55 407.94 215.34 412.07 211.48L412.13 211.52L413.16 210.39C420.61 202.17 431.24 197.45 442.34 197.45C464.04 197.45 481.69 215.11 481.69 236.81M442.34 194.10C430.82 194.10 419.66 198.83 411.64 207.10L411.63 207.10L410.68 208.11C407.08 211.98 402 214.19 396.72 214.19C390.86 214.19 385.43 211.58 381.87 207.09C381.34 206.24 380.44 205.73 379.45 205.73C378.14 205.73 376.99 206.62 376.71 207.85L376.64 208.16C376.21 211.12 376 214.16 376 217.17C376 251.76 404.13 279.89 438.71 279.89C442.56 279.89 446.42 279.54 450.23 278.84L450.85 278.67C455.16 277.80 459.29 276.28 463.11 274.14C476.64 266.59 485.05 252.29 485.05 236.81C485.05 213.26 465.89 194.10 442.34 194.10"/></g><g id="lv-pal"><path class="lv-p" d="M234.98 310.37L228.62 310.37L228.62 370.08L267.23 370.08L267.23 364.20L234.98 364.20ZM234.98 310.37"/><path class="lv-p" d="M276.96 342.05L307.34 342.05L307.34 336.17L276.96 336.17L276.96 316.25L307.34 316.25L307.34 310.37L270.60 310.37L270.60 370.08L312.08 370.08L312.08 364.20L276.96 364.20ZM276.96 342.05"/><path class="lv-p" d="M335.92 361.66L317.33 310.37L310.60 310.37L332.85 370.08L338.90 370.08L361.23 310.37L354.66 310.37ZM335.92 361.66"/><path class="lv-p" d="M363.80 370.08L370.17 370.08L370.17 310.37L363.80 310.37ZM363.80 370.08"/><path class="lv-p" d="M484.17 370.08L490.53 370.08L490.53 310.37L484.17 310.37ZM484.17 370.08"/><path class="lv-p" d="M528.60 361.23L507.26 310.37L499.86 310.37L499.86 370.08L506.23 370.08L506.23 322.87L525.53 369.19L525.89 370.08L531.32 370.08L550.75 322.94L550.75 370.08L557.12 370.08L557.12 310.37L549.71 310.37ZM528.60 361.23"/><path class="lv-p" d="M403.83 336.83L402.42 336.54C393.41 334.71 385.62 333.12 385.62 325.57C385.62 317.69 393.26 314.90 399.80 314.90C410.11 314.90 416.23 319.69 416.60 328.03L416.64 328.86L423.01 328.86L422.97 327.96C422.42 315.92 413.98 309.01 399.80 309.01C389.58 309.01 379.26 314.13 379.26 325.57C379.26 337.87 391.09 340.32 399.76 342.10L400.66 342.29C409.99 344.19 418.04 345.83 418.04 354C418.04 363.12 408.58 365.55 402.99 365.55C402.34 365.55 401.71 365.53 401.07 365.50L399.57 365.43L399.57 371.33L400.93 371.39C401.61 371.42 402.30 371.44 402.99 371.44C410.94 371.44 424.41 367.77 424.41 354C424.41 341.05 412.51 338.61 403.83 336.83"/><path class="lv-p" d="M456.17 336.83L454.75 336.54C445.74 334.70 437.95 333.12 437.95 325.57C437.95 317.69 445.59 314.90 452.14 314.90C462.44 314.90 468.56 319.69 468.94 328.04L468.97 328.86L475.35 328.86L475.30 327.96C474.75 315.92 466.31 309.01 452.14 309.01C441.91 309.01 431.59 314.13 431.59 325.57C431.59 337.86 443.42 340.31 452.09 342.10L453 342.29C462.32 344.19 470.37 345.83 470.37 354C470.37 363.12 460.91 365.55 455.32 365.55C454.67 365.55 454.04 365.53 453.40 365.50L451.90 365.43L451.90 371.33L453.27 371.39C453.94 371.42 454.62 371.44 455.32 371.44C463.28 371.44 476.74 367.77 476.74 354C476.74 341.05 464.85 338.61 456.17 336.83"/><path class="lv-p" d="M589.57 310.37L583.80 310.37L559.80 370.08L566.64 370.08L586.75 318.98L606.33 370.08L613.15 370.08ZM589.57 310.37"/><path class="lv-p" d="M363.92 306.59L369.90 306.59L377.86 298.26L369.44 298.26ZM363.92 306.59"/><path class="lv-p" d="M607.84 315.23C608.62 315.23 609.31 315.18 609.31 314.25C609.31 313.50 608.63 313.36 607.99 313.36L606.75 313.36L606.75 315.23ZM606.75 318.63L605.83 318.63L605.83 312.59L608.13 312.59C609.56 312.59 610.27 313.11 610.27 314.31C610.27 315.39 609.59 315.86 608.70 315.97L610.42 318.63L609.39 318.63L607.80 316.01L606.75 316.01ZM607.85 319.98C610.23 319.98 612.10 318.12 612.10 315.60C612.10 313.11 610.23 311.24 607.85 311.24C605.46 311.24 603.58 313.11 603.58 315.60C603.58 318.12 605.46 319.98 607.85 319.98M602.53 315.60C602.53 312.59 604.97 310.37 607.85 310.37C610.71 310.37 613.15 312.59 613.15 315.60C613.15 318.63 610.71 320.85 607.85 320.85C604.97 320.85 602.53 318.63 602.53 315.60"/></g><g id="lv-lin"><path class="lv-t" d="M278.32 381.48L280.44 381.48L277.90 384.22L276.60 384.22ZM277.90 386.71L277.86 386.71L275.94 394.46L279.78 394.46ZM276.85 385.54L278.98 385.54L283.08 400.10L281.30 400.10L280.15 395.91L275.55 395.91L274.48 400.10L272.69 400.10ZM276.85 385.54"/><path class="lv-t" d="M298.45 400.22L297.21 400.22L297.21 397.95L297.17 397.95C296.75 399.60 295.44 400.46 293.83 400.46C289.50 400.46 289.17 396.14 289.17 392.73C289.17 389.33 289.77 385.25 293.99 385.25C296.76 385.25 298.35 387.06 298.32 389.78L296.69 389.78C296.67 387.99 295.91 386.75 294.07 386.71C290.88 386.65 290.84 390.30 290.84 392.78C290.84 395 290.73 398.86 293.60 399C296.59 399.14 296.86 396.40 296.84 394.08L293.60 394.08L293.60 392.63L298.45 392.63ZM298.45 400.22"/><path class="lv-t" d="M306.41 385.54L308.02 385.54L308.02 396.01C308 397.16 308.20 399 310.78 399C313.36 399 313.55 397.16 313.53 396.01L313.53 385.54L315.15 385.54L315.15 396.59C315.15 399.19 313.42 400.46 310.78 400.46C308.14 400.46 306.41 399.19 306.41 396.59ZM306.41 385.54"/><path class="lv-t" d="M326.96 386.71L326.92 386.71L325.01 394.46L328.85 394.46ZM325.92 385.54L328.05 385.54L332.15 400.10L330.37 400.10L329.22 395.91L324.62 395.91L323.55 400.10L321.76 400.10ZM325.92 385.54"/><path class="lv-t" d="M357.69 385.54L360.53 385.54L360.53 400.10L358.92 400.10L358.92 388.10C358.92 387.48 358.96 386.88 358.92 386.26L358.88 386.26C358.70 387.12 358.57 387.66 358.43 388.22L355.39 400.10L353.46 400.10L350.41 388.05C350.28 387.55 350.16 387.06 349.99 386.26L349.95 386.26C349.95 386.88 349.99 387.52 349.99 388.14L349.99 400.10L348.37 400.10L348.37 385.54L351.23 385.54L354.08 396.90C354.24 397.52 354.32 398.12 354.39 399.06L354.43 399.06C354.53 398.32 354.63 397.60 354.80 396.88ZM357.69 385.54"/><path class="lv-t" d="M368.76 400.10L368.76 385.54L370.37 385.54L370.37 400.10ZM368.76 400.10"/><path class="lv-t" d="M385.86 385.54L387.47 385.54L387.47 400.10L384.83 400.10L380.75 388.46C380.52 387.80 380.34 387.14 380.21 386.26L380.17 386.26C380.19 387 380.21 387.76 380.21 388.5L380.21 400.10L378.60 400.10L378.60 385.54L381.22 385.54L385.35 397.47C385.53 397.91 385.67 398.38 385.86 399.06L385.90 399.06C385.88 398.53 385.86 397.97 385.86 397.42ZM385.86 385.54"/><path class="lv-t" d="M395.25 400.10L395.25 385.54L402.53 385.54L402.53 387L396.86 387L396.86 391.82L402.18 391.82L402.18 393.27L396.86 393.27L396.87 398.65L402.57 398.65L402.57 400.10ZM395.25 400.10"/><path class="lv-t" d="M411.66 392.24L414.20 392.24C414.95 392.22 417.05 392.11 417.01 389.56C416.98 387.06 415.01 387 413.92 387L411.66 387ZM411.66 400.10L410.04 400.10L410.04 385.54L413.79 385.54C416.84 385.54 418.78 386.34 418.68 389.70C418.62 391.41 417.58 392.63 415.89 392.86L415.89 392.90C417.77 393.08 418.23 393.68 418.47 395.62C418.53 396.71 418.62 397.78 418.78 398.86C418.84 399.14 418.96 399.78 419.34 399.78L419.34 400.10L417.46 400.10C417.11 399.17 416.96 397.37 416.96 396.40C416.96 394.94 416.37 393.70 414.47 393.70L411.66 393.70ZM411.66 400.10"/><path class="lv-t" d="M430.50 386.71L430.46 386.71L428.54 394.46L432.39 394.46ZM429.45 385.54L431.59 385.54L435.69 400.10L433.90 400.10L432.76 395.91L428.16 395.91L427.08 400.10L425.30 400.10ZM429.45 385.54"/><path class="lv-t" d="M442.34 400.10L442.34 385.54L443.95 385.54L443.95 398.65L449.90 398.65L449.90 400.10ZM442.34 400.10"/><path class="lv-t" d="M473.75 385.54L475.36 385.54L475.36 400.10L472.72 400.10L468.64 388.46C468.41 387.80 468.23 387.14 468.10 386.26L468.06 386.26C468.08 387 468.10 387.76 468.10 388.5L468.10 400.10L466.49 400.10L466.49 385.54L469.11 385.54L473.25 397.47C473.42 397.91 473.56 398.38 473.75 399.06L473.79 399.06C473.77 398.53 473.75 397.97 473.75 397.42ZM473.75 385.54"/><path class="lv-t" d="M487.12 386.71L487.08 386.71L485.16 394.46L489.01 394.46ZM486.07 385.54L488.21 385.54L492.31 400.10L490.52 400.10L489.38 395.91L484.78 395.91L483.71 400.10L481.92 400.10ZM486.07 385.54"/><path class="lv-t" d="M496.57 385.54L505.72 385.54L505.72 387L501.95 387L501.95 400.10L500.34 400.10L500.34 387L496.57 387ZM496.57 385.54"/><path class="lv-t" d="M512.41 385.54L514.03 385.54L514.03 396.01C514.01 397.16 514.20 399 516.78 399C519.37 399 519.56 397.16 519.54 396.01L519.54 385.54L521.15 385.54L521.15 396.59C521.15 399.19 519.42 400.46 516.78 400.46C514.14 400.46 512.41 399.19 512.41 396.59ZM512.41 385.54"/><path class="lv-t" d="M530.83 392.24L533.38 392.24C534.14 392.22 536.23 392.11 536.19 389.56C536.16 387.06 534.19 387 533.11 387L530.83 387ZM530.83 400.10L529.23 400.10L529.23 385.54L532.97 385.54C536.02 385.54 537.96 386.34 537.86 389.70C537.80 391.41 536.76 392.63 535.07 392.86L535.07 392.90C536.95 393.08 537.42 393.68 537.65 395.62C537.71 396.71 537.81 397.78 537.96 398.86C538.02 399.14 538.14 399.78 538.52 399.78L538.52 400.10L536.64 400.10C536.29 399.17 536.14 397.37 536.14 396.40C536.14 394.94 535.55 393.70 533.65 393.70L530.83 393.70ZM530.83 400.10"/><path class="lv-t" d="M549.68 386.71L549.64 386.71L547.72 394.46L551.57 394.46ZM548.64 385.54L550.77 385.54L554.87 400.10L553.08 400.10L551.94 395.91L547.33 395.91L546.27 400.10L544.48 400.10ZM548.64 385.54"/><path class="lv-t" d="M561.52 400.10L561.52 385.54L563.14 385.54L563.14 398.65L569.08 398.65L569.08 400.10ZM561.52 400.10"/></g></defs></svg>
 
 <div id="mural" class="mural hidden" role="status" aria-live="polite"></div>
+<div id="aviso-so-inclui" class="so-inclui-aviso hidden" role="note">Acesso da diretoria: você vê tudo e pode incluir; não altera nem apaga.</div>
 
 <div id="lock-screen" class="lock-wrap">
   <div class="lock-card">
@@ -1154,7 +1162,15 @@
       </label>
       <p class="form-error hidden" id="login-error"></p>
       <button type="submit" class="btn btn-primary" id="btn-login-submit">Entrar</button>
+      <button type="button" class="btn btn-secondary lock-rosto-btn hidden" id="btn-login-rosto"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10v1M15 10v1M12 10v3h-1M9.5 15.5c1.4 1 3.6 1 5 0"/></svg> Entrar com o rosto</button>
     </form>
+    <div id="lock-rosto" class="hidden">
+      <p class="lock-rosto-t">Olá, <b id="lock-rosto-nome"></b>!</p>
+      <p class="hint">Este acesso entra com o rosto. Cadastre agora: o próprio aparelho (Face ID no iPhone, ou a biometria do computador) confirma que é você. Nenhuma foto é guardada. Depois, é só tocar em “Entrar com o rosto”.</p>
+      <p class="form-error hidden" id="lock-rosto-erro"></p>
+      <button type="button" class="btn btn-primary" id="btn-rosto-cadastrar">Cadastrar o meu rosto</button>
+      <button type="button" class="btn-text" id="btn-rosto-voltar">Voltar</button>
+    </div>
   </div>
 </div>
 
@@ -4138,6 +4154,21 @@
             '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
       });
       blocoSetores += '<button type="button" class="btn btn-secondary btn-sm" data-action="setor-novo" style="margin-top:10px">+ Nova senha de setor</button>';
+      // acessos da diretoria (pedido de 18/10/2026): veem tudo e só incluem; podem exigir o rosto
+      blocoSetores += '<h3 class="acesso-sub">Acessos da diretoria (vê tudo e só inclui)</h3>';
+      var dirs = (acessoInfo && acessoInfo.diretoria) || [];
+      if (!carregando && !dirs.length) blocoSetores += '<p class="field-hint">Nenhum ainda. Quem tem esse acesso vê todas as abas e módulos e pode lançar coisas novas, mas não altera nem apaga nada.</p>';
+      dirs.forEach(function(x) {
+        var rosto = !x.biometria ? 'entra com a senha' : x.rostos ? 'entra só com o rosto' + (x.rostoUsadoEm ? ' · último acesso ' + formatDateTimeBR(x.rostoUsadoEm) : '') : 'rosto ainda não cadastrado (cadastra no 1º acesso)';
+        blocoSetores += confirmRemoverSetor === x.ref
+          ? '<div class="driver-confirm">Remover o acesso de “' + escapeHtml(x.nome) + '”? Quem estiver usando sai do app.' +
+            '<button class="btn-text danger" data-action="setor-remover-confirmar" data-ref="' + escapeHtml(x.ref) + '">Remover</button><button class="btn-text" data-action="setor-remover-cancelar">Cancelar</button></div>'
+          : '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="est-sub">' + escapeHtml(rosto) + '</span></span>' +
+            '<button class="btn-text" data-action="dir-editar" data-ref="' + escapeHtml(x.ref) + '">Editar</button>' +
+            (x.rostos ? '<button class="btn-text" data-action="dir-apagar-rosto" data-ref="' + escapeHtml(x.ref) + '">Apagar rosto</button>' : '') +
+            '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
+      });
+      blocoSetores += '<button type="button" class="btn btn-secondary btn-sm" data-action="dir-novo" style="margin-top:10px">+ Novo acesso da diretoria</button>';
     }
     el.innerHTML = '<div class="driver-row"><span class="driver-name">Senha mestre<span class="est-sub">a sua: abre tudo, inclusive Cadastros, Pesquisas e todos os módulos</span></span>' +
       '<button class="btn-text" data-action="acesso-mestre">Trocar</button></div>' + linhaEquipe + blocoSetores;
@@ -4146,13 +4177,15 @@
   function carregarAcessoInfo() {
     acessoBuscando = true;
     chamarAcesso({ acao: 'lista' }).then(function(r) {
-      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [], reps: {} };
+      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [], reps: {}, diretoria: [] };
       (r.senhas || []).forEach(function(x) {
         if (x.ref === 'mestre') info.mestre = x.atualizado_em || true;
         if (x.ref === 'equipe') { info.equipe = x.atualizado_em || true; info.equipeModulos = x.modulos || []; }
         if (/^setor:/.test(x.ref || '')) info.setores.push({ ref: x.ref, nome: x.nome || '', modulos: x.modulos || [], em: x.atualizado_em });
         if (/^representante:/.test(x.ref || '')) info.reps[x.ref] = x.atualizado_em || true;
+        if (/^diretoria:/.test(x.ref || '')) info.diretoria.push({ ref: x.ref, nome: x.nome || '', biometria: !!x.biometria, rostos: Number(x.rostos) || 0, rostoUsadoEm: x.rostoUsadoEm || null });
       });
+      info.diretoria.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       info.setores.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       acessoInfo = info;
     }).catch(function(e) { console.error('acesso lista', e); acessoInfo = { erro: true }; })
@@ -4214,6 +4247,13 @@
     else if (a === 'acesso-equipe-remover') { confirmRemoverEquipe = true; renderAcessoAdmin(); }
     else if (a === 'acesso-equipe-cancelar') { confirmRemoverEquipe = false; renderAcessoAdmin(); }
     else if (a === 'setor-novo') openSetorForm('novo', null);
+    else if (a === 'dir-novo') abrirAcessoDiretoria(null);
+    else if (a === 'dir-editar') abrirAcessoDiretoria(((acessoInfo && acessoInfo.diretoria) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null);
+    else if (a === 'dir-apagar-rosto') {
+      if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Confirmar: apagar rosto'; return; }
+      chamarAcesso({ acao: 'bio_apagar', ref: b.dataset.ref }).then(function() { acessoInfo = null; renderAcessoAdmin(); showToast('Rosto apagado: no próximo acesso com a senha, a pessoa cadastra o rosto de novo.'); })
+        .catch(function(err) { console.error('apagar rosto', err); showToast('Não foi possível agora. Tente de novo.'); });
+    }
     else if (a === 'setor-editar') openSetorForm('editar', ((acessoInfo && acessoInfo.setores) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null);
     else if (a === 'setor-equipe') openSetorForm('equipe', { ref: 'equipe', nome: 'Equipe do escritório', modulos: (acessoInfo && acessoInfo.equipeModulos) || [] });
     else if (a === 'setor-remover') { confirmRemoverSetor = b.dataset.ref; renderAcessoAdmin(); }
@@ -4263,6 +4303,36 @@
   document.getElementById('acesso-sheet-overlay').addEventListener('click', function(e) {
     if (e.target === document.getElementById('acesso-sheet-overlay')) closeAcessoForm();
   });
+
+  // ---------- acessos da diretoria: veem tudo e só incluem; podem exigir o rosto ----------
+  function abrirAcessoDiretoria(x) {
+    gerAbrir({
+      titulo: x ? 'Acesso da diretoria — ' + x.nome : 'Novo acesso da diretoria', botao: 'Salvar',
+      html: '<p class="hint">Vê todas as abas e módulos e pode incluir (lançar coisas novas), mas não altera nem apaga nada. Quem cria a senha é você, aqui; passe a senha só para a pessoa.</p>' +
+        '<label>Nome <span class="req">*</span><input type="text" id="dir-nome" maxlength="60" autocomplete="off" value="' + escapeHtml(x ? x.nome : '') + '" /></label>' +
+        '<label>' + (x ? 'Nova senha <span class="opt">(deixe em branco para manter)</span>' : 'Senha <span class="req">*</span>') + '<input type="password" id="dir-senha" autocomplete="new-password" /></label>' +
+        '<label>Repita a senha<input type="password" id="dir-senha2" autocomplete="new-password" /></label>' +
+        '<label class="check-row"><input type="checkbox" id="dir-rosto"' + (!x || x.biometria ? ' checked' : '') + ' /> Exigir o rosto: no 1º acesso com a senha, a pessoa cadastra o rosto (Face ID no iPhone ou biometria do computador); depois, entra só com o rosto</label>' +
+        '<p class="field-hint">Mínimo de 6 caracteres, diferente das outras senhas.</p>',
+      salvar: function() {
+        var nome = gerVal('dir-nome'), senha = document.getElementById('dir-senha').value, senha2 = document.getElementById('dir-senha2').value, rosto = document.getElementById('dir-rosto').checked;
+        if (!nome) return gerErro('Digite o nome.');
+        if (!x && !senha) return gerErro('Crie a senha.');
+        if (senha && senha.length < 6) return gerErro('A senha precisa ter pelo menos 6 caracteres.');
+        if (senha !== senha2) return gerErro('As duas senhas não são iguais.');
+        var ref = x ? x.ref : 'diretoria:' + (String(nome).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'dir') + '-' + uid().slice(-6).replace(/[^A-Za-z0-9]/g, 'x');
+        var corpo = senha ? { acao: 'definir', ref: ref, nome: nome, senha: senha, biometria: rosto } : { acao: 'ajustar', ref: ref, nome: nome, biometria: rosto };
+        return chamarAcesso(corpo).then(function() {
+          acessoInfo = null; renderAcessoAdmin();
+          showToast(x ? 'Acesso salvo.' : 'Acesso de ' + nome + ' criado.' + (rosto ? ' No 1º acesso, ' + nome.split(' ')[0] + ' cadastra o rosto.' : ''));
+        }).catch(function(e) {
+          var c = e && e.codigo;
+          gerErro(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.' : 'Não foi possível salvar agora. Tente novamente.');
+          return false;
+        });
+      }
+    });
+  }
 
   // ---------- senhas de setor: módulos da fábrica que cada senha abre ----------
   var setorEdit = null; // { modo: 'novo' | 'editar' | 'equipe', ref }
@@ -8475,6 +8545,8 @@
     document.getElementById('lock-loading').classList.toggle('hidden', state !== 'loading');
     document.getElementById('lock-setup-form').classList.toggle('hidden', state !== 'setup');
     document.getElementById('lock-login-form').classList.toggle('hidden', state !== 'login');
+    document.getElementById('lock-rosto').classList.toggle('hidden', state !== 'rosto');
+    document.getElementById('btn-login-rosto').classList.toggle('hidden', !rostoDisponivel());
     document.getElementById('lock-screen').classList.remove('hidden');
     document.getElementById('admin-view').classList.add('hidden');
     document.getElementById('driver-view').classList.add('hidden');
@@ -8489,6 +8561,8 @@
   function showAdminView() {
     document.getElementById('lock-screen').classList.add('hidden');
     document.getElementById('admin-view').classList.remove('hidden');
+    document.getElementById('aviso-so-inclui').classList.toggle('hidden', !(session && session.soInclui));
+    var secAcesso = document.getElementById('acesso-admin'); if (secAcesso) secAcesso.classList.toggle('hidden', !!(session && session.soInclui));
     document.getElementById('driver-view').classList.add('hidden');
     document.getElementById('setor-view').classList.add('hidden');
     esconderRepView();
@@ -8564,18 +8638,18 @@
       // a senha é conferida no servidor; o app recebe só um login com o papel da pessoa
       btn.textContent = 'Entrando…';
       chamarAcesso({ acao: 'entrar', senha: pass }).then(function(r) {
-        return sbCliente.auth.setSession({ access_token: r.access_token, refresh_token: r.refresh_token });
-      }).then(function(x) {
-        if (x.error) throw x.error;
-        var u = (x.data && (x.data.user || (x.data.session && x.data.session.user))) || null;
-        var ident = identidadeDoUsuario(u);
-        if (!ident) { var e2 = new Error('papel'); e2.codigo = 'interno'; throw e2; }
         btn.disabled = false;
         btn.textContent = 'Entrar';
-        comecarSessao(ident, pass, x.data && x.data.session && x.data.session.access_token);
+        if (r && r.cadastrarRosto) { abrirCadastroRosto(r); return null; } // 1º acesso: cadastra o rosto antes de entrar
+        return abrirSessaoDoServidor(r, pass);
       }).catch(function(e) {
         btn.textContent = 'Entrar';
         var c = e && e.codigo;
+        if (c === 'biometria') {
+          senhaErrada(rostoDisponivel() ? 'Este acesso entra só com o rosto.' : 'Este acesso entra só com o rosto, pelo iPhone (Safari) ou por um computador com biometria.');
+          if (rostoDisponivel()) entrarComRosto();
+          return;
+        }
         senhaErrada(c === 'senha' ? 'Senha incorreta.'
           : c === 'tentativas' ? 'Muitas tentativas erradas. Espere alguns minutos e tente de novo.'
           : 'Não foi possível entrar agora. Confira a internet e tente de novo.');
@@ -8590,6 +8664,87 @@
       if (match) { comecarSessao({ role: 'motorista', nome: match.nome }, null); return; }
       senhaErrada('Senha incorreta.');
     });
+  });
+
+  // ---------- entrar com o rosto (passkey do aparelho: Face ID no iPhone, biometria do computador) ----------
+  // Pedido de 18/10/2026: acesso que "exige o rosto" cadastra o rosto no 1º acesso com a senha e, daí em diante,
+  // só entra com o rosto. Quem confere o rosto é o próprio aparelho; o servidor confere a assinatura (função acesso).
+  var rostoTicket = null, ROSTO_OK = 'levissima-rosto-ok';
+  function rostoDisponivel() { return mode === 'db' && !!(window.PublicKeyCredential && navigator.credentials && navigator.credentials.get && window.isSecureContext !== false); }
+  function b64uParaBytes(s) { s = String(s || '').replace(/-/g, '+').replace(/_/g, '/'); var bin = atob(s + '==='.slice((s.length + 3) % 4)), out = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; }
+  function bytesParaB64u(buf) { var b = new Uint8Array(buf), t = ''; for (var i = 0; i < b.length; i++) t += String.fromCharCode(b[i]); return btoa(t).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function credenciaisDe(lista) { return (lista || []).map(function(c) { return { type: 'public-key', id: b64uParaBytes(c.id), transports: c.transports || undefined }; }); }
+  function credencialJson(c) {
+    var r = c.response, j = { id: c.id, rawId: bytesParaB64u(c.rawId), type: c.type, response: { clientDataJSON: bytesParaB64u(r.clientDataJSON) } };
+    if (r.attestationObject) { j.response.attestationObject = bytesParaB64u(r.attestationObject); j.response.transports = r.getTransports ? r.getTransports() : []; }
+    if (r.authenticatorData) { j.response.authenticatorData = bytesParaB64u(r.authenticatorData); j.response.signature = bytesParaB64u(r.signature); j.response.userHandle = r.userHandle ? bytesParaB64u(r.userHandle) : null; }
+    return j;
+  }
+  function msgRosto(e) {
+    var n = e && (e.codigo || e.name);
+    return n === 'NotAllowedError' ? 'Não foi confirmado. Toque de novo e olhe para o aparelho.'
+      : n === 'InvalidStateError' ? 'Este aparelho já tem o rosto cadastrado para este acesso. Toque em “Entrar com o rosto”.'
+      : n === 'rosto' ? 'Rosto não reconhecido para nenhum acesso.'
+      : n === 'ticket' ? 'O tempo para cadastrar acabou. Digite a senha de novo.'
+      : n === 'tentativas' ? 'Muitas tentativas. Espere alguns minutos.'
+      : 'Não foi possível agora. Confira a internet e tente de novo.';
+  }
+  // login devolvido pela função acesso (senha, rosto ou cadastro do rosto) → entra no app
+  function abrirSessaoDoServidor(r, senhaDigitada) {
+    return sbCliente.auth.setSession({ access_token: r.access_token, refresh_token: r.refresh_token }).then(function(x) {
+      if (x.error) throw x.error;
+      var u = (x.data && (x.data.user || (x.data.session && x.data.session.user))) || null;
+      var ident = identidadeDoUsuario(u);
+      if (!ident) { var e2 = new Error('papel'); e2.codigo = 'interno'; throw e2; }
+      if (ident.biometria && u) { try { sessionStorage.setItem(ROSTO_OK, u.id); } catch (e3) {} }
+      comecarSessao(ident, senhaDigitada || null, x.data && x.data.session && x.data.session.access_token);
+    });
+  }
+  function entrarComRosto() {
+    var err = document.getElementById('login-error'), btn = document.getElementById('btn-login-rosto');
+    if (btn.disabled) return;
+    btn.disabled = true;
+    chamarAcesso({ acao: 'bio_entrar_opcoes' }).then(function(o) {
+      var p = o.opcoes;
+      return navigator.credentials.get({ publicKey: { challenge: b64uParaBytes(p.challenge), rpId: p.rpId, timeout: p.timeout, userVerification: p.userVerification, allowCredentials: credenciaisDe(p.allowCredentials) } });
+    }).then(function(c) {
+      if (!c) throw erroComCodigo('NotAllowedError');
+      return chamarAcesso({ acao: 'bio_entrar', credencial: credencialJson(c) });
+    }).then(function(r) { err.classList.add('hidden'); return abrirSessaoDoServidor(r, null); })
+      .catch(function(e) { console.warn('rosto', e); err.textContent = msgRosto(e); err.classList.remove('hidden'); })
+      .then(function() { btn.disabled = false; });
+  }
+  function abrirCadastroRosto(r) {
+    rostoTicket = r.ticket;
+    document.getElementById('lock-rosto-nome').textContent = String(r.nome || '').split(' ')[0] || 'tudo bem';
+    var e = document.getElementById('lock-rosto-erro');
+    e.classList.toggle('hidden', rostoDisponivel());
+    e.textContent = rostoDisponivel() ? '' : 'Este aparelho não consegue cadastrar o rosto. Abra o app pelo iPhone (Safari) ou por um computador com biometria.';
+    document.getElementById('btn-rosto-cadastrar').disabled = !rostoDisponivel();
+    showLockState('rosto');
+  }
+  document.getElementById('btn-login-rosto').addEventListener('click', entrarComRosto);
+  document.getElementById('btn-rosto-voltar').addEventListener('click', function() { rostoTicket = null; showLockState('login'); });
+  document.getElementById('btn-rosto-cadastrar').addEventListener('click', function() {
+    var btn = this, err = document.getElementById('lock-rosto-erro');
+    if (!rostoTicket || btn.disabled) return;
+    btn.disabled = true; err.classList.add('hidden');
+    chamarAcesso({ acao: 'bio_registro_opcoes', ticket: rostoTicket }).then(function(o) {
+      var p = o.opcoes;
+      return navigator.credentials.create({ publicKey: { rp: p.rp, user: { id: b64uParaBytes(p.user.id), name: p.user.name, displayName: p.user.displayName }, challenge: b64uParaBytes(p.challenge),
+        pubKeyCredParams: p.pubKeyCredParams, timeout: p.timeout, attestation: p.attestation, authenticatorSelection: p.authenticatorSelection, excludeCredentials: credenciaisDe(p.excludeCredentials) } });
+    }).then(function(c) {
+      if (!c) throw erroComCodigo('NotAllowedError');
+      var ua = navigator.userAgent, aparelho = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Navegador';
+      return chamarAcesso({ acao: 'bio_registro', ticket: rostoTicket, credencial: credencialJson(c), aparelho: aparelho });
+    }).then(function(r) {
+      rostoTicket = null;
+      return abrirSessaoDoServidor(r, null).then(function() { showToast('Rosto cadastrado. Nos próximos acessos, toque em “Entrar com o rosto”.'); });
+    }).catch(function(e) {
+      console.warn('cadastro do rosto', e);
+      err.textContent = msgRosto(e); err.classList.remove('hidden');
+      if (e && e.codigo === 'ticket') { rostoTicket = null; setTimeout(function() { showLockState('login'); }, 2500); }
+    }).then(function() { btn.disabled = false; });
   });
 
   // ---------- cadastro de motoristas (somente no modo escritório) ----------
@@ -13772,7 +13927,7 @@
     if (r && r.then) {
       btn.disabled = true;
       r.then(function(ok) { btn.disabled = false; if (ok !== false) gerFechar(); })
-        .catch(function(err) { btn.disabled = false; console.error('salvar', err); gerErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo 15 MB).' : 'Não foi possível salvar agora. Tente novamente.'); });
+        .catch(function(err) { btn.disabled = false; console.error('salvar', err); gerErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo 15 MB).' : err && err.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : 'Não foi possível salvar agora. Tente novamente.'); });
     } else if (r !== false) gerFechar();
   });
   document.getElementById('ger-form-body').addEventListener('click', function(e) { var b = e.target.closest('[data-ger]'); if (b && ger && ger.acao) ger.acao(b.dataset.ger, b, e); });
@@ -15429,7 +15584,7 @@
   function renderPedidosSenha() {
     var sec = document.getElementById('cp-sec'), box = document.getElementById('cp-lista');
     if (!sec || !box) return;
-    var mestre = !!session && session.role === 'admin';
+    var mestre = !!session && session.role === 'admin' && !session.soInclui;
     sec.classList.toggle('hidden', !mestre);
     if (!mestre) return;
     var pend = cadastroPedidos.filter(function(x) { return x.status === 'pendente'; }).sort(function(a, b) { return String(a.criadoEm || '').localeCompare(String(b.criadoEm || '')); });
@@ -16256,7 +16411,7 @@
       inds: r.inds.map(function(x) { return { id: x.ind.id, v: rd(x.v), f: x.fonte, n: x.n, p: x.peso, nota: rd(x.nota) }; }) };
   }
   function mtPublicarResumo() {
-    if (!session || !ehEscritorio() || mode !== 'db' || !db) return;
+    if (!session || !ehEscritorio() || session.soInclui || mode !== 'db' || !db) return;
     var m = mtMesAtual(), novo = mtResumoDoc(m), chave = mtEstavel(novo), atual = mtDoc('resumo-' + m);
     if (chave === mtUltimoResumo) return;
     if (atual) { var a = Object.assign({}, atual); delete a.id; delete a.atualizadoEm; if (mtEstavel(a) === chave) { mtUltimoResumo = chave; return; } }
@@ -16516,7 +16671,7 @@
       ).then(function() { closeEquipeForm(); });
     }).catch(function(e2) {
       console.error('membro save error', e2);
-      fail('Não foi possível salvar agora. Tente novamente.');
+      fail(e2 && e2.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : 'Não foi possível salvar agora. Tente novamente.');
     });
   });
 
@@ -16677,6 +16832,14 @@
       for (var i = 0; i < 20; i++) out += c[r[i] % c.length];
       return out;
     }
+    // acesso da diretoria (só inclui): alterar ou apagar o que já existe é recusado aqui e no banco (0014)
+    var avisoSoIncluiEm = 0;
+    function recusaSoInclui() {
+      if (Date.now() - avisoSoIncluiEm > 4000) { avisoSoIncluiEm = Date.now(); try { showToast('Seu acesso só inclui: não altera nem apaga.'); } catch (e) {} }
+      var e2 = new Error('so_inclui'); e2.codigo = 'so_inclui'; return Promise.reject(e2);
+    }
+    function soInclui() { return !!(session && session.soInclui); }
+    function jaExiste(col, id) { return !!(cache[col] && cache[col][id] !== undefined); }
     function docRef(col, id) {
       id = id || novoId();
       return {
@@ -16688,15 +16851,18 @@
           });
         },
         set: function(dados, opts) {
+          if (soInclui() && jaExiste(col, id)) return recusaSoInclui();
           var sp = separar(dados);
           return rpc('doc_gravar', { p_colecao: col, p_id: id, p_dados: sp.dados, p_mesclar: !!(opts && opts.merge), p_uniao: sp.uniao })
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },
         update: function(patch) {
+          if (soInclui()) return recusaSoInclui();
           return rpc('doc_atualizar', { p_colecao: col, p_id: id, p_dados: separar(patch).dados })
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },
         delete: function() {
+          if (soInclui()) return recusaSoInclui();
           return sb.from('docs').delete().eq('colecao', col).eq('id', id).then(function(r) {
             if (r.error) throw r.error;
             aplicar(col, id, null);
@@ -16745,6 +16911,7 @@
           delete: function(ref) { ops.push({ op: 'delete', colecao: ref._col, id: ref.id }); },
           commit: function() {
             if (!ops.length) return Promise.resolve();
+            if (soInclui() && ops.some(function(o) { return o.op !== 'set' || jaExiste(o.colecao, o.id); })) return recusaSoInclui();
             return rpc('docs_lote', { p_ops: ops }).then(function(res) {
               (res || []).forEach(function(x) { aplicar(x.colecao, x.id, x.data); });
             });
@@ -16757,7 +16924,7 @@
   function identidadeDoUsuario(u) {
     var m = (u && u.app_metadata) || {};
     var mods = Array.isArray(m.modulos) ? m.modulos.slice(0, 20) : [];
-    if (m.papel === 'mestre') return { role: 'admin', nome: m.nome || '' };
+    if (m.papel === 'mestre') return { role: 'admin', nome: m.nome || '', soInclui: m.so_inclui === true, biometria: m.biometria === true };
     if (m.papel === 'equipe') return { role: 'equipe', nome: m.nome || '', modulos: mods };
     if (m.papel === 'motorista' && m.nome) return { role: 'motorista', nome: m.nome };
     if (m.papel === 'setor') return { role: 'setor', nome: m.nome || '', modulos: mods };
@@ -16835,6 +17002,11 @@
       return sbCliente.auth.getSession().then(function(r) {
         var sess = r && r.data && r.data.session;
         var ident = sess ? identidadeDoUsuario(sess.user) : null;
+        // acesso que exige o rosto: ao abrir o app de novo, entra só com o rosto (no mesmo uso, a navegação continua)
+        var rostoOk = ''; try { rostoOk = sessionStorage.getItem(ROSTO_OK) || ''; } catch (e) {}
+        if (ident && sess.user && sess.user.app_metadata && sess.user.app_metadata.biometria === true && rostoOk !== sess.user.id) {
+          return sbCliente.auth.signOut({ scope: 'local' }).catch(function() {}).then(function() { showLockState('login'); });
+        }
         if (ident) comecarSessao(ident, null, sess.access_token);
         else showLockState('login');
       }).catch(function(e) { console.error('sessão', e); showLockState('login'); });

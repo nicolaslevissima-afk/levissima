@@ -78,6 +78,11 @@
       var meta = claims.app_metadata || (s.user && s.user.app_metadata) || {};
       var nivel = nivelNoModulo(meta, MODULO);
       ident = { uid: claims.sub || (s.user && s.user.id) || '', nome: meta.nome || '', papel: meta.papel || '', nivel: nivel };
+      // acesso que exige o rosto: só entra no módulo quem passou pelo rosto neste uso do app (pedido de 18/10/2026)
+      if (meta.biometria === true) {
+        var rostoOk = ''; try { rostoOk = sessionStorage.getItem('levissima-rosto-ok') || ''; } catch (e) {}
+        if (rostoOk !== ident.uid) { irParaLogin(); return; }
+      }
       montarBarra();
       if (!nivel) {
         mostrarAviso('A sua senha não abre o módulo ' + NOME_MODULO + '. Peça à diretoria para liberar este módulo para você.', true);

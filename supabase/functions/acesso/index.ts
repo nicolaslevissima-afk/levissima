@@ -10,15 +10,29 @@
 //   { acao: 'ajustar', ref, nome?, modulos }                       -> { ok }             (só a senha mestre; sem trocar a senha)
 //   { acao: 'remover', ref }                                       -> { ok }             (só a senha mestre)
 //   { acao: 'lista' }                                              -> { senhas: [...] }  (só a senha mestre)
+//   { acao: 'bio_exigir', ref, exige }                             -> { ok }             (só a senha mestre: exige o rosto)
+//   { acao: 'bio_apagar', ref }                                    -> { ok }             (só a senha mestre: apaga os rostos cadastrados)
+// Entrar com o rosto (passkey do aparelho; verificação em webauthn.js):
+//   'entrar' com a senha de quem exige o rosto: sem rosto cadastrado -> { cadastrarRosto, ticket, nome } (ainda sem login);
+//                                               com rosto cadastrado -> erro 'biometria' (a senha sozinha não entra)
+//   { acao: 'bio_registro_opcoes', ticket }                        -> { opcoes }         (cadastro do rosto no 1º acesso)
+//   { acao: 'bio_registro', ticket, credencial, aparelho }         -> login              (rosto cadastrado: entra)
+//   { acao: 'bio_entrar_opcoes' }                                  -> { opcoes }
+//   { acao: 'bio_entrar', credencial }                             -> login
+// 'diretoria:<id>' (diretoria: vê tudo como a senha mestre, mas só inclui; não altera nem apaga — regras em 0014).
 // Senhas: 'mestre' (tudo), 'equipe' (escritório de cargas + módulos marcados), 'motorista:<id>' (app do motorista)
 // 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões)
 // e 'representante:<id>' (Força de vendas: lança as cargas dos clientes dele; regras em 0005_forca_de_vendas.sql).
 // Cada módulo pode ser "usado" ('manutencao') ou "gerenciado" ('manutencao:gerir').
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { verificarRegistro, verificarEntrada, desafioNovo, desafioDaCredencial, b64urlEnc } from './webauthn.js';
 
 const URL_SB = Deno.env.get('SUPABASE_URL') ?? '';
 const SERVICO = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
 const DOMINIO = 'acesso.levissima.app.br'; // só identifica os logins internos; nenhum e-mail é enviado
+// passkeys valem para o site do app (o iPhone e o computador usam o app pelo navegador)
+const RP_ID = 'nicolaslevissima-afk.github.io';
+const ORIGENS = ['https://nicolaslevissima-afk.github.io'];
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -33,6 +47,7 @@ function erro(codigo: string, status: number) { return resposta({ erro: codigo }
 const admin = createClient(URL_SB, SERVICO, { auth: { persistSession: false, autoRefreshToken: false } });
 
 type Ident = { ref: string; papel: string; nome: string; usuario: string | null; modulos?: string[] };
+type Quem = { papel: string; ref: string; soInclui: boolean };
 
 const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
 
@@ -42,6 +57,7 @@ function papelDaRef(ref: string): string | null {
   if (/^motorista:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'motorista';
   if (/^setor:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'setor';
   if (/^representante:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'representante';
+  if (/^diretoria:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'diretoria';
   return null;
 }
 
@@ -57,9 +73,16 @@ function limparModulos(v: unknown): string[] {
   return MODULOS.filter((m) => nivel.has(m)).map((m) => nivel.get(m) as string);
 }
 
-async function modulosDe(ref: string): Promise<string[]> {
-  const { data } = await admin.from('acesso_senhas').select('modulos').eq('ref', ref).maybeSingle();
-  return limparModulos(data && (data as { modulos?: unknown }).modulos);
+async function linhaDe(ref: string): Promise<{ modulos: string[]; biometria: boolean; papel: string; nome: string; usuario: string | null } | null> {
+  const { data } = await admin.from('acesso_senhas').select('modulos, biometria, papel, nome, usuario').eq('ref', ref).maybeSingle();
+  if (!data) return null;
+  const l = data as { modulos?: unknown; biometria?: boolean; papel: string; nome: string; usuario: string | null };
+  return { modulos: limparModulos(l.modulos), biometria: !!l.biometria, papel: l.papel, nome: l.nome || '', usuario: l.usuario || null };
+}
+// o que vai no token: a diretoria entra com papel 'mestre' (vê tudo) e so_inclui (o banco não deixa alterar nem apagar)
+function metaDe(id: { ref: string; papel: string; nome: string }, modulos: string[], biometria: boolean) {
+  const dir = id.papel === 'diretoria';
+  return { papel: dir ? 'mestre' : id.papel, nome: id.nome, ref: id.ref, modulos, so_inclui: dir, biometria };
 }
 function emailDe(ref: string) { return ref.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '@' + DOMINIO; }
 
@@ -86,8 +109,9 @@ async function acharUsuarioPorEmail(email: string): Promise<string | null> {
 async function sessaoPara(id: Ident) {
   const email = emailDe(id.ref);
   const senha = await senhaInterna(id.ref);
-  const modulos = id.papel === 'equipe' || id.papel === 'setor' ? await modulosDe(id.ref) : [];
-  const meta = { papel: id.papel, nome: id.nome, ref: id.ref, modulos };
+  const linha = await linhaDe(id.ref);
+  const modulos = (id.papel === 'equipe' || id.papel === 'setor') && linha ? linha.modulos : [];
+  const meta = metaDe(id, modulos, !!(linha && linha.biometria));
   let uid = id.usuario;
   if (uid) {
     const { error } = await admin.auth.admin.updateUserById(uid, { app_metadata: meta });
@@ -113,7 +137,7 @@ async function sessaoPara(id: Ident) {
   }
   const { data, error } = r;
   if (error || !data.session) throw error || new Error('sem sessão');
-  return { access_token: data.session.access_token, refresh_token: data.session.refresh_token, papel: id.papel, nome: id.nome, modulos };
+  return { access_token: data.session.access_token, refresh_token: data.session.refresh_token, papel: meta.papel, nome: id.nome, modulos, soInclui: meta.so_inclui, biometria: meta.biometria };
 }
 
 // Grava os módulos (e o nome) de uma senha e já atualiza o login ligado a ela: vale no próximo acesso
@@ -121,12 +145,12 @@ async function sessaoPara(id: Ident) {
 async function gravarModulos(ref: string, modulos: string[], nome: string | null): Promise<boolean> {
   const mud: Record<string, unknown> = { modulos };
   if (nome !== null) mud.nome = nome;
-  const { data, error } = await admin.from('acesso_senhas').update(mud).eq('ref', ref).select('papel, nome, usuario');
+  const { data, error } = await admin.from('acesso_senhas').update(mud).eq('ref', ref).select('papel, nome, usuario, biometria');
   if (error) throw error;
   const linha = Array.isArray(data) ? data[0] : null;
   if (!linha) return false;
   if (linha.usuario) {
-    await admin.auth.admin.updateUserById(String(linha.usuario), { app_metadata: { papel: linha.papel, nome: linha.nome, ref, modulos } });
+    await admin.auth.admin.updateUserById(String(linha.usuario), { app_metadata: metaDe({ ref, papel: linha.papel, nome: linha.nome }, modulos, !!linha.biometria) });
   }
   return true;
 }
@@ -141,13 +165,31 @@ async function conferir(senha: string, origem: string): Promise<Ident | null | '
   return linha ? { ref: linha.ref, papel: linha.papel, nome: linha.nome || '', usuario: linha.usuario || null } : null;
 }
 
-async function quemChamou(req: Request): Promise<{ papel: string; ref: string } | null> {
+async function quemChamou(req: Request): Promise<Quem | null> {
   const token = (req.headers.get('Authorization') || '').replace(/^Bearer\s+/i, '');
   if (!token || token.split('.').length !== 3) return null;
   const { data, error } = await admin.auth.getUser(token);
   if (error || !data.user) return null;
-  const m = (data.user.app_metadata || {}) as Record<string, string>;
-  return m.papel ? { papel: m.papel, ref: m.ref || '' } : null;
+  const m = (data.user.app_metadata || {}) as Record<string, unknown>;
+  return m.papel ? { papel: String(m.papel), ref: String(m.ref || ''), soInclui: m.so_inclui === true } : null;
+}
+
+// ---------- rosto (passkeys) ----------
+async function rostosDe(ref: string): Promise<{ cred_id: string; transportes: string[] }[]> {
+  const { data } = await admin.from('acesso_biometria').select('cred_id, transportes').eq('ref', ref);
+  return (data || []) as { cred_id: string; transportes: string[] }[];
+}
+async function usuarioDoRosto(ref: string): Promise<string> {
+  const h = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('levissima-rosto:' + ref)));
+  return b64urlEnc(h.slice(0, 16));
+}
+function emMinutos(n: number) { return new Date(Date.now() + n * 60000).toISOString(); }
+function limparDesafios() { admin.from('acesso_desafios').delete().lt('expira', new Date().toISOString()).then(() => {}, () => {}); }
+async function ticketValido(ticket: string) {
+  if (!/^[A-Za-z0-9_-]{30,64}$/.test(ticket)) return null;
+  const { data } = await admin.from('acesso_desafios').select('id, ref, desafio, expira').eq('ticket', ticket).eq('tipo', 'cadastro').maybeSingle();
+  const t = data as { id: number; ref: string; desafio: string | null; expira: string } | null;
+  return t && new Date(t.expira).getTime() > Date.now() ? t : null;
 }
 
 Deno.serve(async (req) => {
@@ -166,7 +208,82 @@ Deno.serve(async (req) => {
       const id = await conferir(senha, origem);
       if (id === 'bloqueado') return erro('tentativas', 429);
       if (!id) return erro('senha', 401);
+      const linha = await linhaDe(id.ref);
+      if (linha && linha.biometria) {
+        // exige o rosto: com rosto cadastrado, a senha sozinha não entra; sem rosto, cadastra antes de entrar
+        if ((await rostosDe(id.ref)).length) return erro('biometria', 403);
+        limparDesafios();
+        const ticket = desafioNovo();
+        const { error } = await admin.from('acesso_desafios').insert({ tipo: 'cadastro', ref: id.ref, ticket, expira: emMinutos(10) });
+        if (error) throw error;
+        return resposta({ cadastrarRosto: true, ticket, nome: id.nome });
+      }
       return resposta(await sessaoPara(id));
+    }
+
+    if (acao === 'bio_registro_opcoes') {
+      const t = await ticketValido(String(corpo.ticket || ''));
+      if (!t) return erro('ticket', 401);
+      const linha = await linhaDe(t.ref);
+      if (!linha) return erro('ticket', 401);
+      const desafio = desafioNovo();
+      const { error } = await admin.from('acesso_desafios').update({ desafio }).eq('id', t.id);
+      if (error) throw error;
+      const ja = await rostosDe(t.ref);
+      return resposta({ opcoes: {
+        rp: { id: RP_ID, name: 'LEVÍSSIMA' },
+        user: { id: await usuarioDoRosto(t.ref), name: (linha.nome || 'Acesso') + ' · LEVÍSSIMA', displayName: linha.nome || 'Acesso LEVÍSSIMA' },
+        challenge: desafio,
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }, { type: 'public-key', alg: -8 }],
+        timeout: 120000, attestation: 'none',
+        authenticatorSelection: { residentKey: 'required', requireResidentKey: true, userVerification: 'required' },
+        excludeCredentials: ja.map((c) => ({ type: 'public-key', id: c.cred_id, transports: c.transportes || [] })),
+      } });
+    }
+
+    if (acao === 'bio_registro') {
+      const t = await ticketValido(String(corpo.ticket || ''));
+      if (!t || !t.desafio) return erro('ticket', 401);
+      let novo;
+      try { novo = await verificarRegistro({ credencial: corpo.credencial, desafio: t.desafio, origens: ORIGENS, rpId: RP_ID }); }
+      catch (e) { console.warn('rosto: cadastro recusado', (e as { codigo?: string }).codigo || e); return erro('rosto', 400); }
+      const { error } = await admin.from('acesso_biometria').insert({ cred_id: novo.credId, ref: t.ref, chave: novo.chave, alg: novo.alg, contador: novo.contador,
+        transportes: novo.transportes, aparelho: String(corpo.aparelho || '').slice(0, 80) });
+      if (error) throw error;
+      await admin.from('acesso_desafios').delete().eq('id', t.id);
+      const linha = await linhaDe(t.ref);
+      if (!linha) return erro('ticket', 401);
+      return resposta(await sessaoPara({ ref: t.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario }));
+    }
+
+    if (acao === 'bio_entrar_opcoes') {
+      limparDesafios();
+      const { count } = await admin.from('acesso_desafios').select('id', { count: 'exact', head: true }).eq('tipo', 'entrar').gt('expira', new Date().toISOString());
+      if ((count || 0) > 500) return erro('tentativas', 429);
+      const desafio = desafioNovo();
+      const { error } = await admin.from('acesso_desafios').insert({ tipo: 'entrar', desafio, expira: emMinutos(5) });
+      if (error) throw error;
+      return resposta({ opcoes: { challenge: desafio, rpId: RP_ID, timeout: 120000, userVerification: 'required', allowCredentials: [] } });
+    }
+
+    if (acao === 'bio_entrar') {
+      const credencial = corpo.credencial as { id?: string; rawId?: string } | undefined;
+      const desafio = credencial ? desafioDaCredencial(credencial) : '';
+      if (!desafio) return erro('rosto', 401);
+      // o desafio vale uma vez só: apaga antes de conferir
+      const { data: usados } = await admin.from('acesso_desafios').delete().eq('desafio', desafio).eq('tipo', 'entrar').gt('expira', new Date().toISOString()).select('id');
+      if (!usados || !usados.length) return erro('rosto', 401);
+      const credId = String((credencial && (credencial.rawId || credencial.id)) || '');
+      const { data: rc } = await admin.from('acesso_biometria').select('cred_id, ref, chave, contador').eq('cred_id', credId).maybeSingle();
+      const cred = rc as { cred_id: string; ref: string; chave: string; contador: number } | null;
+      if (!cred) return erro('rosto', 401);
+      let r;
+      try { r = await verificarEntrada({ credencial, desafio, origens: ORIGENS, rpId: RP_ID, chave: cred.chave, contador: cred.contador }); }
+      catch (e) { console.warn('rosto: entrada recusada', (e as { codigo?: string }).codigo || e); return erro('rosto', 401); }
+      await admin.from('acesso_biometria').update({ contador: r.contador, usado_em: new Date().toISOString() }).eq('cred_id', cred.cred_id);
+      const linha = await linhaDe(cred.ref);
+      if (!linha) return erro('rosto', 401);
+      return resposta(await sessaoPara({ ref: cred.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario }));
     }
 
     const quem = await quemChamou(req);
@@ -178,12 +295,16 @@ Deno.serve(async (req) => {
       return resposta({ ok: !!id && id.ref === quem.ref, papel: id && id !== 'bloqueado' && id.ref === quem.ref ? id.papel : null });
     }
 
-    if (quem.papel !== 'mestre') return erro('permissao', 403);
+    if (quem.papel !== 'mestre' || quem.soInclui) return erro('permissao', 403); // a diretoria (só inclui) não mexe em senhas
 
     if (acao === 'lista') {
-      const { data, error } = await admin.from('acesso_senhas').select('ref, papel, nome, atualizado_em, modulos').order('ref');
+      const { data, error } = await admin.from('acesso_senhas').select('ref, papel, nome, atualizado_em, modulos, biometria').order('ref');
       if (error) throw error;
-      return resposta({ senhas: (data || []).map((l) => ({ ...l, modulos: limparModulos((l as { modulos?: unknown }).modulos) })) });
+      const { data: rs } = await admin.from('acesso_biometria').select('ref, criado_em, usado_em');
+      const porRef: Record<string, { n: number; usadoEm: string | null }> = {};
+      ((rs || []) as { ref: string; usado_em: string | null }[]).forEach((x) => { const p = porRef[x.ref] || (porRef[x.ref] = { n: 0, usadoEm: null }); p.n++; if (x.usado_em && (!p.usadoEm || x.usado_em > p.usadoEm)) p.usadoEm = x.usado_em; });
+      return resposta({ senhas: (data || []).map((l) => ({ ...l, modulos: limparModulos((l as { modulos?: unknown }).modulos),
+        rostos: (porRef[(l as { ref: string }).ref] || { n: 0 }).n, rostoUsadoEm: (porRef[(l as { ref: string }).ref] || { usadoEm: null }).usadoEm })) });
     }
 
     const ref = String(corpo.ref || '');
@@ -193,7 +314,7 @@ Deno.serve(async (req) => {
     if (acao === 'definir') {
       const senha = String(corpo.senha || '');
       const nome = String(corpo.nome || (papel === 'mestre' ? 'Diretoria' : papel === 'equipe' ? 'Equipe do escritório' : '')).slice(0, 80);
-      if ((papel === 'motorista' || papel === 'setor' || papel === 'representante') && !nome) return erro('dados', 400);
+      if ((papel === 'motorista' || papel === 'setor' || papel === 'representante' || papel === 'diretoria') && !nome) return erro('dados', 400);
       const modulos = limparModulos(corpo.modulos);
       if (papel === 'setor' && !modulos.length) return erro('modulos', 400);
       if (papel === 'mestre') {
@@ -211,6 +332,36 @@ Deno.serve(async (req) => {
       if (papel === 'equipe' || papel === 'setor') {
         if (papel === 'setor' || corpo.modulos !== undefined) await gravarModulos(ref, modulos, null);
       }
+      if (corpo.biometria !== undefined && ref !== 'mestre') {
+        const { error: e2 } = await admin.from('acesso_senhas').update({ biometria: corpo.biometria === true }).eq('ref', ref);
+        if (e2) throw e2;
+      }
+      return resposta({ ok: true });
+    }
+
+    if (acao === 'bio_exigir') {
+      if (ref === 'mestre') return erro('dados', 400);
+      const { data, error } = await admin.from('acesso_senhas').update({ biometria: corpo.exige === true }).eq('ref', ref).select('ref');
+      if (error) throw error;
+      if (!data || !data.length) return erro('nao_encontrado', 404);
+      return resposta({ ok: true });
+    }
+
+    if (acao === 'bio_apagar') {
+      const { error } = await admin.from('acesso_biometria').delete().eq('ref', ref);
+      if (error) throw error;
+      await admin.from('acesso_desafios').delete().eq('ref', ref);
+      return resposta({ ok: true });
+    }
+
+    if (acao === 'ajustar' && papel === 'diretoria') {
+      const nome = String(corpo.nome || '').slice(0, 80);
+      if (!nome) return erro('dados', 400);
+      const mud: Record<string, unknown> = { nome };
+      if (corpo.biometria !== undefined) mud.biometria = corpo.biometria === true;
+      const { data, error } = await admin.from('acesso_senhas').update(mud).eq('ref', ref).select('ref');
+      if (error) throw error;
+      if (!data || !data.length) return erro('nao_encontrado', 404);
       return resposta({ ok: true });
     }
 
