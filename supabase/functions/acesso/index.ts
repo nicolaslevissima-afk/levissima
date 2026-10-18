@@ -20,6 +20,8 @@
 //   { acao: 'bio_entrar_opcoes' }                                  -> { opcoes }
 //   { acao: 'bio_entrar', credencial }                             -> login
 // 'diretoria:<id>' (diretoria: vê tudo como a senha mestre, mas só inclui; não altera nem apaga — regras em 0014).
+// 'escritorio:<id>' (pessoa do escritório com a própria senha: papel 'equipe', com o nome dela; a permissão 'canhotos'
+// abre o controle de canhotos e as fotos do caminhão — regras em 0015).
 // Senhas: 'mestre' (tudo), 'equipe' (escritório de cargas + módulos marcados), 'motorista:<id>' (app do motorista)
 // 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões)
 // e 'representante:<id>' (Força de vendas: lança as cargas dos clientes dele; regras em 0005_forca_de_vendas.sql).
@@ -49,7 +51,8 @@ const admin = createClient(URL_SB, SERVICO, { auth: { persistSession: false, aut
 type Ident = { ref: string; papel: string; nome: string; usuario: string | null; modulos?: string[] };
 type Quem = { papel: string; ref: string; soInclui: boolean };
 
-const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
+// 'canhotos' não é módulo da fábrica: é a permissão de ver os canhotos e as fotos do caminhão (acessos individuais do escritório)
+const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes', 'canhotos'];
 
 function papelDaRef(ref: string): string | null {
   if (ref === 'mestre') return 'mestre';
@@ -58,6 +61,8 @@ function papelDaRef(ref: string): string | null {
   if (/^setor:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'setor';
   if (/^representante:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'representante';
   if (/^diretoria:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'diretoria';
+  // acesso individual de uma pessoa do escritório: vê o mesmo que a senha da equipe, com o próprio nome e permissões
+  if (/^escritorio:[A-Za-z0-9_-]{1,64}$/.test(ref)) return 'equipe';
   return null;
 }
 
@@ -110,7 +115,7 @@ async function sessaoPara(id: Ident) {
   const email = emailDe(id.ref);
   const senha = await senhaInterna(id.ref);
   const linha = await linhaDe(id.ref);
-  const modulos = (id.papel === 'equipe' || id.papel === 'setor') && linha ? linha.modulos : [];
+  const modulos = await modulosDoToken(id.ref, (id.papel === 'equipe' || id.papel === 'setor') && linha ? linha.modulos : []);
   const meta = metaDe(id, modulos, !!(linha && linha.biometria));
   let uid = id.usuario;
   if (uid) {
@@ -142,6 +147,13 @@ async function sessaoPara(id: Ident) {
 
 // Grava os módulos (e o nome) de uma senha e já atualiza o login ligado a ela: vale no próximo acesso
 // e, para quem está com o app aberto, na próxima renovação do login (até 1 hora).
+// pessoa do escritório (escritorio:<id>): os módulos da fábrica liberados para a senha da equipe, mais as permissões dela
+async function modulosDoToken(ref: string, modulos: string[]): Promise<string[]> {
+  if (!ref.startsWith('escritorio:')) return modulos;
+  const equipe = await linhaDe('equipe');
+  return limparModulos([...(equipe ? equipe.modulos.filter((m) => !m.startsWith('canhotos')) : []), ...modulos]);
+}
+
 async function gravarModulos(ref: string, modulos: string[], nome: string | null): Promise<boolean> {
   const mud: Record<string, unknown> = { modulos };
   if (nome !== null) mud.nome = nome;
@@ -150,7 +162,7 @@ async function gravarModulos(ref: string, modulos: string[], nome: string | null
   const linha = Array.isArray(data) ? data[0] : null;
   if (!linha) return false;
   if (linha.usuario) {
-    await admin.auth.admin.updateUserById(String(linha.usuario), { app_metadata: metaDe({ ref, papel: linha.papel, nome: linha.nome }, modulos, !!linha.biometria) });
+    await admin.auth.admin.updateUserById(String(linha.usuario), { app_metadata: metaDe({ ref, papel: linha.papel, nome: linha.nome }, await modulosDoToken(ref, modulos), !!linha.biometria) });
   }
   return true;
 }
@@ -314,7 +326,8 @@ Deno.serve(async (req) => {
     if (acao === 'definir') {
       const senha = String(corpo.senha || '');
       const nome = String(corpo.nome || (papel === 'mestre' ? 'Diretoria' : papel === 'equipe' ? 'Equipe do escritório' : '')).slice(0, 80);
-      if ((papel === 'motorista' || papel === 'setor' || papel === 'representante' || papel === 'diretoria') && !nome) return erro('dados', 400);
+      const individual = ref.startsWith('escritorio:');
+      if ((papel === 'motorista' || papel === 'setor' || papel === 'representante' || papel === 'diretoria' || individual) && !String(corpo.nome || '').trim()) return erro('dados', 400);
       const modulos = limparModulos(corpo.modulos);
       if (papel === 'setor' && !modulos.length) return erro('modulos', 400);
       if (papel === 'mestre') {
@@ -330,7 +343,7 @@ Deno.serve(async (req) => {
         throw error;
       }
       if (papel === 'equipe' || papel === 'setor') {
-        if (papel === 'setor' || corpo.modulos !== undefined) await gravarModulos(ref, modulos, null);
+        if (papel === 'setor' || individual || corpo.modulos !== undefined) await gravarModulos(ref, modulos, null);
       }
       if (corpo.biometria !== undefined && ref !== 'mestre') {
         const { error: e2 } = await admin.from('acesso_senhas').update({ biometria: corpo.biometria === true }).eq('ref', ref);
@@ -369,8 +382,9 @@ Deno.serve(async (req) => {
       if (papel !== 'equipe' && papel !== 'setor') return erro('dados', 400);
       const modulos = limparModulos(corpo.modulos);
       if (papel === 'setor' && !modulos.length) return erro('modulos', 400);
-      const nome = papel === 'setor' ? String(corpo.nome || '').slice(0, 80) : null;
-      if (papel === 'setor' && !nome) return erro('dados', 400);
+      const comNome = papel === 'setor' || ref.startsWith('escritorio:');
+      const nome = comNome ? String(corpo.nome || '').slice(0, 80) : null;
+      if (comNome && !nome) return erro('dados', 400);
       const ok = await gravarModulos(ref, modulos, nome);
       if (!ok) return erro('nao_encontrado', 404);
       return resposta({ ok: true });

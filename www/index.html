@@ -1132,6 +1132,63 @@
   .rep-resumo { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0; margin: 4px 0 18px; }
   .fv-banner { display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid var(--laranja); border-left: 4px solid var(--laranja); background: var(--card); border-radius: 8px; padding: 10px 12px; margin: 0 0 14px; font-size: 0.875rem; }
   .fv-tag { font-size: 0.75rem; font-weight: 700; color: var(--teal); }
+
+  /* ---- Canhotos e fotos do caminhão (18/10/2026) ---- */
+  .foto-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; margin: 6px 0 12px; }
+  .foto-tile { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 128px; margin: 0 !important;
+    border: 2px dashed var(--line); border-radius: 10px; background: var(--card); color: var(--muted); text-align: center; padding: 8px; cursor: pointer; font: inherit; overflow: hidden; }
+  button.foto-tile { width: 100%; }
+  .foto-tile input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .foto-tile:focus-within, button.foto-tile:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .foto-ico { font-size: 1.75rem; line-height: 1; }
+  .foto-tile-t { font-size: 0.8125rem; font-weight: 600; color: var(--ink); }
+  .foto-tile small { font-size: 0.6875rem; }
+  .foto-tile.cheia { border-style: solid; border-color: var(--verde); padding: 0; cursor: default; justify-content: flex-end; }
+  .foto-tile.cheia img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .foto-tile.cheia .foto-tile-t { position: relative; width: 100%; background: rgba(16, 32, 12, 0.78); color: #FFFFFF; padding: 4px 6px; font-size: 0.75rem; }
+  .foto-tirar { position: absolute; top: 6px; right: 6px; border: 0; border-radius: 999px; background: rgba(0, 0, 0, 0.62); color: #FFFFFF; font: 600 0.6875rem var(--font-display); padding: 4px 9px; cursor: pointer; }
+  .foto-tile.feita { border-style: solid; border-color: var(--verde); cursor: default; }
+  .foto-tile.feita .foto-ico { color: var(--verde-texto); }
+  .lona-bloco { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 2px; margin: 8px 0 10px; background: var(--paper); }
+  .lona-t { margin: 0 0 2px; font-size: 0.875rem; }
+  .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+  .cn-linha { margin-top: 6px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .cn-linha .chip-est { margin-left: 0; }
+  .chip-est.cn-viagem { background: var(--st-delivered-bg); color: var(--st-delivered-fg); }
+  .frete-item.est-viagem { border-left-color: var(--st-delivered-bg); }
+  .frete-sub.alerta { color: var(--danger); font-weight: 600; }
+  .cn-item { cursor: pointer; }
+  .cn-item:hover { border-color: var(--teal); }
+  .cn-thumbs { display: flex; gap: 6px; margin-top: 8px; }
+  .cn-thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); background: var(--paper); cursor: zoom-in; }
+  .cn-filtros { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 10px; }
+  .cn-filtro { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: 600 0.8125rem var(--font-display); cursor: pointer; }
+  .cn-filtro[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .cn-filtro .n { font-family: var(--font-mono); margin-left: 4px; opacity: 0.8; }
+  .cn-ctrl { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .cn-ctrl label { margin: 0; font-size: 0.8125rem; color: var(--muted); }
+  .cn-ctrl input, .cn-ctrl select { margin-top: 5px; }
+  @media (max-width: 640px) { .cn-ctrl { grid-template-columns: 1fr 1fr; } .cn-ctrl label:first-child { grid-column: 1 / -1; } }
+  .cn-resumo { margin-bottom: 14px; }
+  .cn-resumo .stat-value.alerta { color: var(--danger); }
+  .cn-fotos-grandes { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; margin: 10px 0 12px; }
+  .cn-fotos-grandes img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); cursor: zoom-in; }
+  .cn-acoes { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 12px 0; }
+  .cn-caixa { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 4px; margin: 0 0 12px; }
+  .cn-cam-t { font-size: 0.8125rem; font-weight: 600; margin: 10px 0 6px; }
+  .cn-cam-grade { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cn-cam { margin: 0; }
+  .cn-cam img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); background: var(--paper); cursor: zoom-in; display: block; }
+  .cn-cam.vazio > span { display: flex; align-items: center; justify-content: center; aspect-ratio: 4 / 3; border: 2px dashed var(--line); border-radius: 8px; color: var(--muted); font-size: 0.8125rem; }
+  .cn-cam figcaption { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+  .cn-cam figcaption small { display: block; }
+  .cn-foto-erro { opacity: 0.4; }
+  .cn-hist { list-style: none; padding: 0; margin: 4px 0 0; font-size: 0.75rem; color: var(--muted); }
+  .cn-hist li { padding: 3px 0; border-bottom: 1px solid var(--line); }
+  .foto-zoom { position: fixed; inset: 0; z-index: 80; background: rgba(0, 0, 0, 0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+  .foto-zoom img { max-width: 100%; max-height: calc(100vh - 90px); object-fit: contain; }
+  .foto-zoom-acoes { display: flex; gap: 12px; margin-top: 12px; }
+  .foto-zoom-acoes .btn { min-width: 120px; }
 </style>
 </head>
 <body>
@@ -1194,6 +1251,7 @@
       <button type="button" class="seg-btn" data-tab="qualidade"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="tab-txt">Qualidade</span></button>
       <button type="button" class="seg-btn" data-tab="metas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span class="tab-txt">Metas</span></button>
       <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
+      <button type="button" class="seg-btn" data-tab="canhotos"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 11.5h6"/><path d="M9.5 16.5l1.8 1.8 3.7-3.7"/></svg></span><span class="tab-txt">Canhotos</span></button>
       <button type="button" class="seg-btn" data-tab="cadastros"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="tab-txt">Cadastros</span></button>
       <button type="button" class="seg-btn" data-tab="rh"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><span class="tab-txt">RH</span></button>
       <button type="button" class="seg-btn" data-tab="fretes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15 9.2c-.6-.8-1.7-1.2-3-1.2-1.7 0-3 .8-3 2s1.3 1.7 3 2 3 .8 3 2-1.3 2-3 2c-1.3 0-2.4-.4-3-1.2M12 6v2M12 16v2"/></svg></span><span class="tab-txt">Fretes</span></button>
@@ -1434,6 +1492,9 @@
   <div class="tab-panel hidden" id="tab-compras">
     <div id="oc-conteudo"></div>
   </div>
+  <div class="tab-panel hidden" id="tab-canhotos">
+    <div id="cn-conteudo"></div>
+  </div>
   <div class="tab-panel hidden" id="tab-fretes">
     <p class="tagline">Fretes dos motoristas: quanto falta pagar a cada um e a tabela de valores por destino. Só a senha mestre vê esta aba.</p>
     <section class="drivers-admin" id="fretes-resumo-admin">
@@ -1592,6 +1653,9 @@
     <div id="rep-andamento"></div>
     <div class="section-head" style="margin-top:22px"><h2 class="section-title">Carregados</h2></div>
     <div id="rep-carregados"></div>
+    <div class="section-head" style="margin-top:22px"><h2 class="section-title">Canhotos dos seus clientes</h2><span class="count-chip" id="rep-cn-n"></span></div>
+    <p class="hint">Foto do canhoto assinado de cada entrega e as fotos do caminhão. Toque para ver.</p>
+    <div id="rep-canhotos"></div>
   </div>
 </div>
 <button class="fab hidden" id="btn-rep-novo">+ Novo pedido</button>
@@ -1662,6 +1726,18 @@
           <textarea id="f-obs" rows="2"></textarea>
         </label>
 
+        <div class="group hidden" id="sec-canhoto">
+          <p class="group-title">Canhoto da nota fiscal <span class="req">*</span></p>
+          <p class="hint">Fotografe o canhoto assinado e datado pelo cliente, inteiro e legível. A foto vai para o controle de canhotos: escritório, diretoria e o representante do cliente.</p>
+          <div class="foto-grade" id="canhoto-fotos"></div>
+          <label class="check-row"><input type="checkbox" id="f-canhoto-sem" /> Não deu para fotografar o canhoto agora</label>
+          <div class="hidden" id="canhoto-sem-box">
+            <label>Motivo <span class="req">*</span><select id="f-canhoto-motivo"></select></label>
+            <label class="hidden" id="canhoto-outro-label">Qual o motivo? <span class="req">*</span><input type="text" id="f-canhoto-outro" maxlength="120" autocomplete="off" /></label>
+            <p class="field-hint">O canhoto fica pendente no controle até alguém enviar a foto (o motorista também pode enviar depois, em “Concluídas”).</p>
+          </div>
+        </div>
+
         <div class="sig-wrap" id="sig-section">
           <p class="sig-section-title">Confirmação</p>
           <div id="sig-blocks">
@@ -1699,6 +1775,15 @@
     </form>
   </div>
 </div>
+
+<div class="foto-zoom hidden" id="foto-zoom" role="dialog" aria-modal="true" aria-label="Foto ampliada">
+  <img id="foto-zoom-img" alt="Foto ampliada" />
+  <div class="foto-zoom-acoes">
+    <button type="button" class="btn btn-secondary" id="btn-foto-zoom-baixar">Baixar</button>
+    <button type="button" class="btn btn-primary" id="btn-foto-zoom-fechar">Fechar</button>
+  </div>
+</div>
+<input type="file" id="lona-input" accept="image/*" capture="environment" aria-hidden="true" tabindex="-1" style="position:fixed;left:-200px;top:0;width:1px;height:1px;opacity:0" />
 
 <div class="sheet-overlay hidden" id="doc-overlay">
   <div class="sheet">
@@ -2204,6 +2289,12 @@
         <input type="text" id="cgc-conferente" autocomplete="off" />
         <span class="field-hint">Para conferir com senha, cadastre os conferentes em Cadastros › Equipe com senha.</span>
       </label>
+
+      <div class="group hidden" id="cgc-fotos-sec">
+        <p class="group-title">Fotos do caminhão antes de lonar <span class="req">*</span></p>
+        <p class="hint">Quem confere tira as duas fotos, com a carga à mostra, antes de lonar. Elas ficam no controle de canhotos.</p>
+        <div class="foto-grade" id="cgc-fotos"></div>
+      </div>
 
       <div class="sig-wrap" id="cgc-sig-section">
         <p class="sig-section-title">Confirmação</p>
@@ -4169,6 +4260,7 @@
             '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
       });
       blocoSetores += '<button type="button" class="btn btn-secondary btn-sm" data-action="dir-novo" style="margin-top:10px">+ Novo acesso da diretoria</button>';
+      blocoSetores += blocoEscritorioHtml(carregando);
     }
     el.innerHTML = '<div class="driver-row"><span class="driver-name">Senha mestre<span class="est-sub">a sua: abre tudo, inclusive Cadastros, Pesquisas e todos os módulos</span></span>' +
       '<button class="btn-text" data-action="acesso-mestre">Trocar</button></div>' + linhaEquipe + blocoSetores;
@@ -4177,15 +4269,17 @@
   function carregarAcessoInfo() {
     acessoBuscando = true;
     chamarAcesso({ acao: 'lista' }).then(function(r) {
-      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [], reps: {}, diretoria: [] };
+      var info = { mestre: null, equipe: null, equipeModulos: [], setores: [], reps: {}, diretoria: [], escritorio: [] };
       (r.senhas || []).forEach(function(x) {
         if (x.ref === 'mestre') info.mestre = x.atualizado_em || true;
         if (x.ref === 'equipe') { info.equipe = x.atualizado_em || true; info.equipeModulos = x.modulos || []; }
         if (/^setor:/.test(x.ref || '')) info.setores.push({ ref: x.ref, nome: x.nome || '', modulos: x.modulos || [], em: x.atualizado_em });
         if (/^representante:/.test(x.ref || '')) info.reps[x.ref] = x.atualizado_em || true;
+        if (/^escritorio:/.test(x.ref || '')) info.escritorio.push({ ref: x.ref, nome: x.nome || '', modulos: x.modulos || [], em: x.atualizado_em });
         if (/^diretoria:/.test(x.ref || '')) info.diretoria.push({ ref: x.ref, nome: x.nome || '', biometria: !!x.biometria, rostos: Number(x.rostos) || 0, rostoUsadoEm: x.rostoUsadoEm || null });
       });
       info.diretoria.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+      info.escritorio.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       info.setores.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       acessoInfo = info;
     }).catch(function(e) { console.error('acesso lista', e); acessoInfo = { erro: true }; })
@@ -4248,6 +4342,9 @@
     else if (a === 'acesso-equipe-cancelar') { confirmRemoverEquipe = false; renderAcessoAdmin(); }
     else if (a === 'setor-novo') openSetorForm('novo', null);
     else if (a === 'dir-novo') abrirAcessoDiretoria(null);
+    else if (a === 'esc-novo') abrirAcessoEscritorio(null, null);
+    else if (a === 'esc-criar') abrirAcessoEscritorio(null, equipe.find(function(m) { return m.id === b.dataset.id; }) || null);
+    else if (a === 'esc-editar') abrirAcessoEscritorio(((acessoInfo && acessoInfo.escritorio) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null, null);
     else if (a === 'dir-editar') abrirAcessoDiretoria(((acessoInfo && acessoInfo.diretoria) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null);
     else if (a === 'dir-apagar-rosto') {
       if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Confirmar: apagar rosto'; return; }
@@ -4868,6 +4965,7 @@
     if (dev) info += row('Devolução da entrega anterior', escapeHtml(dev.texto), dev.pendente ? 'ask' : '');
     if (done) {
       info += row('Conferente', escapeHtml(c.conferente || '—'));
+      info += fotosCaminhaoRow(c, id, row);
       var ent = entregasResumo(c);
       if (ent) info += row('Entregas', escapeHtml(ent.longo), ent.ok ? 'ok' : '');
     }
@@ -5476,6 +5574,7 @@
       return;
     }
     if (action === 'conf-barras') { closeCargaDetail(); abrirConferencia(id); return; }
+    if (action === 'ver-fotos-caminhao') { closeCargaDetail(); abrirFotosCaminhao(id); return; }
     if (action === 'mapa-carga') { openMapaCarga(id); return; }
     if (action === 'detalhes') { openCargaDetail(id); return; }
     if (action === 'pager-entregar') { entregarPagerAuto(id); return; }
@@ -5547,10 +5646,13 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'canhotos', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
-  function abasPermitidas() { return session && session.role === 'equipe' ? ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras'] : TABS; }
+  function abasPermitidas() {
+    if (session && session.role === 'equipe') return ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras'].concat(podeVerCanhotos() ? ['canhotos'] : []);
+    return mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos'; });
+  }
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
@@ -5572,6 +5674,7 @@
     if (ui.tab === 'qualidade') renderQualidade();
     if (ui.tab === 'compras') renderCompras();
     if (ui.tab === 'metas') renderMetas();
+    if (ui.tab === 'canhotos') renderCanhotos();
     if (ui.tab === 'inicio') renderInicio();
     var ativa = document.querySelector('#admin-tabs .seg-btn.active');
     if (ativa && ativa.scrollIntoView && window.innerWidth < 1100) { try { ativa.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {} }
@@ -5971,6 +6074,7 @@
   function sairParaEntrega(cargaId) {
     var c = findCarga(cargaId);
     if (!c) return;
+    if (ladosFaltando(c).length) { showToast('Antes de sair, tire as duas fotos do caminhão lonado (lado do motorista e lado do passageiro).'); return; }
     iniciarRastreio(cargaId); // o pedido de permissão da localização sai do toque no botão
     var agora = new Date().toISOString();
     localizacaoAgora().then(function(loc) {
@@ -6129,8 +6233,9 @@
         '<div class="viagem-acoes"><span class="carga-sub">Saiu às ' + escapeHtml(horaDe(c.viagem.saidaEm)) + '</span>' +
           '<button type="button" class="btn-text" data-rastreio-botao="' + id + '" data-action="rastreio-ligar" data-id="' + id + '">Ligar localização</button></div>' +
         '<p class="hint">Deixe o app aberto na tela durante a viagem: assim o escritório acompanha pelo mapa.</p>'
-      : '<button type="button" class="btn btn-primary" data-action="sair-viagem" data-id="' + id + '">Saí para entrega</button>' +
-        '<p class="hint">Ao sair, o app passa a mandar a localização do celular para o escritório enquanto estiver aberto na tela.</p>';
+      : lonaHtml(c) + '<button type="button" class="btn btn-primary" data-action="sair-viagem" data-id="' + id + '"' + (ladosFaltando(c).length ? ' disabled' : '') + '>Saí para entrega</button>' +
+        (ladosFaltando(c).length ? '<p class="hint">Para liberar a saída, tire as duas fotos do caminhão lonado.</p>'
+          : '<p class="hint">Ao sair, o app passa a mandar a localização do celular para o escritório enquanto estiver aberto na tela.</p>');
     return '<div class="viagem-card" data-carga="' + id + '">' + topo + controle +
       g.entregas.map(function(r) { return renderDriverPendingItem(r, true); }).join('') + '</div>';
   }
@@ -6162,8 +6267,8 @@
       '<div class="tx-top"><span class="tx-date">' + formatDateBR(r.data) + '</span><span class="tx-tipo entrega">Concluída</span></div>' +
       '<div class="client-name">' + escapeHtml(r.cliente) + '</div>' +
       '<div class="tx-qty">' + fmtInt(r.paletes) + ' paletes · ' + fmtInt(r.chapatex) + ' chapatex</div>' +
-      pedidoMetaHtml(r, false) +
-      '<div class="tx-actions"><button class="btn-text" data-action="comprovante" data-id="' + escapeHtml(r.id) + '">Comprovante</button></div>' +
+      pedidoMetaHtml(r, false) + canhotoMotoristaHtml(r) +
+      '<div class="tx-actions">' + botaoCanhotoHtml(r) + '<button class="btn-text" data-action="comprovante" data-id="' + escapeHtml(r.id) + '">Comprovante</button></div>' +
       '</div>';
   }
 
@@ -7275,6 +7380,7 @@
     document.getElementById('btn-carga-conclude-submit').disabled = false;
     sigCgcMotorista.showCanvasMode();
     sigCgcConferente.showCanvasMode();
+    prepararFotosConferencia();
     document.getElementById('carga-conclude-overlay').classList.remove('hidden');
   }
   function closeCargaConclude() {
@@ -7387,6 +7493,8 @@
     }
     if (!sigCgcMotorista.isSatisfied()) { errEl.textContent = 'Colete a assinatura do motorista antes de concluir.'; errEl.classList.remove('hidden'); return; }
     if (!sigCgcConferente.isSatisfied()) { errEl.textContent = 'Colete a assinatura do conferente antes de concluir.'; errEl.classList.remove('hidden'); return; }
+    var erroFotos = validarFotosConferencia();
+    if (erroFotos) { errEl.textContent = erroFotos; errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
 
     var totals = computeCargaTotals(clientesOut);
@@ -7413,7 +7521,12 @@
     concludeSubmitting = true;
     submitConclude.disabled = true;
     // Só fecha a tela depois que a gravação for confirmada; se falhar, as assinaturas continuam na tela.
-    withTimeout(saveCargaConclusion(id, rec, pedidos), 20000).then(function() {
+    // as fotos do caminhão (antes de lonar) sobem primeiro e ficam marcadas na carga concluída
+    subirFotosConferencia(id, conferente, rec.conferenteId).then(function(conf) {
+      if (conf) rec.fotosCaminhao = Object.assign({}, original.fotosCaminhao || {}, { conferencia: conf });
+      return withTimeout(saveCargaConclusion(id, rec, pedidos), 20000);
+    }).then(function() {
+      abrirCanhotosDaCarga(pedidos.map(function(p) { return p.docId; }));
       concludeSubmitting = false;
       submitConclude.disabled = false;
       closeCargaConclude();
@@ -7423,7 +7536,9 @@
       console.error('conclude carga error', err);
       concludeSubmitting = false;
       submitConclude.disabled = false;
-      errEl.textContent = 'Não foi possível concluir o carregamento. Verifique a conexão e tente de novo — nada será duplicado.';
+      errEl.textContent = err && err.etapa === 'foto'
+        ? (err.codigo === 'grande' ? 'Uma foto do caminhão ficou grande demais. Tire de novo.' : 'Não foi possível enviar as fotos do caminhão. Verifique a internet e tente de novo — nada será duplicado.')
+        : 'Não foi possível concluir o carregamento. Verifique a conexão e tente de novo — nada será duplicado.';
       errEl.classList.remove('hidden');
     });
   });
@@ -7522,6 +7637,7 @@
     setTipo(p.tipo === 'devolucao' ? 'devolucao' : 'entrega');
     applyModeVisibility();
     if (modeName === 'concluir') renderResumo(p);
+    prepararCanhotoForm();
     var comPesquisa = modeName === 'concluir' && p.tipo !== 'devolucao' && pesquisasAtivas();
     document.getElementById('sec-pesquisa-cliente').classList.toggle('hidden', !comPesquisa);
     if (comPesquisa) prepararPerguntas(document.getElementById('pesq-cliente-perguntas'), 'pqc', PESQ_CLIENTE);
@@ -7595,6 +7711,8 @@
       }
     }
     if (formMode !== 'pedido') {
+      var erroCanhoto = validarCanhotoForm();
+      if (erroCanhoto) return erroCanhoto;
       if (!sigCliente.isSatisfied()) return 'Colete a assinatura do cliente antes de salvar.';
       if (!sigMotorista.isSatisfied()) return 'Colete a assinatura do motorista antes de salvar.';
     }
@@ -7650,7 +7768,14 @@
     var pesqCliente = secPq.classList.contains('hidden') ? null : lerRespostas(secPq);
     submitting = true;
     submitBtn.disabled = true;
-    withTimeout(addOrUpdateRecord(rec, editingId), 20000).then(function(savedId) {
+    // canhoto: a foto sobe antes; a entrega leva a situação do canhoto e a função do banco abre o controle
+    subirCanhotoDoForm(editingId).then(function(cn) {
+      if (cn) rec.canhoto = cn.espelho;
+      return withTimeout(addOrUpdateRecord(rec, editingId), 20000).then(function(savedId) {
+        if (cn) registrarCanhoto(savedId, cn.fotos, cn.motivo, rec.entregaLoc).catch(function(e) { console.warn('canhoto: fica na entrega e o controle sincroniza depois', e); });
+        return savedId;
+      });
+    }).then(function(savedId) {
       ui.expanded[cliente] = true;
       closeForm();
       render();
@@ -7666,7 +7791,9 @@
       console.error('save error', err);
       submitting = false;
       submitBtn.disabled = false;
-      showFormError('Não foi possível gravar a entrega. Verifique a conexão e tente novamente.');
+      showFormError(err && err.etapa === 'foto'
+        ? (err.codigo === 'grande' ? 'A foto do canhoto ficou grande demais. Tire de novo.' : 'Não foi possível enviar a foto do canhoto. Verifique a internet e tente de novo.')
+        : 'Não foi possível gravar a entrega. Verifique a conexão e tente novamente.');
     });
   }
 
@@ -7708,6 +7835,8 @@
         return;
       }
       if (action === 'sair-viagem') { sairParaEntrega(id); return; }
+      if (action === 'lona-foto') { pedirFotoLona(id, actionBtn.dataset.lado); return; }
+      if (action === 'canhoto-enviar') { abrirEnvioCanhoto(id); return; }
       if (action === 'pesq-responder') { openPesquisaMotorista(id); return; }
       if (action === 'pesq-dispensar') { marcarPesquisaMotorista(id, 'dispensada'); return; }
       if (action === 'cheguei') { chegueiNoCliente(id); return; }
@@ -8089,9 +8218,11 @@
     var L = RM, R = RW - RM, y = H - 104;
     ctx.fillStyle = RC.line;
     ctx.fillRect(L, y, R - L, 2);
-    var conf = d.rec.concluidoEm
+    var cn = d.rec.canhoto;
+    var conf = (d.rec.concluidoEm
       ? 'Confirmado digitalmente em ' + formatDateTimeBR(d.rec.concluidoEm)
-      : 'Registro lançado a partir do vale de papel original';
+      : 'Registro lançado a partir do vale de papel original') +
+      (cn ? (cn.n ? ' · canhoto da nota fotografado' : ' · canhoto da nota pendente') : '');
     txt(ctx, conf, L, y + 42, rFont(500, 26, R_DISP), RC.muted, 'left');
     txt(ctx, 'Comprovante emitido em ' + formatDateTimeBR(new Date().toISOString()) + ' · Registro ' + receiptCode(d.rec), L, y + 78, rFont(400, 24, R_DISP), RC.muted, 'left');
   }
@@ -9914,6 +10045,7 @@
     subscribeProdutos();
     subscribeCargas();
     subscribeFretes();
+    subscribeCanhotos();
   }
   function esconderRepView() {
     document.getElementById('rep-view').classList.add('hidden');
@@ -9971,6 +10103,7 @@
       '<div class="stat"><div class="stat-value">' + nLib + '</div><div class="stat-label">liberados</div></div>';
     el.innerHTML = abertos.length ? abertos.map(repCardHtml).join('') : '<p class="empty-state">Nenhum pedido em andamento. Toque em “+ Novo pedido”.</p>';
     document.getElementById('rep-carregados').innerHTML = feitos.length ? feitos.slice(0, 40).map(repCardHtml).join('') : '<p class="empty-state">Nenhum pedido carregado ainda.</p>';
+    renderRepCanhotos();
   }
   document.getElementById('btn-rep-novo').addEventListener('click', function() { openCargaForm(null); });
   document.getElementById('btn-logout-rep').addEventListener('click', logout);
@@ -16699,6 +16832,768 @@
     triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'levissima-paletes-chapatex.csv');
   });
 
+  // =====================================================================================================
+  // CANHOTOS E FOTOS DO CAMINHÃO (pedido de 18/10/2026; referência: Canhoto Fácil, da Varitus)
+  // - Na conclusão da entrega: foto do canhoto da NF assinado pelo cliente (ou o motivo de não ter foto agora),
+  //   com data, hora e local. O escritório confere ou pede outra foto na aba Canhotos.
+  // - Conferência final da carga: fotos dos dois lados do caminhão antes de lonar (obrigatórias para concluir).
+  // - Motorista: fotos dos dois lados do caminhão lonado, ainda dentro da empresa (obrigatórias para sair).
+  // Veem: senha mestre e diretoria, as pessoas do escritório com a permissão "canhotos" (acesso individual)
+  // e o representante do cliente. Fotos no bucket privado "canhotos"; regras na migração 0015.
+  var BUCKET_CANHOTOS = 'canhotos';
+  var CANHOTO_DESDE = '2026-10-18';
+  var CANHOTO_ATRASO_DIAS = 2;
+  var LONA_DISTANCIA_MAX = 1000; // metros entre a foto do motorista e a da conferência (acima disso, avisa)
+  var LADOS_CAMINHAO = [{ id: 'esquerdo', nome: 'Lado do motorista' }, { id: 'direito', nome: 'Lado do passageiro' }];
+  var MOTIVOS_SEM_FOTO = ['Cliente não assinou o canhoto', 'O canhoto ficou com o cliente', 'Sem a nota impressa na entrega', 'Vou enviar a foto depois', 'Outro'];
+  var MOTIVOS_REFAZER = ['Foto ilegível ou cortada', 'Sem a assinatura do cliente', 'Sem a data do recebimento', 'Não é o canhoto desta nota', 'Outro'];
+  var canhotos = [];
+  var canhotosCarregado = false;
+  var cnUi = { area: 'canhotos', filtro: '', busca: '', periodo: '30', rep: '', sincronizado: false, reps: null, mostrar: 60 };
+
+  function temPermissao(m) { return !!(session && (session.modulos || []).some(function(x) { return x === m || x === m + ':gerir'; })); }
+  function podeVerCanhotos() { return mode === 'db' && !!session && (session.role === 'admin' || (session.role === 'equipe' && temPermissao('canhotos'))); }
+  function podeConferirCanhotos() { return podeVerCanhotos() && !session.soInclui; }
+  function kmTexto(m) { return m >= 1000 ? (m / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' km' : Math.round(m) + ' m'; }
+  function locCurta(loc) { return loc && isFinite(loc.lat) && isFinite(loc.lng) ? { lat: loc.lat, lng: loc.lng, acc: loc.acc || null } : null; }
+
+  function subscribeCanhotos() {
+    if (mode !== 'db' || !session) return;
+    if (!podeVerCanhotos() && session.role !== 'representante') return;
+    db.collection('canhotos').onSnapshot(function(snap) {
+      canhotos = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      canhotosCarregado = true;
+      if (session && session.role === 'representante') { renderRepCanhotos(); return; }
+      renderCanhotosSelo();
+      if (ui.tab === 'canhotos') renderCanhotos();
+    }, function(err) { console.error('canhotos', err); });
+  }
+
+  // ----- fotos: preparo (JPEG leve), envio e endereço assinado para ver -----
+  function prepararFotoLeve(file) {
+    var t = tipoDoArquivo(file);
+    var mimeOk = /^image\/(jpeg|png|webp|heic|heif)$/.test(t.mime);
+    var original = { blob: file, mime: mimeOk ? t.mime : 'image/jpeg', ext: mimeOk ? t.ext : 'jpg' };
+    return new Promise(function(resolve) {
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function() {
+        try {
+          var k = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight));
+          var cv = document.createElement('canvas');
+          cv.width = Math.max(1, Math.round(img.naturalWidth * k)); cv.height = Math.max(1, Math.round(img.naturalHeight * k));
+          var cx = cv.getContext('2d');
+          cx.fillStyle = '#FFFFFF'; cx.fillRect(0, 0, cv.width, cv.height);
+          cx.drawImage(img, 0, 0, cv.width, cv.height);
+          URL.revokeObjectURL(url);
+          cv.toBlob(function(b) {
+            resolve(b && (b.size < file.size || !/^image\/(jpeg|png|webp)$/.test(t.mime)) ? { blob: b, mime: 'image/jpeg', ext: 'jpg' } : original);
+          }, 'image/jpeg', 0.82);
+        } catch (e) { URL.revokeObjectURL(url); resolve(original); }
+      };
+      img.onerror = function() { URL.revokeObjectURL(url); resolve(original); };
+      img.src = url;
+    });
+  }
+  function enviarFotoCanhotos(caminhoSemExt, file) {
+    return prepararFotoLeve(file).then(function(a) {
+      if (a.blob.size > 8 * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; throw e; }
+      var caminho = caminhoSemExt + '.' + a.ext;
+      return withTimeout(sbCliente.storage.from(BUCKET_CANHOTOS).upload(caminho, a.blob, { contentType: a.mime, upsert: false }), 90000).then(function(r) {
+        if (r.error) throw r.error;
+        return caminho;
+      });
+    });
+  }
+  var fotoUrlCache = {};
+  function urlFotoCanhoto(caminho) {
+    var c = fotoUrlCache[caminho];
+    if (c && c.ate > Date.now()) return Promise.resolve(c.url);
+    return sbCliente.storage.from(BUCKET_CANHOTOS).createSignedUrl(caminho, 3600).then(function(r) {
+      if (r.error || !r.data || !r.data.signedUrl) throw r.error || new Error('sem endereço');
+      fotoUrlCache[caminho] = { url: r.data.signedUrl, ate: Date.now() + 50 * 60000 };
+      return r.data.signedUrl;
+    });
+  }
+  // as <img data-cn-foto="caminho"> recebem o endereço assinado depois de desenhadas
+  function carregarFotosCanhoto(raiz) {
+    if (mode !== 'db' || !sbCliente) return;
+    Array.prototype.forEach.call((raiz || document).querySelectorAll('img[data-cn-foto]:not([data-cn-ok])'), function(img) {
+      img.setAttribute('data-cn-ok', '1');
+      urlFotoCanhoto(img.getAttribute('data-cn-foto')).then(function(u) { img.src = u; })
+        .catch(function(e) { console.warn('foto', e); img.alt = 'Foto indisponível'; img.classList.add('cn-foto-erro'); });
+    });
+  }
+  // foto ampliada (tocar numa foto)
+  var zoomCaminho = '';
+  document.addEventListener('click', function(e) {
+    var img = e.target.closest && e.target.closest('img[data-cn-foto]');
+    if (!img || !img.src) return;
+    e.preventDefault(); e.stopPropagation();
+    zoomCaminho = img.getAttribute('data-cn-foto') || '';
+    document.getElementById('foto-zoom-img').src = img.src;
+    document.getElementById('foto-zoom').classList.remove('hidden');
+  }, true);
+  function fecharZoom() { document.getElementById('foto-zoom').classList.add('hidden'); document.getElementById('foto-zoom-img').removeAttribute('src'); }
+  document.getElementById('btn-foto-zoom-fechar').addEventListener('click', fecharZoom);
+  document.getElementById('foto-zoom').addEventListener('click', function(e) { if (e.target === this) fecharZoom(); });
+  document.getElementById('btn-foto-zoom-baixar').addEventListener('click', function() {
+    if (!zoomCaminho) return;
+    sbCliente.storage.from(BUCKET_CANHOTOS).download(zoomCaminho).then(function(r) {
+      if (r.error) throw r.error;
+      triggerDownload(r.data, 'levissima-' + zoomCaminho.replace(/[^A-Za-z0-9.-]+/g, '-'));
+    }).catch(function(e) { console.error('baixar foto', e); showToast('Não foi possível baixar agora.'); });
+  });
+
+  // Campo de fotos tiradas na hora (câmera). cfg: { lados: [{ id, nome }] } (fotos fixas) ou { max, rotulo }.
+  function campoFotos(el, cfg) {
+    var fotos = {}, ordem = [], seq = 0;
+    function slots() {
+      if (cfg.lados) return cfg.lados.map(function(l) { return { id: l.id, nome: l.nome }; });
+      var out = ordem.map(function(id, i) { return { id: id, nome: cfg.rotulo + (cfg.max > 1 ? ' ' + (i + 1) : '') }; });
+      if (ordem.length < cfg.max) out.push({ id: 'f' + (seq + 1), nome: ordem.length ? 'Mais uma foto' : cfg.rotulo });
+      return out;
+    }
+    function render() {
+      el.innerHTML = slots().map(function(s) {
+        var f = fotos[s.id];
+        if (f) return '<div class="foto-tile cheia"><img src="' + f.url + '" alt="' + escapeHtml(s.nome) + '" /><span class="foto-tile-t">✓ ' + escapeHtml(s.nome) + '</span>' +
+          '<button type="button" class="foto-tirar" data-foto-tirar="' + s.id + '">' + (cfg.lados ? 'Trocar' : 'Remover') + '</button></div>';
+        return '<label class="foto-tile"><input type="file" accept="image/*" capture="environment" data-foto-slot="' + s.id + '" />' +
+          '<span class="foto-ico" aria-hidden="true">📷</span><span class="foto-tile-t">' + escapeHtml(s.nome) + '</span><small>tocar para fotografar</small></label>';
+      }).join('');
+    }
+    el.addEventListener('change', function(e) {
+      var inp = e.target.closest('[data-foto-slot]');
+      if (!inp) return;
+      var f = inp.files && inp.files[0];
+      if (!f) return;
+      if (f.type && !/^image\//.test(f.type)) { showToast('Escolha uma foto.'); return; }
+      var id = inp.dataset.fotoSlot;
+      if (!cfg.lados && ordem.indexOf(id) < 0) { ordem.push(id); seq++; }
+      if (fotos[id]) URL.revokeObjectURL(fotos[id].url);
+      fotos[id] = { file: f, url: URL.createObjectURL(f) };
+      render();
+      if (cfg.mudou) cfg.mudou();
+    });
+    el.addEventListener('click', function(e) {
+      var b = e.target.closest('[data-foto-tirar]');
+      if (!b) return;
+      e.preventDefault();
+      var id = b.dataset.fotoTirar;
+      if (fotos[id]) URL.revokeObjectURL(fotos[id].url);
+      delete fotos[id];
+      ordem = ordem.filter(function(x) { return x !== id; });
+      render();
+      if (cfg.mudou) cfg.mudou();
+    });
+    render();
+    return {
+      arquivos: function() { return (cfg.lados ? cfg.lados.map(function(l) { return l.id; }) : ordem).filter(function(id) { return fotos[id]; }).map(function(id) { return { slot: id, file: fotos[id].file }; }); },
+      completo: function() { return cfg.lados ? cfg.lados.every(function(l) { return !!fotos[l.id]; }) : ordem.length > 0; },
+      quantas: function() { return Object.keys(fotos).length; },
+      limpar: function() { Object.keys(fotos).forEach(function(k) { URL.revokeObjectURL(fotos[k].url); }); fotos = {}; ordem = []; render(); }
+    };
+  }
+
+  // ----- gravação do canhoto (funções do banco) -----
+  function espelhoCanhoto(c) {
+    return { status: c.status || 'pendente', em: new Date().toISOString(), n: (c.fotos || []).length, fotos: c.fotos || [], motivo: c.motivoSemFoto || '', problema: (c.problema && c.problema.motivo) || '' };
+  }
+  function aplicarCanhotoLocal(recId, novo) {
+    if (!novo || !db || !db.aplicarLocal) return;
+    db.aplicarLocal('canhotos', recId, novo);
+    var r = findRecord(recId);
+    if (r) { var reg = Object.assign({}, r); delete reg.id; reg.canhoto = espelhoCanhoto(novo); db.aplicarLocal('registros', recId, reg); }
+  }
+  function registrarCanhoto(recId, fotos, motivo, loc) {
+    if (mode !== 'db' || !db) return Promise.resolve(null);
+    return db.rpc('canhoto_registrar', { p_registro: recId, p_fotos: fotos || [], p_motivo: motivo || '', p_loc: locCurta(loc) })
+      .then(function(novo) { aplicarCanhotoLocal(recId, novo); return novo; });
+  }
+  function abrirCanhotosDaCarga(ids) {
+    if (mode !== 'db' || !db || !ids || !ids.length) return;
+    db.rpc('canhotos_abrir', { p_registros: ids.slice(0, 300) })
+      .then(function(n) { if (n && db.recarregar && podeVerCanhotos()) db.recarregar('canhotos'); })
+      .catch(function(e) { console.warn('canhotos da carga (o controle abre depois)', e); });
+  }
+
+  // ----- conclusão da entrega: foto do canhoto -----
+  var campoCanhoto = campoFotos(document.getElementById('canhoto-fotos'), { max: 3, rotulo: 'Foto do canhoto' });
+  document.getElementById('f-canhoto-motivo').innerHTML = '<option value="">Escolha…</option>' + MOTIVOS_SEM_FOTO.map(function(m) { return '<option>' + escapeHtml(m) + '</option>'; }).join('');
+  document.getElementById('f-canhoto-sem').addEventListener('change', function() { toggleHidden('canhoto-sem-box', !this.checked); });
+  document.getElementById('f-canhoto-motivo').addEventListener('change', function() { toggleHidden('canhoto-outro-label', this.value !== 'Outro'); });
+  function canhotoNoFormulario() { return mode === 'db' && formMode === 'concluir' && currentTipo !== 'devolucao' && !!editingRecord; }
+  function prepararCanhotoForm() {
+    toggleHidden('sec-canhoto', !canhotoNoFormulario());
+    campoCanhoto.limpar();
+    document.getElementById('f-canhoto-sem').checked = false;
+    document.getElementById('f-canhoto-motivo').value = '';
+    document.getElementById('f-canhoto-outro').value = '';
+    toggleHidden('canhoto-sem-box', true);
+    toggleHidden('canhoto-outro-label', true);
+  }
+  function motivoSemFotoForm() {
+    if (!document.getElementById('f-canhoto-sem').checked) return '';
+    var m = document.getElementById('f-canhoto-motivo').value;
+    if (m === 'Outro') { var o = document.getElementById('f-canhoto-outro').value.trim(); return o ? 'Outro: ' + o : ''; }
+    return m;
+  }
+  function validarCanhotoForm() {
+    if (!canhotoNoFormulario() || campoCanhoto.quantas()) return null;
+    if (!document.getElementById('f-canhoto-sem').checked) return 'Tire a foto do canhoto da nota assinado pelo cliente (ou marque “Não deu para fotografar o canhoto agora”).';
+    if (!motivoSemFotoForm()) return 'Diga por que não deu para fotografar o canhoto.';
+    return null;
+  }
+  // sobe as fotos antes de gravar a entrega; devolve o que vai junto na entrega (o espelho do canhoto)
+  function subirCanhotoDoForm(recId) {
+    if (!canhotoNoFormulario() || !recId) return Promise.resolve(null);
+    var arqs = campoCanhoto.arquivos(), motivo = arqs.length ? '' : motivoSemFotoForm();
+    return Promise.all(arqs.map(function(a) { return enviarFotoCanhotos('entregas/' + recId + '/' + uid(), a.file); }))
+      .catch(function(e) { e.etapa = 'foto'; throw e; })
+      .then(function(caminhos) {
+        return { fotos: caminhos, motivo: motivo, espelho: { status: caminhos.length ? 'enviado' : 'pendente', em: new Date().toISOString(), n: caminhos.length, fotos: caminhos, motivo: motivo, problema: '', por: session ? session.nome || '' : '' } };
+      });
+  }
+
+  // ----- situação do canhoto para quem não lê a coleção (motorista): vem espelhada na entrega -----
+  function canhotoDaEntrega(r) {
+    if (!r || r.tipo === 'devolucao' || mode !== 'db') return null;
+    if (!r.canhoto && String(r.concluidoEm || r.data || '') < CANHOTO_DESDE) return null;
+    return r.canhoto || { status: 'pendente', n: 0 };
+  }
+  var ROTULO_CANHOTO = {
+    viagem: { txt: 'Em viagem', cls: 'cn-viagem', est: 'viagem' },
+    pendente: { txt: 'Canhoto pendente', cls: 'confirmar', est: 'confirmar' },
+    atrasado: { txt: 'Canhoto atrasado', cls: 'falta', est: 'falta' },
+    enviado: { txt: 'A conferir', cls: 'apagar', est: 'apagar' },
+    problema: { txt: 'Refazer a foto', cls: 'falta', est: 'falta' },
+    conferido: { txt: 'Conferido', cls: 'pago', est: 'pago' }
+  };
+  function chipCanhotoMotorista(cn) {
+    var t = cn.status === 'enviado' ? 'Canhoto enviado' : cn.status === 'conferido' ? 'Canhoto conferido' : cn.status === 'problema' ? 'Refazer a foto do canhoto' : 'Canhoto pendente';
+    return '<span class="chip-est ' + (ROTULO_CANHOTO[cn.status] || ROTULO_CANHOTO.pendente).cls + '">' + escapeHtml(t) + '</span>';
+  }
+  function canhotoMotoristaHtml(r) {
+    var cn = canhotoDaEntrega(r);
+    if (!cn) return '';
+    var obs = cn.status === 'problema' && cn.problema ? cn.problema : cn.status === 'pendente' && cn.motivo ? cn.motivo : '';
+    return '<div class="cn-linha">' + chipCanhotoMotorista(cn) + (obs ? '<span class="frete-sub" style="margin:0">' + escapeHtml(obs) + '</span>' : '') + '</div>';
+  }
+  function botaoCanhotoHtml(r) {
+    var cn = canhotoDaEntrega(r);
+    return cn && (cn.status === 'pendente' || cn.status === 'problema')
+      ? '<button class="btn btn-secondary btn-sm" data-action="canhoto-enviar" data-id="' + escapeHtml(r.id) + '">Enviar foto do canhoto</button>' : '';
+  }
+  // enviar a foto depois (motorista nas concluídas; escritório e diretoria no controle)
+  function abrirEnvioCanhoto(recId, depois) {
+    if (mode !== 'db') return;
+    var r = findRecord(recId), c = canhotos.find(function(x) { return x.id === recId; });
+    var cliente = (r && r.cliente) || (c && c.cliente) || '';
+    var nf = (r && (r.nfNumero || r.pedidoNf)) || (c && (c.nf || c.pedidoNf)) || '';
+    var problema = (r && r.canhoto && r.canhoto.status === 'problema' && r.canhoto.problema) || (c && c.status === 'problema' && c.problema && c.problema.motivo) || '';
+    var campo = null;
+    gerAbrir({
+      titulo: 'Foto do canhoto · ' + cliente, botao: 'Enviar foto',
+      html: '<p class="hint">Fotografe o canhoto ' + (nf ? 'da nota ' + escapeHtml(nf) + ' ' : '') + 'assinado e datado pelo cliente, inteiro e legível.</p>' +
+        (problema ? '<p class="field-hint warn">Pedido do escritório: ' + escapeHtml(problema) + '</p>' : '') +
+        '<div class="foto-grade" id="cn-envio-fotos"></div>',
+      depois: function() { campo = campoFotos(document.getElementById('cn-envio-fotos'), { max: 3, rotulo: 'Foto do canhoto' }); },
+      salvar: function() {
+        var arqs = campo ? campo.arquivos() : [];
+        if (!arqs.length) return gerErro('Tire a foto do canhoto.');
+        var locP = session && session.role === 'motorista' ? localizacaoAgora() : Promise.resolve(null);
+        return Promise.all(arqs.map(function(a) { return enviarFotoCanhotos('entregas/' + recId + '/' + uid(), a.file); }))
+          .then(function(caminhos) { return locP.then(function(loc) { return registrarCanhoto(recId, caminhos, '', loc); }); })
+          .then(function(novo) { showToast('Foto do canhoto enviada.'); if (depois) setTimeout(function() { depois(novo); }, 0); })
+          .catch(function(e) {
+            console.error('enviar canhoto', e);
+            return gerErro(e && e.codigo === 'grande' ? 'Foto grande demais.' : 'Não foi possível enviar agora. Verifique a internet e tente de novo.');
+          });
+      }
+    });
+  }
+
+  // ----- conclusão do carregamento: as duas fotos do caminhão antes de lonar -----
+  var locConferencia = null;
+  var campoCaminhaoConf = campoFotos(document.getElementById('cgc-fotos'), {
+    lados: LADOS_CAMINHAO,
+    mudou: function() { if (!locConferencia) localizacaoAgora().then(function(l) { if (l) locConferencia = l; }); }
+  });
+  function prepararFotosConferencia() {
+    toggleHidden('cgc-fotos-sec', mode !== 'db');
+    campoCaminhaoConf.limpar();
+    locConferencia = null;
+  }
+  function validarFotosConferencia() {
+    return mode === 'db' && !campoCaminhaoConf.completo() ? 'Tire as duas fotos do caminhão (lado do motorista e lado do passageiro) antes de lonar.' : null;
+  }
+  function subirFotosConferencia(cargaId, conferente, conferenteId) {
+    if (mode !== 'db') return Promise.resolve(null);
+    return Promise.all(campoCaminhaoConf.arquivos().map(function(a) {
+      return enviarFotoCanhotos('caminhao/' + cargaId + '/conferencia-' + a.slot + '-' + uid(), a.file).then(function(c) { return [a.slot, c]; });
+    })).then(function(pares) {
+      var conf = { por: conferente || '', porId: conferenteId || '', em: new Date().toISOString(), loc: locCurta(locConferencia) };
+      pares.forEach(function(p) { conf[p[0]] = p[1]; });
+      return conf;
+    }).catch(function(e) { e.etapa = 'foto'; throw e; });
+  }
+
+  // ----- motorista: as duas fotos do caminhão lonado antes de sair -----
+  function fotosMotoristaDe(c) { return (c && c.fotosCaminhao && c.fotosCaminhao.motorista) || {}; }
+  function ladosFaltando(c) {
+    if (mode !== 'db') return [];
+    var fm = fotosMotoristaDe(c);
+    return LADOS_CAMINHAO.filter(function(l) { return !fm[l.id]; });
+  }
+  var lonaEnviando = {}, lonaAlvo = null, filaLona = Promise.resolve();
+  function lonaHtml(c) {
+    if (mode !== 'db') return '';
+    var fm = fotosMotoristaDe(c), id = escapeHtml(c.id);
+    return '<div class="lona-bloco"><p class="lona-t"><b>Fotos do caminhão lonado</b> <span class="req">*</span></p>' +
+      '<p class="hint">Ainda dentro da empresa, depois de lonar: uma foto de cada lado, com o caminhão inteiro visível.</p><div class="foto-grade">' +
+      LADOS_CAMINHAO.map(function(l) {
+        if (fm[l.id]) return '<div class="foto-tile feita"><span class="foto-ico" aria-hidden="true">✓</span><span class="foto-tile-t">' + escapeHtml(l.nome) + '</span><small>enviada às ' + escapeHtml(horaDe(fm[l.id + 'Em'] || '')) + '</small></div>';
+        if (lonaEnviando[c.id + ':' + l.id]) return '<div class="foto-tile"><span class="foto-ico" aria-hidden="true">⏳</span><span class="foto-tile-t">' + escapeHtml(l.nome) + '</span><small>enviando…</small></div>';
+        return '<button type="button" class="foto-tile" data-action="lona-foto" data-id="' + id + '" data-lado="' + l.id + '"><span class="foto-ico" aria-hidden="true">📷</span><span class="foto-tile-t">' + escapeHtml(l.nome) + '</span><small>tocar para fotografar</small></button>';
+      }).join('') + '</div>' +
+      (fm.foraDaEmpresa ? '<p class="field-hint warn">Pela localização, uma foto foi tirada a ' + escapeHtml(kmTexto(fm.foraDaEmpresa.distancia)) + ' do local da conferência. As fotos devem ser tiradas ainda dentro da empresa.</p>' : '') +
+      '</div>';
+  }
+  function pedirFotoLona(cargaId, lado) {
+    lonaAlvo = { id: cargaId, lado: lado };
+    var inp = document.getElementById('lona-input');
+    inp.value = '';
+    inp.click();
+  }
+  document.getElementById('lona-input').addEventListener('change', function() {
+    var f = this.files && this.files[0], alvo = lonaAlvo;
+    lonaAlvo = null;
+    if (!f || !alvo) return;
+    enviarFotoLona(alvo.id, alvo.lado, f);
+  });
+  function enviarFotoLona(cargaId, lado, file) {
+    var k = cargaId + ':' + lado;
+    lonaEnviando[k] = true;
+    renderDriverView();
+    var locP = localizacaoAgora();
+    enviarFotoCanhotos('caminhao/' + cargaId + '/motorista-' + lado + '-' + uid(), file).then(function(caminho) {
+      return locP.then(function(loc) {
+        // uma gravação de cada vez: as duas fotos podem terminar juntas
+        var passo = filaLona.then(function() {
+          var c = findCarga(cargaId) || {};
+          var fc = Object.assign({}, c.fotosCaminhao || {});
+          var fm = Object.assign({}, fc.motorista || {});
+          fm[lado] = caminho;
+          fm[lado + 'Em'] = new Date().toISOString();
+          fm[lado + 'Loc'] = locCurta(loc);
+          fm.por = session ? session.nome || '' : '';
+          var ref = fc.conferencia && fc.conferencia.loc;
+          var dist = (loc && ref && isFinite(ref.lat) && isFinite(ref.lng)) ? Math.round(distanciaM(ref, loc)) : null;
+          var fora = dist != null && dist > LONA_DISTANCIA_MAX && (!loc.acc || loc.acc < 500);
+          if (fora) fm.foraDaEmpresa = { lado: lado, distancia: dist, em: fm[lado + 'Em'] };
+          fc.motorista = fm;
+          return setCargaFields(cargaId, { fotosCaminhao: fc }).then(function() { return fora ? dist : null; });
+        });
+        filaLona = passo.catch(function() {});
+        return passo;
+      });
+    }).then(function(dist) {
+      delete lonaEnviando[k];
+      renderDriverView();
+      showToast(dist != null
+        ? 'Foto enviada, mas pela localização você parece estar fora da empresa (a ' + kmTexto(dist) + '). As fotos do caminhão lonado devem ser tiradas ainda dentro da Levíssima.'
+        : 'Foto do ' + (lado === 'esquerdo' ? 'lado do motorista' : 'lado do passageiro') + ' enviada.');
+    }).catch(function(err) {
+      delete lonaEnviando[k];
+      renderDriverView();
+      console.error('foto do caminhão', err);
+      showToast(err && err.codigo === 'grande' ? 'Foto grande demais.' : 'Não foi possível enviar a foto agora. Verifique a internet e tente de novo.');
+    });
+  }
+
+  // ----- fotos do caminhão (conferência e motorista), para quem vê -----
+  function resumoFotosCaminhao(c) {
+    var fc = (c && c.fotosCaminhao) || {}, conf = fc.conferencia || {}, mot = fc.motorista || {};
+    var nConf = LADOS_CAMINHAO.filter(function(l) { return conf[l.id]; }).length, nMot = LADOS_CAMINHAO.filter(function(l) { return mot[l.id]; }).length;
+    return { nConf: nConf, nMot: nMot, fora: !!mot.foraDaEmpresa,
+      texto: 'antes de lonar: ' + (nConf === 2 ? '2 fotos ✓' : nConf ? '1 de 2 fotos' : 'sem fotos') + ' · lonado (motorista): ' + (nMot === 2 ? '2 fotos ✓' : nMot ? '1 de 2 fotos' : 'falta') + (mot.foraDaEmpresa ? ' · ⚠ fora da empresa?' : '') };
+  }
+  function caminhaoFotosHtml(fc) {
+    fc = fc || {};
+    var conf = fc.conferencia || {}, mot = fc.motorista || {};
+    function tile(path, rot, sub) {
+      return path
+        ? '<figure class="cn-cam"><img data-cn-foto="' + escapeHtml(path) + '" alt="' + escapeHtml(rot) + '" /><figcaption>' + escapeHtml(rot) + (sub ? '<small>' + escapeHtml(sub) + '</small>' : '') + '</figcaption></figure>'
+        : '<figure class="cn-cam vazio"><span>sem foto</span><figcaption>' + escapeHtml(rot) + '</figcaption></figure>';
+    }
+    return '<p class="cn-cam-t">Antes de lonar (conferência' + (conf.por ? ' · ' + escapeHtml(conf.por) : '') + (conf.em ? ' · ' + escapeHtml(formatDateTimeBR(conf.em)) : '') + ')</p>' +
+      '<div class="cn-cam-grade">' + tile(conf.esquerdo, 'Lado do motorista') + tile(conf.direito, 'Lado do passageiro') + '</div>' +
+      '<p class="cn-cam-t">Lonado, pelo motorista' + (mot.por ? ' · ' + escapeHtml(mot.por) : '') + '</p>' +
+      '<div class="cn-cam-grade">' + tile(mot.esquerdo, 'Lado do motorista', mot.esquerdoEm ? formatDateTimeBR(mot.esquerdoEm) : '') + tile(mot.direito, 'Lado do passageiro', mot.direitoEm ? formatDateTimeBR(mot.direitoEm) : '') + '</div>' +
+      (mot.foraDaEmpresa ? '<p class="field-hint warn">Atenção: a foto do ' + (mot.foraDaEmpresa.lado === 'esquerdo' ? 'lado do motorista' : 'lado do passageiro') + ' foi tirada a ' + escapeHtml(kmTexto(mot.foraDaEmpresa.distancia)) + ' do local da conferência (pode ter sido fora da empresa).</p>' : '');
+  }
+  function carregarCaminhao(cargaId, alvoId) {
+    var c = session && session.role !== 'representante' ? findCarga(cargaId) : null;
+    var p = c ? Promise.resolve({ fotosCaminhao: c.fotosCaminhao || {} }) : db.rpc('fotos_caminhao', { p_carga: cargaId });
+    p.then(function(r) {
+      var el = document.getElementById(alvoId);
+      if (!el) return;
+      el.innerHTML = r ? caminhaoFotosHtml(r.fotosCaminhao) : '<p class="field-hint">Carga não encontrada.</p>';
+      carregarFotosCanhoto(el);
+    }).catch(function(e) {
+      console.warn('fotos do caminhão', e);
+      var el = document.getElementById(alvoId);
+      if (el) el.innerHTML = '<p class="field-hint">Não foi possível carregar as fotos agora.</p>';
+    });
+  }
+  function abrirFotosCaminhao(cargaId) {
+    var c = findCarga(cargaId);
+    if (!c) return;
+    gerAbrir({
+      titulo: 'Fotos do caminhão · carga ' + cargaCode(c),
+      html: '<p class="hint">' + escapeHtml([formatDateBR(c.data), c.motorista ? 'motorista ' + c.motorista : '', (c.clientes || []).map(function(x) { return x.cliente; }).filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + '</p>' +
+        '<div id="cn-cam-ver">' + caminhaoFotosHtml(c.fotosCaminhao) + '</div>',
+      depois: function() { carregarFotosCanhoto(document.getElementById('cn-cam-ver')); }
+    });
+  }
+  function fotosCaminhaoRow(c, id, row) {
+    if (mode !== 'db') return '';
+    var r = resumoFotosCaminhao(c);
+    return row('Fotos do caminhão', escapeHtml(r.texto) + (podeVerCanhotos() && (r.nConf || r.nMot) ? '<button type="button" class="btn-text" data-action="ver-fotos-caminhao" data-id="' + id + '">Ver fotos</button>' : ''),
+      r.fora ? 'ask' : (r.nConf === 2 && r.nMot === 2 ? 'ok' : ''));
+  }
+
+  // ----- aba Canhotos (controle) -----
+  function statusCanhoto(c) {
+    var st = c.status || 'pendente';
+    if (st === 'pendente') {
+      if (!c.entregue) return Object.assign({ key: 'viagem' }, ROTULO_CANHOTO.viagem);
+      var dias = c.entregueEm ? Math.floor((Date.now() - Date.parse(c.entregueEm)) / 86400000) : 0;
+      if (dias >= CANHOTO_ATRASO_DIAS) return Object.assign({ key: 'atrasado', dias: dias }, ROTULO_CANHOTO.atrasado, { txt: 'Sem foto há ' + dias + ' dias' });
+      return Object.assign({ key: 'pendente' }, ROTULO_CANHOTO.pendente, { txt: 'Sem foto' });
+    }
+    return Object.assign({ key: st }, ROTULO_CANHOTO[st] || ROTULO_CANHOTO.pendente);
+  }
+  var ORDEM_CANHOTO = { problema: 0, atrasado: 1, enviado: 2, pendente: 3, viagem: 4, conferido: 5 };
+  function dataRefCanhoto(c) { return String(c.entregueEm || c.dataCarga || c.criadoEm || ''); }
+  function noPeriodoCanhoto(c) {
+    var d = dataRefCanhoto(c).slice(0, 10);
+    if (cnUi.periodo === 'tudo' || !d) return true;
+    var hoje = new Date();
+    if (cnUi.periodo === '30') return d >= isoFromDate(new Date(hoje.getTime() - 30 * 86400000));
+    var ini = new Date(hoje.getFullYear(), hoje.getMonth() - (cnUi.periodo === 'mesant' ? 1 : 0), 1), fim = new Date(ini.getFullYear(), ini.getMonth() + 1, 0);
+    return d >= isoFromDate(ini) && d <= isoFromDate(fim);
+  }
+  function filtrarCanhotos(lista, comFiltro) {
+    var q = normNome(cnUi.busca);
+    return lista.filter(function(c) {
+      if (!noPeriodoCanhoto(c)) return false;
+      if (cnUi.rep === '-' && c.representanteRef) return false;
+      if (cnUi.rep && cnUi.rep !== '-' && c.representanteRef !== cnUi.rep) return false;
+      if (q && normNome([c.cliente, c.documento, c.nf, c.pedidoNf, c.motorista, c.representanteNome, c.cargaId ? cargaCode({ id: c.cargaId }) : ''].join(' ')).indexOf(q) < 0) return false;
+      if (!comFiltro || !cnUi.filtro) return true;
+      var k = statusCanhoto(c).key;
+      if (cnUi.filtro === 'acao') return k === 'problema' || k === 'atrasado' || k === 'enviado' || k === 'pendente';
+      if (cnUi.filtro === 'pendente') return k === 'pendente' || k === 'atrasado';
+      return k === cnUi.filtro;
+    }).sort(function(a, b) {
+      return (ORDEM_CANHOTO[statusCanhoto(a).key] - ORDEM_CANHOTO[statusCanhoto(b).key]) || dataRefCanhoto(b).localeCompare(dataRefCanhoto(a));
+    });
+  }
+  function cartaoCanhotoHtml(c) {
+    var s = statusCanhoto(c), fotos = (c.fotos || []).slice(0, 3);
+    var linha1 = [c.nf ? 'NF ' + c.nf : (c.pedidoNf ? (/^\s*(nf|pedido)/i.test(c.pedidoNf) ? c.pedidoNf : 'Pedido/NF ' + c.pedidoNf) : ''),
+      c.entregueEm ? 'entregue ' + formatDateTimeBR(c.entregueEm) : (c.dataCarga ? 'carga de ' + formatDateBR(c.dataCarga) : ''),
+      c.motorista ? 'motorista ' + c.motorista : ''].filter(Boolean).join(' · ');
+    return '<div class="frete-item cn-item est-' + s.est + '" data-cn="' + escapeHtml(c.id) + '" role="button" tabindex="0">' +
+      '<div class="frete-top"><span><b>' + escapeHtml(c.cliente || '—') + '</b></span><span class="chip-est ' + s.cls + '">' + escapeHtml(s.txt) + '</span></div>' +
+      (linha1 ? '<div class="frete-sub">' + escapeHtml(linha1) + '</div>' : '') +
+      '<div class="frete-sub">' + escapeHtml(c.representanteNome ? 'Representante: ' + c.representanteNome : 'Sem representante') + (c.fisico ? ' · canhoto em papel recebido' : '') + '</div>' +
+      (c.status === 'problema' && c.problema ? '<div class="frete-sub alerta">Pedido de nova foto: ' + escapeHtml(c.problema.motivo) + '</div>' : '') +
+      (c.status === 'pendente' && c.motivoSemFoto ? '<div class="frete-sub">Sem foto: ' + escapeHtml(c.motivoSemFoto) + '</div>' : '') +
+      (fotos.length ? '<div class="cn-thumbs">' + fotos.map(function(f) { return '<img data-cn-foto="' + escapeHtml(f) + '" alt="Foto do canhoto" />'; }).join('') + '</div>' : '') +
+      '</div>';
+  }
+  function renderCanhotosSelo() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="canhotos"]');
+    if (!b) return;
+    var n = podeConferirCanhotos() ? canhotos.filter(function(c) { var k = statusCanhoto(c).key; return k === 'enviado' || k === 'atrasado'; }).length : 0;
+    seloAba(b, n, n + (n === 1 ? ' canhoto a conferir ou atrasado' : ' canhotos a conferir ou atrasados'));
+  }
+  function sincronizarCanhotos() {
+    if (cnUi.sincronizado || !podeVerCanhotos() || !canhotosCarregado || !records.length) return;
+    cnUi.sincronizado = true;
+    var tem = {};
+    canhotos.forEach(function(c) { tem[c.id] = true; });
+    var ids = records.filter(function(r) {
+      return r.tipo !== 'devolucao' && r.cargaId && !tem[r.id] && /^[A-Za-z0-9_-]+$/.test(r.id) && String(r.criadoEm || r.data || '') >= CANHOTO_DESDE;
+    }).map(function(r) { return r.id; });
+    abrirCanhotosDaCarga(ids);
+  }
+  function carregarRepsCanhotos() {
+    if (cnUi.reps || !podeVerCanhotos()) return Promise.resolve(cnUi.reps || []);
+    return db.rpc('canhotos_representantes', {}).then(function(l) { cnUi.reps = Array.isArray(l) ? l : []; return cnUi.reps; })
+      .catch(function(e) { console.warn('representantes', e); return []; });
+  }
+  function renderCanhotos() {
+    var el = document.getElementById('cn-conteudo');
+    if (!el) return;
+    if (!podeVerCanhotos()) { el.innerHTML = '<p class="empty-state">O seu acesso não abre os canhotos.</p>'; return; }
+    sincronizarCanhotos();
+    if (!cnUi.reps) carregarRepsCanhotos().then(function() { if (ui.tab === 'canhotos') renderCanhotos(); });
+    var foco = document.activeElement && document.activeElement.id === 'cn-busca' ? document.activeElement.selectionStart : null;
+    var areas = '<nav class="segmented q-areas" aria-label="Canhotos ou caminhões">' +
+      '<button type="button" class="seg-btn' + (cnUi.area === 'canhotos' ? ' active' : '') + '" data-cnarea="canhotos">Canhotos</button>' +
+      '<button type="button" class="seg-btn' + (cnUi.area === 'caminhoes' ? ' active' : '') + '" data-cnarea="caminhoes">Fotos dos caminhões</button></nav>';
+    var html = '<p class="tagline">Canhotos das notas assinados pelos clientes, fotografados na entrega, e as fotos do caminhão (antes de lonar e lonado). Veem: diretoria, logística, financeiro, faturamento, comercial e o representante de cada cliente.</p>' + areas;
+    if (cnUi.area === 'caminhoes') { el.innerHTML = html + caminhoesListaHtml(); carregarFotosCanhoto(el); return; }
+    var base = filtrarCanhotos(canhotos, false);
+    var cont = { acao: 0, enviado: 0, pendente: 0, atrasado: 0, problema: 0, conferido: 0, viagem: 0 };
+    base.forEach(function(c) { var k = statusCanhoto(c).key; cont[k]++; if (k !== 'conferido' && k !== 'viagem') cont.acao++; });
+    if (!cnUi.filtro && canhotosCarregado) cnUi.filtro = cont.acao ? 'acao' : 'todos';
+    var filtroAtual = cnUi.filtro || 'todos';
+    var lista = filtrarCanhotos(canhotos, filtroAtual !== 'todos');
+    var FILTROS = [['acao', 'Precisa de atenção', cont.acao], ['enviado', 'A conferir', cont.enviado], ['pendente', 'Sem foto', cont.pendente + cont.atrasado],
+      ['problema', 'Refazer', cont.problema], ['conferido', 'Conferidos', cont.conferido], ['viagem', 'Em viagem', cont.viagem], ['todos', 'Todos', base.length]];
+    var reps = cnUi.reps || [];
+    html += '<div class="summary cn-resumo">' +
+      '<div class="stat"><div class="stat-value">' + cont.enviado + '</div><div class="stat-label">a conferir</div></div>' +
+      '<div class="stat"><div class="stat-value' + (cont.atrasado ? ' alerta' : '') + '">' + (cont.pendente + cont.atrasado) + '</div><div class="stat-label">sem foto' + (cont.atrasado ? ' (' + cont.atrasado + ' há ' + CANHOTO_ATRASO_DIAS + '+ dias)' : '') + '</div></div>' +
+      '<div class="stat"><div class="stat-value' + (cont.problema ? ' alerta' : '') + '">' + cont.problema + '</div><div class="stat-label">refazer foto</div></div>' +
+      '<div class="stat"><div class="stat-value">' + cont.conferido + '</div><div class="stat-label">conferidos</div></div></div>' +
+      '<div class="cn-ctrl">' +
+        '<label>Buscar<input type="search" id="cn-busca" autocomplete="off" placeholder="Cliente, NF, motorista ou carga" value="' + escapeHtml(cnUi.busca) + '" /></label>' +
+        '<label>Período<select id="cn-periodo">' + [['30', 'Últimos 30 dias'], ['mes', 'Este mês'], ['mesant', 'Mês passado'], ['tudo', 'Tudo']].map(function(o) {
+          return '<option value="' + o[0] + '"' + (cnUi.periodo === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></label>' +
+        '<label>Representante<select id="cn-rep"><option value="">Todos</option><option value="-"' + (cnUi.rep === '-' ? ' selected' : '') + '>Sem representante</option>' +
+          reps.map(function(r) { return '<option value="' + escapeHtml(r.ref) + '"' + (cnUi.rep === r.ref ? ' selected' : '') + '>' + escapeHtml(r.nome) + '</option>'; }).join('') + '</select></label>' +
+      '</div>' +
+      '<div class="cn-filtros" role="group" aria-label="Situação">' + FILTROS.map(function(f) {
+        return '<button type="button" class="cn-filtro" data-cnf="' + f[0] + '" aria-pressed="' + (filtroAtual === f[0] ? 'true' : 'false') + '">' + f[1] + '<span class="n">' + f[2] + '</span></button>';
+      }).join('') + '</div>';
+    if (!canhotosCarregado) html += '<p class="empty-state">Carregando…</p>';
+    else if (!lista.length) html += '<p class="empty-state">' + (canhotos.length ? 'Nenhum canhoto neste filtro.' : 'Nenhum canhoto ainda. Eles aparecem quando um carregamento é concluído.') + '</p>';
+    else html += lista.slice(0, cnUi.mostrar).map(cartaoCanhotoHtml).join('') +
+      (lista.length > cnUi.mostrar ? '<button type="button" class="btn btn-secondary btn-sm" data-cnmais="1">Mostrar mais (' + (lista.length - cnUi.mostrar) + ')</button>' : '');
+    html += '<div class="cn-acoes"><button type="button" class="btn btn-secondary btn-sm" data-cnexportar="1"' + (lista.length ? '' : ' disabled') + '>Exportar esta lista (planilha)</button></div>';
+    el.innerHTML = html;
+    if (foco !== null) { var bi = document.getElementById('cn-busca'); bi.focus(); try { bi.setSelectionRange(foco, foco); } catch (e) {} }
+    carregarFotosCanhoto(el);
+  }
+  function caminhoesListaHtml() {
+    var q = normNome(cnUi.busca);
+    var lista = cargas.filter(function(c) {
+      if (c.status !== 'concluida') return false;
+      var d = String(c.concluidoEm || c.data || '').slice(0, 10);
+      if (cnUi.periodo !== 'tudo' && d < isoFromDate(new Date(Date.now() - 30 * 86400000))) return false;
+      return !q || normNome([c.motorista, cargaCode(c), (c.clientes || []).map(function(x) { return x.cliente; }).join(' ')].join(' ')).indexOf(q) >= 0;
+    }).sort(function(a, b) { return String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); });
+    var html = '<div class="cn-ctrl"><label>Buscar<input type="search" id="cn-busca" autocomplete="off" placeholder="Motorista, cliente ou carga" value="' + escapeHtml(cnUi.busca) + '" /></label>' +
+      '<label>Período<select id="cn-periodo"><option value="30"' + (cnUi.periodo !== 'tudo' ? ' selected' : '') + '>Últimos 30 dias</option><option value="tudo"' + (cnUi.periodo === 'tudo' ? ' selected' : '') + '>Tudo</option></select></label></div>';
+    if (!lista.length) return html + '<p class="empty-state">Nenhum carregamento concluído no período.</p>';
+    return html + lista.slice(0, 80).map(function(c) {
+      var r = resumoFotosCaminhao(c), ok = r.nConf === 2 && r.nMot === 2;
+      return '<div class="frete-item cn-item est-' + (r.fora ? 'falta' : ok ? 'pago' : 'confirmar') + '" data-cncarga="' + escapeHtml(c.id) + '" role="button" tabindex="0">' +
+        '<div class="frete-top"><span><b>Carga ' + escapeHtml(cargaCode(c)) + '</b> · ' + escapeHtml(formatDateTimeBR(c.concluidoEm) || formatDateBR(c.data)) + '</span><span class="chip-est ' + (r.fora ? 'falta' : ok ? 'pago' : 'confirmar') + '">' + (r.fora ? 'Ver localização' : ok ? '4 fotos' : 'Faltam fotos') + '</span></div>' +
+        '<div class="frete-sub">' + escapeHtml([c.motorista, (c.clientes || []).map(function(x) { return x.cliente; }).filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + '</div>' +
+        '<div class="frete-sub">' + escapeHtml(r.texto) + '</div></div>';
+    }).join('');
+  }
+  function linhaCanhoto(k, v) { return v ? '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + v + '</span></div>' : ''; }
+  var ACAO_HIST = { foto: 'enviou foto', sem_foto: 'sem foto', conferido: 'conferiu', problema: 'pediu nova foto', reabrir: 'reabriu', fisico: 'recebeu o papel', fisico_desfazer: 'desmarcou o papel' };
+  function abrirCanhoto(id) {
+    var c = canhotos.find(function(x) { return x.id === id; });
+    if (!c) return;
+    var podeMarcar = podeConferirCanhotos(), podeEnviar = podeVerCanhotos();
+    var s = statusCanhoto(c), nf = (c.fotos || []).length;
+    var reps = cnUi.reps || [];
+    var acoes = '';
+    if (podeMarcar) {
+      acoes = '<div class="cn-acoes">' +
+        (nf && c.status !== 'conferido' ? '<button type="button" class="btn btn-primary btn-sm" data-ger="conferido">✓ Canhoto conferido</button>' : '') +
+        (nf && c.status !== 'problema' ? '<button type="button" class="btn btn-secondary btn-sm" data-ger="problema">Pedir nova foto</button>' : '') +
+        (c.status === 'conferido' || c.status === 'problema' ? '<button type="button" class="btn-text" data-ger="reabrir">Reabrir</button>' : '') +
+        '<button type="button" class="btn-text" data-ger="' + (c.fisico ? 'fisico_desfazer' : 'fisico') + '">' + (c.fisico ? 'Desmarcar papel recebido' : 'Canhoto em papel recebido') + '</button></div>' +
+        '<div class="cn-caixa hidden" id="cn-problema-box"><label>O que precisa refazer? <span class="req">*</span><select id="cn-problema-motivo"><option value="">Escolha…</option>' +
+          MOTIVOS_REFAZER.map(function(m) { return '<option>' + escapeHtml(m) + '</option>'; }).join('') + '</select></label>' +
+          '<label class="hidden" id="cn-problema-outro-l">Qual? <span class="req">*</span><input type="text" id="cn-problema-outro" maxlength="120" autocomplete="off" /></label>' +
+          '<button type="button" class="btn btn-secondary btn-sm" data-ger="problema_ok">Pedir nova foto ao motorista</button></div>' +
+        '<div class="cn-caixa"><label>Representante do cliente<select id="cn-rep-sel"><option value="">— sem representante —</option>' +
+          reps.map(function(r) { return '<option value="' + escapeHtml(r.ref) + '"' + (c.representanteRef === r.ref ? ' selected' : '') + '>' + escapeHtml(r.nome) + '</option>'; }).join('') +
+          (c.representanteRef && !reps.some(function(r) { return r.ref === c.representanteRef; }) ? '<option value="' + escapeHtml(c.representanteRef) + '" selected>' + escapeHtml(c.representanteNome || c.representanteRef) + '</option>' : '') +
+          '</select></label><label class="check-row"><input type="checkbox" id="cn-rep-todos" checked /> Vale para os outros canhotos deste cliente sem representante (e os próximos)</label>' +
+          '<button type="button" class="btn-text" data-ger="rep_salvar">Salvar representante</button></div>';
+    }
+    if (podeEnviar && c.status !== 'conferido') acoes += '<div class="cn-acoes"><button type="button" class="btn btn-secondary btn-sm" data-ger="foto">Enviar foto do canhoto</button></div>';
+    var hist = (c.historico || []).slice().reverse().slice(0, 12);
+    gerAbrir({
+      titulo: 'Canhoto · ' + (c.cliente || ''),
+      html: '<div><span class="chip-est ' + s.cls + '" style="margin-left:0">' + escapeHtml(s.txt) + '</span></div>' +
+        (nf ? '<div class="cn-fotos-grandes">' + c.fotos.map(function(f) { return '<img data-cn-foto="' + escapeHtml(f) + '" alt="Foto do canhoto" />'; }).join('') + '</div>'
+          : '<p class="empty-state" style="margin:10px 0">Ainda sem foto do canhoto.</p>') +
+        '<div class="pedido-resumo">' +
+          linhaCanhoto('Cliente', escapeHtml(c.cliente || '')) +
+          linhaCanhoto(escapeHtml(docLabel(c.documento, 'CPF/CNPJ')), c.documento ? escapeHtml(formatDocument(c.documento)) : '') +
+          linhaCanhoto('Nota fiscal', escapeHtml(c.nf || '')) + linhaCanhoto('Pedido/NF', escapeHtml(c.pedidoNf || '')) +
+          linhaCanhoto('Carga', c.cargaId ? escapeHtml(cargaCode({ id: c.cargaId }) + (c.dataCarga ? ' · ' + formatDateBR(c.dataCarga) : '')) : '') +
+          linhaCanhoto('Motorista', escapeHtml(c.motorista || '')) +
+          linhaCanhoto('Entregue', c.entregueEm ? escapeHtml(formatDateTimeBR(c.entregueEm)) + (c.recebidoPor ? ' · recebido por ' + escapeHtml(c.recebidoPor) : '') : 'ainda não') +
+          linhaCanhoto('Foto enviada', c.enviadoEm ? escapeHtml(formatDateTimeBR(c.enviadoEm) + (c.enviadoPor ? ' por ' + c.enviadoPor : '')) + (c.enviadoLoc ? ' · ' + locLink(c.enviadoLoc) : '') : '') +
+          linhaCanhoto('Sem foto', c.status === 'pendente' ? escapeHtml(c.motivoSemFoto || '') : '') +
+          linhaCanhoto('Refazer', c.status === 'problema' && c.problema ? escapeHtml(c.problema.motivo + ' (' + (c.problema.por || '—') + ', ' + formatDateTimeBR(c.problema.em) + ')') : '') +
+          linhaCanhoto('Conferido', c.status === 'conferido' && c.conferidoEm ? escapeHtml(formatDateTimeBR(c.conferidoEm) + (c.conferidoPor ? ' por ' + c.conferidoPor : '')) : '') +
+          linhaCanhoto('Canhoto em papel', c.fisico ? escapeHtml('recebido ' + formatDateTimeBR(c.fisico.em) + (c.fisico.por ? ' por ' + c.fisico.por : '')) : '') +
+          linhaCanhoto('Representante', escapeHtml(c.representanteNome || 'nenhum')) +
+        '</div>' + acoes +
+        '<div class="section-head"><h2 class="section-title">Fotos do caminhão desta carga</h2></div><div id="cn-caminhao">' + (c.cargaId ? '<p class="field-hint">Carregando…</p>' : '<p class="field-hint">Entrega sem carga.</p>') + '</div>' +
+        (hist.length ? '<div class="section-head"><h2 class="section-title">Histórico</h2></div><ul class="cn-hist">' + hist.map(function(h) {
+          return '<li>' + escapeHtml(formatDateTimeBR(h.em) + ' · ' + (h.por || '—') + ' ' + (ACAO_HIST[h.acao] || h.acao) + (h.motivo ? ': ' + h.motivo : '') + (h.n ? ' (' + h.n + (h.n === 1 ? ' foto)' : ' fotos)') : '')) + '</li>';
+        }).join('') + '</ul>' : ''),
+      depois: function() {
+        var corpo = document.getElementById('ger-form-body');
+        carregarFotosCanhoto(corpo);
+        if (c.cargaId) carregarCaminhao(c.cargaId, 'cn-caminhao');
+        var sel = document.getElementById('cn-problema-motivo');
+        if (sel) sel.addEventListener('change', function() { toggleHidden('cn-problema-outro-l', sel.value !== 'Outro'); });
+      },
+      acao: function(a) {
+        if (a === 'foto') { abrirEnvioCanhoto(id, function() { abrirCanhoto(id); }); return; }
+        if (a === 'problema') { toggleHidden('cn-problema-box', false); document.getElementById('cn-problema-motivo').focus(); return; }
+        if (a === 'rep_salvar') {
+          var ref = document.getElementById('cn-rep-sel').value, todos = document.getElementById('cn-rep-todos').checked;
+          db.rpc('canhoto_representante', { p_id: id, p_ref: ref, p_todos: todos }).then(function(n) {
+            if (db.recarregar) db.recarregar('canhotos');
+            showToast(ref ? 'Representante salvo' + (n > 1 ? ' em ' + n + ' canhotos deste cliente.' : '.') : 'Representante retirado.');
+            gerFechar();
+          }).catch(function(e) { console.error('representante do canhoto', e); gerErro('Não foi possível salvar agora. Tente de novo.'); });
+          return;
+        }
+        var motivo = '';
+        if (a === 'problema_ok') {
+          var m = document.getElementById('cn-problema-motivo').value;
+          motivo = m === 'Outro' ? (document.getElementById('cn-problema-outro').value.trim() ? 'Outro: ' + document.getElementById('cn-problema-outro').value.trim() : '') : m;
+          if (!motivo) { gerErro('Escolha o que precisa refazer.'); return; }
+          a = 'problema';
+        }
+        db.rpc('canhoto_marcar', { p_id: id, p_acao: a, p_motivo: motivo }).then(function(novo) {
+          aplicarCanhotoLocal(id, novo);
+          showToast(a === 'conferido' ? 'Canhoto conferido.' : a === 'problema' ? 'Pedido de nova foto enviado ao motorista.' : a === 'fisico' ? 'Canhoto em papel marcado como recebido.' : 'Canhoto atualizado.');
+          abrirCanhoto(id);
+        }).catch(function(e) { console.error('marcar canhoto', e); gerErro('Não foi possível salvar agora. Tente de novo.'); });
+      }
+    });
+  }
+  function exportarCanhotos() {
+    var lista = filtrarCanhotos(canhotos, (cnUi.filtro || 'todos') !== 'todos');
+    var cab = ['Cliente', 'CPF/CNPJ', 'NF', 'Pedido/NF', 'Carga', 'Data da carga', 'Entregue em', 'Recebido por', 'Motorista', 'Representante', 'Situação',
+      'Foto enviada em', 'Enviada por', 'Conferido em', 'Conferido por', 'Motivo sem foto', 'Pedido de nova foto', 'Canhoto em papel', 'Fotos'];
+    var linhas = lista.map(function(c) {
+      return [c.cliente, c.documento ? formatDocument(c.documento) : '', c.nf, c.pedidoNf, c.cargaId ? cargaCode({ id: c.cargaId }) : '', c.dataCarga ? formatDateBR(c.dataCarga) : '',
+        c.entregueEm ? formatDateTimeBR(c.entregueEm) : '', c.recebidoPor, c.motorista, c.representanteNome, statusCanhoto(c).txt,
+        c.enviadoEm ? formatDateTimeBR(c.enviadoEm) : '', c.enviadoPor, c.conferidoEm ? formatDateTimeBR(c.conferidoEm) : '', c.conferidoPor,
+        c.motivoSemFoto, c.problema ? c.problema.motivo : '', c.fisico ? 'recebido ' + formatDateTimeBR(c.fisico.em) : '', (c.fotos || []).length];
+    });
+    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(function(v) { return csvEscape(v == null ? '' : v); }).join(';'); }).join('\r\n');
+    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), 'levissima-canhotos-' + todayIso() + '.csv');
+  }
+  var cnConteudo = document.getElementById('cn-conteudo');
+  cnConteudo.addEventListener('click', function(e) {
+    var t = e.target;
+    var a = t.closest('[data-cnarea]'); if (a) { cnUi.area = a.dataset.cnarea; renderCanhotos(); return; }
+    var f = t.closest('[data-cnf]'); if (f) { cnUi.filtro = f.dataset.cnf; cnUi.mostrar = 60; renderCanhotos(); return; }
+    if (t.closest('[data-cnmais]')) { cnUi.mostrar += 60; renderCanhotos(); return; }
+    if (t.closest('[data-cnexportar]')) { exportarCanhotos(); return; }
+    var cg = t.closest('[data-cncarga]'); if (cg) { abrirFotosCaminhao(cg.dataset.cncarga); return; }
+    var it = t.closest('[data-cn]'); if (it) abrirCanhoto(it.dataset.cn);
+  });
+  cnConteudo.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    var it = e.target.closest('[data-cn], [data-cncarga]');
+    if (!it || e.target.tagName === 'INPUT') return;
+    e.preventDefault();
+    if (it.dataset.cncarga) abrirFotosCaminhao(it.dataset.cncarga); else abrirCanhoto(it.dataset.cn);
+  });
+  cnConteudo.addEventListener('input', function(e) { if (e.target.id === 'cn-busca') { cnUi.busca = e.target.value; cnUi.mostrar = 60; renderCanhotos(); } });
+  cnConteudo.addEventListener('change', function(e) {
+    if (e.target.id === 'cn-periodo') { cnUi.periodo = e.target.value; renderCanhotos(); }
+    if (e.target.id === 'cn-rep') { cnUi.rep = e.target.value; renderCanhotos(); }
+  });
+
+  // ----- portal do representante: canhotos dos clientes dele (só ver) -----
+  function renderRepCanhotos() {
+    var el = document.getElementById('rep-canhotos');
+    if (!el || !session || session.role !== 'representante') return;
+    var lista = canhotos.slice().sort(function(a, b) { return dataRefCanhoto(b).localeCompare(dataRefCanhoto(a)); });
+    document.getElementById('rep-cn-n').textContent = lista.length ? String(lista.length) : '';
+    el.innerHTML = !canhotosCarregado ? '<p class="empty-state">Carregando…</p>'
+      : lista.length ? lista.slice(0, 60).map(cartaoCanhotoHtml).join('') : '<p class="empty-state">Nenhum canhoto dos seus clientes ainda.</p>';
+    carregarFotosCanhoto(el);
+  }
+  document.getElementById('rep-canhotos').addEventListener('click', function(e) {
+    var it = e.target.closest('[data-cn]');
+    if (it) abrirCanhoto(it.dataset.cn);
+  });
+
+  // ----- Cadastros › Acesso ao app: pessoas do escritório com acesso individual -----
+  function blocoEscritorioHtml(carregando) {
+    var escs = (acessoInfo && acessoInfo.escritorio) || [];
+    var html = '<h3 class="acesso-sub">Pessoas do escritório (acesso individual)</h3>' +
+      '<p class="field-hint">Cada pessoa entra com a própria senha, vê o mesmo que a senha da equipe e aparece com o nome dela. Marque quem vê os canhotos e as fotos do caminhão (aba Canhotos).</p>';
+    escs.forEach(function(x) {
+      var canh = (x.modulos || []).indexOf('canhotos') >= 0;
+      html += confirmRemoverSetor === x.ref
+        ? '<div class="driver-confirm">Remover o acesso de “' + escapeHtml(x.nome) + '”? Quem estiver usando sai do app.' +
+          '<button class="btn-text danger" data-action="setor-remover-confirmar" data-ref="' + escapeHtml(x.ref) + '">Remover</button><button class="btn-text" data-action="setor-remover-cancelar">Cancelar</button></div>'
+        : '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="est-sub">' + (canh ? 'vê os canhotos e as fotos do caminhão' : 'sem os canhotos') + '</span></span>' +
+          '<button class="btn-text" data-action="esc-editar" data-ref="' + escapeHtml(x.ref) + '">Editar</button>' +
+          '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
+    });
+    var semAcesso = carregando ? [] : equipe.filter(function(m) { return m.veCanhotos && !escs.some(function(x) { return x.ref === 'escritorio:' + m.id; }); })
+      .sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); });
+    semAcesso.forEach(function(m) {
+      html += '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + '<span class="est-sub">' + escapeHtml((m.area ? m.area + ' · ' : '') + 'vai ver os canhotos · ainda sem acesso') + '</span></span>' +
+        '<button class="btn-text" data-action="esc-criar" data-id="' + escapeHtml(m.id) + '">Criar acesso</button></div>';
+    });
+    if (!carregando && !escs.length && !semAcesso.length) html += '<p class="field-hint">Nenhum ainda.</p>';
+    return html + '<button type="button" class="btn btn-secondary btn-sm" data-action="esc-novo" style="margin-top:10px">+ Acesso individual</button>';
+  }
+  function abrirAcessoEscritorio(x, membro) {
+    var nomeIni = x ? x.nome : membro ? membro.nome : '';
+    var canh = x ? (x.modulos || []).indexOf('canhotos') >= 0 : true;
+    gerAbrir({
+      titulo: x ? 'Acesso de ' + x.nome : 'Novo acesso individual do escritório', botao: 'Salvar',
+      html: '<p class="hint">A pessoa entra com a própria senha e vê o mesmo que a senha da equipe do escritório (Cargas, Paletes e chapatex, Estoque…), com o nome dela. Quem cria a senha é você, aqui; passe a senha só para a pessoa.</p>' +
+        '<label>Nome <span class="req">*</span><input type="text" id="esc-nome" maxlength="60" autocomplete="off" list="esc-nomes" value="' + escapeHtml(nomeIni) + '" /></label>' +
+        '<datalist id="esc-nomes">' + equipe.map(function(m) { return '<option value="' + escapeHtml(m.nome) + '"></option>'; }).join('') + '</datalist>' +
+        '<label>' + (x ? 'Nova senha <span class="opt">(deixe em branco para manter)</span>' : 'Senha <span class="req">*</span>') + '<input type="password" id="esc-senha" autocomplete="new-password" /></label>' +
+        '<label>Repita a senha<input type="password" id="esc-senha2" autocomplete="new-password" /></label>' +
+        '<label class="check-row"><input type="checkbox" id="esc-canhotos"' + (canh ? ' checked' : '') + ' /> Vê os canhotos e as fotos do caminhão (aba Canhotos)</label>' +
+        '<p class="field-hint">Mínimo de 6 caracteres, diferente das outras senhas.</p>',
+      salvar: function() {
+        var nome = gerVal('esc-nome'), senha = document.getElementById('esc-senha').value, senha2 = document.getElementById('esc-senha2').value;
+        var veCanh = document.getElementById('esc-canhotos').checked;
+        if (!nome) return gerErro('Digite o nome.');
+        if (!x && !senha) return gerErro('Crie a senha.');
+        if (senha && senha.length < 6) return gerErro('A senha precisa ter pelo menos 6 caracteres.');
+        if (senha !== senha2) return gerErro('As duas senhas não são iguais.');
+        var escs = (acessoInfo && acessoInfo.escritorio) || [];
+        var m = membro || equipe.find(function(e) { return normNome(e.nome) === normNome(nome); });
+        var ref = x ? x.ref : 'escritorio:' + (m && /^[A-Za-z0-9_-]{1,64}$/.test(m.id) ? m.id : (slug(nome) || 'pessoa') + '-' + uid().slice(-6));
+        if (!x && escs.some(function(e) { return e.ref === ref; })) return gerErro('Essa pessoa já tem acesso individual. Use “Editar”.');
+        var modulos = veCanh ? ['canhotos'] : [];
+        var corpo = senha ? { acao: 'definir', ref: ref, nome: nome, senha: senha, modulos: modulos } : { acao: 'ajustar', ref: ref, nome: nome, modulos: modulos };
+        return chamarAcesso(corpo).then(function() {
+          acessoInfo = null; renderAcessoAdmin();
+          showToast(x ? 'Acesso salvo. Quem já está no app vê a mudança no próximo login.' : 'Acesso de ' + nome + ' criado.');
+        }).catch(function(e) {
+          var c = e && e.codigo;
+          gerErro(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.' : 'Não foi possível salvar agora. Tente novamente.');
+          return false;
+        });
+      }
+    });
+  }
+
   // ---------- init ----------
   function preenchido(v) { return !!v && String(v).indexOf('COLE' + '_AQUI') === -1; } // (o marcador é montado em partes de propósito)
   function carregarScript(src) {
@@ -16903,6 +17798,8 @@
       },
       doc: function(caminho) { var p = String(caminho).split('/'); return docRef(p[0], p[1]); },
       rpc: rpc,
+      aplicarLocal: aplicar, // o que uma função do banco devolveu já aparece na tela (o tempo real confirma depois)
+      recarregar: recarregar,
       batch: function() {
         var ops = [];
         return {
@@ -16957,6 +17854,7 @@
     subscribeCadastroPedidos();
     subscribeAgOnline();
     subscribeMetas();
+    subscribeCanhotos();
   }
   function comecarSessao(s, senhaDigitada, token) {
     session = s;
