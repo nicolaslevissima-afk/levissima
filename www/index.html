@@ -1015,6 +1015,15 @@
   .func-set legend { font-size: 0.8125rem; color: var(--muted); margin-bottom: 8px; padding: 0; }
   .func-chip { display: inline-block; font-size: 0.6875rem; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); margin-left: 8px; font-weight: 600; vertical-align: 1px; }
   .func-chip.cargo { color: #702082; border-color: rgba(112, 32, 130, 0.45); }
+  .func-chip.app { color: var(--wood); border-color: rgba(var(--wood-rgb), 0.45); }
+  .acesso-set { border-top: 1px solid var(--line); padding-top: 12px; }
+  .acesso-titulo { font-size: 0.875rem; font-weight: 700; margin: 10px 0 4px; }
+  .acesso-grupo { margin: 0 0 10px; }
+  .acesso-grupo-t { font-size: 0.8125rem; color: var(--muted); margin: 6px 0 4px; }
+  .acesso-grade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 12px; }
+  .acesso-mod { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .acesso-gerir { font-size: 0.75rem; color: var(--muted); }
+  .fat-badge.lib { color: #702082; background: rgba(112, 32, 130, 0.08); }
 
   .resumo-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 8px; }
   .resumo-table th { text-align: right; font-weight: 600; color: var(--muted); font-size: 0.75rem; padding: 6px 4px; border-bottom: 1px solid var(--line); }
@@ -2291,7 +2300,7 @@
       </label>
 
       <div class="group hidden" id="cgc-fotos-sec">
-        <p class="group-title">Fotos do caminhão antes de lonar <span class="req">*</span></p>
+        <p class="group-title" id="cgc-fotos-t">Fotos do caminhão antes de lonar <span class="req">*</span></p>
         <p class="hint">Quem confere tira as duas fotos, com a carga à mostra, antes de lonar. Elas ficam no controle de canhotos.</p>
         <div class="foto-grade" id="cgc-fotos"></div>
       </div>
@@ -2373,7 +2382,7 @@
         </label>
       </div>
       <fieldset class="func-set">
-        <legend>O que essa pessoa faz <span class="req">*</span></legend>
+        <legend>O que essa pessoa faz (assina com a senha de 4 números)</legend>
         <label class="check"><input type="checkbox" id="f-equipe-fat" /> Dá o ok do faturamento</label>
         <label class="check"><input type="checkbox" id="f-equipe-conf" /> Confere o carregamento (expedição)</label>
         <label class="check"><input type="checkbox" id="f-equipe-fin" /> Dá o ok do financeiro (pedidos da força de vendas)</label>
@@ -2386,7 +2395,19 @@
         <label class="check"><input type="checkbox" id="f-equipe-compras" /> Assistente de compras (faz as cotações)</label>
         <label class="check"><input type="checkbox" id="f-equipe-aprovacompra" /> Aprova compras na etapa final <span class="opt">(o cargo diretor já aprova)</span></label>
       </fieldset>
-      <p class="hint">Quando essa senha for digitada, o ok do faturamento ou a conferência saem no nome desta pessoa. Sem senha ainda? A pessoa cria a própria em “Criar a minha senha” e a senha mestre aprova.</p>
+      <fieldset class="func-set acesso-set hidden" id="equipe-acesso-set">
+        <legend>Acesso ao app (senha própria)</legend>
+        <p class="field-hint" id="equipe-acesso-status"></p>
+        <div class="row-2">
+          <label><span id="equipe-acesso-senha-rot">Senha de acesso ao app</span><input type="password" id="f-equipe-acesso-senha" autocomplete="new-password" /></label>
+          <label>Repita a senha<input type="password" id="f-equipe-acesso-senha2" autocomplete="new-password" /></label>
+        </div>
+        <p class="field-hint">Mínimo de 6 caracteres, diferente das outras senhas. Quem cria é você; passe a senha só para a pessoa.</p>
+        <p class="acesso-titulo">O que essa pessoa pode acessar no app</p>
+        <div id="equipe-acesso-checks"></div>
+        <button type="button" class="btn-text danger hidden" id="btn-equipe-acesso-remover">Remover o acesso ao app</button>
+      </fieldset>
+      <p class="hint">A senha de 4 números assina (ok do faturamento, conferência…) no nome desta pessoa. Sem senha ainda? A pessoa cria a própria em “Criar a minha senha” e a senha mestre aprova. A senha de acesso ao app é outra: é com ela que a pessoa entra no app.</p>
       <p class="form-error hidden" id="equipe-form-error"></p>
       <div class="sheet-actions">
         <button type="button" class="btn btn-secondary" id="btn-equipe-cancel">Cancelar</button>
@@ -4260,7 +4281,8 @@
             '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
       });
       blocoSetores += '<button type="button" class="btn btn-secondary btn-sm" data-action="dir-novo" style="margin-top:10px">+ Novo acesso da diretoria</button>';
-      blocoSetores += blocoEscritorioHtml(carregando);
+      blocoSetores += '<h3 class="acesso-sub">Acessos individuais (senha própria de cada pessoa)</h3>' +
+        '<p class="field-hint">Ficam em <b>Equipe com senha</b>, mais abaixo: toque em Editar no nome da pessoa, crie a senha de acesso e marque o que ela pode acessar.</p>';
     }
     el.innerHTML = '<div class="driver-row"><span class="driver-name">Senha mestre<span class="est-sub">a sua: abre tudo, inclusive Cadastros, Pesquisas e todos os módulos</span></span>' +
       '<button class="btn-text" data-action="acesso-mestre">Trocar</button></div>' + linhaEquipe + blocoSetores;
@@ -4283,7 +4305,13 @@
       info.setores.sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
       acessoInfo = info;
     }).catch(function(e) { console.error('acesso lista', e); acessoInfo = { erro: true }; })
-      .then(function() { acessoBuscando = false; renderAcessoAdmin(); renderFvAdmin(); renderRepCadPage(false); });
+      .then(function() {
+        acessoBuscando = false; renderAcessoAdmin(); renderFvAdmin(); renderRepCadPage(false); renderEquipeAdmin();
+        if (acessoFormPendente && !document.getElementById('equipe-sheet-overlay').classList.contains('hidden')) {
+          acessoFormPendente = false;
+          prepararAcessoMembro(equipe.find(function(m) { return m.id === editingMembroId; }) || null);
+        }
+      });
   }
   function openAcessoForm(modo) {
     acessoModo = modo;
@@ -4342,9 +4370,6 @@
     else if (a === 'acesso-equipe-cancelar') { confirmRemoverEquipe = false; renderAcessoAdmin(); }
     else if (a === 'setor-novo') openSetorForm('novo', null);
     else if (a === 'dir-novo') abrirAcessoDiretoria(null);
-    else if (a === 'esc-novo') abrirAcessoEscritorio(null, null);
-    else if (a === 'esc-criar') abrirAcessoEscritorio(null, equipe.find(function(m) { return m.id === b.dataset.id; }) || null);
-    else if (a === 'esc-editar') abrirAcessoEscritorio(((acessoInfo && acessoInfo.escritorio) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null, null);
     else if (a === 'dir-editar') abrirAcessoDiretoria(((acessoInfo && acessoInfo.diretoria) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null);
     else if (a === 'dir-apagar-rosto') {
       if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Confirmar: apagar rosto'; return; }
@@ -5020,7 +5045,7 @@
     html += '<div class="detail-actions">' +
       (done ? '' : liberadaCarga(c) ? '<button type="button" class="btn btn-primary" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>'
         : '<p class="hint" style="margin:0">' + escapeHtml(faltaOkTexto(c)) + ': pedido da força de vendas só carrega depois dos dois oks.</p>') +
-      verMapa + chamar + links + '</div>';
+      liberacaoBotaoHtml(c, id) + verMapa + chamar + links + '</div>';
     return html;
   }
 
@@ -5575,6 +5600,8 @@
     }
     if (action === 'conf-barras') { closeCargaDetail(); abrirConferencia(id); return; }
     if (action === 'ver-fotos-caminhao') { closeCargaDetail(); abrirFotosCaminhao(id); return; }
+    if (action === 'liberar-carga') { closeCargaDetail(); abrirLiberacaoCarga(id, function() { openCargaDetail(id); }); return; }
+    if (action === 'desfazer-liberacao') { desfazerLiberacaoCarga(id); return; }
     if (action === 'mapa-carga') { openMapaCarga(id); return; }
     if (action === 'detalhes') { openCargaDetail(id); return; }
     if (action === 'pager-entregar') { entregarPagerAuto(id); return; }
@@ -5649,13 +5676,21 @@
   var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'canhotos', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
+  // abas que a equipe do escritório pode ter; no acesso individual, a senha mestre marca quais a pessoa vê (19/10/2026)
+  var ABAS_EQUIPE = [['cargas', 'Cargas'], ['paletes', 'Paletes e chapatex'], ['estoque', 'Estoque'], ['producao', 'Produção'], ['materia', 'Matéria-prima'],
+    ['agenda', 'Agenda'], ['salas', 'Salas'], ['qualidade', 'Qualidade'], ['metas', 'Metas'], ['compras', 'Compras']];
   function abasPermitidas() {
-    if (session && session.role === 'equipe') return ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras'].concat(podeVerCanhotos() ? ['canhotos'] : []);
+    if (session && session.role === 'equipe') {
+      var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
+      return ['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
+        .concat(podeVerCanhotos() ? ['canhotos'] : []);
+    }
     return mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos'; });
   }
+  function abaPadrao(permitidas) { return permitidas.indexOf('cargas') >= 0 ? 'cargas' : permitidas[0]; }
   function applyTab() {
     var permitidas = abasPermitidas();
-    if (permitidas.indexOf(ui.tab) < 0) ui.tab = 'cargas';
+    if (permitidas.indexOf(ui.tab) < 0) ui.tab = abaPadrao(permitidas);
     document.querySelectorAll('#admin-tabs .seg-btn').forEach(function(b) { b.classList.toggle('hidden', permitidas.indexOf(b.dataset.tab) < 0); });
     document.getElementById('admin-tabs').classList.toggle('tabs-3', permitidas.length === 3);
     document.getElementById('admin-tabs').classList.toggle('tabs-grade', permitidas.length > 6);
@@ -5685,7 +5720,7 @@
   }
   function setTab(t) {
     if (ui.tab === 'pesquisas' && t !== 'pesquisas') bloquearPesquisas(); // saiu da aba: fecha as respostas
-    ui.tab = abasPermitidas().indexOf(t) >= 0 ? t : 'cargas';
+    ui.tab = abasPermitidas().indexOf(t) >= 0 ? t : abaPadrao(abasPermitidas());
     savePref(LOCAL_TAB_KEY, ui.tab);
     applyTab();
     window.scrollTo(0, 0);
@@ -7352,7 +7387,13 @@
   var cargaConcludeId = null;
   function openCargaConclude(carga) {
     if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
-    if (!duplaOk(carga)) { showToast(duplaMudou(carga) ? 'A carga mudou depois da dupla conferência: refaça a conferência antes de concluir.' : 'Antes de concluir, faça a dupla conferência por código de barras (sem divergência).'); abrirConferencia(carga.id); return; }
+    if (!duplaOk(carga) && !liberacaoDe(carga)) {
+      // quem pode liberar (senha mestre ou a permissão "liberar_carga") escolhe: liberar sem leitura ou fazer a conferência
+      if (podeLiberarCarga()) { abrirLiberacaoCarga(carga.id, function() { var c2 = findCarga(carga.id); if (c2) openCargaConclude(c2); }); return; }
+      showToast((duplaMudou(carga) ? 'A carga mudou depois da dupla conferência: refaça a conferência antes de concluir.' : 'Antes de concluir, faça a dupla conferência por código de barras (sem divergência).') +
+        ' Sem a leitura, só conclui com a liberação de quem tem essa permissão.');
+      abrirConferencia(carga.id); return;
+    }
     cargaConcludeId = carga.id;
     function row(k, v) { return '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + escapeHtml(v) + '</span></div>'; }
     document.getElementById('cgc-resumo').innerHTML =
@@ -7360,7 +7401,8 @@
       row('Motorista', carga.motorista || '—') +
       (carga.numeroPager ? row('Pager', String(carga.numeroPager)) : '') +
       row('Faturamento', carga.faturamentoOk ? 'ok de ' + (carga.faturamentoPor || '—') : 'aguardando ok') +
-      row('Dupla conferência', duplaOk(carga) ? 'ok (' + carga.dupla.r1.por + ' e ' + carga.dupla.r2.por + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, '')) +
+      (liberacaoDe(carga) && !duplaOk(carga) ? row('Liberação', liberacaoTexto(carga)) :
+        row('Dupla conferência', duplaOk(carga) ? 'ok (' + carga.dupla.r1.por + ' e ' + carga.dupla.r2.por + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, ''))) +
       (carga.obs ? row('Observações', carga.obs) : '');
     var devBox = document.getElementById('cgc-devolucao');
     if (carga.entregaAnterior) {
@@ -7487,7 +7529,7 @@
     if (!clientesOut.some(function(cl) { return cl.itens.length; })) { errEl.textContent = 'Confira ao menos um produto com quantidade.'; errEl.classList.remove('hidden'); return; }
     var dupC = (findCarga(cargaConcludeId) || {}).dupla || {};
     var espOut = esperadoConferencia({ clientes: clientesOut });
-    if (!dupC.r1 || !dupC.r2 || !lidosBatem(dupC.r1.lidos, espOut) || !lidosBatem(dupC.r2.lidos, espOut)) {
+    if (!liberacaoDe(findCarga(cargaConcludeId)) && (!dupC.r1 || !dupC.r2 || !lidosBatem(dupC.r1.lidos, espOut) || !lidosBatem(dupC.r2.lidos, espOut))) {
       errEl.textContent = 'Os paletes não batem com a dupla conferência por código de barras. Corrija as quantidades ou refaça a conferência.';
       errEl.classList.remove('hidden'); return;
     }
@@ -8472,9 +8514,10 @@
     txt(ctx, fmtInt(c.totalChapatex) + ' chapatex', R - 20, y + 96, rFont(700, 40, R_MONO), RC.teal, 'right');
     y += boxH + 44;
 
-    if (c.obs) {
+    var obsOrdem = [liberacaoTexto(c), c.obs].filter(Boolean).join(' · ');
+    if (obsOrdem) {
       ctx.font = rFont(400, 28, R_DISP);
-      var obsLines = wrapLines(ctx, c.obs, CW, 4);
+      var obsLines = wrapLines(ctx, obsOrdem, CW, 7);
       for (i = 0; i < obsLines.length; i++) txt(ctx, obsLines[i], L, y + i * 38, rFont(400, 28, R_DISP), RC.ink, 'left');
       y += obsLines.length * 38 + 20;
     }
@@ -8614,6 +8657,7 @@
     });
     L.push('');
     L.push('*Total:* ' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) + ' · ' + fmtInt(c.totalChapatex) + ' chapatex');
+    if (liberacaoDe(c)) L.push('Atenção: ' + liberacaoTexto(c) + '.');
     if (c.obs) L.push('Obs.: ' + c.obs);
     L.push('');
     L.push('No app: toque em “Saí para entrega” ao sair e conclua cada entrega com a assinatura do cliente.' +
@@ -10732,6 +10776,7 @@
   function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r2 && d.r1.ok && d.r2.ok) && !duplaMudou(c); }
   function duplaCardHtml(c, id) {
     if (c.status === 'concluida') return '';
+    if (liberacaoDe(c) && !duplaOk(c)) return '<span class="fat-badge lib">✓ ' + escapeHtml(liberacaoTexto(c, true)) + '</span>';
     var s = situacaoDupla(c);
     return '<button type="button" class="fat-badge ' + (duplaOk(c) ? 'ok' : 'pend') + '" data-action="conf-barras" data-id="' + id + '">' + escapeHtml(s.txt) +
       (duplaOk(c) ? '' : '<span class="fat-badge-cta">' + (c.dupla && c.dupla.r1 ? 'Fazer a 2ª' : 'Conferir') + '</span>') + '</button>';
@@ -10741,7 +10786,7 @@
     var txt = d.r1 ? '1ª: ' + d.r1.por + ' (' + formatDateTimeBR(d.r1.em) + (d.r1.ok ? ', ok' : ', com divergência') + ')' : 'pendente';
     if (d.r2) txt += ' · 2ª: ' + d.r2.por + ' (' + formatDateTimeBR(d.r2.em) + (d.r2.ok ? ', ok' : ', com divergência') + ')';
     var botao = c.status === 'concluida' ? '' : '<button type="button" class="btn-text" data-action="conf-barras" data-id="' + id + '">' + (s.feita ? 'Ver' : d.r1 ? 'Fazer a 2ª' : 'Conferir') + '</button>';
-    return row('Dupla conferência', escapeHtml(txt) + botao, duplaOk(c) ? 'ok' : (s.divergencia ? 'ask' : ''));
+    return row('Dupla conferência', escapeHtml(txt) + botao, duplaOk(c) ? 'ok' : (s.divergencia ? 'ask' : '')) + liberacaoDetailRow(c, id, row);
   }
 
   // ----- folha da conferência -----
@@ -16694,13 +16739,14 @@
   function renderEquipeAdmin() {
     var list = document.getElementById('equipe-list');
     var sorted = equipe.slice().sort(function(a, b) { return (a.nome || '').localeCompare(b.nome || '', 'pt-BR'); });
+    if (gereAcessos() && !acessoInfo && !acessoBuscando) carregarAcessoInfo();
     if (!sorted.length) {
       list.innerHTML = '<p class="empty-state">Ninguém cadastrado. Sem isso, ninguém consegue dar o ok do faturamento, do financeiro ou da logística, nem conferir com senha.</p>';
       return;
     }
     list.innerHTML = sorted.map(function(m) {
       if (confirmDeleteMembro === m.id) {
-        return '<div class="driver-confirm">Remover ' + escapeHtml(m.nome) + '? Os oks já dados continuam registrados.' +
+        return '<div class="driver-confirm">Remover ' + escapeHtml(m.nome) + '? Os oks já dados continuam registrados.' + (acessoDoMembro(m) ? ' O acesso ao app também é removido.' : '') +
           '<button class="btn-text danger" data-action="confirm-remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
           '<button class="btn-text" data-action="cancel-remove-membro">Cancelar</button></div>';
       }
@@ -16709,10 +16755,14 @@
         (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '') +
         (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '') +
         (m.coordenador ? '<span class="func-chip">Autoriza compras' + (m.setores ? ' (' + escapeHtml(m.setores) + ')' : '') + '</span>' : '') + (m.compras ? '<span class="func-chip">Compras</span>' : '') + (m.aprovaCompra ? '<span class="func-chip">Aprova compras</span>' : '');
+      if (gereAcessos() && acessoInfo && !acessoInfo.erro) {
+        var ax = acessoDoMembro(m);
+        chips += ax ? '<span class="func-chip app">App: ' + escapeHtml(resumoAcesso(modulosEfetivos(ax))) + '</span>' : '<span class="func-chip">sem acesso ao app</span>';
+      }
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
-    }).join('');
+    }).join('') + acessosOrfaosHtml();
   }
   var editingMembroId = null;
   // cargos do organograma (pedido de 17/10/2026): coordenador, supervisor e gerente autorizam o pedido de compra antes da
@@ -16727,7 +16777,7 @@
     document.getElementById('equipe-nome-label').classList.toggle('hidden', kind !== 'add');
     document.getElementById('f-equipe-nome').value = m ? m.nome : '';
     document.getElementById('f-equipe-pin').value = '';
-    document.getElementById('f-equipe-pin-text').innerHTML = kind === 'add' ? 'Senha de 4 números <span class="req">*</span>' : 'Nova senha de 4 números <span class="opt">(deixe em branco para manter)</span>';
+    document.getElementById('f-equipe-pin-text').innerHTML = kind === 'add' ? 'Senha de 4 números <span class="opt">(para assinar; em branco, a pessoa cria depois)</span>' : 'Nova senha de 4 números <span class="opt">(deixe em branco para manter)</span>';
     document.getElementById('f-equipe-cargo').value = m && m.cargo ? m.cargo : '';
     document.getElementById('f-equipe-area').value = m && m.area ? m.area : '';
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
@@ -16742,6 +16792,7 @@
     document.getElementById('f-equipe-compras').checked = m ? !!m.compras : false;
     document.getElementById('f-equipe-aprovacompra').checked = m ? !!m.aprovaCompra : false;
     document.getElementById('equipe-form-error').classList.add('hidden');
+    prepararAcessoMembro(m);
     document.getElementById('equipe-sheet-overlay').classList.remove('hidden');
     setTimeout(function() { document.getElementById(kind === 'add' ? 'f-equipe-nome' : 'f-equipe-pin').focus(); }, 30);
   }
@@ -16772,7 +16823,14 @@
       confirmDeleteMembro = null; renderEquipeAdmin();
     } else if (action === 'confirm-remove-membro') {
       confirmDeleteMembro = null;
-      deleteMembro(id).catch(function(err) { console.error('remove membro error', err); });
+      var axr = acessoDoMembro(equipe.find(function(x) { return x.id === id; }));
+      deleteMembro(id).then(function() {
+        if (axr) return chamarAcesso({ acao: 'remover', ref: axr.ref }).then(function() { acessoInfo = null; renderEquipeAdmin(); renderAcessoAdmin(); });
+      }).catch(function(err) { console.error('remove membro error', err); });
+    } else if (action === 'acesso-orfao-remover') {
+      if (btn.dataset.ok !== '1') { btn.dataset.ok = '1'; btn.textContent = 'Confirmar: remover'; return; }
+      chamarAcesso({ acao: 'remover', ref: btn.dataset.ref }).then(function() { acessoInfo = null; renderEquipeAdmin(); renderAcessoAdmin(); showToast('Acesso removido.'); })
+        .catch(function(err) { console.error('remover acesso', err); showToast('Não foi possível remover agora.'); });
     }
   });
   document.getElementById('equipe-form').addEventListener('submit', function(e) {
@@ -16788,8 +16846,16 @@
     var err = document.getElementById('equipe-form-error');
     var fail = function(msg) { err.textContent = msg; err.classList.remove('hidden'); };
     if (!editingMembroId && !nome) return fail('Informe o nome.');
-    if ((!editingMembroId || pin) && !/^[0-9]{4}$/.test(pin)) return fail('A senha precisa ter 4 números.');
-    if (!cargo && !fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Escolha o cargo ou marque o que essa pessoa faz.');
+    if (pin && !/^[0-9]{4}$/.test(pin)) return fail('A senha de assinar precisa ter 4 números.');
+    var acesso = gereAcessos() && !document.getElementById('equipe-acesso-set').classList.contains('hidden') ? {
+      senha: document.getElementById('f-equipe-acesso-senha').value, senha2: document.getElementById('f-equipe-acesso-senha2').value, modulos: lerAcessoChecks() } : null;
+    if (acesso && (acesso.senha || acesso.senha2)) {
+      if (acesso.senha.length < 6) return fail('A senha de acesso ao app precisa ter pelo menos 6 caracteres.');
+      if (acesso.senha !== acesso.senha2) return fail('As duas senhas de acesso ao app não são iguais.');
+    }
+    var membroAtual = editingMembroId ? equipe.find(function(x) { return x.id === editingMembroId; }) : null;
+    var temAcesso = !!(acesso && (acesso.senha || acessoDoMembro(membroAtual)));
+    if (!cargo && !area && !temAcesso && !fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Escolha o cargo, marque o que essa pessoa faz ou dê o acesso ao app.');
     if (!editingMembroId && equipe.some(function(m) { return normNome(m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
     (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
@@ -16799,9 +16865,10 @@
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area };
       if (hash) patch.pinHash = hash;
       return (editingMembroId
-        ? saveMembro(editingMembroId, patch)
-        : saveMembro(null, Object.assign({ nome: nome, criadoEm: new Date().toISOString() }, patch))
-      ).then(function() { closeEquipeForm(); });
+        ? saveMembro(editingMembroId, patch).then(function() { return editingMembroId; })
+        : saveMembro(null, Object.assign({ nome: nome, criadoEm: new Date().toISOString() }, patch)).then(function(ref) { return ref && ref.id; })
+      ).then(function(idSalvo) { return salvarAcessoMembro(idSalvo, nome || (membroAtual && membroAtual.nome) || '', acesso, fail); })
+        .then(function(okAcesso) { if (okAcesso !== false) closeEquipeForm(); });
     }).catch(function(e2) {
       console.error('membro save error', e2);
       fail(e2 && e2.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : 'Não foi possível salvar agora. Tente novamente.');
@@ -17121,14 +17188,17 @@
   });
   function prepararFotosConferencia() {
     toggleHidden('cgc-fotos-sec', mode !== 'db');
+    var lib = liberacaoDe(findCarga(cargaConcludeId));
+    document.getElementById('cgc-fotos-t').innerHTML = 'Fotos do caminhão antes de lonar ' + (lib ? '<span class="opt">(opcional: carga liberada sem fotos)</span>' : '<span class="req">*</span>');
     campoCaminhaoConf.limpar();
     locConferencia = null;
   }
   function validarFotosConferencia() {
-    return mode === 'db' && !campoCaminhaoConf.completo() ? 'Tire as duas fotos do caminhão (lado do motorista e lado do passageiro) antes de lonar.' : null;
+    if (mode !== 'db' || liberacaoDe(findCarga(cargaConcludeId))) return null;
+    return !campoCaminhaoConf.completo() ? 'Tire as duas fotos do caminhão (lado do motorista e lado do passageiro) antes de lonar.' : null;
   }
   function subirFotosConferencia(cargaId, conferente, conferenteId) {
-    if (mode !== 'db') return Promise.resolve(null);
+    if (mode !== 'db' || !campoCaminhaoConf.arquivos().length) return Promise.resolve(null);
     return Promise.all(campoCaminhaoConf.arquivos().map(function(a) {
       return enviarFotoCanhotos('caminhao/' + cargaId + '/conferencia-' + a.slot + '-' + uid(), a.file).then(function(c) { return [a.slot, c]; });
     })).then(function(pares) {
@@ -17142,15 +17212,18 @@
   function fotosMotoristaDe(c) { return (c && c.fotosCaminhao && c.fotosCaminhao.motorista) || {}; }
   function ladosFaltando(c) {
     if (mode !== 'db') return [];
+    var lib = liberacaoDe(c);
+    if (lib && lib.semFotos) return [];
     var fm = fotosMotoristaDe(c);
     return LADOS_CAMINHAO.filter(function(l) { return !fm[l.id]; });
   }
   var lonaEnviando = {}, lonaAlvo = null, filaLona = Promise.resolve();
   function lonaHtml(c) {
     if (mode !== 'db') return '';
-    var fm = fotosMotoristaDe(c), id = escapeHtml(c.id);
-    return '<div class="lona-bloco"><p class="lona-t"><b>Fotos do caminhão lonado</b> <span class="req">*</span></p>' +
-      '<p class="hint">Ainda dentro da empresa, depois de lonar: uma foto de cada lado, com o caminhão inteiro visível.</p><div class="foto-grade">' +
+    var fm = fotosMotoristaDe(c), id = escapeHtml(c.id), lib = liberacaoDe(c);
+    return '<div class="lona-bloco"><p class="lona-t"><b>Fotos do caminhão lonado</b> ' + (lib ? '<span class="opt">(opcional)</span>' : '<span class="req">*</span>') + '</p>' +
+      (lib ? '<p class="hint">Carga liberada sem as fotos do caminhão' + (lib.por ? ' por ' + escapeHtml(lib.por) : '') + '. Se der, tire assim mesmo.</p>'
+        : '<p class="hint">Ainda dentro da empresa, depois de lonar: uma foto de cada lado, com o caminhão inteiro visível.</p>') + '<div class="foto-grade">' +
       LADOS_CAMINHAO.map(function(l) {
         if (fm[l.id]) return '<div class="foto-tile feita"><span class="foto-ico" aria-hidden="true">✓</span><span class="foto-tile-t">' + escapeHtml(l.nome) + '</span><small>enviada às ' + escapeHtml(horaDe(fm[l.id + 'Em'] || '')) + '</small></div>';
         if (lonaEnviando[c.id + ':' + l.id]) return '<div class="foto-tile"><span class="foto-ico" aria-hidden="true">⏳</span><span class="foto-tile-t">' + escapeHtml(l.nome) + '</span><small>enviando…</small></div>';
@@ -17215,8 +17288,9 @@
   function resumoFotosCaminhao(c) {
     var fc = (c && c.fotosCaminhao) || {}, conf = fc.conferencia || {}, mot = fc.motorista || {};
     var nConf = LADOS_CAMINHAO.filter(function(l) { return conf[l.id]; }).length, nMot = LADOS_CAMINHAO.filter(function(l) { return mot[l.id]; }).length;
-    return { nConf: nConf, nMot: nMot, fora: !!mot.foraDaEmpresa,
-      texto: 'antes de lonar: ' + (nConf === 2 ? '2 fotos ✓' : nConf ? '1 de 2 fotos' : 'sem fotos') + ' · lonado (motorista): ' + (nMot === 2 ? '2 fotos ✓' : nMot ? '1 de 2 fotos' : 'falta') + (mot.foraDaEmpresa ? ' · ⚠ fora da empresa?' : '') };
+    var lib = liberacaoDe(c);
+    return { nConf: nConf, nMot: nMot, fora: !!mot.foraDaEmpresa, lib: lib,
+      texto: (lib ? 'liberada sem fotos' + (lib.por ? ' por ' + lib.por : '') + ' · ' : '') + 'antes de lonar: ' + (nConf === 2 ? '2 fotos ✓' : nConf ? '1 de 2 fotos' : 'sem fotos') + ' · lonado (motorista): ' + (nMot === 2 ? '2 fotos ✓' : nMot ? '1 de 2 fotos' : 'falta') + (mot.foraDaEmpresa ? ' · ⚠ fora da empresa?' : '') };
   }
   function caminhaoFotosHtml(fc) {
     fc = fc || {};
@@ -17252,6 +17326,7 @@
     gerAbrir({
       titulo: 'Fotos do caminhão · carga ' + cargaCode(c),
       html: '<p class="hint">' + escapeHtml([formatDateBR(c.data), c.motorista ? 'motorista ' + c.motorista : '', (c.clientes || []).map(function(x) { return x.cliente; }).filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + '</p>' +
+        (liberacaoDe(c) ? '<p class="field-hint warn">' + escapeHtml(liberacaoTexto(c)) + '</p>' : '') +
         '<div id="cn-cam-ver">' + caminhaoFotosHtml(c.fotosCaminhao) + '</div>',
       depois: function() { carregarFotosCanhoto(document.getElementById('cn-cam-ver')); }
     });
@@ -17393,8 +17468,9 @@
     if (!lista.length) return html + '<p class="empty-state">Nenhum carregamento concluído no período.</p>';
     return html + lista.slice(0, 80).map(function(c) {
       var r = resumoFotosCaminhao(c), ok = r.nConf === 2 && r.nMot === 2;
-      return '<div class="frete-item cn-item est-' + (r.fora ? 'falta' : ok ? 'pago' : 'confirmar') + '" data-cncarga="' + escapeHtml(c.id) + '" role="button" tabindex="0">' +
-        '<div class="frete-top"><span><b>Carga ' + escapeHtml(cargaCode(c)) + '</b> · ' + escapeHtml(formatDateTimeBR(c.concluidoEm) || formatDateBR(c.data)) + '</span><span class="chip-est ' + (r.fora ? 'falta' : ok ? 'pago' : 'confirmar') + '">' + (r.fora ? 'Ver localização' : ok ? '4 fotos' : 'Faltam fotos') + '</span></div>' +
+      var est = r.fora ? 'falta' : ok ? 'pago' : r.lib ? 'aprovar' : 'confirmar';
+      return '<div class="frete-item cn-item est-' + est + '" data-cncarga="' + escapeHtml(c.id) + '" role="button" tabindex="0">' +
+        '<div class="frete-top"><span><b>Carga ' + escapeHtml(cargaCode(c)) + '</b> · ' + escapeHtml(formatDateTimeBR(c.concluidoEm) || formatDateBR(c.data)) + '</span><span class="chip-est ' + est + '">' + (r.fora ? 'Ver localização' : ok ? '4 fotos' : r.lib ? 'Liberada sem fotos' : 'Faltam fotos') + '</span></div>' +
         '<div class="frete-sub">' + escapeHtml([c.motorista, (c.clientes || []).map(function(x) { return x.cliente; }).filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + '</div>' +
         '<div class="frete-sub">' + escapeHtml(r.texto) + '</div></div>';
     }).join('');
@@ -17534,64 +17610,181 @@
     if (it) abrirCanhoto(it.dataset.cn);
   });
 
-  // ----- Cadastros › Acesso ao app: pessoas do escritório com acesso individual -----
-  function blocoEscritorioHtml(carregando) {
-    var escs = (acessoInfo && acessoInfo.escritorio) || [];
-    var html = '<h3 class="acesso-sub">Pessoas do escritório (acesso individual)</h3>' +
-      '<p class="field-hint">Cada pessoa entra com a própria senha, vê o mesmo que a senha da equipe e aparece com o nome dela. Marque quem vê os canhotos e as fotos do caminhão (aba Canhotos).</p>';
-    escs.forEach(function(x) {
-      var canh = (x.modulos || []).indexOf('canhotos') >= 0;
-      html += confirmRemoverSetor === x.ref
-        ? '<div class="driver-confirm">Remover o acesso de “' + escapeHtml(x.nome) + '”? Quem estiver usando sai do app.' +
-          '<button class="btn-text danger" data-action="setor-remover-confirmar" data-ref="' + escapeHtml(x.ref) + '">Remover</button><button class="btn-text" data-action="setor-remover-cancelar">Cancelar</button></div>'
-        : '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="est-sub">' + (canh ? 'vê os canhotos e as fotos do caminhão' : 'sem os canhotos') + '</span></span>' +
-          '<button class="btn-text" data-action="esc-editar" data-ref="' + escapeHtml(x.ref) + '">Editar</button>' +
-          '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
-    });
-    var semAcesso = carregando ? [] : equipe.filter(function(m) { return m.veCanhotos && !escs.some(function(x) { return x.ref === 'escritorio:' + m.id; }); })
-      .sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); });
-    semAcesso.forEach(function(m) {
-      html += '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + '<span class="est-sub">' + escapeHtml((m.area ? m.area + ' · ' : '') + 'vai ver os canhotos · ainda sem acesso') + '</span></span>' +
-        '<button class="btn-text" data-action="esc-criar" data-id="' + escapeHtml(m.id) + '">Criar acesso</button></div>';
-    });
-    if (!carregando && !escs.length && !semAcesso.length) html += '<p class="field-hint">Nenhum ainda.</p>';
-    return html + '<button type="button" class="btn btn-secondary btn-sm" data-action="esc-novo" style="margin-top:10px">+ Acesso individual</button>';
+  // =====================================================================================================
+  // LIBERAÇÃO DE CARGA SEM LEITURA DO CÓDIGO DE BARRAS E SEM FOTOS DO CAMINHÃO (pedido de 19/10/2026)
+  // Só a senha mestre e quem tem a permissão "liberar_carga" (Cadastros › Equipe com senha › Acesso ao app).
+  // A liberação fica registrada na carga (excecao: quem, quando, motivo) pela função carga_excecao (migração 0016);
+  // a expedição conclui sem a dupla conferência e sem as fotos, e o motorista sai sem as fotos do caminhão lonado.
+  function podeLiberarCarga() {
+    return mode === 'db' && !!session && ((session.role === 'admin' && !session.soInclui) || (session.role === 'equipe' && temPermissao('liberar_carga')));
   }
-  function abrirAcessoEscritorio(x, membro) {
-    var nomeIni = x ? x.nome : membro ? membro.nome : '';
-    var canh = x ? (x.modulos || []).indexOf('canhotos') >= 0 : true;
+  function liberacaoDe(c) { return c && c.excecao && c.excecao.semConferencia ? c.excecao : null; }
+  function liberacaoTexto(c, curto) {
+    var x = liberacaoDe(c);
+    if (!x) return '';
+    return (curto ? 'Liberada sem leitura e sem fotos' : 'Liberada sem leitura do código de barras e sem fotos do caminhão') +
+      (x.por ? ' por ' + x.por : '') + (!curto && x.em ? ' em ' + formatDateTimeBR(x.em) : '') + (!curto && x.motivo ? ' — motivo: ' + x.motivo : '');
+  }
+  function liberacaoDetailRow(c, id, row) {
+    var x = liberacaoDe(c);
+    if (!x) return '';
+    var desfazer = c.status !== 'concluida' && podeLiberarCarga()
+      ? '<button type="button" class="btn-text" data-action="desfazer-liberacao" data-id="' + id + '">Desfazer</button>' : '';
+    return row('Liberação', escapeHtml(liberacaoTexto(c)) + desfazer, 'ask');
+  }
+  function liberacaoBotaoHtml(c, id) {
+    if (!podeLiberarCarga() || liberacaoDe(c)) return '';
+    var done = c.status === 'concluida';
+    if (!done && duplaOk(c)) return '';
+    if (done && (!ladosFaltando(c).length || (c.viagem && c.viagem.saidaEm))) return '';
+    return '<button type="button" class="btn btn-secondary" data-action="liberar-carga" data-id="' + id + '">' + (done ? 'Liberar a saída sem as fotos do caminhão' : 'Liberar sem leitura e sem fotos') + '</button>';
+  }
+  function abrirLiberacaoCarga(cargaId, depois) {
+    var c = findCarga(cargaId);
+    if (!c || mode !== 'db') return;
+    var done = c.status === 'concluida';
     gerAbrir({
-      titulo: x ? 'Acesso de ' + x.nome : 'Novo acesso individual do escritório', botao: 'Salvar',
-      html: '<p class="hint">A pessoa entra com a própria senha e vê o mesmo que a senha da equipe do escritório (Cargas, Paletes e chapatex, Estoque…), com o nome dela. Quem cria a senha é você, aqui; passe a senha só para a pessoa.</p>' +
-        '<label>Nome <span class="req">*</span><input type="text" id="esc-nome" maxlength="60" autocomplete="off" list="esc-nomes" value="' + escapeHtml(nomeIni) + '" /></label>' +
-        '<datalist id="esc-nomes">' + equipe.map(function(m) { return '<option value="' + escapeHtml(m.nome) + '"></option>'; }).join('') + '</datalist>' +
-        '<label>' + (x ? 'Nova senha <span class="opt">(deixe em branco para manter)</span>' : 'Senha <span class="req">*</span>') + '<input type="password" id="esc-senha" autocomplete="new-password" /></label>' +
-        '<label>Repita a senha<input type="password" id="esc-senha2" autocomplete="new-password" /></label>' +
-        '<label class="check-row"><input type="checkbox" id="esc-canhotos"' + (canh ? ' checked' : '') + ' /> Vê os canhotos e as fotos do caminhão (aba Canhotos)</label>' +
-        '<p class="field-hint">Mínimo de 6 caracteres, diferente das outras senhas.</p>',
+      titulo: 'Liberar a carga ' + cargaCode(c), botao: 'Liberar',
+      html: '<p class="hint">' + (done ? 'O motorista vai poder sair <b>sem as fotos do caminhão lonado</b>.'
+          : 'A carga vai poder ser concluída <b>sem a dupla conferência por código de barras</b> e <b>sem as fotos do caminhão</b> (antes de lonar, na expedição, e lonado, no app do motorista).') +
+        ' A liberação fica registrada na carga com o seu nome, a data e o motivo, e aparece na ordem de carregamento.</p>' +
+        (done ? '' : '<p class="field-hint">Para fazer a conferência normal, toque em Cancelar e depois em “Conferir”.</p>') +
+        '<label>Motivo <span class="req">*</span><textarea id="lib-motivo" rows="2" maxlength="300" placeholder="Ex.: leitor de código de barras com defeito"></textarea></label>',
       salvar: function() {
-        var nome = gerVal('esc-nome'), senha = document.getElementById('esc-senha').value, senha2 = document.getElementById('esc-senha2').value;
-        var veCanh = document.getElementById('esc-canhotos').checked;
-        if (!nome) return gerErro('Digite o nome.');
-        if (!x && !senha) return gerErro('Crie a senha.');
-        if (senha && senha.length < 6) return gerErro('A senha precisa ter pelo menos 6 caracteres.');
-        if (senha !== senha2) return gerErro('As duas senhas não são iguais.');
-        var escs = (acessoInfo && acessoInfo.escritorio) || [];
-        var m = membro || equipe.find(function(e) { return normNome(e.nome) === normNome(nome); });
-        var ref = x ? x.ref : 'escritorio:' + (m && /^[A-Za-z0-9_-]{1,64}$/.test(m.id) ? m.id : (slug(nome) || 'pessoa') + '-' + uid().slice(-6));
-        if (!x && escs.some(function(e) { return e.ref === ref; })) return gerErro('Essa pessoa já tem acesso individual. Use “Editar”.');
-        var modulos = veCanh ? ['canhotos'] : [];
-        var corpo = senha ? { acao: 'definir', ref: ref, nome: nome, senha: senha, modulos: modulos } : { acao: 'ajustar', ref: ref, nome: nome, modulos: modulos };
-        return chamarAcesso(corpo).then(function() {
-          acessoInfo = null; renderAcessoAdmin();
-          showToast(x ? 'Acesso salvo. Quem já está no app vê a mudança no próximo login.' : 'Acesso de ' + nome + ' criado.');
+        var motivo = gerVal('lib-motivo');
+        if (motivo.length < 3) return gerErro('Escreva o motivo da liberação.');
+        return db.rpc('carga_excecao', { p_carga: cargaId, p_acao: 'liberar', p_motivo: motivo }).then(function(novo) {
+          if (novo && db.aplicarLocal) db.aplicarLocal('cargas', cargaId, novo);
+          showToast('Carga liberada sem leitura e sem fotos. A liberação fica registrada na carga.');
+          if (depois) setTimeout(depois, 0);
         }).catch(function(e) {
-          var c = e && e.codigo;
-          gerErro(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.' : 'Não foi possível salvar agora. Tente novamente.');
-          return false;
+          console.error('liberar carga', e);
+          return gerErro(/permissao/.test(String((e && (e.message || e.code)) || e)) ? 'O seu acesso não pode liberar cargas.' : 'Não foi possível liberar agora. Tente de novo.');
         });
       }
     });
+  }
+  function desfazerLiberacaoCarga(cargaId) {
+    db.rpc('carga_excecao', { p_carga: cargaId, p_acao: 'desfazer', p_motivo: '' }).then(function(novo) {
+      if (novo && db.aplicarLocal) db.aplicarLocal('cargas', cargaId, novo);
+      showToast('Liberação desfeita: a carga volta a pedir a dupla conferência e as fotos.');
+      if (document.getElementById('carga-detail-overlay') && !document.getElementById('carga-detail-overlay').classList.contains('hidden')) openCargaDetail(cargaId);
+    }).catch(function(e) { console.error('desfazer liberação', e); showToast('Não foi possível desfazer agora.'); });
+  }
+
+  // =====================================================================================================
+  // ACESSO AO APP DE CADA PESSOA DA EQUIPE (pedido de 19/10/2026): dentro de Cadastros › Equipe com senha, cada nome
+  // tem a senha própria de acesso ao app (ref escritorio:<id da pessoa>) e caixas de assinalar do que ela acessa.
+  var PERMISSOES_ESPECIAIS = [['canhotos', 'Canhotos e fotos do caminhão (aba Canhotos)'], ['liberar_carga', 'Libera carga sem leitura do código de barras e sem fotos do caminhão']];
+  var acessoFormPendente = false;
+  function gereAcessos() { return mode === 'db' && !!session && session.role === 'admin' && !session.soInclui; }
+  function acessoDoMembro(m) {
+    if (!m || !acessoInfo || !acessoInfo.escritorio) return null;
+    return acessoInfo.escritorio.find(function(x) { return x.ref === 'escritorio:' + m.id; }) || null;
+  }
+  // o que a pessoa tem hoje; acesso criado antes das caixas: todas as abas + módulos da senha da equipe + as permissões
+  function modulosEfetivos(x) {
+    var l = (x && x.modulos) || [];
+    if (l.indexOf('abas') >= 0) return l;
+    var eq = ((acessoInfo && acessoInfo.equipeModulos) || []).filter(function(m) { return MODULOS_FABRICA.some(function(f) { return f.id === m.split(':')[0]; }); });
+    return ['abas'].concat(ABAS_EQUIPE.map(function(a) { return 'aba:' + a[0]; }), eq, l);
+  }
+  function resumoAcesso(l) {
+    var abas = ABAS_EQUIPE.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0; }).length;
+    var mods = MODULOS_FABRICA.filter(function(m) { return nivelDe(l, m.id); }).length;
+    return [abas + (abas === 1 ? ' aba' : ' abas'), mods ? mods + (mods === 1 ? ' módulo' : ' módulos') : '',
+      l.indexOf('canhotos') >= 0 ? 'Canhotos' : '', l.indexOf('liberar_carga') >= 0 ? 'Libera carga' : ''].filter(Boolean).join(' · ');
+  }
+  function renderAcessoChecks(lista) {
+    function tem(k) { return lista.indexOf(k) >= 0; }
+    document.getElementById('equipe-acesso-checks').innerHTML =
+      '<div class="acesso-grupo"><p class="acesso-grupo-t">Abas do escritório <span class="opt">(o Início aparece sempre)</span></p><div class="acesso-grade">' +
+        ABAS_EQUIPE.map(function(a) { return '<label class="check"><input type="checkbox" data-acesso="aba:' + a[0] + '"' + (tem('aba:' + a[0]) ? ' checked' : '') + ' /> ' + escapeHtml(a[1]) + '</label>'; }).join('') + '</div></div>' +
+      '<div class="acesso-grupo"><p class="acesso-grupo-t">Módulos da fábrica</p>' +
+        MODULOS_FABRICA.map(function(m) {
+          var n = nivelDe(lista, m.id);
+          return '<div class="acesso-mod"><label class="check"><input type="checkbox" data-acesso="' + m.id + '"' + (n ? ' checked' : '') + ' /> ' + escapeHtml(m.nome) + '</label>' +
+            '<label class="check acesso-gerir"><input type="checkbox" data-acesso-gerir="' + m.id + '"' + (n === 'gerir' ? ' checked' : '') + ' /> gerencia</label></div>';
+        }).join('') + '</div>' +
+      '<div class="acesso-grupo"><p class="acesso-grupo-t">Permissões especiais</p>' +
+        PERMISSOES_ESPECIAIS.map(function(p) { return '<label class="check"><input type="checkbox" data-acesso="' + p[0] + '"' + (tem(p[0]) ? ' checked' : '') + ' /> ' + escapeHtml(p[1]) + '</label>'; }).join('') + '</div>';
+  }
+  document.getElementById('equipe-acesso-checks').addEventListener('change', function(e) {
+    var g = e.target.closest('[data-acesso-gerir]');
+    if (g && g.checked) { var u = document.querySelector('#equipe-acesso-checks [data-acesso="' + g.dataset.acessoGerir + '"]'); if (u) u.checked = true; }
+    var u2 = e.target.closest('[data-acesso]');
+    if (u2 && !u2.checked) { var g2 = document.querySelector('#equipe-acesso-checks [data-acesso-gerir="' + u2.dataset.acesso + '"]'); if (g2) g2.checked = false; }
+  });
+  function lerAcessoChecks() {
+    var out = ['abas'];
+    Array.prototype.forEach.call(document.querySelectorAll('#equipe-acesso-checks [data-acesso]'), function(i) { if (i.checked) out.push(i.dataset.acesso); });
+    Array.prototype.forEach.call(document.querySelectorAll('#equipe-acesso-checks [data-acesso-gerir]'), function(i) {
+      if (!i.checked) return;
+      var k = i.dataset.acessoGerir, p = out.indexOf(k);
+      if (p >= 0) out[p] = k + ':gerir'; else out.push(k + ':gerir');
+    });
+    return out;
+  }
+  function prepararAcessoMembro(m) {
+    var on = gereAcessos();
+    toggleHidden('equipe-acesso-set', !on);
+    if (!on) return;
+    if (!acessoInfo) { acessoFormPendente = true; if (!acessoBuscando) carregarAcessoInfo(); }
+    var x = acessoDoMembro(m);
+    document.getElementById('equipe-acesso-status').textContent = !acessoInfo ? 'Conferindo o acesso…'
+      : acessoInfo.erro ? 'Não foi possível conferir o acesso agora.'
+      : x ? 'Tem acesso ao app com senha própria' + (x.em ? ' (desde ' + formatDateTimeBR(x.em) + ')' : '') + '. Para trocar a senha, digite uma nova.'
+      : 'Ainda sem acesso ao app. Para dar acesso, crie a senha (pelo menos 6 caracteres) e marque o que a pessoa pode acessar.';
+    document.getElementById('equipe-acesso-senha-rot').textContent = x ? 'Nova senha de acesso ao app (deixe em branco para manter)' : 'Senha de acesso ao app';
+    document.getElementById('f-equipe-acesso-senha').value = '';
+    document.getElementById('f-equipe-acesso-senha2').value = '';
+    renderAcessoChecks(x ? modulosEfetivos(x) : ['abas'].concat(ABAS_EQUIPE.map(function(a) { return 'aba:' + a[0]; }), m && m.veCanhotos ? ['canhotos'] : []));
+    var rm = document.getElementById('btn-equipe-acesso-remover');
+    rm.classList.toggle('hidden', !x);
+    rm.textContent = 'Remover o acesso ao app';
+    rm.dataset.ok = '';
+  }
+  // grava o acesso da pessoa (depois de salvar o cadastro dela); devolve false se não deu
+  function salvarAcessoMembro(id, nome, acesso, falhar) {
+    if (!acesso || !id) return Promise.resolve(true);
+    var m = equipe.find(function(e) { return e.id === id; }) || { id: id, nome: nome };
+    var x = acessoDoMembro(m);
+    if (!x && !acesso.senha) return Promise.resolve(true);
+    var ref = 'escritorio:' + id;
+    if (!/^escritorio:[A-Za-z0-9_-]{1,64}$/.test(ref)) { falhar('Não foi possível criar o acesso para esta pessoa.'); return Promise.resolve(false); }
+    var nomeAcesso = (x && x.nome) || nome || m.nome;
+    var corpo = acesso.senha ? { acao: 'definir', ref: ref, nome: nomeAcesso, senha: acesso.senha, modulos: acesso.modulos }
+      : { acao: 'ajustar', ref: ref, nome: nomeAcesso, modulos: acesso.modulos };
+    return chamarAcesso(corpo).then(function() {
+      acessoInfo = null; renderAcessoAdmin();
+      showToast(x ? 'Acesso ao app salvo. Quem já está no app vê a mudança no próximo login.' : 'Acesso ao app de ' + (nome || m.nome) + ' criado.');
+      return true;
+    }).catch(function(e) {
+      var c = e && e.codigo;
+      falhar(c === 'senha_em_uso' ? 'O cadastro foi salvo, mas essa senha de acesso já é usada por outra pessoa. Escolha outra.'
+        : c === 'senha_curta' ? 'A senha de acesso precisa ter pelo menos 6 caracteres.' : 'O cadastro foi salvo, mas não deu para salvar o acesso ao app agora. Tente de novo.');
+      return false;
+    });
+  }
+  document.getElementById('btn-equipe-acesso-remover').addEventListener('click', function() {
+    var b = this, m = equipe.find(function(e) { return e.id === editingMembroId; }), x = acessoDoMembro(m);
+    if (!x) return;
+    if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Confirmar: remover o acesso de ' + m.nome; return; }
+    b.disabled = true;
+    chamarAcesso({ acao: 'remover', ref: x.ref }).then(function() {
+      b.disabled = false;
+      showToast('Acesso ao app de ' + m.nome + ' removido.');
+      acessoInfo = null; acessoFormPendente = true; carregarAcessoInfo();
+    }).catch(function(e) { b.disabled = false; console.error('remover acesso', e); showToast('Não foi possível remover agora.'); });
+  });
+  // acessos individuais sem cadastro na equipe (criados à mão): aparecem no fim da lista, para remover
+  function acessosOrfaosHtml() {
+    if (!gereAcessos() || !acessoInfo || !acessoInfo.escritorio) return '';
+    var orf = acessoInfo.escritorio.filter(function(x) { return !equipe.some(function(m) { return x.ref === 'escritorio:' + m.id; }); });
+    return orf.map(function(x) {
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="func-chip app">acesso ao app sem cadastro na equipe</span></span>' +
+        '<button class="btn-text danger" data-action="acesso-orfao-remover" data-ref="' + escapeHtml(x.ref) + '">Remover acesso</button></div>';
+    }).join('');
   }
 
   // ---------- init ----------
@@ -17820,7 +18013,7 @@
   // Quem é a pessoa logada: o papel vem do token do Supabase (gravado pela função de acesso).
   function identidadeDoUsuario(u) {
     var m = (u && u.app_metadata) || {};
-    var mods = Array.isArray(m.modulos) ? m.modulos.slice(0, 20) : [];
+    var mods = Array.isArray(m.modulos) ? m.modulos.slice(0, 40) : [];
     if (m.papel === 'mestre') return { role: 'admin', nome: m.nome || '', soInclui: m.so_inclui === true, biometria: m.biometria === true };
     if (m.papel === 'equipe') return { role: 'equipe', nome: m.nome || '', modulos: mods };
     if (m.papel === 'motorista' && m.nome) return { role: 'motorista', nome: m.nome };

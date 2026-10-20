@@ -21,7 +21,8 @@
 //   { acao: 'bio_entrar', credencial }                             -> login
 // 'diretoria:<id>' (diretoria: vê tudo como a senha mestre, mas só inclui; não altera nem apaga — regras em 0014).
 // 'escritorio:<id>' (pessoa do escritório com a própria senha: papel 'equipe', com o nome dela; a permissão 'canhotos'
-// abre o controle de canhotos e as fotos do caminhão — regras em 0015).
+// abre o controle de canhotos e as fotos do caminhão — regras em 0015; 'liberar_carga' libera carga sem leitura e
+// sem fotos — regras em 0016; 'aba:<id>' escolhe as abas que ela vê).
 // Senhas: 'mestre' (tudo), 'equipe' (escritório de cargas + módulos marcados), 'motorista:<id>' (app do motorista)
 // 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões)
 // e 'representante:<id>' (Força de vendas: lança as cargas dos clientes dele; regras em 0005_forca_de_vendas.sql).
@@ -51,8 +52,12 @@ const admin = createClient(URL_SB, SERVICO, { auth: { persistSession: false, aut
 type Ident = { ref: string; papel: string; nome: string; usuario: string | null; modulos?: string[] };
 type Quem = { papel: string; ref: string; soInclui: boolean };
 
-// 'canhotos' não é módulo da fábrica: é a permissão de ver os canhotos e as fotos do caminhão (acessos individuais do escritório)
-const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes', 'canhotos'];
+// Módulos da fábrica ("usar" ou "gerir"). Nos acessos individuais do escritório vão também as permissões
+// ('canhotos': controle de canhotos e fotos do caminhão; 'liberar_carga': libera carga sem leitura e sem fotos)
+// e as abas que a pessoa vê ('aba:<id>', com a marca 'abas' quando a lista de abas foi escolhida).
+const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
+const PERMISSOES = ['canhotos', 'liberar_carga', 'abas'];
+const ABAS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras'];
 
 function papelDaRef(ref: string): string | null {
   if (ref === 'mestre') return 'mestre';
@@ -66,16 +71,21 @@ function papelDaRef(ref: string): string | null {
   return null;
 }
 
-// Lista de módulos válida: só os conhecidos, "usar" ou "gerir", sem repetir (gerir vale mais que usar).
+// Lista válida: só os módulos conhecidos ("usar" ou "gerir", sem repetir: gerir vale mais que usar), as permissões
+// e as abas conhecidas.
 function limparModulos(v: unknown): string[] {
   const lista = Array.isArray(v) ? v.map((x) => String(x)) : [];
   const nivel = new Map<string, string>();
+  const extras = new Set<string>();
   for (const item of lista) {
+    if (PERMISSOES.includes(item)) { extras.add(item); continue; }
+    if (item.startsWith('aba:')) { if (ABAS.includes(item.slice(4))) extras.add(item); continue; }
     const [m, g] = item.split(':');
     if (!MODULOS.includes(m) || (g !== undefined && g !== 'gerir')) continue;
     if (g === 'gerir' || !nivel.has(m)) nivel.set(m, g === 'gerir' ? m + ':gerir' : m);
   }
-  return MODULOS.filter((m) => nivel.has(m)).map((m) => nivel.get(m) as string);
+  return [...MODULOS.filter((m) => nivel.has(m)).map((m) => nivel.get(m) as string),
+    ...PERMISSOES.filter((p) => extras.has(p)), ...ABAS.filter((a) => extras.has('aba:' + a)).map((a) => 'aba:' + a)];
 }
 
 async function linhaDe(ref: string): Promise<{ modulos: string[]; biometria: boolean; papel: string; nome: string; usuario: string | null } | null> {
@@ -147,11 +157,12 @@ async function sessaoPara(id: Ident) {
 
 // Grava os módulos (e o nome) de uma senha e já atualiza o login ligado a ela: vale no próximo acesso
 // e, para quem está com o app aberto, na próxima renovação do login (até 1 hora).
-// pessoa do escritório (escritorio:<id>): os módulos da fábrica liberados para a senha da equipe, mais as permissões dela
+// pessoa do escritório (escritorio:<id>): o que foi marcado para ela em Cadastros › Equipe com senha. Acesso criado
+// antes das caixas de assinalar (sem a marca 'abas'): os módulos da fábrica da senha da equipe, mais as permissões dela.
 async function modulosDoToken(ref: string, modulos: string[]): Promise<string[]> {
-  if (!ref.startsWith('escritorio:')) return modulos;
+  if (!ref.startsWith('escritorio:') || modulos.includes('abas')) return modulos;
   const equipe = await linhaDe('equipe');
-  return limparModulos([...(equipe ? equipe.modulos.filter((m) => !m.startsWith('canhotos')) : []), ...modulos]);
+  return limparModulos([...(equipe ? equipe.modulos.filter((m) => MODULOS.includes(m.split(':')[0])) : []), ...modulos]);
 }
 
 async function gravarModulos(ref: string, modulos: string[], nome: string | null): Promise<boolean> {
