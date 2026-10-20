@@ -52,6 +52,64 @@
     return '';
   }
 
+  // ---------- sessão: senha de novo depois de 30 min sem uso e ao abrir o app de novo (pedido de 20/10/2026) ----------
+  // Mesma conta do app principal (index.html): o horário do último uso fica no aparelho e a marca de "aberto" vive só
+  // enquanto o app (ou a aba do navegador) está aberto. Quem sai por tempo volta à tela de senha do LEVÍSSIMA.
+  var SESSAO_LIMITE_MS = 30 * 60 * 1000;
+  var SESSAO_USO = 'levissima-ultimo-uso', SESSAO_ABERTO = 'levissima-aberto', SESSAO_MOTIVO = 'levissima-saida-motivo';
+  var usoGravadoEm = 0, saindo = false, canalSessao = null;
+  function ultimoUso() { try { return Number(localStorage.getItem(SESSAO_USO)) || 0; } catch (e) { return 0; } }
+  function sessaoParada() { var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
+  function gravarUso(forcar) {
+    var agora = Date.now();
+    if (!forcar && agora - usoGravadoEm < 2000) return; // no máximo uma gravação a cada 2 s
+    usoGravadoEm = agora;
+    if (!forcar && agora - ultimoUso() < 10000) return;
+    try { localStorage.setItem(SESSAO_USO, String(agora)); } catch (e) {}
+  }
+  function estavaAberto() { try { return sessionStorage.getItem(SESSAO_ABERTO) === '1'; } catch (e) { return false; } }
+  function marcarAberto() { try { sessionStorage.setItem(SESSAO_ABERTO, '1'); } catch (e) {} gravarUso(true); }
+  function appNativo() { return !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()); }
+  try { if (window.BroadcastChannel) canalSessao = new BroadcastChannel('levissima-sessao'); } catch (e) { canalSessao = null; }
+  if (canalSessao) canalSessao.addEventListener('message', function (ev) {
+    if (ev.data === 'alguem-aberto?' && ident && !saindo && estavaAberto() && !sessaoParada()) canalSessao.postMessage('aberto');
+  });
+  function outraAbaAberta() {
+    if (!canalSessao || appNativo()) return Promise.resolve(false);
+    return new Promise(function (ok) {
+      var fim = false;
+      function ouvir(ev) { if (ev.data === 'aberto' && !fim) { fim = true; clearTimeout(t); canalSessao.removeEventListener('message', ouvir); ok(true); } }
+      var t = setTimeout(function () { if (!fim) { fim = true; canalSessao.removeEventListener('message', ouvir); ok(false); } }, 400);
+      canalSessao.addEventListener('message', ouvir);
+      canalSessao.postMessage('alguem-aberto?');
+    });
+  }
+  function conferirSessaoAoAbrir() {
+    var parada = sessaoParada();
+    if (estavaAberto()) return Promise.resolve(parada ? 'tempo' : '');
+    return outraAbaAberta().then(function (sim) { return !sim ? 'fechado' : parada ? 'tempo' : ''; });
+  }
+  function sairDaSessao(motivo) {
+    if (saindo) return;
+    saindo = true;
+    try { sessionStorage.setItem(SESSAO_MOTIVO, motivo); } catch (e) {}
+    try { sb.auth.signOut({ scope: 'local' }).then(irParaLogin, irParaLogin); } catch (e) { irParaLogin(); }
+  }
+  function aoUsar(e) {
+    if (!ident || saindo) return;
+    if (sessaoParada()) {
+      if (e && e.cancelable && (e.type === 'pointerdown' || e.type === 'click' || e.type === 'keydown')) { e.preventDefault(); e.stopPropagation(); }
+      sairDaSessao('tempo');
+      return;
+    }
+    gravarUso(false);
+  }
+  ['pointerdown', 'click', 'keydown'].forEach(function (ev) { document.addEventListener(ev, aoUsar, true); });
+  ['wheel', 'scroll', 'input', 'touchmove'].forEach(function (ev) { document.addEventListener(ev, aoUsar, { capture: true, passive: true }); });
+  setInterval(function () { if (ident && sessaoParada()) sairDaSessao('tempo'); }, 15000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && ident && sessaoParada()) sairDaSessao('tempo'); });
+  window.addEventListener('focus', function () { if (ident && sessaoParada()) sairDaSessao('tempo'); });
+
   var sb = null;
   var ident = null; // { uid, nome, papel, nivel }
   var prontoResolver, prontoRejeitar;
@@ -74,28 +132,36 @@
     sb.auth.getSession().then(function (r) {
       var s = r && r.data && r.data.session;
       if (!s || !s.access_token) { irParaLogin(); return; }
-      var claims = lerToken(s.access_token);
-      var meta = claims.app_metadata || (s.user && s.user.app_metadata) || {};
-      var nivel = nivelNoModulo(meta, MODULO);
-      ident = { uid: claims.sub || (s.user && s.user.id) || '', nome: meta.nome || '', papel: meta.papel || '', nivel: nivel };
-      // acesso que exige o rosto: só entra no módulo quem passou pelo rosto neste uso do app (pedido de 18/10/2026)
-      if (meta.biometria === true) {
-        var rostoOk = ''; try { rostoOk = sessionStorage.getItem('levissima-rosto-ok') || ''; } catch (e) {}
-        if (rostoOk !== ident.uid) { irParaLogin(); return; }
-      }
-      montarBarra();
-      if (!nivel) {
-        mostrarAviso('A sua senha não abre o módulo ' + NOME_MODULO + '. Peça à diretoria para liberar este módulo para você.', true);
-        prontoRejeitar({ code: 'not_granted', message: 'sem acesso ao módulo' });
-        return;
-      }
-      if (sb.realtime && sb.realtime.setAuth) sb.realtime.setAuth(s.access_token);
-      carregarQuem().then(function () { prontoResolver(true); });
+      // app aberto de novo, ou 30 min sem uso: volta para a senha
+      return conferirSessaoAoAbrir().then(function (motivo) {
+        if (motivo) { sairDaSessao(motivo); return; }
+        marcarAberto();
+        seguirComLogin(s);
+      });
     }).catch(function (e) {
       console.error('login', e);
       mostrarAviso('Não foi possível conferir o seu login agora. Verifique a internet e tente de novo.', true);
       prontoRejeitar({ code: 'unavailable', message: 'login' });
     });
+  }
+  function seguirComLogin(s) {
+    var claims = lerToken(s.access_token);
+    var meta = claims.app_metadata || (s.user && s.user.app_metadata) || {};
+    var nivel = nivelNoModulo(meta, MODULO);
+    ident = { uid: claims.sub || (s.user && s.user.id) || '', nome: meta.nome || '', papel: meta.papel || '', nivel: nivel };
+    // acesso que exige o rosto: só entra no módulo quem passou pelo rosto neste uso do app (pedido de 18/10/2026)
+    if (meta.biometria === true) {
+      var rostoOk = ''; try { rostoOk = sessionStorage.getItem('levissima-rosto-ok') || ''; } catch (e) {}
+      if (rostoOk !== ident.uid) { irParaLogin(); return; }
+    }
+    montarBarra();
+    if (!nivel) {
+      mostrarAviso('A sua senha não abre o módulo ' + NOME_MODULO + '. Peça à diretoria para liberar este módulo para você.', true);
+      prontoRejeitar({ code: 'not_granted', message: 'sem acesso ao módulo' });
+      return;
+    }
+    if (sb.realtime && sb.realtime.setAuth) sb.realtime.setAuth(s.access_token);
+    carregarQuem().then(function () { prontoResolver(true); });
   }
 
   // ---------- quem está usando, pelo próprio acesso: nome, função e turno (pedido de 17/10/2026) ----------
