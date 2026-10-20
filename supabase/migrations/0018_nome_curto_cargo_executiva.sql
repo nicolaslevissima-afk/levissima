@@ -40,7 +40,7 @@ begin
   select d.data into eq from public.docs d
    where d.colecao = 'equipe' and public.sem_acento_0009(d.data ->> 'nome') = k
    order by (d.data ? 'cargo') desc limit 1;
-  -- ... senão o único cadastro cujo nome completo começa pelo nome do acesso ("Angélica" → "Angélica Peres dos Santos")
+  -- ... senão o único cadastro cujo nome completo começa pelo nome do acesso ("Ana" → "Ana Maria da Silva")
   if eq is null then
     select count(*) into n from public.docs d
      where d.colecao = 'equipe' and left(public.sem_acento_0009(d.data ->> 'nome'), length(k) + 1) = k || ' ';
@@ -49,7 +49,7 @@ begin
        where d.colecao = 'equipe' and left(public.sem_acento_0009(d.data ->> 'nome'), length(k) + 1) = k || ' ';
     end if;
   end if;
-  -- ... senão o único cadastro cujo nome é o começo do nome do acesso ("Angélica Peres dos Santos" → "Angélica")
+  -- ... senão o único cadastro cujo nome é o começo do nome do acesso ("Ana Maria da Silva" → "Ana")
   if eq is null then
     select count(*) into n from public.docs d
      where d.colecao = 'equipe' and public.sem_acento_0009(d.data ->> 'nome') <> ''

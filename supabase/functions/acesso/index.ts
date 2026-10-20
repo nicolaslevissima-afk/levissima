@@ -22,7 +22,8 @@
 // 'diretoria:<id>' (diretoria: vê tudo como a senha mestre, mas só inclui; não altera nem apaga — regras em 0014).
 // 'escritorio:<id>' (pessoa do escritório com a própria senha: papel 'equipe', com o nome dela; a permissão 'canhotos'
 // abre o controle de canhotos e as fotos do caminhão — regras em 0015; 'liberar_carga' libera carga sem leitura e
-// sem fotos — regras em 0016; 'aba:<id>' escolhe as abas que ela vê).
+// sem fotos — regras em 0016; 'aba:<id>' escolhe as abas que ela vê; 'ver:<aba>' ou 'inclui:<aba>', o nível em cada aba:
+// só visualiza ou só inclui — com o mesmo nível em todas, o token leva so_ver ou so_inclui e o banco segura, regras em 0021).
 // Senhas: 'mestre' (tudo), 'equipe' (escritório de cargas + módulos marcados), 'motorista:<id>' (app do motorista)
 // 'setor:<id>' (só os módulos marcados: Manutenção, Empilhadeiras, Uniformes e EPI, Garrafões)
 // e 'representante:<id>' (Força de vendas: lança as cargas dos clientes dele; regras em 0005_forca_de_vendas.sql).
@@ -57,7 +58,9 @@ type Quem = { papel: string; ref: string; soInclui: boolean };
 // e as abas que a pessoa vê ('aba:<id>', com a marca 'abas' quando a lista de abas foi escolhida).
 const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
 const PERMISSOES = ['canhotos', 'liberar_carga', 'abas'];
-const ABAS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras'];
+const ABAS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas'];
+// nível de cada aba marcada (19/10/2026): 'ver:<aba>' = só visualiza, 'inclui:<aba>' = só inclui; sem nada = edita
+const NIVEIS = ['ver', 'inclui'];
 
 function papelDaRef(ref: string): string | null {
   if (ref === 'mestre') return 'mestre';
@@ -80,12 +83,27 @@ function limparModulos(v: unknown): string[] {
   for (const item of lista) {
     if (PERMISSOES.includes(item)) { extras.add(item); continue; }
     if (item.startsWith('aba:')) { if (ABAS.includes(item.slice(4))) extras.add(item); continue; }
+    const nv = item.split(':');
+    if (nv.length === 2 && NIVEIS.includes(nv[0]) && ABAS.includes(nv[1])) { extras.add(item); continue; }
     const [m, g] = item.split(':');
     if (!MODULOS.includes(m) || (g !== undefined && g !== 'gerir')) continue;
     if (g === 'gerir' || !nivel.has(m)) nivel.set(m, g === 'gerir' ? m + ':gerir' : m);
   }
   return [...MODULOS.filter((m) => nivel.has(m)).map((m) => nivel.get(m) as string),
-    ...PERMISSOES.filter((p) => extras.has(p)), ...ABAS.filter((a) => extras.has('aba:' + a)).map((a) => 'aba:' + a)];
+    ...PERMISSOES.filter((p) => extras.has(p)), ...ABAS.filter((a) => extras.has('aba:' + a)).map((a) => 'aba:' + a),
+    // o nível só vale para aba marcada; se vier "ver" e "inclui" para a mesma aba, fica o mais restrito (ver)
+    ...ABAS.filter((a) => extras.has('aba:' + a) && (extras.has('ver:' + a) || extras.has('inclui:' + a)))
+      .map((a) => (extras.has('ver:' + a) ? 'ver:' : 'inclui:') + a)];
+}
+// Nível igual em todas as abas marcadas: o banco também segura (so_ver: não grava nada; so_inclui: não altera nem apaga).
+// Com níveis diferentes por aba, quem segura é o app (a aba aberta decide).
+function nivelGeral(modulos: string[]): '' | 'ver' | 'inclui' {
+  if (!modulos.includes('abas')) return '';
+  const abas = ABAS.filter((a) => modulos.includes('aba:' + a));
+  if (!abas.length) return '';
+  if (abas.every((a) => modulos.includes('ver:' + a))) return 'ver';
+  if (abas.every((a) => modulos.includes('ver:' + a) || modulos.includes('inclui:' + a))) return 'inclui';
+  return '';
 }
 
 async function linhaDe(ref: string): Promise<{ modulos: string[]; biometria: boolean; papel: string; nome: string; usuario: string | null } | null> {
@@ -97,7 +115,8 @@ async function linhaDe(ref: string): Promise<{ modulos: string[]; biometria: boo
 // o que vai no token: a diretoria entra com papel 'mestre' (vê tudo) e so_inclui (o banco não deixa alterar nem apagar)
 function metaDe(id: { ref: string; papel: string; nome: string }, modulos: string[], biometria: boolean) {
   const dir = id.papel === 'diretoria';
-  return { papel: dir ? 'mestre' : id.papel, nome: id.nome, ref: id.ref, modulos, so_inclui: dir, biometria };
+  const geral = id.papel === 'equipe' ? nivelGeral(modulos) : '';
+  return { papel: dir ? 'mestre' : id.papel, nome: id.nome, ref: id.ref, modulos, so_inclui: dir || geral === 'inclui', so_ver: geral === 'ver', biometria };
 }
 function emailDe(ref: string) { return ref.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '@' + DOMINIO; }
 
