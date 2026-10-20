@@ -2367,15 +2367,16 @@
       <button class="icon-btn" id="btn-close-equipe-sheet" aria-label="Fechar">✕</button>
     </div>
     <form id="equipe-form" novalidate>
-      <label id="equipe-nome-label">Nome <span class="req">*</span>
+      <label id="equipe-nome-label">Nome completo <span class="req">*</span>
         <input type="text" id="f-equipe-nome" autocomplete="off" />
+        <span class="field-hint">No app aparece só o primeiro nome, com o cargo na frente (ex.: “Angélica · Executiva”).</span>
       </label>
       <label><span id="f-equipe-pin-text">Senha de 4 números <span class="req">*</span></span>
         <input type="password" id="f-equipe-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" />
       </label>
       <div class="row-2">
         <label>Cargo <span class="opt">(organograma)</span>
-          <select id="f-equipe-cargo"><option value="">—</option><option value="diretor">Diretor</option><option value="gerente">Gerente</option><option value="executiva_comercial">Executiva comercial</option><option value="coordenador">Coordenador</option><option value="supervisor">Supervisor</option><option value="analista">Analista</option><option value="assistente">Assistente</option><option value="lider">Líder</option><option value="operador">Operador</option><option value="outro">Outro</option></select>
+          <select id="f-equipe-cargo"><option value="">—</option><option value="diretor">Diretor</option><option value="gerente">Gerente</option><option value="coordenador">Coordenador</option><option value="supervisor">Supervisor</option><option value="executiva">Executiva</option><option value="analista">Analista</option><option value="assistente">Assistente</option><option value="lider">Líder</option><option value="operador">Operador</option><option value="outro">Outro</option></select>
         </label>
         <label>Área
           <select id="f-equipe-area"><option value="">—</option><option>Diretoria</option><option>Gestão</option><option>Comercial</option><option>Faturamento</option><option>Financeiro</option><option>Logística</option><option>Expedição</option><option>Produção</option><option>Qualidade</option><option>Manutenção</option><option>RH</option><option>Compras</option><option>Administrativo</option><option>Força de vendas</option></select>
@@ -3282,22 +3283,60 @@
     { id: 'equipe-natieli', nome: 'Natieli', pinHash: '0d61e38b364591d3df7f23f7cfb204cb05b26233b3f4dd7179d550080c966835', faturamento: true },
     { id: 'equipe-priscilla', nome: 'Priscilla', pinHash: 'ba9482e50cc91e295b0b966561f5ea61ead6cd1f0da98b5fd859ca8d3148853e', faturamento: true }
   ];
+  // Nomes da equipe (pedido de 19/10/2026): o cadastro guarda o NOME COMPLETO (nomeCompleto, campo "nome" no banco);
+  // no resto do app a pessoa aparece só com o primeiro nome e o cargo na frente ("Angélica · Executiva"). Dois com o
+  // mesmo primeiro nome ganham a inicial do último sobrenome ("Gabriel C."). O que assinarem a partir daqui sai assim.
+  function primeiroNome(n) { return String(n || '').trim().split(/\s+/)[0] || ''; }
+  function nomesCurtosEquipe(lista) {
+    var cont = {};
+    lista.forEach(function(m) { if (m.nomeCompleto == null) m.nomeCompleto = m.nome || ''; var k = normNome(primeiroNome(m.nomeCompleto)); cont[k] = (cont[k] || 0) + 1; });
+    lista.forEach(function(m) {
+      var partes = String(m.nomeCompleto || '').trim().split(/\s+/), p = partes[0] || '';
+      var base = cont[normNome(p)] > 1 && partes.length > 1 ? p + ' ' + partes[partes.length - 1].charAt(0).toUpperCase() + '.' : p;
+      var cargo = m.cargo && m.cargo !== 'outro' ? cargoNome(m.cargo) : '';
+      m.nome = base + (cargo ? ' · ' + cargo : '');
+    });
+    return lista;
+  }
+  // nome gravado (completo ou já curto) → como aparece no app; quem não é da equipe aparece com o primeiro nome
+  function nomePessoa(nome) {
+    if (!nome) return '';
+    var n = normNome(nome);
+    var m = equipe.find(function(x) { return normNome(x.nomeCompleto || '') === n; }) || equipe.find(function(x) { return normNome(x.nome) === n; });
+    if (m) return m.nome;
+    if (/\s·\s/.test(nome)) return nome;
+    // gravado só com o primeiro nome (antes de 19/10/2026): se só uma pessoa da equipe tem esse primeiro nome, é ela
+    var mesmos = equipe.filter(function(x) { return normNome(primeiroNome(x.nomeCompleto || x.nome)) === n; });
+    return mesmos.length === 1 ? mesmos[0].nome : primeiroNome(nome);
+  }
+  // nome digitado → a pessoa da equipe: pelo nome completo, pelo nome como aparece no app ("Ana · Analista"),
+  // ou pelo primeiro nome quando só uma pessoa tem esse primeiro nome
+  function membroPorNome(nome) {
+    var n = normNome(nome), base = normNome(String(nome || '').split(' · ')[0]);
+    if (!n) return null;
+    return equipe.find(function(x) { return normNome(x.nomeCompleto || '') === n || normNome(x.nome) === n; }) ||
+      (function() { var l = equipe.filter(function(x) { return normNome(primeiroNome(x.nomeCompleto || x.nome)) === base; }); return l.length === 1 ? l[0] : null; })();
+  }
   function loadLocalEquipe() {
     try { equipe = JSON.parse(localStorage.getItem(LOCAL_EQUIPE_KEY) || '[]'); } catch (e) { equipe = []; }
+    equipe.forEach(function(m) { m.nomeCompleto = m.nomeCompleto || m.nome || ''; });
+    nomesCurtosEquipe(equipe);
   }
   function saveLocalEquipe() {
-    try { localStorage.setItem(LOCAL_EQUIPE_KEY, JSON.stringify(equipe)); } catch (e) {}
+    var guardar = equipe.map(function(m) { var c = Object.assign({}, m); c.nome = m.nomeCompleto || m.nome; delete c.nomeCompleto; return c; });
+    try { localStorage.setItem(LOCAL_EQUIPE_KEY, JSON.stringify(guardar)); } catch (e) {}
   }
   function equipePadraoFaltando() {
     return EQUIPE_PADRAO.filter(function(m) {
-      return !equipe.some(function(x) { return x.id === m.id || normNome(x.nome) === normNome(m.nome); });
+      return !equipe.some(function(x) { return x.id === m.id || normNome(x.nomeCompleto || x.nome) === normNome(m.nome); });
     });
   }
   // Cadastra as pessoas do faturamento uma única vez (quem for removido depois não volta sozinho).
   function seedEquipeLocal() {
     if (loadPref(LOCAL_EQUIPE_SEED_KEY, '')) return;
     var agora = new Date().toISOString();
-    equipePadraoFaltando().forEach(function(m) { equipe.push(Object.assign({ criadoEm: agora }, m)); });
+    equipePadraoFaltando().forEach(function(m) { equipe.push(Object.assign({ criadoEm: agora, nomeCompleto: m.nome }, m)); });
+    nomesCurtosEquipe(equipe);
     saveLocalEquipe();
     savePref(LOCAL_EQUIPE_SEED_KEY, agora);
   }
@@ -3318,7 +3357,7 @@
   var equipeSeedChecked = false;
   function subscribeEquipe() {
     db.collection('equipe').onSnapshot(function(snap) {
-      equipe = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      equipe = nomesCurtosEquipe(snap.docs.map(function(d) { var x = Object.assign({ id: d.id }, d.data()); x.nomeCompleto = x.nome || ''; return x; }));
       if (!equipeSeedChecked) { equipeSeedChecked = true; seedEquipeDb(); }
       if (session) render();
     }, function(err) { console.error('equipe error', err); });
@@ -3330,10 +3369,11 @@
     }
     if (id) {
       var idx = equipe.findIndex(function(m) { return m.id === id; });
-      if (idx >= 0) equipe[idx] = Object.assign({}, equipe[idx], patch);
+      if (idx >= 0) equipe[idx] = Object.assign({}, equipe[idx], patch, patch.nome ? { nomeCompleto: patch.nome } : {});
     } else {
-      equipe.push(Object.assign({ id: 'membro-' + Date.now() + '-' + Math.random().toString(36).slice(2) }, patch));
+      equipe.push(Object.assign({ id: 'membro-' + Date.now() + '-' + Math.random().toString(36).slice(2) }, patch, { nomeCompleto: patch.nome || '' }));
     }
+    nomesCurtosEquipe(equipe);
     saveLocalEquipe();
     render();
     return Promise.resolve();
@@ -4903,7 +4943,7 @@
       ? '<span class="pager-chip" title="Pager entregue ao motorista"><span class="pager-chip-k">Pager</span>' + escapeHtml(c.numeroPager) + '</span>'
       : '';
     var fat = c.faturamentoOk
-      ? '<div class="fat-badge ok">✓ ok de ' + escapeHtml(c.faturamentoPor || '—') + '</div>'
+      ? '<div class="fat-badge ok">✓ ok de ' + escapeHtml(nomePessoa(c.faturamentoPor) || '—') + '</div>'
       : '<button type="button" class="fat-badge pend" data-action="fat-ok" data-id="' + id + '">○ Sem ok do faturamento<span class="fat-badge-cta">Dar ok</span></button>';
     var fv = fvCardHtml(c, id);
     var ent = done ? entregasResumo(c) : null;
@@ -4981,7 +5021,7 @@
       info += row('Chegada (pager)', escapeHtml(horaDe(c.pagerEm) + (esp != null ? (done ? ' · esperou ' + fmtDuracao(esp) + ' até carregar' : ' · no pátio há ' + fmtDuracao(esp)) : '')), (!done && esp != null && esp >= ESPERA_LONGA_MIN) ? 'ask' : '');
     }
     info += c.faturamentoOk
-      ? row('Faturamento', escapeHtml('ok de ' + (c.faturamentoPor || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')) +
+      ? row('Faturamento', escapeHtml('ok de ' + (nomePessoa(c.faturamentoPor) || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')) +
           '<button type="button" class="btn-text" data-action="fat-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
       : row('Faturamento', 'aguardando ok<button type="button" class="btn-text" data-action="fat-ok" data-id="' + id + '">Dar ok</button>');
     info += fvDetailRows(c, id, row);
@@ -4989,7 +5029,7 @@
     var dev = devolucaoAnteriorTexto(c);
     if (dev) info += row('Devolução da entrega anterior', escapeHtml(dev.texto), dev.pendente ? 'ask' : '');
     if (done) {
-      info += row('Conferente', escapeHtml(c.conferente || '—'));
+      info += row('Conferente', escapeHtml(nomePessoa(c.conferente) || '—'));
       info += fotosCaminhaoRow(c, id, row);
       var ent = entregasResumo(c);
       if (ent) info += row('Entregas', escapeHtml(ent.longo), ent.ok ? 'ok' : '');
@@ -7400,9 +7440,9 @@
       row('Programada para', formatDateBR(carga.data) + (carga.hora ? ' às ' + carga.hora : '')) +
       row('Motorista', carga.motorista || '—') +
       (carga.numeroPager ? row('Pager', String(carga.numeroPager)) : '') +
-      row('Faturamento', carga.faturamentoOk ? 'ok de ' + (carga.faturamentoPor || '—') : 'aguardando ok') +
+      row('Faturamento', carga.faturamentoOk ? 'ok de ' + (nomePessoa(carga.faturamentoPor) || '—') : 'aguardando ok') +
       (liberacaoDe(carga) && !duplaOk(carga) ? row('Liberação', liberacaoTexto(carga)) :
-        row('Dupla conferência', duplaOk(carga) ? 'ok (' + carga.dupla.r1.por + ' e ' + carga.dupla.r2.por + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, ''))) +
+        row('Dupla conferência', duplaOk(carga) ? 'ok (' + nomePessoa(carga.dupla.r1.por) + ' e ' + nomePessoa(carga.dupla.r2.por) + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, ''))) +
       (carga.obs ? row('Observações', carga.obs) : '');
     var devBox = document.getElementById('cgc-devolucao');
     if (carga.entregaAnterior) {
@@ -8433,7 +8473,7 @@
       infos.push(['Espera no pátio', 'pager às ' + horaDe(c.pagerEm) + (espera != null ? '; carregada às ' + horaDe(c.concluidoEm) + ' (' + fmtDuracao(espera) + ')' : '')]);
     }
     infos.push(['Faturamento', c.faturamentoOk
-      ? 'ok de ' + (c.faturamentoPor || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')
+      ? 'ok de ' + (nomePessoa(c.faturamentoPor) || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')
       : 'aguardando ok']);
     if (c.entregaAnterior) {
       var dv = c.devolucaoAnteriorConfirmada === 'sim' ? 'trouxe' : c.devolucaoAnteriorConfirmada === 'nao' ? 'não trouxe' : 'não informado';
@@ -8528,7 +8568,7 @@
     var gap = 60, boxW = (CW - gap) / 2, boxH = 150;
     var items = [
       { x: L, label: 'Assinatura do motorista', name: c.motorista, sig: sigs[0], has: !!c.assinaturaMotorista },
-      { x: L + boxW + gap, label: 'Assinatura do conferente', name: c.conferente, sig: sigs[1], has: !!c.assinaturaConferente }
+      { x: L + boxW + gap, label: 'Assinatura do conferente', name: nomePessoa(c.conferente), sig: sigs[1], has: !!c.assinaturaConferente }
     ];
     items.forEach(function(it) {
       ctx.strokeStyle = RC.line; ctx.lineWidth = 3;
@@ -10048,20 +10088,20 @@
     if (!pedidoRep(c)) return '';
     return '<div class="fv-tag">Força de vendas · ' + escapeHtml(c.representanteNome || '—') + '</div>' +
       (c.financeiroOk
-        ? '<div class="fat-badge ok">✓ financeiro: ' + escapeHtml(c.financeiroPor || '—') + '</div>'
+        ? '<div class="fat-badge ok">✓ financeiro: ' + escapeHtml(nomePessoa(c.financeiroPor) || '—') + '</div>'
         : '<button type="button" class="fat-badge pend" data-action="fin-ok" data-id="' + id + '">○ Sem ok do financeiro<span class="fat-badge-cta">Dar ok</span></button>') +
       (c.logisticaOk
-        ? '<div class="fat-badge ok">✓ logística: ' + escapeHtml(c.logisticaPor || '—') + '</div>'
+        ? '<div class="fat-badge ok">✓ logística: ' + escapeHtml(nomePessoa(c.logisticaPor) || '—') + '</div>'
         : '<button type="button" class="fat-badge pend" data-action="log-ok" data-id="' + id + '">○ Sem ok da logística<span class="fat-badge-cta">Dar ok</span></button>');
   }
   function fvDetailRows(c, id, row) {
     if (!pedidoRep(c)) return '';
     return row('Força de vendas', escapeHtml(c.representanteNome || '—')) +
       (c.financeiroOk
-        ? row('Financeiro', escapeHtml('ok de ' + (c.financeiroPor || '—') + (c.financeiroEm ? ' em ' + formatDateTimeBR(c.financeiroEm) : '')) + '<button type="button" class="btn-text" data-action="fin-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
+        ? row('Financeiro', escapeHtml('ok de ' + (nomePessoa(c.financeiroPor) || '—') + (c.financeiroEm ? ' em ' + formatDateTimeBR(c.financeiroEm) : '')) + '<button type="button" class="btn-text" data-action="fin-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
         : row('Financeiro', 'aguardando ok<button type="button" class="btn-text" data-action="fin-ok" data-id="' + id + '">Dar ok</button>', 'ask')) +
       (c.logisticaOk
-        ? row('Logística', escapeHtml('ok de ' + (c.logisticaPor || '—') + (c.logisticaEm ? ' em ' + formatDateTimeBR(c.logisticaEm) : '')) + '<button type="button" class="btn-text" data-action="log-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
+        ? row('Logística', escapeHtml('ok de ' + (nomePessoa(c.logisticaPor) || '—') + (c.logisticaEm ? ' em ' + formatDateTimeBR(c.logisticaEm) : '')) + '<button type="button" class="btn-text" data-action="log-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
         : row('Logística', 'aguardando ok<button type="button" class="btn-text" data-action="log-ok" data-id="' + id + '">Dar ok</button>', 'ask'));
   }
   function pedidosRepPendentes() { return cargas.filter(function(c) { return pedidoRep(c) && c.status !== 'concluida' && !liberadaCarga(c); }); }
@@ -10768,9 +10808,9 @@
   function situacaoDupla(c) {
     var d = c.dupla || {};
     if (d.r1 && d.r2 && duplaMudou(c)) return { cls: 'pend', txt: '⚠ A carga mudou depois da dupla conferência · refazer', feita: true, divergencia: true };
-    if (d.r1 && d.r2) return (d.r1.ok && d.r2.ok) ? { cls: 'ok', txt: '✓ Dupla conferência: ' + d.r1.por + ' e ' + d.r2.por, feita: true }
+    if (d.r1 && d.r2) return (d.r1.ok && d.r2.ok) ? { cls: 'ok', txt: '✓ Dupla conferência: ' + nomePessoa(d.r1.por) + ' e ' + nomePessoa(d.r2.por), feita: true }
       : { cls: 'pend', txt: '⚠ Dupla conferência com divergência', feita: true, divergencia: true };
-    if (d.r1) return { cls: 'pend', txt: d.r1.ok ? '◐ 1ª conferência ok (' + d.r1.por + ') · falta a 2ª' : '⚠ 1ª conferência com divergência · falta a 2ª', feita: false };
+    if (d.r1) return { cls: 'pend', txt: d.r1.ok ? '◐ 1ª conferência ok (' + nomePessoa(d.r1.por) + ') · falta a 2ª' : '⚠ 1ª conferência com divergência · falta a 2ª', feita: false };
     return { cls: 'pend', txt: '○ Dupla conferência por código de barras', feita: false };
   }
   function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r2 && d.r1.ok && d.r2.ok) && !duplaMudou(c); }
@@ -10783,8 +10823,8 @@
   }
   function duplaDetailRow(c, id, row) {
     var d = c.dupla || {}, s = situacaoDupla(c);
-    var txt = d.r1 ? '1ª: ' + d.r1.por + ' (' + formatDateTimeBR(d.r1.em) + (d.r1.ok ? ', ok' : ', com divergência') + ')' : 'pendente';
-    if (d.r2) txt += ' · 2ª: ' + d.r2.por + ' (' + formatDateTimeBR(d.r2.em) + (d.r2.ok ? ', ok' : ', com divergência') + ')';
+    var txt = d.r1 ? '1ª: ' + nomePessoa(d.r1.por) + ' (' + formatDateTimeBR(d.r1.em) + (d.r1.ok ? ', ok' : ', com divergência') + ')' : 'pendente';
+    if (d.r2) txt += ' · 2ª: ' + nomePessoa(d.r2.por) + ' (' + formatDateTimeBR(d.r2.em) + (d.r2.ok ? ', ok' : ', com divergência') + ')';
     var botao = c.status === 'concluida' ? '' : '<button type="button" class="btn-text" data-action="conf-barras" data-id="' + id + '">' + (s.feita ? 'Ver' : d.r1 ? 'Fazer a 2ª' : 'Conferir') + '</button>';
     return row('Dupla conferência', escapeHtml(txt) + botao, duplaOk(c) ? 'ok' : (s.divergencia ? 'ask' : '')) + liberacaoDetailRow(c, id, row);
   }
@@ -10901,7 +10941,7 @@
     var d = Object.assign({}, c.dupla || {}), r1 = d.r1;
     if (conf.rodada === 2 && r1 && ((quem.id && r1.porId && quem.id === r1.porId) || normNome(quem.nome) === normNome(r1.por))) {
       var er = document.getElementById('conf-erro');
-      er.textContent = 'A 2ª conferência tem que ser feita por outra pessoa (a 1ª foi de ' + r1.por + ').';
+      er.textContent = 'A 2ª conferência tem que ser feita por outra pessoa (a 1ª foi de ' + nomePessoa(r1.por) + ').';
       er.classList.remove('hidden');
       return;
     }
@@ -13053,7 +13093,7 @@
     if (!inp || !s) return;
     var nome = inp.value.replace(/\s+/g, ' ').trim();
     if (!nome) { inp.focus(); return; }
-    var m = membrosConvidaveis().find(function(x) { return normNome(x.nome) === normNome(nome); });
+    var m = membroPorNome(nome);
     if (m) { if (!s.part.some(function(p) { return p.id === m.id; })) s.part.push({ id: m.id, nome: m.nome }); }
     else if (!s.part.some(function(p) { return !p.id && normNome(p.nome) === normNome(nome); })) s.part.push({ id: '', nome: nome });
     slRenderPart();
@@ -14076,7 +14116,11 @@
       }, function(err) { console.error(SUP_COL[k], err); });
     });
   }
-  function quemSessao() { return (session && session.nome) || (session && session.role === 'admin' ? 'Senha mestre' : 'Equipe'); }
+  // pessoas (senha mestre, diretoria, equipe) assinam como aparecem no app: primeiro nome e cargo; setores, com o nome do setor
+  function quemSessao() {
+    if (session && session.nome) return session.role === 'admin' || session.role === 'equipe' ? nomePessoa(session.nome) : session.nome;
+    return session && session.role === 'admin' ? 'Senha mestre' : 'Equipe';
+  }
   function diasAte(iso) { return Math.round((Date.parse(String(iso).slice(0, 10) + 'T12:00:00') - Date.parse(todayIso() + 'T12:00:00')) / 86400000); }
   function dataCurta(iso) { return formatDateBR(iso).slice(0, 5); }
 
@@ -15467,7 +15511,7 @@
         if (!itens.length) return gerErro('Informe ao menos um item: descrição, quantidade e onde vai aplicar.');
         if (!nome) return gerErro('Informe o seu nome.');
         var dados = { status: 'pedido', setor: setor, urgencia: document.getElementById('oc-urg').value, itens: itens, obs: gerVal('oc-obs') };
-        var membro = membrosConvidaveis().find(function(m) { return normNome(m.nome) === normNome(nome); });
+        var membro = membroPorNome(nome);
         function gravar(quem) {
           var agora = new Date().toISOString();
           dados.pedido = quem; dados.numero = ocProximoNumero(); dados.criadoEm = agora; dados.atualizadoEm = agora;
@@ -15759,6 +15803,13 @@
     });
   }
   // ----- aprovação (senha mestre) -----
+  // a pessoa do pedido já está na equipe? pelo nome completo; sem senha ainda, também pelo primeiro nome (organograma)
+  function membroDoPedido(x) {
+    var n = normNome(x.nome), p = normNome(primeiroNome(x.nome));
+    return equipe.find(function(m) { return normNome(m.nomeCompleto || m.nome) === n; }) ||
+      equipe.find(function(m) { return !m.pinHash && normNome(primeiroNome(m.nomeCompleto || m.nome)) === p && String(m.nomeCompleto || m.nome).trim().split(/\s+/).length === 1; }) ||
+      equipe.find(function(m) { return !m.pinHash && normNome(primeiroNome(m.nomeCompleto || m.nome)) === p && n.indexOf(normNome(m.nomeCompleto || m.nome)) === 0; });
+  }
   function renderPedidosSenha() {
     var sec = document.getElementById('cp-sec'), box = document.getElementById('cp-lista');
     if (!sec || !box) return;
@@ -15768,7 +15819,7 @@
     var pend = cadastroPedidos.filter(function(x) { return x.status === 'pendente'; }).sort(function(a, b) { return String(a.criadoEm || '').localeCompare(String(b.criadoEm || '')); });
     document.getElementById('cp-n').textContent = pend.length ? String(pend.length) : '';
     box.innerHTML = pend.length ? pend.map(function(x) {
-      var ja = equipe.find(function(m) { return normNome(m.nome) === normNome(x.nome); });
+      var ja = membroDoPedido(x);
       return '<div class="frete-item est-confirmar"><div class="frete-top"><span><b>' + escapeHtml(x.nome) + '</b></span><span class="chip-est confirmar">' + (ja ? 'Troca de senha' : 'Senha nova') + '</span></div>' +
         '<div class="frete-sub">CPF ' + escapeHtml(cpfMascara(x.cpf)) + (x.matricula ? ' · matrícula ' + escapeHtml(x.matricula) : '') + ' · pedido em ' + escapeHtml(formatDateTimeBR(x.criadoEm)) + '</div>' +
         '<div class="frete-sub">' + (x.rh ? 'No RH: ' + escapeHtml([x.rh.nome, x.rh.funcao, x.rh.setor, x.rh.admissao ? 'admissão ' + formatDateBR(x.rh.admissao) : ''].filter(Boolean).join(' · ')) : '<span class="alerta">Não achado no cadastro do RH (confira com cuidado)</span>') + '</div>' +
@@ -15786,8 +15837,7 @@
     }).catch(function(e) { console.error('foto do cadastro', e); var el = document.getElementById(alvo); if (el) el.textContent = 'Foto indisponível'; });
   }
   function abrirDecisaoSenha(x) {
-    var ja = equipe.find(function(m) { return normNome(m.nome) === normNome(x.nome); }) ||
-      equipe.find(function(m) { return !m.pinHash && normNome(m.nome) === normNome(String(x.nome || '').trim().split(/\s+/)[0]); }); // cadastrado no organograma só com o primeiro nome
+    var ja = membroDoPedido(x);
     var FUNCS = [['faturamento', 'Dá o ok do faturamento'], ['conferente', 'Confere o carregamento'], ['financeiro', 'Ok do financeiro'], ['logistica', 'Logística dos caminhões'],
       ['gestao', 'Diretoria / gestão'], ['qualidade', 'Qualidade'], ['coordenador', 'Autoriza pedidos de compra'], ['compras', 'Assistente de compras']];
     gerAbrir({
@@ -16738,7 +16788,7 @@
   // ---------- faturamento: cadastro de quem dá o ok (somente no modo escritório) ----------
   function renderEquipeAdmin() {
     var list = document.getElementById('equipe-list');
-    var sorted = equipe.slice().sort(function(a, b) { return (a.nome || '').localeCompare(b.nome || '', 'pt-BR'); });
+    var sorted = equipe.slice().sort(function(a, b) { return (a.nomeCompleto || a.nome || '').localeCompare(b.nomeCompleto || b.nome || '', 'pt-BR'); });
     if (gereAcessos() && !acessoInfo && !acessoBuscando) carregarAcessoInfo();
     if (!sorted.length) {
       list.innerHTML = '<p class="empty-state">Ninguém cadastrado. Sem isso, ninguém consegue dar o ok do faturamento, do financeiro ou da logística, nem conferir com senha.</p>';
@@ -16746,7 +16796,7 @@
     }
     list.innerHTML = sorted.map(function(m) {
       if (confirmDeleteMembro === m.id) {
-        return '<div class="driver-confirm">Remover ' + escapeHtml(m.nome) + '? Os oks já dados continuam registrados.' + (acessoDoMembro(m) ? ' O acesso ao app também é removido.' : '') +
+        return '<div class="driver-confirm">Remover ' + escapeHtml(m.nomeCompleto || m.nome) + '? Os oks já dados continuam registrados.' + (acessoDoMembro(m) ? ' O acesso ao app também é removido.' : '') +
           '<button class="btn-text danger" data-action="confirm-remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
           '<button class="btn-text" data-action="cancel-remove-membro">Cancelar</button></div>';
       }
@@ -16759,7 +16809,7 @@
         var ax = acessoDoMembro(m);
         chips += ax ? '<span class="func-chip app">App: ' + escapeHtml(resumoAcesso(modulosEfetivos(ax))) + '</span>' : '<span class="func-chip">sem acesso ao app</span>';
       }
-      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + chips + '</span>' +
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nomeCompleto || m.nome) + '<span class="driver-sub">no app: ' + escapeHtml(m.nome) + '</span>' + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
     }).join('') + acessosOrfaosHtml();
@@ -16767,18 +16817,18 @@
   var editingMembroId = null;
   // cargos do organograma (pedido de 17/10/2026): coordenador, supervisor e gerente autorizam o pedido de compra antes da
   // cotação; diretor (Nicolas ou André) aprova a compra na etapa final
-  var CARGOS = [['diretor', 'Diretor'], ['gerente', 'Gerente'], ['executiva_comercial', 'Executiva comercial'], ['coordenador', 'Coordenador'], ['supervisor', 'Supervisor'], ['analista', 'Analista'], ['assistente', 'Assistente'], ['lider', 'Líder'], ['operador', 'Operador'], ['outro', 'Outro']];
-  function cargoNome(k) { var c = CARGOS.find(function(x) { return x[0] === k; }); return c ? c[1] : ''; }
+  var CARGOS = [['diretor', 'Diretor'], ['gerente', 'Gerente'], ['coordenador', 'Coordenador'], ['supervisor', 'Supervisor'], ['executiva', 'Executiva'], ['analista', 'Analista'], ['assistente', 'Assistente'], ['lider', 'Líder'], ['operador', 'Operador'], ['outro', 'Outro']];
+  function cargoNome(k) { if (k === 'executiva_comercial') k = 'executiva'; var c = CARGOS.find(function(x) { return x[0] === k; }); return c ? c[1] : ''; }
   function autorizaAntesCotacao(m) { return !!m && (!!m.coordenador || ['coordenador', 'supervisor', 'gerente'].indexOf(m.cargo) >= 0); }
   function aprovaCompraFinal(m) { return !!m && (!!m.aprovaCompra || m.cargo === 'diretor'); }
   function openEquipeForm(kind, m) {
     editingMembroId = m ? m.id : null;
-    document.getElementById('equipe-sheet-title').textContent = kind === 'add' ? 'Adicionar pessoa' : 'Editar — ' + m.nome;
-    document.getElementById('equipe-nome-label').classList.toggle('hidden', kind !== 'add');
-    document.getElementById('f-equipe-nome').value = m ? m.nome : '';
+    document.getElementById('equipe-sheet-title').textContent = kind === 'add' ? 'Adicionar pessoa' : 'Editar — ' + (m.nomeCompleto || m.nome);
+    document.getElementById('equipe-nome-label').classList.remove('hidden');
+    document.getElementById('f-equipe-nome').value = m ? (m.nomeCompleto || m.nome) : '';
     document.getElementById('f-equipe-pin').value = '';
     document.getElementById('f-equipe-pin-text').innerHTML = kind === 'add' ? 'Senha de 4 números <span class="opt">(para assinar; em branco, a pessoa cria depois)</span>' : 'Nova senha de 4 números <span class="opt">(deixe em branco para manter)</span>';
-    document.getElementById('f-equipe-cargo').value = m && m.cargo ? m.cargo : '';
+    document.getElementById('f-equipe-cargo').value = m && m.cargo ? (m.cargo === 'executiva_comercial' ? 'executiva' : m.cargo) : '';
     document.getElementById('f-equipe-area').value = m && m.area ? m.area : '';
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
@@ -16845,7 +16895,8 @@
     var cargo = document.getElementById('f-equipe-cargo').value, area = document.getElementById('f-equipe-area').value;
     var err = document.getElementById('equipe-form-error');
     var fail = function(msg) { err.textContent = msg; err.classList.remove('hidden'); };
-    if (!editingMembroId && !nome) return fail('Informe o nome.');
+    nome = nome.replace(/\s+/g, ' ');
+    if (!nome) return fail('Informe o nome completo.');
     if (pin && !/^[0-9]{4}$/.test(pin)) return fail('A senha de assinar precisa ter 4 números.');
     var acesso = gereAcessos() && !document.getElementById('equipe-acesso-set').classList.contains('hidden') ? {
       senha: document.getElementById('f-equipe-acesso-senha').value, senha2: document.getElementById('f-equipe-acesso-senha2').value, modulos: lerAcessoChecks() } : null;
@@ -16856,7 +16907,7 @@
     var membroAtual = editingMembroId ? equipe.find(function(x) { return x.id === editingMembroId; }) : null;
     var temAcesso = !!(acesso && (acesso.senha || acessoDoMembro(membroAtual)));
     if (!cargo && !area && !temAcesso && !fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Escolha o cargo, marque o que essa pessoa faz ou dê o acesso ao app.');
-    if (!editingMembroId && equipe.some(function(m) { return normNome(m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
+    if (equipe.some(function(m) { return m.id !== editingMembroId && normNome(m.nomeCompleto || m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
     (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
       // Duas pessoas com a mesma senha: não daria para saber de quem é o ok.
@@ -16864,10 +16915,11 @@
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area };
       if (hash) patch.pinHash = hash;
+      if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch).then(function() { return editingMembroId; })
         : saveMembro(null, Object.assign({ nome: nome, criadoEm: new Date().toISOString() }, patch)).then(function(ref) { return ref && ref.id; })
-      ).then(function(idSalvo) { return salvarAcessoMembro(idSalvo, nome || (membroAtual && membroAtual.nome) || '', acesso, fail); })
+      ).then(function(idSalvo) { return salvarAcessoMembro(idSalvo, nome, acesso, fail); })
         .then(function(okAcesso) { if (okAcesso !== false) closeEquipeForm(); });
     }).catch(function(e2) {
       console.error('membro save error', e2);
@@ -17222,7 +17274,7 @@
     if (mode !== 'db') return '';
     var fm = fotosMotoristaDe(c), id = escapeHtml(c.id), lib = liberacaoDe(c);
     return '<div class="lona-bloco"><p class="lona-t"><b>Fotos do caminhão lonado</b> ' + (lib ? '<span class="opt">(opcional)</span>' : '<span class="req">*</span>') + '</p>' +
-      (lib ? '<p class="hint">Carga liberada sem as fotos do caminhão' + (lib.por ? ' por ' + escapeHtml(lib.por) : '') + '. Se der, tire assim mesmo.</p>'
+      (lib ? '<p class="hint">Carga liberada sem as fotos do caminhão' + (lib.por ? ' por ' + escapeHtml(nomePessoa(lib.por)) : '') + '. Se der, tire assim mesmo.</p>'
         : '<p class="hint">Ainda dentro da empresa, depois de lonar: uma foto de cada lado, com o caminhão inteiro visível.</p>') + '<div class="foto-grade">' +
       LADOS_CAMINHAO.map(function(l) {
         if (fm[l.id]) return '<div class="foto-tile feita"><span class="foto-ico" aria-hidden="true">✓</span><span class="foto-tile-t">' + escapeHtml(l.nome) + '</span><small>enviada às ' + escapeHtml(horaDe(fm[l.id + 'Em'] || '')) + '</small></div>';
@@ -17290,7 +17342,7 @@
     var nConf = LADOS_CAMINHAO.filter(function(l) { return conf[l.id]; }).length, nMot = LADOS_CAMINHAO.filter(function(l) { return mot[l.id]; }).length;
     var lib = liberacaoDe(c);
     return { nConf: nConf, nMot: nMot, fora: !!mot.foraDaEmpresa, lib: lib,
-      texto: (lib ? 'liberada sem fotos' + (lib.por ? ' por ' + lib.por : '') + ' · ' : '') + 'antes de lonar: ' + (nConf === 2 ? '2 fotos ✓' : nConf ? '1 de 2 fotos' : 'sem fotos') + ' · lonado (motorista): ' + (nMot === 2 ? '2 fotos ✓' : nMot ? '1 de 2 fotos' : 'falta') + (mot.foraDaEmpresa ? ' · ⚠ fora da empresa?' : '') };
+      texto: (lib ? 'liberada sem fotos' + (lib.por ? ' por ' + nomePessoa(lib.por) : '') + ' · ' : '') + 'antes de lonar: ' + (nConf === 2 ? '2 fotos ✓' : nConf ? '1 de 2 fotos' : 'sem fotos') + ' · lonado (motorista): ' + (nMot === 2 ? '2 fotos ✓' : nMot ? '1 de 2 fotos' : 'falta') + (mot.foraDaEmpresa ? ' · ⚠ fora da empresa?' : '') };
   }
   function caminhaoFotosHtml(fc) {
     fc = fc || {};
@@ -17300,7 +17352,7 @@
         ? '<figure class="cn-cam"><img data-cn-foto="' + escapeHtml(path) + '" alt="' + escapeHtml(rot) + '" /><figcaption>' + escapeHtml(rot) + (sub ? '<small>' + escapeHtml(sub) + '</small>' : '') + '</figcaption></figure>'
         : '<figure class="cn-cam vazio"><span>sem foto</span><figcaption>' + escapeHtml(rot) + '</figcaption></figure>';
     }
-    return '<p class="cn-cam-t">Antes de lonar (conferência' + (conf.por ? ' · ' + escapeHtml(conf.por) : '') + (conf.em ? ' · ' + escapeHtml(formatDateTimeBR(conf.em)) : '') + ')</p>' +
+    return '<p class="cn-cam-t">Antes de lonar (conferência' + (conf.por ? ' · ' + escapeHtml(nomePessoa(conf.por)) : '') + (conf.em ? ' · ' + escapeHtml(formatDateTimeBR(conf.em)) : '') + ')</p>' +
       '<div class="cn-cam-grade">' + tile(conf.esquerdo, 'Lado do motorista') + tile(conf.direito, 'Lado do passageiro') + '</div>' +
       '<p class="cn-cam-t">Lonado, pelo motorista' + (mot.por ? ' · ' + escapeHtml(mot.por) : '') + '</p>' +
       '<div class="cn-cam-grade">' + tile(mot.esquerdo, 'Lado do motorista', mot.esquerdoEm ? formatDateTimeBR(mot.esquerdoEm) : '') + tile(mot.direito, 'Lado do passageiro', mot.direitoEm ? formatDateTimeBR(mot.direitoEm) : '') + '</div>' +
@@ -17514,16 +17566,16 @@
           linhaCanhoto('Carga', c.cargaId ? escapeHtml(cargaCode({ id: c.cargaId }) + (c.dataCarga ? ' · ' + formatDateBR(c.dataCarga) : '')) : '') +
           linhaCanhoto('Motorista', escapeHtml(c.motorista || '')) +
           linhaCanhoto('Entregue', c.entregueEm ? escapeHtml(formatDateTimeBR(c.entregueEm)) + (c.recebidoPor ? ' · recebido por ' + escapeHtml(c.recebidoPor) : '') : 'ainda não') +
-          linhaCanhoto('Foto enviada', c.enviadoEm ? escapeHtml(formatDateTimeBR(c.enviadoEm) + (c.enviadoPor ? ' por ' + c.enviadoPor : '')) + (c.enviadoLoc ? ' · ' + locLink(c.enviadoLoc) : '') : '') +
+          linhaCanhoto('Foto enviada', c.enviadoEm ? escapeHtml(formatDateTimeBR(c.enviadoEm) + (c.enviadoPor ? ' por ' + nomePessoa(c.enviadoPor) : '')) + (c.enviadoLoc ? ' · ' + locLink(c.enviadoLoc) : '') : '') +
           linhaCanhoto('Sem foto', c.status === 'pendente' ? escapeHtml(c.motivoSemFoto || '') : '') +
-          linhaCanhoto('Refazer', c.status === 'problema' && c.problema ? escapeHtml(c.problema.motivo + ' (' + (c.problema.por || '—') + ', ' + formatDateTimeBR(c.problema.em) + ')') : '') +
-          linhaCanhoto('Conferido', c.status === 'conferido' && c.conferidoEm ? escapeHtml(formatDateTimeBR(c.conferidoEm) + (c.conferidoPor ? ' por ' + c.conferidoPor : '')) : '') +
-          linhaCanhoto('Canhoto em papel', c.fisico ? escapeHtml('recebido ' + formatDateTimeBR(c.fisico.em) + (c.fisico.por ? ' por ' + c.fisico.por : '')) : '') +
+          linhaCanhoto('Refazer', c.status === 'problema' && c.problema ? escapeHtml(c.problema.motivo + ' (' + (nomePessoa(c.problema.por) || '—') + ', ' + formatDateTimeBR(c.problema.em) + ')') : '') +
+          linhaCanhoto('Conferido', c.status === 'conferido' && c.conferidoEm ? escapeHtml(formatDateTimeBR(c.conferidoEm) + (c.conferidoPor ? ' por ' + nomePessoa(c.conferidoPor) : '')) : '') +
+          linhaCanhoto('Canhoto em papel', c.fisico ? escapeHtml('recebido ' + formatDateTimeBR(c.fisico.em) + (c.fisico.por ? ' por ' + nomePessoa(c.fisico.por) : '')) : '') +
           linhaCanhoto('Representante', escapeHtml(c.representanteNome || 'nenhum')) +
         '</div>' + acoes +
         '<div class="section-head"><h2 class="section-title">Fotos do caminhão desta carga</h2></div><div id="cn-caminhao">' + (c.cargaId ? '<p class="field-hint">Carregando…</p>' : '<p class="field-hint">Entrega sem carga.</p>') + '</div>' +
         (hist.length ? '<div class="section-head"><h2 class="section-title">Histórico</h2></div><ul class="cn-hist">' + hist.map(function(h) {
-          return '<li>' + escapeHtml(formatDateTimeBR(h.em) + ' · ' + (h.por || '—') + ' ' + (ACAO_HIST[h.acao] || h.acao) + (h.motivo ? ': ' + h.motivo : '') + (h.n ? ' (' + h.n + (h.n === 1 ? ' foto)' : ' fotos)') : '')) + '</li>';
+          return '<li>' + escapeHtml(formatDateTimeBR(h.em) + ' · ' + (nomePessoa(h.por) || '—') + ' ' + (ACAO_HIST[h.acao] || h.acao) + (h.motivo ? ': ' + h.motivo : '') + (h.n ? ' (' + h.n + (h.n === 1 ? ' foto)' : ' fotos)') : '')) + '</li>';
         }).join('') + '</ul>' : ''),
       depois: function() {
         var corpo = document.getElementById('ger-form-body');
@@ -17623,7 +17675,7 @@
     var x = liberacaoDe(c);
     if (!x) return '';
     return (curto ? 'Liberada sem leitura e sem fotos' : 'Liberada sem leitura do código de barras e sem fotos do caminhão') +
-      (x.por ? ' por ' + x.por : '') + (!curto && x.em ? ' em ' + formatDateTimeBR(x.em) : '') + (!curto && x.motivo ? ' — motivo: ' + x.motivo : '');
+      (x.por ? ' por ' + nomePessoa(x.por) : '') + (!curto && x.em ? ' em ' + formatDateTimeBR(x.em) : '') + (!curto && x.motivo ? ' — motivo: ' + x.motivo : '');
   }
   function liberacaoDetailRow(c, id, row) {
     var x = liberacaoDe(c);
@@ -17752,12 +17804,15 @@
     if (!x && !acesso.senha) return Promise.resolve(true);
     var ref = 'escritorio:' + id;
     if (!/^escritorio:[A-Za-z0-9_-]{1,64}$/.test(ref)) { falhar('Não foi possível criar o acesso para esta pessoa.'); return Promise.resolve(false); }
-    var nomeAcesso = (x && x.nome) || nome || m.nome;
+    // o login leva o nome completo do cadastro (identificação pelo RH); se o cadastro só tem o começo do nome que o
+    // acesso já tem ("Angélica" e "Angélica Peres dos Santos"), fica o do acesso, que é mais completo
+    var nomeAcesso = nome || m.nomeCompleto || m.nome || (x && x.nome) || '';
+    if (x && x.nome && normNome(x.nome).length > normNome(nomeAcesso).length && normNome(x.nome).indexOf(normNome(nomeAcesso)) === 0) nomeAcesso = x.nome;
     var corpo = acesso.senha ? { acao: 'definir', ref: ref, nome: nomeAcesso, senha: acesso.senha, modulos: acesso.modulos }
       : { acao: 'ajustar', ref: ref, nome: nomeAcesso, modulos: acesso.modulos };
     return chamarAcesso(corpo).then(function() {
       acessoInfo = null; renderAcessoAdmin();
-      showToast(x ? 'Acesso ao app salvo. Quem já está no app vê a mudança no próximo login.' : 'Acesso ao app de ' + (nome || m.nome) + ' criado.');
+      showToast(x ? 'Acesso ao app salvo. Quem já está no app vê a mudança no próximo login.' : 'Acesso ao app de ' + primeiroNome(nome || m.nomeCompleto) + ' criado.');
       return true;
     }).catch(function(e) {
       var c = e && e.codigo;
