@@ -2463,6 +2463,13 @@
 
       <div class="pedido-resumo hidden" id="cgc-devolucao"></div>
 
+      <div class="group hidden" id="cgc-frete-sec">
+        <label>Valor do frete combinado <span class="req">*</span>
+          <input type="text" id="cgc-frete-valor" inputmode="decimal" maxlength="14" placeholder="R$ 0,00" autocomplete="off" />
+          <span class="field-hint" id="cgc-frete-hint">Carreta (ou carga com mais de 18 paletes): a tabela de fretes só tem 16 e 18 paletes. Pergunte o preço ao motorista ou à transportadora e informe antes de concluir.</span>
+        </label>
+      </div>
+
       <label id="cgc-conferente-pin-label">Senha do conferente <span class="req">*</span>
         <input type="password" id="cgc-conferente-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" />
         <span class="field-hint" id="cgc-conferente-hint">Digite a sua senha de 4 números: o seu nome aparece sozinho.</span>
@@ -7142,7 +7149,7 @@
   }
 
   var cgEditor = makeClientesEditor('cg-clientes-list', 'cg', { allowClienteEdit: true, allowAjustePaletes: true, getCargaId: function() { return editingCargaId; }, onChange: function() { renderCgTotaisInto('cg-totais', cgEditor); } });
-  var cgcEditor = makeClientesEditor('cgc-clientes-list', 'cgc', { allowClienteEdit: false, allowAjustePaletes: true, getCargaId: function() { return cargaConcludeId; }, onChange: function() { renderCgTotaisInto('cgc-totais', cgcEditor); } });
+  var cgcEditor = makeClientesEditor('cgc-clientes-list', 'cgc', { allowClienteEdit: false, allowAjustePaletes: true, getCargaId: function() { return cargaConcludeId; }, onChange: function() { renderCgTotaisInto('cgc-totais', cgcEditor); atualizarFreteCombinado(); } });
 
   document.getElementById('btn-cg-add-cliente').addEventListener('click', function() { cgEditor.addCliente(); });
 
@@ -7650,6 +7657,20 @@
 
   // ---------- concluir carregamento (expedição) ----------
   var cargaConcludeId = null;
+  // Frete de carreta (pedido de 20/10/2026): a tabela tem só 16 e 18 paletes; com motorista de carreta (ou mais de
+  // 18 paletes) o app pergunta o preço combinado antes de concluir. Fica em carga.freteCombinado e, na aba Fretes,
+  // é o valor sugerido daquela viagem (vale depois de confirmado pela senha mestre).
+  function motoristaDaCarga(c) { return motoristas.find(function(m) { return mesmoMotorista(m.nome, c && c.motorista); }) || null; }
+  function cargaDeCarreta(c, paletes) {
+    var m = motoristaDaCarga(c);
+    return !!(m && (m.veiculoTipo === 'carreta' || Number(m.capacidadePaletes) > 18)) || Number(paletes != null ? paletes : c && c.totalPaletes) > 18;
+  }
+  function atualizarFreteCombinado() {
+    var sec = document.getElementById('cgc-frete-sec');
+    if (!sec || !cargaConcludeId) return;
+    var c = findCarga(cargaConcludeId), tot = computeCargaTotals(cgcEditor.toOut());
+    sec.classList.toggle('hidden', !cargaDeCarreta(c, tot.paletes));
+  }
   function openCargaConclude(carga) {
     if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
     if (!duplaOk(carga) && !liberacaoDe(carga)) {
@@ -7688,6 +7709,8 @@
     sigCgcMotorista.showCanvasMode();
     sigCgcConferente.showCanvasMode();
     prepararFotosConferencia();
+    document.getElementById('cgc-frete-valor').value = carga.freteCombinado && Number(carga.freteCombinado.valor) > 0 ? ocValorTexto(carga.freteCombinado.valor) : '';
+    atualizarFreteCombinado();
     document.getElementById('carga-conclude-overlay').classList.remove('hidden');
   }
   function closeCargaConclude() {
@@ -7802,9 +7825,15 @@
     if (!sigCgcConferente.isSatisfied()) { errEl.textContent = 'Colete a assinatura do conferente antes de concluir.'; errEl.classList.remove('hidden'); return; }
     var erroFotos = validarFotosConferencia();
     if (erroFotos) { errEl.textContent = erroFotos; errEl.classList.remove('hidden'); return; }
+    var totals = computeCargaTotals(clientesOut), freteComb = null;
+    if (cargaDeCarreta(findCarga(cargaConcludeId), totals.paletes)) {
+      var vfc = ocValor(document.getElementById('cgc-frete-valor').value);
+      if (vfc === null || vfc <= 0) { errEl.textContent = 'Carreta: informe o valor do frete combinado (pergunte ao motorista ou à transportadora) antes de concluir.'; errEl.classList.remove('hidden'); document.getElementById('cgc-frete-valor').focus(); return; }
+      if (vfc > 100000) { errEl.textContent = 'Confira o valor do frete.'; errEl.classList.remove('hidden'); return; }
+      freteComb = { valor: Math.round(vfc * 100) / 100, por: quemSessao(), em: new Date().toISOString() };
+    }
     errEl.classList.add('hidden');
 
-    var totals = computeCargaTotals(clientesOut);
     var original = Object.assign({}, findCarga(cargaConcludeId) || {});
     delete original.id;
     var rec = Object.assign({}, original, {
@@ -7816,6 +7845,7 @@
       status: 'concluida',
       concluidoEm: new Date().toISOString()
     });
+    if (freteComb) rec.freteCombinado = freteComb;
     var devSel = document.getElementById('cgc-devolucao-anterior');
     if (devSel && original.entregaAnterior) {
       var devObs = document.getElementById('cgc-devolucao-anterior-obs');
@@ -9455,18 +9485,21 @@
     var adicional = partes.length > 1 ? adicionalFrete() : 0;
     var sugerido = maior ? arred2(maior.valor + adicional) : 0;
     var precisa = !partes.length || partes.some(function(p) { return p.confirmar; });
+    var fc = c.freteCombinado && Number(c.freteCombinado.valor) > 0 ? c.freteCombinado : null;
+    if (fc) { sugerido = arred2(fc.valor); precisa = true; } // carreta: o preço combinado na conclusão, confirmado depois
     var temValor = !!reg && reg.valor != null && reg.valor !== '' && !isNaN(Number(reg.valor));
     var valor = temValor ? arred2(reg.valor) : sugerido;
     var estado = reg && reg.pagoEm ? 'pago' : (reg && reg.confirmado && reg.aprovacao === 'pendente') ? 'aprovar' : ((reg && reg.confirmado) || !precisa) ? 'apagar' : 'confirmar';
     return {
       carga: c, reg: reg, destinos: destinos, partes: partes, maior: maior, adicional: adicional, sugerido: sugerido,
       cheio: arred2(cheioMax + adicional), valor: valor, estado: estado, precisa: precisa, paletes: paletes, com175: com175,
-      ajustado: temValor && arred2(reg.valor) !== sugerido,
+      ajustado: temValor && arred2(reg.valor) !== sugerido, combinado: fc,
       proporcional: partes.some(function(p) { return p.proporcional; }),
       semTabela: !partes.length || partes.some(function(p) { return p.semTabela; })
     };
   }
   function composicaoFrete(f) {
+    if (f.combinado) return 'carreta: valor combinado na conclusão (' + fmtBRL(f.combinado.valor) + (f.combinado.por ? ', informado por ' + nomePessoa(f.combinado.por) : '') + ')';
     if (!f.partes.length) return 'sem destino informado na carga';
     var t = f.partes.map(function(p) {
       if (p.semTabela) return p.destino + ': sem valor na tabela';
