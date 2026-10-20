@@ -87,6 +87,47 @@ ACT['ab-foto-del'] = el => { const v = VIEWS.abrir, i = +el.dataset.i, x = (v.fo
      """'<dl class="kv"><dt>Quem usa</dt><dd>' + (p.nome ? esc(p.nome) + ' · ' + esc(p.setor) : 'não identificado') + (p.auto ? ' <span class="small muted">(pelo acesso ao LEVÍSSIMA)</span>' : ' <button type="button" class="btn sm ghost" data-act="perfil">Trocar</button>') + '</dd>'"""),
 ]
 
+# Manutenção, pedido de 20/10/2026: fichas de manutenção preventiva em planilha (modelo: a ficha da Enchedora da
+# Linha 1). O código novo fica em manutencao-fichas.js (inserido antes da inicialização) e estas trocas ligam a
+# ficha ao resto do módulo:
+# - coleção "fichas" e a tela "Fichas de preventiva" no menu (seção Planos);
+# - equipamento e tarefa do plano mostram a ficha (método, fornecedor, quantidade, nº de controle);
+# - a execução da preventiva grava o resultado O (normal) ou X (anormal), como na ficha (X pede a observação);
+# - registrar uma execução antiga (ex.: mês passado, pela ficha) não faz a "última execução" voltar no tempo;
+# - "a cada 2 anos" na periodicidade.
+TROCAS_MANUTENCAO_FICHAS = [
+    ("const COLS = ['equipamentos', 'elementos', 'chamados', 'preventivas', 'lubrificacao', 'pecas', 'movimentos', 'ferramentas', 'config'];",
+     "const COLS = ['equipamentos', 'elementos', 'chamados', 'preventivas', 'lubrificacao', 'pecas', 'movimentos', 'ferramentas', 'config', 'fichas'];"),
+    ("  { id: 'preventiva', nome: 'Preventiva', ico: 'calendar', sec: 'Planos' },",
+     "  { id: 'preventiva', nome: 'Preventiva', ico: 'calendar', sec: 'Planos' },\n"
+     "  { id: 'fichas', nome: 'Fichas de preventiva', curto: 'Fichas', ico: 'list', sec: 'Planos' },"),
+    ("  h += '<div class=\"blk\"><div class=\"blk-h\"><h3>Preventiva · ' + prev.length",
+     "  h += fichasDoEquipHtml(e);\n  h += '<div class=\"blk\"><div class=\"blk-h\"><h3>Preventiva · ' + prev.length"),
+    ("      if (p.descricao || p.obs) h += '<div class=\"blk\"><h3>Instruções</h3>",
+     "      if (col === 'preventivas') h += fichaBlocoPlano(p);\n      if (p.descricao || p.obs) h += '<div class=\"blk\"><h3>Instruções</h3>"),
+    ("  hist.push({ data: d.data, horas: d.horas == null ? null : d.horas, por: d.por || nomeUsuario(), obs: d.obs || '', pecas: d.pecas || [], prevista: st.proxima || null, t: Date.now(), checklist: d.checklist || null });",
+     "  hist.push({ data: d.data, horas: d.horas == null ? null : d.horas, por: d.por || nomeUsuario(), obs: d.obs || '', pecas: d.pecas || [], prevista: st.proxima || null, t: Date.now(), checklist: d.checklist || null, resultado: d.resultado || null });\n"
+     "  hist.sort((a, b) => String(a.data || '').localeCompare(String(b.data || '')) || (a.t || 0) - (b.t || 0));\n"
+     "  const maisNova = !item.ultimaData || d.data >= item.ultimaData;"),
+    ("  const patch = { ultimaData: d.data, proximaData: null, historico: hist.slice(-40), atualizadoEm: Date.now() };",
+     "  const patch = { ultimaData: maisNova ? d.data : item.ultimaData, proximaData: maisNova ? null : (item.proximaData || null), historico: hist.slice(-40), atualizadoEm: Date.now() };"),
+    ("fDate('ex-data', 'Data da execução', hoje(), { name: 'data', req: true })",
+     "fDate('ex-data', 'Data da execução', el.dataset.data && el.dataset.data <= hoje() ? el.dataset.data : hoje(), { name: 'data', req: true })"),
+    ("      + ((p.checklist || []).length ? '<div class=\"field\"><span class=\"flabel\">Checklist</span>'",
+     "      + (col === 'preventivas' ? fChips('resultado', 'Resultado (como na ficha)', [{ v: 'O', l: 'O = Normal' }, { v: 'X', l: 'X = Anormal' }], 'O', { hint: 'Anormal: descreva nas observações o que foi encontrado.' }) : '')\n"
+     "      + ((p.checklist || []).length ? '<div class=\"field\"><span class=\"flabel\">Checklist</span>'"),
+    ("  if (!d.por) return toast('Informe quem executou.', 'crit');",
+     "  if (!d.por) return toast('Informe quem executou.', 'crit');\n"
+     "  const resultado = col === 'preventivas' ? (d.resultado === 'X' ? 'X' : 'O') : null;\n"
+     "  if (resultado === 'X' && !d.obs) return toast('Anormal (X): descreva nas observações o que foi encontrado.', 'crit');"),
+    ("    const r = await executarPlano(col, p, { data: d.data, horas, por: d.por, obs, pecas, checklist: d.ck || null });",
+     "    const r = await executarPlano(col, p, { data: d.data, horas, por: d.por, obs, pecas, checklist: d.ck || null, resultado });\n"
+     "    if (resultado === 'X') toast('Registrado como anormal (X). Se precisar de conserto, abra um chamado.', 'crit');"),
+    ("180: 'semestral', 365: 'anual' }[n]", "180: 'semestral', 365: 'anual', 730: 'a cada 2 anos' }[n]"),
+    ("'<div class=\"ev\"><div class=\"w\">' + fmtData(x.data) + (x.horas != null ?",
+     "'<div class=\"ev\"><div class=\"w\">' + fmtData(x.data) + (x.resultado === 'X' ? ' · <b style=\"color:var(--crit)\">X anormal</b>' : x.resultado === 'O' ? ' · O normal' : '') + (x.horas != null ?"),
+]
+
 MODULOS = {
     'manutencao': {
         'titulo': ('<title>Manutenção Levíssima</title>', '<title>Manutenção · LEVÍSSIMA</title>'),
@@ -104,7 +145,8 @@ MODULOS = {
             ("'<span class=\"small muted\">A IA fica disponível ao usar o app pelo Claude com sua conta.</span>'", "''"),
             ("'Banco compartilhado: todos que usam este app pelo link do Claude veem os mesmos dados, ao vivo.'",
              "'Banco do LEVÍSSIMA: todos com acesso ao módulo Manutenção veem os mesmos dados, ao vivo.'"),
-        ] + TROCAS_MANUTENCAO_1710,
+        ] + TROCAS_MANUTENCAO_1710 + TROCAS_MANUTENCAO_FICHAS,
+        'inserir_antes': ('/* =====================================================================\n   Inicialização', 'manutencao-fichas.js'),
     },
     'uniformes': {
         'titulo': ('<title>Levíssima Uniformes e EPI</title>', '<title>Uniformes e EPI · LEVÍSSIMA</title>'),
@@ -157,6 +199,12 @@ def montar(saida, url=None, chave=None):
         for a, b in cfg['trocas']:
             assert s.count(a) == 1, (nome, a[:70], s.count(a))
             s = s.replace(a, b)
+        if cfg.get('inserir_antes'):
+            ancora, arquivo = cfg['inserir_antes']
+            assert s.count(ancora) == 1, (nome, ancora)
+            extra = open(os.path.join(AQUI, arquivo), encoding='utf-8').read()
+            assert '</script' not in extra.lower(), arquivo
+            s = s.replace(ancora, extra.rstrip() + '\n\n' + ancora)
         s = sem_tema_escuro(s)
         i = s.lower().index('<head>') + len('<head>')
         s = s[:i] + cabeca(nome) + s[i:]
