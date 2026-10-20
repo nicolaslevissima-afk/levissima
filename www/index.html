@@ -2375,7 +2375,7 @@
       </label>
       <div class="row-2">
         <label>Cargo <span class="opt">(organograma)</span>
-          <select id="f-equipe-cargo"><option value="">—</option><option value="diretor">Diretor</option><option value="gerente">Gerente</option><option value="coordenador">Coordenador</option><option value="supervisor">Supervisor</option><option value="analista">Analista</option><option value="assistente">Assistente</option><option value="lider">Líder</option><option value="operador">Operador</option><option value="outro">Outro</option></select>
+          <select id="f-equipe-cargo"><option value="">—</option><option value="diretor">Diretor</option><option value="gerente">Gerente</option><option value="executiva_comercial">Executiva comercial</option><option value="coordenador">Coordenador</option><option value="supervisor">Supervisor</option><option value="analista">Analista</option><option value="assistente">Assistente</option><option value="lider">Líder</option><option value="operador">Operador</option><option value="outro">Outro</option></select>
         </label>
         <label>Área
           <select id="f-equipe-area"><option value="">—</option><option>Diretoria</option><option>Gestão</option><option>Comercial</option><option>Faturamento</option><option>Financeiro</option><option>Logística</option><option>Expedição</option><option>Produção</option><option>Qualidade</option><option>Manutenção</option><option>RH</option><option>Compras</option><option>Administrativo</option><option>Força de vendas</option></select>
@@ -16767,7 +16767,7 @@
   var editingMembroId = null;
   // cargos do organograma (pedido de 17/10/2026): coordenador, supervisor e gerente autorizam o pedido de compra antes da
   // cotação; diretor (Nicolas ou André) aprova a compra na etapa final
-  var CARGOS = [['diretor', 'Diretor'], ['gerente', 'Gerente'], ['coordenador', 'Coordenador'], ['supervisor', 'Supervisor'], ['analista', 'Analista'], ['assistente', 'Assistente'], ['lider', 'Líder'], ['operador', 'Operador'], ['outro', 'Outro']];
+  var CARGOS = [['diretor', 'Diretor'], ['gerente', 'Gerente'], ['executiva_comercial', 'Executiva comercial'], ['coordenador', 'Coordenador'], ['supervisor', 'Supervisor'], ['analista', 'Analista'], ['assistente', 'Assistente'], ['lider', 'Líder'], ['operador', 'Operador'], ['outro', 'Outro']];
   function cargoNome(k) { var c = CARGOS.find(function(x) { return x[0] === k; }); return c ? c[1] : ''; }
   function autorizaAntesCotacao(m) { return !!m && (!!m.coordenador || ['coordenador', 'supervisor', 'gerente'].indexOf(m.cargo) >= 0); }
   function aprovaCompraFinal(m) { return !!m && (!!m.aprovaCompra || m.cargo === 'diretor'); }
