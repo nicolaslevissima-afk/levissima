@@ -779,6 +779,30 @@
   .oc-ia { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 4px 0; }
   .oc-ia-res { font-size: 0.8125rem; color: var(--muted); }
   .foto-campo-mini .foto-tile { min-height: 74px; }
+  .chat-bolha.apagada { opacity: 0.7; font-style: italic; background: transparent !important; border-style: dashed !important; }
+  .chat-apagar { font-size: 0.6875rem; padding: 0; min-height: 0; color: var(--muted); text-decoration: underline; }
+  .mural-row-ico { display: inline-flex; width: 20px; height: 20px; margin-right: 6px; vertical-align: -4px; color: var(--teal); }
+  .mural-row-ico svg { width: 20px; height: 20px; }
+  .mu-icones { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+  .mu-ico { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; border: 1px solid var(--line); border-radius: 999px; cursor: pointer; }
+  .mu-ico .mural-ico { width: 32px; height: 32px; background: linear-gradient(100deg, #2D7A1C 0%, #702082 100%); }
+  .mu-ico .mural-ico svg { width: 20px; height: 20px; }
+  .mu-ico:has(input:checked) { border-color: var(--roxo); box-shadow: 0 0 0 2px rgba(112, 32, 130, 0.25); }
+  .ag2-topo { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 10px; }
+  .ag2-dia { margin: 12px 0; }
+  .ag2-dia-t { font-size: 0.9375rem; margin: 0 0 6px; text-transform: capitalize; }
+  .ag2-item { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 10px; padding: 10px 12px; margin: 0 0 8px; background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--wood); border-radius: 10px; }
+  .ag2-item.pessoal { border-left-color: var(--teal); }
+  .ag2-item.novo { box-shadow: 0 0 0 2px rgba(255, 106, 19, 0.35); }
+  .ag2-item.cancelado { opacity: 0.6; }
+  .ag2-item.cancelado .ag2-txt > b { text-decoration: line-through; }
+  .ag2-hora { font-family: var(--font-mono); font-weight: 700; font-size: 0.875rem; }
+  .ag2-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+  .ag2-tipo { display: inline-block; width: fit-content; font-size: 0.6875rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; background: rgba(var(--wood-rgb), 0.12); color: var(--wood); }
+  .ag2-tipo.pessoal { background: rgba(var(--teal-rgb), 0.14); color: var(--teal); }
+  .ag2-tipo-campo { display: flex; flex-direction: column; gap: 4px; }
+  .ag2-tipo-rot { font-size: 0.875rem; font-weight: 600; }
+  .ag2-tipos { display: flex; gap: 12px; flex-wrap: wrap; }
   /* só visualiza: some o botão principal de lançar/salvar da aba (o app e o banco também recusam a gravação) */
   body.nivel-ver .tab-panel:not(#tab-inicio):not(#tab-chat):not(#tab-solicitacoes):not(#tab-organograma) .btn-primary { display: none !important; }
   /* ---- estoque por local, cronograma de saída e suprimentos ---- */
@@ -1367,6 +1391,7 @@
       <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
       <button type="button" class="seg-btn" data-tab="trocas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="tab-txt">Trocas e devoluções</span></button>
       <button type="button" class="seg-btn" data-tab="canhotos"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 11.5h6"/><path d="M9.5 16.5l1.8 1.8 3.7-3.7"/></svg></span><span class="tab-txt">Canhotos</span></button>
+      <button type="button" class="seg-btn" data-tab="minhaagenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15" r="2"/></svg></span><span class="tab-txt">Minha agenda</span></button>
       <button type="button" class="seg-btn" data-tab="chat"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg></span><span class="tab-txt">Chat</span></button>
       <button type="button" class="seg-btn" data-tab="solicitacoes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg></span><span class="tab-txt">Solicitações</span></button>
       <button type="button" class="seg-btn" data-tab="organograma"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></svg></span><span class="tab-txt">Organograma</span></button>
@@ -1617,6 +1642,9 @@
   </div>
   <div class="tab-panel hidden" id="tab-trocas">
     <div id="trocas-conteudo"></div>
+  </div>
+  <div class="tab-panel hidden" id="tab-minhaagenda">
+    <div id="ag2-conteudo"></div>
   </div>
   <div class="tab-panel hidden" id="tab-chat">
     <div id="chat-conteudo"></div>
@@ -2517,6 +2545,7 @@
           <span class="aniv-campos"><select id="f-equipe-aniv-dia" aria-label="Dia do aniversário"><option value="">dia</option><option value="01">1</option><option value="02">2</option><option value="03">3</option><option value="04">4</option><option value="05">5</option><option value="06">6</option><option value="07">7</option><option value="08">8</option><option value="09">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select><select id="f-equipe-aniv-mes" aria-label="Mês do aniversário"><option value="">mês</option><option value="01">janeiro</option><option value="02">fevereiro</option><option value="03">março</option><option value="04">abril</option><option value="05">maio</option><option value="06">junho</option><option value="07">julho</option><option value="08">agosto</option><option value="09">setembro</option><option value="10">outubro</option><option value="11">novembro</option><option value="12">dezembro</option></select></span>
         </label>
       </div>
+      <label class="check"><input type="checkbox" id="f-equipe-org" /> Vê a aba <b>Organograma</b> <span class="opt">(onde está na empresa: quem está acima e abaixo)</span></label>
       <div class="homen-set" role="group" aria-label="Homenagens">
         <span class="field-hint">Recebe as mensagens de:</span>
         <label class="check"><input type="checkbox" id="f-equipe-h-mulher" /> Dia da Mulher</label>
@@ -4037,6 +4066,7 @@
   }
 
   // ---------- rendering ----------
+  var abasVistas = '';
   function render() {
     if (session && session.role === 'motorista') { renderDriverView(); return; }
     if (session && session.role === 'representante') { renderRepView(); return; }
@@ -4063,6 +4093,8 @@
     renderProdutosAdmin();
     renderMarcasAdmin();
     renderEquipeAdmin();
+    var abasAgora = session ? abasPermitidas().join() : '';
+    if (session && abasAgora !== abasVistas && !document.getElementById('admin-view').classList.contains('hidden')) { abasVistas = abasAgora; applyTab(); } else abasVistas = abasAgora;
     renderDatasAdmin();
     renderMuraisAdmin();
     if (ui.tab === 'organograma') renderOrganograma();
@@ -5864,8 +5896,10 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'canhotos', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
-  var ABAS_COMUNICACAO = ['chat', 'solicitacoes', 'organograma']; // todo mundo do escritório tem (19/10/2026)
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var ABAS_COMUNICACAO = ['minhaagenda', 'chat', 'solicitacoes']; // todo mundo do escritório tem (19 e 20/10/2026)
+  // Organograma (20/10/2026): escondido de todos; a senha mestre marca em Cadastros › Equipe com senha quem vê a aba
+  function podeVerOrganograma() { if (!session) return false; if (session.ref === 'mestre' || (session.role === 'admin' && !session.soInclui && !session.ref)) return true; var m = meuMembro(); return !!(m && m.veOrganograma); }
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
   // A senha da equipe abre o dia a dia do escritório (com Produção e Matéria-prima); Cadastros, Fretes e Pesquisas só com a senha mestre.
   // abas que a equipe do escritório pode ter; no acesso individual, a senha mestre marca quais a pessoa vê (19/10/2026)
@@ -5886,9 +5920,10 @@
     if (session && session.role === 'equipe') {
       var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
       return ['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
-        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : ['organograma']);
+        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []);
     }
-    return mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && t !== 'chat' && t !== 'solicitacoes'; });
+    var org = podeVerOrganograma();
+    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return t !== 'organograma' || org; });
   }
   function abaPadrao(permitidas) { return permitidas.indexOf('cargas') >= 0 ? 'cargas' : permitidas[0]; }
   function applyTab() {
@@ -5915,7 +5950,8 @@
     if (ui.tab === 'canhotos') renderCanhotos();
     if (ui.tab === 'trocas') renderTrocas();
     if (ui.tab !== 'chat' && ui.tab !== 'solicitacoes') chat.montada = '';
-    if (ui.tab === 'chat' || ui.tab === 'solicitacoes') { ligarComunicacao(); carregarPessoasChat(); }
+    if (ui.tab === 'chat' || ui.tab === 'solicitacoes' || ui.tab === 'minhaagenda') { ligarComunicacao(); carregarPessoasChat(); }
+    if (ui.tab === 'minhaagenda') renderMinhaAgenda();
     if (ui.tab === 'chat') renderChat();
     if (ui.tab === 'solicitacoes') renderSolicitacoes();
     if (ui.tab === 'organograma') renderOrganograma();
@@ -15458,6 +15494,8 @@
   // grava, em Cadastros › Recados em destaque.
   var murais = [], muralLigado = false, muralFechados = {}, muralEditando = null;
   var LOCAL_MURAL_KEY = 'levissima-murais-v2';
+  var TROMBETA_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10.5h2.5v3H2z"/><path d="M4.5 12H14"/><path d="M14 9.2 21.5 5v14L14 14.8z"/><path d="M7.5 12V8.6M10 12V8.6M12.5 12V8.6"/><path d="M6 15c2.2 1.4 5.8 1.4 8 0"/></svg>';
+  function iconeRecado(m) { return m && m.icone === 'trombeta' ? TROMBETA_SVG : TROFEU_SVG; }
   var TROFEU_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a4 4 0 0 1-4 4M7 5H4v2a4 4 0 0 0 4 4"/></svg>';
   function ligarMural() {
     if (muralLigado) { renderMural(); return; }
@@ -15486,7 +15524,7 @@
     document.body.classList.toggle('com-mural', !!lista.length);
     el.innerHTML = lista.map(function(m) {
       var pessoal = Array.isArray(m.para) && m.para.length;
-      return '<div class="mural"><span class="mural-ico">' + TROFEU_SVG + '</span><p class="mural-txt">' + (pessoal ? '<span class="mural-tag">Para você</span>' : '') + escapeHtml(String(m.texto).trim()) + '</p>' +
+      return '<div class="mural"><span class="mural-ico">' + iconeRecado(m) + '</span><p class="mural-txt">' + (pessoal ? '<span class="mural-tag">Para você</span>' : '') + escapeHtml(String(m.texto).trim()) + '</p>' +
         '<button type="button" class="mural-x" data-mural-x="' + escapeHtml(m.id) + '" aria-label="Fechar o recado">✕</button></div>';
     }).join('');
   }
@@ -15509,7 +15547,7 @@
     var lista = murais.slice().sort(function(a, b) { return String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || '')); });
     el.innerHTML = lista.length ? lista.map(function(m) {
       var on = m.ativo !== false;
-      return '<div class="mural-row' + (on ? '' : ' off') + '"><div><span class="mural-row-t">' + escapeHtml(m.texto || '(sem texto)') + '</span><span class="driver-sub">Quem vê: ' + escapeHtml(paraResumo(m)) + (on ? '' : ' · escondido') + '</span></div>' +
+      return '<div class="mural-row' + (on ? '' : ' off') + '"><div><span class="mural-row-ico" aria-hidden="true">' + iconeRecado(m) + '</span><span class="mural-row-t">' + escapeHtml(m.texto || '(sem texto)') + '</span><span class="driver-sub">Quem vê: ' + escapeHtml(paraResumo(m)) + (on ? '' : ' · escondido') + '</span></div>' +
         '<div class="mural-row-acoes"><label class="check data-liga"><input type="checkbox" data-mural-liga="' + escapeHtml(m.id) + '"' + (on ? ' checked' : '') + ' /> Mostrar</label>' +
         '<button type="button" class="btn-text" data-mural-editar="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button type="button" class="btn-text danger" data-mural-apagar="' + escapeHtml(m.id) + '">Apagar</button></div></div>';
@@ -15543,6 +15581,9 @@
     gerAbrir({
       titulo: m ? 'Editar recado' : 'Novo recado', botao: 'Salvar recado',
       html: '<label>Texto do recado <span class="req">*</span><textarea id="mu-texto" rows="2" maxlength="200">' + escapeHtml(m ? m.texto || '' : '') + '</textarea></label>' +
+        '<p class="acesso-titulo">Ícone</p><div class="mu-icones" role="radiogroup" aria-label="Ícone do recado">' +
+          '<label class="mu-ico"><input type="radio" name="mu-ico" value="trofeu"' + (!m || m.icone !== 'trombeta' ? ' checked' : '') + ' /><span class="mural-ico">' + TROFEU_SVG + '</span> Troféu</label>' +
+          '<label class="mu-ico"><input type="radio" name="mu-ico" value="trombeta"' + (m && m.icone === 'trombeta' ? ' checked' : '') + ' /><span class="mural-ico">' + TROMBETA_SVG + '</span> Trombeta</label></div>' +
         '<p class="acesso-titulo">Quem vê</p>' +
         '<label class="check"><input type="radio" name="mu-quem" value="todos"' + (!para.length ? ' checked' : '') + ' /> Todos os acessos</label>' +
         '<label class="check"><input type="radio" name="mu-quem" value="escolher"' + (para.length ? ' checked' : '') + ' /> Só as pessoas que eu escolher</label>' +
@@ -15561,7 +15602,8 @@
         if (!texto) return gerErro('Escreva o recado.');
         if (escolher && !lista.length) return gerErro('Escolha ao menos uma pessoa (ou marque “Todos os acessos”).');
         var agora = new Date().toISOString();
-        var dados = { texto: texto, ativo: ativo, para: lista, atualizadoEm: agora, criadoEm: (m && m.criadoEm) || agora, por: quemSessao() };
+        var icone = (document.querySelector('input[name="mu-ico"]:checked') || {}).value === 'trombeta' ? 'trombeta' : 'trofeu';
+        var dados = { texto: texto, ativo: ativo, para: lista, icone: icone, atualizadoEm: agora, criadoEm: (m && m.criadoEm) || agora, por: quemSessao() };
         return gravarMural(m ? m.id : 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), dados).then(function() {
           if (m) delete muralFechados[m.id];
           showToast(!ativo ? 'Recado salvo (escondido).' : lista.length ? 'Recado salvo: só ' + (lista.length === 1 ? 'a pessoa escolhida vê.' : 'as ' + lista.length + ' pessoas escolhidas veem.') : 'Recado salvo: aparece para todos.');
@@ -15852,9 +15894,6 @@
     });
   }
   // "Não sabe o nome da peça?": a foto vai para a função "identificar-peca" (IA), que devolve o nome
-  function blobParaBase64(b) {
-    return new Promise(function(ok, falha) { var fr = new FileReader(); fr.onload = function() { ok(String(fr.result).replace(/^data:[^,]*,/, '')); }; fr.onerror = falha; fr.readAsDataURL(b); });
-  }
   function ocIdentificarPeca(i, file) {
     var res = document.getElementById('oc-ia-res-' + i);
     if (res) res.textContent = 'Perguntando à IA… (pode levar alguns segundos)';
@@ -17136,6 +17175,13 @@
     tiles.push({ tab: 'compras', t: 'Compras', v: ocAprov + ocCot, u: ocAprov + ocCot === 1 ? 'ordem esperando assinatura' : 'ordens esperando assinatura', s: ocAprov + ' para aprovar · ' + ocCot + ' em cotação · ' + ocEnt + ' aguardando entrega', alerta: ocAprov > 0 });
     var ag = 0; try { ag = agEntradasDoDia(hoje).length; } catch (e) {}
     tiles.push({ tab: 'agenda', t: 'Agenda dos retornáveis', v: ag, u: ag === 1 ? 'agendamento hoje' : 'agendamentos hoje', s: 'linha dos garrafões 10 L e 20 L' });
+    if (comunicacaoLigada()) {
+      var cHoje = agendaDeHoje(), nNov = agendaNaoVistos().length, agoraHM = pad2(new Date().getHours()) + ':' + pad2(new Date().getMinutes());
+      var prox = cHoje.filter(function(c) { return !c.inicio || String(c.inicio).slice(0, 5) >= agoraHM; })[0];
+      var tAg = { tab: 'minhaagenda', t: 'Minha agenda', v: cHoje.length, u: cHoje.length === 1 ? 'compromisso hoje' : 'compromissos hoje',
+        s: [prox ? 'próximo ' + (prox.inicio ? String(prox.inicio).slice(0, 5) + ' · ' : '') + prox.titulo : 'nada mais hoje', nNov ? nNov + (nNov === 1 ? ' novo marcado por outra pessoa' : ' novos marcados por outras pessoas') : ''].filter(Boolean).join(' · '), alerta: nNov > 0 };
+      if (tAg.alerta || cHoje.length) tiles.unshift(tAg); else tiles.push(tAg);
+    }
     var trP = trocasPendentes().length;
     tiles.push({ tab: 'trocas', t: 'Trocas e devoluções', v: trP, u: trP === 1 ? 'aguardando a Qualidade' : 'aguardando a Qualidade', s: trP ? 'a Qualidade anota o destino do produto' : 'nada esperando destino', alerta: trP > 0 });
     if (comunicacaoLigada()) {
@@ -17212,6 +17258,7 @@
       var supM = m.superiorId ? equipe.find(function(x) { return x.id === m.superiorId; }) : null;
       if (m.aniversario) chips += '<span class="func-chip">🎂 ' + escapeHtml(m.aniversario.split('-').reverse().join('/')) + '</span>';
       if (supM) chips += '<span class="func-chip">responde a ' + escapeHtml(supM.nomeCurto || supM.nome) + '</span>';
+      if (m.veOrganograma) chips += '<span class="func-chip">vê o Organograma</span>';
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nomeCompleto || m.nome) + '<span class="driver-sub">no app: ' + escapeHtml(m.nome) + '</span>' + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
@@ -17245,6 +17292,7 @@
     document.getElementById('f-equipe-h-mulher').checked = !!hm.mulher;
     document.getElementById('f-equipe-h-mae').checked = !!hm.mae;
     document.getElementById('f-equipe-h-pai').checked = !!hm.pai;
+    document.getElementById('f-equipe-org').checked = !!(m && m.veOrganograma);
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
     document.getElementById('f-equipe-fin').checked = m ? !!m.financeiro : false;
@@ -17339,7 +17387,7 @@
       if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
-        superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen };
+        superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked };
       if (hash) patch.pinHash = hash;
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
@@ -18694,8 +18742,13 @@
     if (!msgs.length) return '<p class="chat-vazio">' + (tipo === 'sol' ? (souMestre ? 'Nenhuma mensagem ainda.' : 'Escreva abaixo o que pode melhorar no app, uma ideia nova ou um problema que encontrou. O Nicolas responde aqui mesmo.') : 'Nenhuma mensagem ainda. Diga um oi!') + '</p>';
     return msgs.map(function(m) {
       var minha = m.de === eu, dia = diaLocal(m.criado_em), sep = '';
+      // apagar: a própria mensagem até 1 hora depois; a senha mestre, qualquer uma (pedido de 20/10/2026)
+      var podeApagar = !m.apagada && (souMestre || (minha && Date.now() - Date.parse(m.criado_em) < 3600000));
       if (dia && dia !== ultimoDia) { ultimoDia = dia; sep = '<div class="chat-dia">' + escapeHtml(dia === todayIso() ? 'Hoje' : dia === addDiasIso(todayIso(), -1) ? 'Ontem' : formatDateBR(dia)) + '</div>'; }
       var res = '';
+      if (m.apagada) {
+        return sep + '<div class="chat-bolha apagada ' + (minha ? 'eu' : 'outro') + '"><div class="chat-txt">🚫 Mensagem apagada' + (m.apagada_por === 'mestre' && m.de !== 'mestre' ? ' pelo Nicolas' : '') + '</div><span class="chat-hora">' + escapeHtml(horaMsg(m.criado_em)) + '</span></div>';
+      }
       if (tipo === 'sol' && m.de === 'mestre') {
         if (!souMestre) {
           res = m.resolvido == null
@@ -18704,7 +18757,8 @@
         } else res = '<div class="sol-res ' + (m.resolvido == null ? '' : m.resolvido ? 'ok' : 'nao') + '">' + (m.resolvido == null ? 'Resolveu? aguardando a resposta' : m.resolvido ? '✓ Resolvido' : '✗ Não resolvido') + '</div>';
       }
       return sep + '<div class="chat-bolha ' + (minha ? 'eu' : 'outro') + '"><div class="chat-txt">' + escapeHtml(m.texto).replace(/\n/g, '<br>') + '</div>' +
-        '<span class="chat-hora">' + escapeHtml(horaMsg(m.criado_em)) + (minha && tipo === 'chat' ? (m.lida ? ' · lida' : '') : '') + '</span>' + res + '</div>';
+        '<span class="chat-hora">' + escapeHtml(horaMsg(m.criado_em)) + (minha && tipo === 'chat' ? (m.lida ? ' · lida' : '') : '') +
+        (podeApagar ? ' · <button type="button" class="btn-text chat-apagar" data-chat-apagar="' + m.id + '">apagar</button>' : '') + '</span>' + res + '</div>';
     }).join('');
   }
   // tela de uma conversa: monta uma vez (cabeçalho e caixa de texto) e depois só troca as mensagens
@@ -18748,7 +18802,7 @@
       (!chat.carregado || !chat.pessoas ? '<p class="empty-state">Carregando…</p>' : linhas.length ? '<div class="chat-lista">' + linhas.map(function(l) {
         return '<button type="button" class="chat-pessoa' + (l.n ? ' nova' : '') + '" data-chat="abrir" data-ref="' + escapeHtml(l.ref) + '" data-busca="' + escapeHtml(normNome(l.nome)) + '">' +
           '<span class="chat-av" aria-hidden="true">' + escapeHtml(primeiroNome(l.nome).charAt(0).toUpperCase()) + '</span>' +
-          '<span class="chat-pessoa-txt"><b>' + escapeHtml(l.nome) + '</b><span class="driver-sub">' + (l.ult ? escapeHtml((l.ult.de === eu ? 'Você: ' : '') + String(l.ult.texto).slice(0, 70)) : 'Começar uma conversa') + '</span></span>' +
+          '<span class="chat-pessoa-txt"><b>' + escapeHtml(l.nome) + '</b><span class="driver-sub">' + (l.ult ? escapeHtml((l.ult.de === eu ? 'Você: ' : '') + (l.ult.apagada ? 'mensagem apagada' : String(l.ult.texto).slice(0, 70))) : 'Começar uma conversa') + '</span></span>' +
           '<span class="chat-pessoa-fim">' + (l.ult ? '<small>' + escapeHtml(horaMsg(l.ult.criado_em)) + '</small>' : '') + (l.n ? '<b class="chat-n">' + l.n + '</b>' : '') + '</span></button>';
       }).join('') + '</div>' : '<p class="empty-state">Ninguém mais tem acesso individual ao app ainda. Quem ganhar a senha própria (Cadastros › Equipe com senha) aparece aqui.</p>');
   }
@@ -18776,7 +18830,7 @@
         var chip = l.esperando ? '<span class="sol-chip esp">aguardando resposta</span>' : l.res === true ? '<span class="sol-chip ok">✓ resolvido</span>' : l.res === false ? '<span class="sol-chip nao">✗ não resolvido</span>' : '<span class="sol-chip">respondida</span>';
         return '<button type="button" class="chat-pessoa' + (l.n ? ' nova' : '') + '" data-chat="sol-abrir" data-ref="' + escapeHtml(l.ref) + '">' +
           '<span class="chat-av" aria-hidden="true">' + escapeHtml(primeiroNome(l.nome).charAt(0).toUpperCase()) + '</span>' +
-          '<span class="chat-pessoa-txt"><b>' + escapeHtml(l.nome) + '</b> ' + chip + '<span class="driver-sub">' + escapeHtml((l.ult.de === 'mestre' ? 'Você: ' : '') + String(l.ult.texto).slice(0, 80)) + '</span></span>' +
+          '<span class="chat-pessoa-txt"><b>' + escapeHtml(l.nome) + '</b> ' + chip + '<span class="driver-sub">' + escapeHtml((l.ult.de === 'mestre' ? 'Você: ' : '') + (l.ult.apagada ? 'mensagem apagada' : String(l.ult.texto).slice(0, 80))) + '</span></span>' +
           '<span class="chat-pessoa-fim"><small>' + escapeHtml(horaMsg(l.ult.criado_em)) + '</small>' + (l.n ? '<b class="chat-n">' + l.n + '</b>' : '') + '</span></button>';
       }).join('') + '</div>' : '<p class="empty-state">' + (chat.carregado ? 'Nenhuma solicitação ainda. Quando alguém escrever, aparece aqui (e no selo da aba).' : 'Carregando…') + '</p>');
   }
@@ -18801,8 +18855,15 @@
     });
   }
   function cliqueChat(e) {
-    var b = e.target.closest('[data-chat],[data-sol-res]');
+    var b = e.target.closest('[data-chat],[data-sol-res],[data-chat-apagar]');
     if (!b) return;
+    if (b.dataset.chatApagar) {
+      if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'tocar de novo para apagar'; setTimeout(function() { if (b.isConnected) { b.dataset.ok = ''; b.textContent = 'apagar'; } }, 5000); return; }
+      b.disabled = true;
+      db.rpc('chat_apagar', { p_id: Number(b.dataset.chatApagar) }).then(function(row) { if (row && row.id != null) chatAplicar(row, false); showToast('Mensagem apagada.'); })
+        .catch(function(err) { b.disabled = false; console.warn('apagar mensagem', err); showToast(/prazo/.test(String(err && err.message)) ? 'Só dá para apagar até 1 hora depois de enviar.' : 'Não foi possível apagar agora.'); });
+      return;
+    }
     if (b.dataset.solRes) {
       var id = Number(b.dataset.id), sim = b.dataset.solRes === 'sim';
       b.disabled = true;
@@ -18836,9 +18897,221 @@
   function ligarComunicacao() {
     if (!session || !ehEscritorio()) return;
     carregarPostit();
-    if (comunicacaoLigada()) { chatLigar(); carregarIdentInfo(); }
+    if (comunicacaoLigada()) { chatLigar(); carregarIdentInfo(); agendaLigar(); }
     renderChatBadges();
+    renderMinhaAgendaBadge();
   }
+  // =====================================================================================================
+  // MINHA AGENDA (pedido de 20/10/2026): agenda individual de cada pessoa com acesso próprio ao app. Só o dono e quem
+  // ele incluiu veem o compromisso; quem foi incluído recebe o aviso e o compromisso aparece na agenda dele. Trabalho ou
+  // pessoal. Tabela "compromissos" (migração 0023), gravada só pelas funções do banco.
+  var ag2 = { itens: [], carregado: false, carregando: false, canal: null, de: null, filtro: 'proximos', tipo: '', confirmar: null, avisados: {}, lembrados: {} };
+  function agendaLigada() { return comunicacaoLigada(); }
+  function agendaLigar() {
+    if (!agendaLigada()) return;
+    var ref = minhaRef();
+    if (ag2.de === ref && (ag2.carregado || ag2.carregando)) return;
+    if (ag2.canal) { try { sbCliente.removeChannel(ag2.canal); } catch (e) {} ag2.canal = null; }
+    ag2.de = ref; ag2.itens = []; ag2.carregado = false; ag2.carregando = true;
+    ag2.canal = sbCliente.channel('levissima-agenda-' + ref.replace(/[^a-z0-9]/gi, '')).on('postgres_changes', { event: '*', schema: 'public', table: 'compromissos' }, function(p) {
+      var row = p && p.new && p.new.id != null ? p.new : null;
+      if (!row || ag2.de !== ref || ag2.carregando) return;
+      agendaAplicar(row, true);
+    }).subscribe(function(st) { if (st === 'SUBSCRIBED' && ag2.carregado && ag2.de === ref) agendaRecarregar(false); });
+    agendaRecarregar(true);
+  }
+  function agendaRecarregar(primeira) {
+    var ref = ag2.de, out = [], passo = 1000;
+    function pagina(de) {
+      return sbCliente.from('compromissos').select('*').order('data').range(de, de + passo - 1).then(function(r) {
+        if (r.error) throw r.error;
+        out = out.concat(r.data || []);
+        return (r.data || []).length === passo ? pagina(de + passo) : out;
+      });
+    }
+    return pagina(0).then(function(rows) {
+      if (ag2.de !== ref) return;
+      ag2.itens = rows; ag2.carregado = true; ag2.carregando = false;
+      var novos = agendaNaoVistos();
+      if (primeira && novos.length) {
+        novos.forEach(function(c) { ag2.avisados[c.id + '|' + c.atualizado_em] = true; });
+        showToast(novos.length === 1 ? agendaAvisoTexto(novos[0]) : '📅 ' + novos.length + ' compromissos novos marcados por outras pessoas na sua agenda.');
+      }
+      agendaAtualizarTela();
+    }).catch(function(e) { console.error('agenda', e); if (ag2.de === ref) { ag2.carregando = false; ag2.carregado = true; agendaAtualizarTela(); } });
+  }
+  function agendaAplicar(row, avisar) {
+    var i = ag2.itens.findIndex(function(c) { return c.id === row.id; });
+    if (i < 0) ag2.itens.push(row); else ag2.itens[i] = row;
+    var eu = minhaRef(), chave = row.id + '|' + row.atualizado_em;
+    if (avisar && row.dono !== eu && (row.participantes || []).indexOf(eu) >= 0 && (row.vistos || []).indexOf(eu) < 0 && (row.saiu || []).indexOf(eu) < 0 && !ag2.avisados[chave]) {
+      ag2.avisados[chave] = true;
+      if (ui.tab === 'minhaagenda' && !document.hidden) agendaMarcarVistos(); else showToast(agendaAvisoTexto(row));
+    }
+    agendaAtualizarTela();
+  }
+  function agendaQuando(c) {
+    var d = formatDateBR(c.data).slice(0, 5), h = c.inicio ? String(c.inicio).slice(0, 5) : '';
+    return d + (h ? ' às ' + h : '');
+  }
+  function agendaAvisoTexto(c) {
+    var quem = nomePessoa(c.dono_nome) || 'Alguém';
+    return c.cancelado ? '📅 ' + quem + ' cancelou: ' + c.titulo + ' (' + agendaQuando(c) + ').' : '📅 ' + quem + ' marcou um compromisso com você: ' + c.titulo + ' · ' + agendaQuando(c) + '.';
+  }
+  // compromissos em que fui incluído e ainda não vi (o selo da aba)
+  function agendaNaoVistos() {
+    var eu = minhaRef();
+    return ag2.itens.filter(function(c) { return c.dono !== eu && (c.participantes || []).indexOf(eu) >= 0 && (c.vistos || []).indexOf(eu) < 0 && (c.saiu || []).indexOf(eu) < 0; });
+  }
+  function agendaMeus() {
+    var eu = minhaRef();
+    return ag2.itens.filter(function(c) { return c.dono === eu || ((c.participantes || []).indexOf(eu) >= 0 && (c.saiu || []).indexOf(eu) < 0); });
+  }
+  function agendaMarcarVistos() {
+    var eu = minhaRef(), l = agendaNaoVistos();
+    if (!l.length) return;
+    l.forEach(function(c) { c.vistos = (c.vistos || []).concat([eu]); });
+    renderMinhaAgendaBadge();
+    db.rpc('compromisso_visto', { p_ids: l.map(function(c) { return c.id; }) }).catch(function(e) { console.error('agenda visto', e); });
+  }
+  function renderMinhaAgendaBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="minhaagenda"]');
+    if (!b) return;
+    var n = agendaLigada() ? agendaNaoVistos().length : 0;
+    seloAba(b, n, n + (n === 1 ? ' compromisso novo marcado por outra pessoa' : ' compromissos novos marcados por outras pessoas'));
+  }
+  function agendaAtualizarTela() {
+    renderMinhaAgendaBadge();
+    if (ui.tab === 'minhaagenda') renderMinhaAgenda();
+    else if (ui.tab === 'inicio') renderInicio();
+  }
+  function agendaDeHoje() {
+    var hoje = todayIso();
+    return agendaMeus().filter(function(c) { return c.data === hoje && !c.cancelado; }).sort(agendaOrdem);
+  }
+  function agendaOrdem(a, b) { return String(a.data).localeCompare(String(b.data)) || String(a.inicio || '').localeCompare(String(b.inicio || '')) || a.id - b.id; }
+  function rotuloDiaAgenda(iso) {
+    var hoje = todayIso();
+    if (iso === hoje) return 'Hoje · ' + formatDateBR(iso).slice(0, 5);
+    if (iso === addDiasIso(hoje, 1)) return 'Amanhã · ' + formatDateBR(iso).slice(0, 5);
+    if (iso === addDiasIso(hoje, -1)) return 'Ontem · ' + formatDateBR(iso).slice(0, 5);
+    var dias = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+    var d = new Date(iso + 'T12:00:00');
+    return dias[d.getDay()] + ' · ' + formatDateBR(iso);
+  }
+  function compromissoHtml(c) {
+    var eu = minhaRef(), meu = c.dono === eu, novo = !meu && (c.vistos || []).indexOf(eu) < 0;
+    var nomes = (c.participantes || []).map(function(r) { var n = (c.participantes_nomes || {})[r]; return nomePessoa(n || pessoaNome(r)) + ((c.saiu || []).indexOf(r) >= 0 ? ' (saiu)' : ''); });
+    var hora = c.inicio ? String(c.inicio).slice(0, 5) + (c.fim ? '–' + String(c.fim).slice(0, 5) : '') : 'dia todo';
+    var acoes = '';
+    if (ag2.confirmar === 'cancelar:' + c.id) acoes = '<span>Cancelar este compromisso' + (nomes.length ? ' (avisa quem foi incluído)' : '') + '?</span><button type="button" class="btn-text danger" data-ag2="cancelar-ok" data-id="' + c.id + '">Cancelar compromisso</button><button type="button" class="btn-text" data-ag2="nao">Manter</button>';
+    else if (meu && !c.cancelado) acoes = '<button type="button" class="btn-text" data-ag2="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn-text danger" data-ag2="cancelar" data-id="' + c.id + '">Cancelar</button>';
+    else if (meu && c.cancelado) acoes = '<button type="button" class="btn-text" data-ag2="editar" data-id="' + c.id + '">Reabrir / editar</button>';
+    else acoes = '<button type="button" class="btn-text danger" data-ag2="sair" data-id="' + c.id + '">Tirar da minha agenda</button>';
+    return '<div class="ag2-item ' + c.tipo + (c.cancelado ? ' cancelado' : '') + (novo ? ' novo' : '') + '">' +
+      '<div class="ag2-hora">' + escapeHtml(hora) + '</div>' +
+      '<div class="ag2-txt"><b>' + escapeHtml(c.titulo) + '</b>' + (novo ? ' <span class="sol-chip esp">novo</span>' : '') + (c.cancelado ? ' <span class="sol-chip nao">cancelado</span>' : '') +
+        ' <span class="ag2-tipo ' + c.tipo + '">' + (c.tipo === 'pessoal' ? 'Pessoal' : 'Trabalho') + '</span>' +
+        (c.local ? '<span class="driver-sub">📍 ' + escapeHtml(c.local) + '</span>' : '') +
+        (c.obs ? '<span class="driver-sub">' + escapeHtml(c.obs) + '</span>' : '') +
+        (!meu ? '<span class="driver-sub">Marcado por <b>' + escapeHtml(nomePessoa(c.dono_nome) || '—') + '</b></span>' : '') +
+        (nomes.length ? '<span class="driver-sub">Com: ' + escapeHtml(nomes.join(', ')) + '</span>' : '') +
+        '<div class="frete-acoes">' + acoes + '</div></div></div>';
+  }
+  function renderMinhaAgenda() {
+    var box = document.getElementById('ag2-conteudo');
+    if (!box || !session) return;
+    if (!agendaLigada()) { box.innerHTML = '<p class="empty-state">A agenda precisa do banco on-line e do acesso individual (senha própria de acesso ao app).</p>'; return; }
+    var hoje = todayIso(), f = ag2.filtro;
+    var lista = agendaMeus().filter(function(c) {
+      if (ag2.tipo && c.tipo !== ag2.tipo) return false;
+      if (f === 'hoje') return c.data === hoje;
+      if (f === 'passados') return c.data < hoje;
+      return c.data >= hoje;
+    }).sort(agendaOrdem);
+    if (f === 'passados') lista.reverse();
+    var grupos = [], porDia = {};
+    lista.forEach(function(c) { if (!porDia[c.data]) { porDia[c.data] = []; grupos.push(c.data); } porDia[c.data].push(c); });
+    var nHoje = agendaDeHoje().length, nNovos = agendaNaoVistos().length;
+    var chip = function(k, nome, n) { return '<button type="button" class="est-loc' + (ag2.filtro === k ? ' on' : '') + '" data-ag2="filtro" data-f="' + k + '">' + nome + (n ? '<b>' + n + '</b>' : '') + '</button>'; };
+    var chipT = function(k, nome) { return '<button type="button" class="est-loc' + (ag2.tipo === k ? ' on' : '') + '" data-ag2="tipo" data-t="' + k + '">' + nome + '</button>'; };
+    box.innerHTML = '<p class="tagline">A sua agenda: <b>só você vê</b>. Se incluir alguém, o compromisso aparece na agenda da pessoa e ela recebe o aviso.</p>' +
+      '<div class="ag2-topo"><button type="button" class="btn btn-primary" data-ag2="novo">+ Novo compromisso</button>' + (nNovos ? '<span class="sol-chip esp">' + nNovos + (nNovos === 1 ? ' novo marcado por outra pessoa' : ' novos marcados por outras pessoas') + '</span>' : '') + '</div>' +
+      '<div class="est-loc-chips" role="group" aria-label="Período">' + chip('proximos', 'Próximos', 0) + chip('hoje', 'Hoje', nHoje) + chip('passados', 'Passados', 0) + '</div>' +
+      '<div class="est-loc-chips" role="group" aria-label="Tipo">' + chipT('', 'Todos') + chipT('trabalho', 'Trabalho') + chipT('pessoal', 'Pessoal') + '</div>' +
+      (!ag2.carregado ? '<p class="empty-state">Carregando…</p>' : grupos.length ? grupos.map(function(d) {
+        return '<section class="ag2-dia"><h3 class="ag2-dia-t">' + escapeHtml(rotuloDiaAgenda(d)) + '</h3>' + porDia[d].map(compromissoHtml).join('') + '</section>';
+      }).join('') : '<p class="empty-state">' + (f === 'passados' ? 'Nada nos dias que passaram.' : f === 'hoje' ? 'Nada marcado para hoje.' : 'Nenhum compromisso marcado. Toque em “+ Novo compromisso”.') + '</p>');
+    if (!document.hidden) agendaMarcarVistos();
+  }
+  function abrirCompromisso(c) {
+    var p = c || { titulo: '', data: todayIso(), inicio: '', fim: '', tipo: 'trabalho', local: '', obs: '', participantes: [] };
+    if (!chat.pessoas) carregarPessoasChat();
+    function pessoasHtml() {
+      var ps = (chat.pessoas || []).filter(function(x) { return x.ref !== minhaRef(); }).slice().sort(function(a, b) { return nomePessoa(a.nome).localeCompare(nomePessoa(b.nome), 'pt-BR'); });
+      if (!ps.length) return '<p class="field-hint">' + (chat.pessoas ? 'Ninguém mais tem acesso próprio ao app ainda.' : 'Carregando as pessoas…') + '</p>';
+      return ps.map(function(x) { return '<label class="check"><input type="checkbox" data-ag2-part="' + escapeHtml(x.ref) + '"' + ((p.participantes || []).indexOf(x.ref) >= 0 ? ' checked' : '') + ' /> ' + escapeHtml(nomePessoa(x.nome)) + '</label>'; }).join('');
+    }
+    gerAbrir({
+      titulo: c ? 'Editar compromisso' : 'Novo compromisso', botao: 'Salvar',
+      html: '<label>O quê <span class="req">*</span><input type="text" id="ag2-titulo" maxlength="120" autocomplete="off" value="' + escapeHtml(p.titulo) + '" placeholder="Ex.: visita ao cliente, médico, reunião" /></label>' +
+        '<div class="row-2"><label>Dia <span class="req">*</span><input type="date" id="ag2-data" value="' + escapeHtml(p.data) + '" /></label>' +
+        '<div class="ag2-tipo-campo" role="radiogroup" aria-label="Tipo"><span class="ag2-tipo-rot">Tipo</span><span class="ag2-tipos"><label class="check"><input type="radio" name="ag2-tipo" value="trabalho"' + (p.tipo !== 'pessoal' ? ' checked' : '') + ' /> Trabalho</label><label class="check"><input type="radio" name="ag2-tipo" value="pessoal"' + (p.tipo === 'pessoal' ? ' checked' : '') + ' /> Pessoal</label></span></div></div>' +
+        '<div class="row-2"><label>Começa <span class="opt">(em branco: dia todo)</span><input type="time" id="ag2-ini" value="' + escapeHtml(p.inicio ? String(p.inicio).slice(0, 5) : '') + '" /></label>' +
+        '<label>Termina <span class="opt">(opcional)</span><input type="time" id="ag2-fim" value="' + escapeHtml(p.fim ? String(p.fim).slice(0, 5) : '') + '" /></label></div>' +
+        '<label>Onde <span class="opt">(opcional)</span><input type="text" id="ag2-local" maxlength="120" autocomplete="off" value="' + escapeHtml(p.local || '') + '" /></label>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="ag2-obs" maxlength="500" autocomplete="off" value="' + escapeHtml(p.obs || '') + '" /></label>' +
+        '<p class="acesso-titulo">Incluir pessoas <span class="opt">(aparece na agenda delas, com aviso)</span></p><div class="mural-para" id="ag2-pessoas">' + pessoasHtml() + '</div>',
+      depois: function() {
+        if (!chat.pessoas) { var t = setInterval(function() { var bx = document.getElementById('ag2-pessoas'); if (!bx || !ger) { clearInterval(t); return; } if (chat.pessoas) { clearInterval(t); bx.innerHTML = pessoasHtml(); } }, 400); }
+      },
+      salvar: function() {
+        var titulo = gerVal('ag2-titulo'), data = gerVal('ag2-data'), ini = gerVal('ag2-ini'), fim = gerVal('ag2-fim');
+        if (!titulo) return gerErro('Escreva o compromisso.');
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) return gerErro('Escolha o dia.');
+        if (fim && !ini) return gerErro('Com a hora de terminar, informe também a de começar.');
+        if (ini && fim && fim <= ini) return gerErro('A hora de terminar tem que ser depois da de começar.');
+        var tipo = (document.querySelector('input[name="ag2-tipo"]:checked') || {}).value || 'trabalho';
+        var part = Array.prototype.map.call(document.querySelectorAll('#ag2-pessoas [data-ag2-part]:checked'), function(x) { return x.dataset.ag2Part; });
+        return db.rpc('compromisso_salvar', { p_id: c ? c.id : null, p: { titulo: titulo, data: data, inicio: ini, fim: fim, tipo: tipo, local: gerVal('ag2-local'), obs: gerVal('ag2-obs'), participantes: part } })
+          .then(function(row) {
+            if (row && row.id != null) agendaAplicar(row, false);
+            if (data !== todayIso() && ag2.filtro === 'hoje') ag2.filtro = 'proximos';
+            showToast(part.length ? 'Compromisso salvo: ' + (part.length === 1 ? 'a pessoa incluída recebe o aviso.' : 'as ' + part.length + ' pessoas incluídas recebem o aviso.') : 'Compromisso salvo na sua agenda.');
+          });
+      }
+    });
+  }
+  document.getElementById('tab-minhaagenda').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-ag2]');
+    if (!b) return;
+    var a = b.dataset.ag2, c = b.dataset.id ? ag2.itens.find(function(x) { return String(x.id) === b.dataset.id; }) : null;
+    if (a === 'novo') abrirCompromisso(null);
+    else if (a === 'filtro') { ag2.filtro = b.dataset.f; renderMinhaAgenda(); }
+    else if (a === 'tipo') { ag2.tipo = b.dataset.t; renderMinhaAgenda(); }
+    else if (a === 'editar' && c) abrirCompromisso(c);
+    else if (a === 'cancelar' && c) { ag2.confirmar = 'cancelar:' + c.id; renderMinhaAgenda(); }
+    else if (a === 'nao') { ag2.confirmar = null; renderMinhaAgenda(); }
+    else if (a === 'cancelar-ok' && c) {
+      ag2.confirmar = null;
+      db.rpc('compromisso_cancelar', { p_id: c.id }).then(function(row) { if (row && row.id != null) agendaAplicar(row, false); showToast('Compromisso cancelado.'); })
+        .catch(function(err) { console.error('agenda', err); showToast('Não foi possível cancelar agora.'); renderMinhaAgenda(); });
+    } else if (a === 'sair' && c) {
+      if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Tocar de novo para tirar'; return; }
+      db.rpc('compromisso_sair', { p_id: c.id }).then(function(row) { if (row && row.id != null) agendaAplicar(row, false); showToast('Tirado da sua agenda.'); })
+        .catch(function(err) { console.error('agenda', err); showToast('Não foi possível tirar agora.'); });
+    }
+  });
+  // lembrete 15 minutos antes (com o app aberto)
+  setInterval(function() {
+    if (!session || !agendaLigada() || !ag2.carregado) return;
+    var agora = new Date(), min = agora.getHours() * 60 + agora.getMinutes();
+    agendaDeHoje().forEach(function(c) {
+      if (!c.inicio) return;
+      var p = String(c.inicio).split(':'), ini = Number(p[0]) * 60 + Number(p[1]), falta = ini - min, chave = c.id + '|' + c.data + '|' + c.inicio;
+      if (falta >= 0 && falta <= 15 && !ag2.lembrados[chave]) { ag2.lembrados[chave] = true; showToast('⏰ ' + (falta ? 'Em ' + falta + ' min' : 'Agora') + ': ' + c.titulo + (c.local ? ' · ' + c.local : '') + '.'); }
+    });
+  }, 60000);
   // =====================================================================================================
   // TROCAS E DEVOLUÇÕES (pedido de 19/10/2026)
   // A expedição lança o que voltou (qualquer produto): quem recebeu, cliente que devolveu, produto e quantidade e até
