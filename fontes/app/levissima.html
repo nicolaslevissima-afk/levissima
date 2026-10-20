@@ -803,6 +803,11 @@
   .ag2-tipo-campo { display: flex; flex-direction: column; gap: 4px; }
   .ag2-tipo-rot { font-size: 0.875rem; font-weight: 600; }
   .ag2-tipos { display: flex; gap: 12px; flex-wrap: wrap; }
+  .transp-grupo { border: 1px solid var(--line); border-radius: 10px; padding: 4px 10px; margin: 0 0 10px; background: var(--card); }
+  .transp-cab { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .transp-cab > span { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .transp-grupo .driver-row:last-child { border-bottom: 0; }
+  .transp-linha .driver-name { min-width: 0; }
   /* só visualiza: some o botão principal de lançar/salvar da aba (o app e o banco também recusam a gravação) */
   body.nivel-ver .tab-panel:not(#tab-inicio):not(#tab-chat):not(#tab-solicitacoes):not(#tab-organograma) .btn-primary { display: none !important; }
   /* ---- estoque por local, cronograma de saída e suprimentos ---- */
@@ -1662,8 +1667,9 @@
     <p class="tagline">Fretes dos motoristas: quanto falta pagar a cada um e a tabela de valores por destino. Só a senha mestre vê esta aba.</p>
     <section class="drivers-admin" id="fretes-resumo-admin">
       <div class="section-head"><h2 class="section-title">Fretes a pagar por motorista</h2><span class="count-chip" id="fretes-resumo-total" style="white-space:nowrap"></span></div>
-      <p class="hint">Entram as cargas com carregamento concluído. Toque em <b>Abrir</b> para confirmar, pagar ou tirar o relatório do motorista.</p>
+      <p class="hint">Entram as cargas com carregamento concluído. Quem trabalha por uma transportadora entra no total dela. Toque em <b>Abrir</b> para confirmar, pagar ou tirar o relatório (da transportadora ou do motorista).</p>
       <div id="fretes-resumo-list"></div>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-fretes-planilha">Baixar planilha dos fretes</button>
     </section>
 
     <section class="drivers-admin" id="fretes-admin">
@@ -1708,10 +1714,11 @@
     </section>
 
     <section class="drivers-admin" id="drivers-admin">
-      <div class="section-head"><h2 class="section-title">Motoristas cadastrados</h2></div>
-      <p class="hint">Toque em <b>Abrir</b> para ver a página do motorista: dados e acesso, fretes a pagar e documentos do motorista e do caminhão.</p>
+      <div class="section-head"><h2 class="section-title">Motoristas e transportadoras</h2></div>
+      <p class="hint">Todos são prestadores de serviço. Quem trabalha por uma <b>transportadora</b> fica dentro dela (o pagamento do frete vai para a transportadora). Toque em <b>Abrir</b> para ver a página do motorista: dados e acesso, fretes a pagar e documentos do motorista e do caminhão.</p>
       <div id="drivers-list"></div>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-add-driver">+ Adicionar motorista</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="btn-add-transp">+ Adicionar transportadora</button>
     </section>
 
     <section class="drivers-admin" id="fv-admin">
@@ -2156,6 +2163,17 @@
           <option value="proprio">Motorista próprio da Levíssima</option>
         </select>
       </label>
+      <label id="driver-transp-label">Transportadora <span class="opt">(se trabalha por uma empresa que presta serviço para a Levíssima)</span>
+        <select id="f-driver-transp"><option value="">Autônomo (sem transportadora)</option></select>
+      </label>
+      <div class="row-2">
+        <label>Veículo
+          <select id="f-driver-veiculo"><option value="">Não informado</option><option value="toco">Toco</option><option value="truck">Truck</option><option value="bitruck">Bitruck</option><option value="carreta">Carreta</option><option value="vuc">VUC / 3/4</option><option value="outro">Outro</option></select>
+        </label>
+        <label>Capacidade <span class="opt">(paletes)</span>
+          <input type="number" id="f-driver-cap" min="1" max="40" step="1" inputmode="numeric" />
+        </label>
+      </div>
       <label><span id="driver-senha-text">Senha de acesso <span class="opt">(pode criar depois)</span></span>
         <input type="password" id="f-driver-senha" minlength="6" autocomplete="new-password" />
       </label>
@@ -3092,6 +3110,7 @@
     loadLocalCompras();
     loadLocalTrocas();
     loadLocalDatas();
+    loadLocalTransportadoras();
     loadLocalAgOnline();
     loadLocalMetas();
     atualizarRastreiosLocais();
@@ -4384,7 +4403,8 @@
     var current = sel.value;
     var sorted = motoristas.slice().sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
     sel.innerHTML = '<option value="">Selecione…</option>' + sorted.map(function(m) {
-      return '<option value="' + escapeHtml(m.nome) + '">' + escapeHtml(m.nome) + '</option>';
+      var vt = veiculoTexto(m);
+      return '<option value="' + escapeHtml(m.nome) + '">' + escapeHtml(m.nome + (vt ? ' · ' + vt : '')) + '</option>';
     }).join('');
     if (sorted.some(function(m) { return m.nome === current; })) sel.value = current;
     document.getElementById('sem-motorista-hint').classList.toggle('hidden', sorted.length > 0);
@@ -4403,7 +4423,19 @@
       .sort(function(a, b) { return (b.rf.apagar - a.rf.apagar) || (b.rf.nConfirmar - a.rf.nConfirmar) || a.m.nome.localeCompare(b.m.nome, 'pt-BR'); });
     tot.textContent = geral ? fmtBRL(geral) + ' a pagar' : '';
     if (!linhas.length) { list.innerHTML = '<p class="empty-state">Nenhum motorista cadastrado ainda (Cadastros › Motoristas).</p>'; return; }
-    list.innerHTML = linhas.map(function(x) {
+    // transportadoras primeiro (o pagamento vai para elas), depois os autônomos um a um
+    var htmlT = transportadoras.slice().map(function(t) { return { t: t, r: resumoFretesTransportadora(t), ms: motoristasDaTransportadora(t) }; }).filter(function(x) { return x.ms.length; })
+      .sort(function(a, b) { return (b.r.apagar - a.r.apagar) || String(a.t.nome).localeCompare(String(b.t.nome), 'pt-BR'); }).map(function(x) {
+        var sub2 = [x.ms.length + (x.ms.length === 1 ? ' motorista' : ' motoristas') + (x.t.dono ? ' · dono: ' + escapeHtml(x.t.dono) : '')];
+        sub2.push(x.r.nApagar ? '<span class="apagar">' + fmtBRL(x.r.apagar) + ' a pagar (' + x.r.nApagar + (x.r.nApagar === 1 ? ' frete' : ' fretes') + ')</span>' : 'nada a pagar');
+        if (x.r.nConfirmar) sub2.push('<span class="alerta">' + x.r.nConfirmar + (x.r.nConfirmar === 1 ? ' frete a confirmar' : ' fretes a confirmar') + '</span>');
+        if (x.r.nAprovar) sub2.push('<span class="alerta">' + x.r.nAprovar + ' aguardando a sua aprovação</span>');
+        return '<div class="driver-row transp-linha"><span class="driver-name">🚚 ' + escapeHtml(x.t.nome) + '<span class="driver-sub">' + sub2.join(' · ') + '</span>' +
+          '<span class="driver-sub">' + x.ms.map(function(m) { return escapeHtml(m.nome) + (veiculoTexto(m) ? ' (' + escapeHtml(veiculoTexto(m)) + ')' : ''); }).join(', ') + '</span></span>' +
+          '<button class="btn-text" data-action="fretes-abrir-transp" data-id="' + escapeHtml(x.t.id) + '">Abrir</button></div>';
+      }).join('');
+    linhas = linhas.filter(function(x) { return !transportadoraDe(x.m); });
+    list.innerHTML = htmlT + (htmlT && linhas.length ? '<p class="acesso-titulo">Autônomos e próprios</p>' : '') + linhas.map(function(x) {
       var sub = [];
       if (x.m.vinculo) sub.push(escapeHtml(vinculoCurto(x.m.vinculo)));
       sub.push(x.rf.nApagar ? '<span class="apagar">' + fmtBRL(x.rf.apagar) + ' a pagar (' + x.rf.nApagar + (x.rf.nApagar === 1 ? ' frete' : ' fretes') + ')</span>' : 'nada a pagar');
@@ -4414,38 +4446,20 @@
     }).join('') + (nConf ? '<p class="field-hint warn">' + nConf + (nConf === 1 ? ' frete precisa' : ' fretes precisam') + ' da sua confirmação (carga com outra quantidade de paletes ou sem destino).</p>' : '');
   }
   document.getElementById('fretes-resumo-list').addEventListener('click', function(e) {
+    var bt = e.target.closest('[data-action="fretes-abrir-transp"]');
+    if (bt) { var tt = transportadoras.find(function(x) { return x.id === bt.dataset.id; }); if (tt) abrirFretesTransportadora(tt); return; }
     var b = e.target.closest('[data-action="fretes-abrir-mot"]');
     if (b) abrirMotoristaPage(b.dataset.id, 'fretes');
   });
+  document.getElementById('btn-fretes-planilha').addEventListener('click', function() { exportarFretesPlanilha(); });
   function renderDriversAdmin() {
     renderFretesResumo();
     var list = document.getElementById('drivers-list');
-    if (!motoristas.length) {
+    if (!motoristas.length && !transportadoras.length) {
       list.innerHTML = '<p class="empty-state">Nenhum motorista cadastrado ainda.</p>';
       return;
     }
-    var sorted = motoristas.slice().sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
-    list.innerHTML = sorted.map(function(m) {
-      if (confirmDeleteDriver === m.id) {
-        return '<div class="driver-confirm">Remover ' + escapeHtml(m.nome) + '? Pedidos já lançados no nome dele não são afetados.' +
-          '<button class="btn-text danger" data-action="confirm-remove-driver" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
-          '<button class="btn-text" data-action="cancel-remove-driver">Cancelar</button></div>';
-      }
-      var sub = [];
-      if (m.vinculo) sub.push(escapeHtml(vinculoCurto(m.vinculo)));
-      if (m.telefone) sub.push(escapeHtml(telMask(m.telefone)));
-      if (session && session.role === 'admin' && fretesTabela) {
-        var rf = resumoFretesMotorista(m);
-        if (rf.nApagar) sub.push('<span class="apagar">' + fmtBRL(rf.apagar) + ' a pagar</span>');
-        if (rf.nConfirmar) sub.push('<span class="alerta">' + rf.nConfirmar + (rf.nConfirmar === 1 ? ' frete a confirmar' : ' fretes a confirmar') + '</span>');
-      }
-      var avisosDoc = alertasDocsMotorista(m);
-      if (avisosDoc.length) sub.push('<span class="alerta">' + escapeHtml(avisosDoc.map(function(x) { return x.nome + ' ' + x.v.texto; }).join(', ')) + '</span>');
-      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) +
-          (sub.length ? '<span class="driver-sub">' + sub.join(' · ') + '</span>' : '') + '</span>' +
-        '<button class="btn-text" data-action="open-driver" data-id="' + escapeHtml(m.id) + '">Abrir</button>' +
-        '<button class="btn-text danger" data-action="remove-driver" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
-    }).join('');
+    list.innerHTML = htmlMotoristasAgrupados();
   }
 
   // ---------- acesso ao app: senha mestre e senha da equipe do escritório ----------
@@ -7470,7 +7484,8 @@
     var sel = document.getElementById('cg-motorista');
     var sorted = motoristas.slice().sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
     sel.innerHTML = '<option value="">Selecione…</option>' + sorted.map(function(m) {
-      return '<option value="' + escapeHtml(m.nome) + '">' + escapeHtml(m.nome) + '</option>';
+      var vt = veiculoTexto(m);
+      return '<option value="' + escapeHtml(m.nome) + '">' + escapeHtml(m.nome + (vt ? ' · ' + vt : '')) + '</option>';
     }).join('');
     if (sorted.some(function(m) { return m.nome === current; })) sel.value = current;
   }
@@ -8163,6 +8178,17 @@
   document.getElementById('driver-done-list').addEventListener('click', onListClick);
 
   document.getElementById('drivers-list').addEventListener('click', function(e) {
+    var bt = e.target.closest('[data-action^="transp-"]');
+    if (bt) {
+      var tt = transportadoras.find(function(x) { return x.id === bt.dataset.id; });
+      if (!tt) return;
+      if (bt.dataset.action === 'transp-editar') abrirTransportadoraForm(tt);
+      else if (bt.dataset.action === 'transp-remover') {
+        if (bt.dataset.ok !== '1') { bt.dataset.ok = '1'; bt.textContent = 'Tocar de novo para remover'; return; }
+        gravarTransportadora(tt.id, null, true).then(function() { showToast('Transportadora removida.'); }).catch(function(err) { console.error('transportadora', err); showToast('Não foi possível remover agora.'); });
+      }
+      return;
+    }
     var btn = e.target.closest('[data-action]');
     if (!btn) return;
     var action = btn.dataset.action, id = btn.dataset.id;
@@ -9183,6 +9209,13 @@
     nomeInput.value = driver ? driver.nome : '';
     setVal('f-driver-tel', driver && driver.telefone ? telMask(driver.telefone) : '');
     setVal('f-driver-vinculo', (driver && driver.vinculo) || '');
+    var selT = document.getElementById('f-driver-transp');
+    selT.innerHTML = '<option value="">Autônomo (sem transportadora)</option>' + transportadoras.slice().sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); })
+      .map(function(t) { return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.nome + (t.dono ? ' (' + t.dono + ')' : '')) + '</option>'; }).join('');
+    selT.value = driver && driver.transportadoraId && transportadoras.some(function(t) { return t.id === driver.transportadoraId; }) ? driver.transportadoraId : '';
+    document.getElementById('driver-transp-label').classList.toggle('hidden', !(session && session.role === 'admin'));
+    setVal('f-driver-veiculo', (driver && driver.veiculoTipo) || '');
+    setVal('f-driver-cap', driver && driver.capacidadePaletes ? String(driver.capacidadePaletes) : '');
     document.getElementById('driver-senha-text').innerHTML = kind === 'add' ? 'Senha de acesso <span class="opt">(pode criar depois)</span>' : 'Nova senha <span class="opt">(deixe em branco para manter)</span>';
     setVal('f-driver-senha', '');
     document.getElementById('driver-form-error').classList.add('hidden');
@@ -9193,6 +9226,11 @@
     editingDriverId = null;
   }
   document.getElementById('btn-add-driver').addEventListener('click', function() { openDriverForm('add', null); });
+  document.getElementById('btn-add-transp').addEventListener('click', function() { abrirTransportadoraForm(null); });
+  document.getElementById('f-driver-veiculo').addEventListener('change', function(e) {
+    var v = veiculoDe(e.target.value), cap = document.getElementById('f-driver-cap');
+    if (v && v[2] && (!cap.value || VEICULOS.some(function(x) { return String(x[2]) === cap.value; }))) cap.value = String(v[2]);
+  });
   document.getElementById('f-driver-tel').addEventListener('input', function(e) {
     var v = telMask(e.target.value);
     if (v !== e.target.value) e.target.value = v;
@@ -9209,7 +9247,10 @@
     var senha = document.getElementById('f-driver-senha').value;
     var telefone = telMask(document.getElementById('f-driver-tel').value);
     var vinculo = document.getElementById('f-driver-vinculo').value;
+    var extraMot = { veiculoTipo: document.getElementById('f-driver-veiculo').value, capacidadePaletes: Number(document.getElementById('f-driver-cap').value) || 0 };
+    if (session && session.role === 'admin') extraMot.transportadoraId = document.getElementById('f-driver-transp').value;
     var err = document.getElementById('driver-form-error');
+    if (extraMot.capacidadePaletes && (extraMot.capacidadePaletes < 1 || extraMot.capacidadePaletes > 40)) { err.textContent = 'Capacidade entre 1 e 40 paletes.'; err.classList.remove('hidden'); return; }
     if (!editingDriverId && !nome) { err.textContent = 'Informe o nome do motorista.'; err.classList.remove('hidden'); return; }
     if (senha && senha.length < 6) { err.textContent = 'A senha precisa ter pelo menos 6 caracteres (números ou letras).'; err.classList.remove('hidden'); return; }
     if (telefone && !waNumero(telefone)) { err.textContent = 'Celular incompleto: informe DDD e número.'; err.classList.remove('hidden'); return; }
@@ -9224,8 +9265,8 @@
       var btnSalvar = document.querySelector('#driver-form button[type=submit]');
       btnSalvar.disabled = true;
       (senha ? chamarAcesso({ acao: 'definir', ref: 'motorista:' + mid, nome: m0 ? m0.nome : nome, senha: senha }) : Promise.resolve()).then(function() {
-        if (editingDriverId) return saveMotorista(mid, { telefone: telefone, vinculo: vinculo });
-        return db.collection('motoristas').doc(mid).set({ nome: nome, telefone: telefone, vinculo: vinculo, criadoEm: new Date().toISOString() });
+        if (editingDriverId) return saveMotorista(mid, Object.assign({ telefone: telefone, vinculo: vinculo }, extraMot));
+        return db.collection('motoristas').doc(mid).set(Object.assign({ nome: nome, telefone: telefone, vinculo: vinculo, criadoEm: new Date().toISOString() }, extraMot));
       }).then(function() { btnSalvar.disabled = false; closeDriverForm(); }).catch(function(e) {
         btnSalvar.disabled = false;
         if (!e || (e.codigo !== 'senha_em_uso' && e.codigo !== 'senha_curta')) console.error('driver save error', e);
@@ -9242,11 +9283,11 @@
         var dup = new Error('senha_em_uso'); dup.codigo = 'senha_em_uso'; throw dup;
       }
       if (editingDriverId) {
-        var patch = { telefone: telefone, vinculo: vinculo };
+        var patch = Object.assign({ telefone: telefone, vinculo: vinculo }, extraMot);
         if (hash) patch.senhaHash = hash;
         return saveMotorista(editingDriverId, patch);
       }
-      return saveMotorista(null, { nome: nome, senhaHash: hash, telefone: telefone, vinculo: vinculo });
+      return saveMotorista(null, Object.assign({ nome: nome, senhaHash: hash, telefone: telefone, vinculo: vinculo }, extraMot));
     }).then(function() { closeDriverForm(); }).catch(function(e) {
       if (!e || e.codigo !== 'senha_em_uso') console.error('driver save error', e);
       err.textContent = e && e.codigo === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : 'Não foi possível salvar agora. Tente novamente.';
@@ -9795,6 +9836,10 @@
           '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
         '<div class="driver-row"><span class="driver-name">Vínculo<span class="est-sub">' + escapeHtml(VINCULOS[m.vinculo] || 'não informado') + '</span></span>' +
           '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
+        '<div class="driver-row"><span class="driver-name">Transportadora<span class="est-sub">' + escapeHtml(transportadoraDe(m) ? transportadoraDe(m).nome + (transportadoraDe(m).dono ? ' · dono: ' + transportadoraDe(m).dono : '') : 'autônomo (sem transportadora)') + '</span></span>' +
+          '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
+        '<div class="driver-row"><span class="driver-name">Veículo<span class="est-sub">' + escapeHtml(veiculoTexto(m) || 'não informado') + '</span></span>' +
+          '<button class="btn-text" data-action="mot-senha">Editar</button></div>' +
       '</section>' +
       '<section class="mot-sec"><h3>Dados do motorista e do caminhão</h3><p class="hint">Só a senha mestre vê estes dados.</p>' +
         '<form class="mot-form" id="mot-dados-form" novalidate>' +
@@ -10150,17 +10195,19 @@
     var lw = desenharSimbolo(ctx, L, 163, 36);
     txt(ctx, 'LEVÍSSIMA · Fretes dos motoristas', L + (lw ? lw + 12 : 0), 192, rFont(500, 30, R_DISP), RC.muted, 'left');
     txt(ctx, 'Período', R, 110, rFont(500, 26, R_DISP), RC.muted, 'right');
+    var tpR = m.transportadora || null;
     txtFit(ctx, periodo, R, 154, 600, R_DISP, 32, 20, 380, RC.ink, 'right');
     ctx.fillStyle = RC.ink; ctx.fillRect(L, 218, CW, 4);
     y = 288;
     var dd = motoristaDados[m.id] || {};
     var colX = [L, L + 520, L + 800], colW = [480, 260, CW - 800];
-    txtFit(ctx, 'Motorista' + (m.vinculo === 'terceiro' ? ' · terceiro contratado' : m.vinculo === 'proprio' ? ' · próprio' : ''), colX[0], y, 500, R_DISP, 26, 18, colW[0], RC.muted, 'left');
-    txt(ctx, 'CPF', colX[1], y, rFont(500, 26, R_DISP), RC.muted, 'left');
-    txt(ctx, 'Caminhão', colX[2], y, rFont(500, 26, R_DISP), RC.muted, 'left');
+    var tpM = !tpR ? transportadoraDe(m) : null;
+    txtFit(ctx, tpR ? 'Transportadora' + (tpR.dono ? ' · dono: ' + tpR.dono : '') : 'Motorista' + (m.vinculo === 'terceiro' ? ' · terceiro contratado' : m.vinculo === 'proprio' ? ' · próprio' : '') + (tpM ? ' · ' + tpM.nome : ''), colX[0], y, 500, R_DISP, 26, 18, colW[0], RC.muted, 'left');
+    txt(ctx, tpR ? 'CNPJ' : 'CPF', colX[1], y, rFont(500, 26, R_DISP), RC.muted, 'left');
+    txt(ctx, tpR ? 'Motoristas' : 'Caminhão', colX[2], y, rFont(500, 26, R_DISP), RC.muted, 'left');
     drawValueBlock(ctx, m.nome || '—', colX[0], y + 46, colW[0], RC.ink);
-    txtFit(ctx, dd.cpf || '—', colX[1], y + 46, 600, R_MONO, 30, 20, colW[1], RC.ink, 'left');
-    txtFit(ctx, [dd.placa, dd.veiculo].filter(Boolean).join(' · ') || '—', colX[2], y + 46, 600, R_MONO, 30, 18, colW[2], RC.ink, 'left');
+    txtFit(ctx, tpR ? (tpR.cnpj || '—') : (dd.cpf || '—'), colX[1], y + 46, 600, R_MONO, 30, 20, colW[1], RC.ink, 'left');
+    txtFit(ctx, tpR ? String(motoristasDaTransportadora(tpR).length) : ([dd.placa, dd.veiculo || veiculoTexto(m)].filter(Boolean).join(' · ') || '—'), colX[2], y + 46, 600, R_MONO, 30, 18, colW[2], RC.ink, 'left');
     y += 46 + 50;
     ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2);
     y += 52;
@@ -10184,7 +10231,7 @@
       txt(ctx, estadoFreteTexto(f.estado), cSit, y, rFont(700, 22, R_DISP), corEstadoFrete(f.estado), 'right');
       var yy = y + Math.max(dl.length, 1) * 32;
       var clientes = (c.clientes || []).map(function(cl) { return cl.cliente; }).filter(Boolean).join(', ');
-      var detalhe = (clientes ? clientes + ' · ' : '') + (f.ajustado ? 'valor ajustado (tabela ' + fmtBRL(f.sugerido) + ')' : composicaoFrete(f)) + (f.reg && f.reg.obs ? ' · ' + f.reg.obs : '');
+      var detalhe = (f.motoristaNome ? 'Motorista: ' + f.motoristaNome + (f.motoristaVeiculo ? ' (' + f.motoristaVeiculo + ')' : '') + ' · ' : '') + (clientes ? clientes + ' · ' : '') + (f.ajustado ? 'valor ajustado (tabela ' + fmtBRL(f.sugerido) + ')' : composicaoFrete(f)) + (f.reg && f.reg.obs ? ' · ' + f.reg.obs : '');
       ctx.font = rFont(400, 20, R_DISP);
       var dt = wrapLines(ctx, detalhe, R - cDest, 2);
       for (i = 0; i < dt.length; i++) txt(ctx, dt[i], cDest, yy + i * 26, rFont(400, 20, R_DISP), RC.muted, 'left');
@@ -10216,7 +10263,7 @@
       faixaMarca(ctx, RW, 16);
       layoutRelatorioFretes(ctx, m, lista, periodo);
       var L = RM, R = RW - RM, gap = 60, w = (R - L - gap) / 2, ya = H - RODAPE - 90;
-      [[L, 'Motorista (recebi o valor acima)', m.nome], [L + w + gap, 'Levíssima (pagamento)', '']].forEach(function(a) {
+      [[L, m.transportadora ? 'Transportadora (recebi o valor acima)' : 'Motorista (recebi o valor acima)', m.transportadora ? (m.transportadora.dono || m.nome) : m.nome], [L + w + gap, 'Levíssima (pagamento)', '']].forEach(function(a) {
         ctx.fillStyle = RC.ink; ctx.fillRect(a[0], ya, w, 2);
         txt(ctx, a[1], a[0], ya + 36, rFont(500, 24, R_DISP), RC.muted, 'left');
         if (a[2]) txtFit(ctx, a[2], a[0], ya + 72, 600, R_DISP, 28, 18, w, RC.ink, 'left');
@@ -18902,6 +18949,164 @@
     renderMinhaAgendaBadge();
   }
   // =====================================================================================================
+  // TRANSPORTADORAS (pedido de 20/10/2026): motoristas terceiros podem trabalhar para uma transportadora que presta
+  // serviço para a Levíssima (o dono pode ser também motorista). Para o financeiro, os fretes ficam agrupados por
+  // transportadora: total a pagar, relatório em PDF da transportadora (com o motorista de cada viagem) e planilha.
+  // Coleção "transportadoras" (só a senha mestre, 0024); no motorista: transportadoraId, veiculoTipo, capacidadePaletes.
+  var transportadoras = [], TRANSP_LOCAL_KEY = 'levissima-transportadoras-v1';
+  var VEICULOS = [['toco', 'Toco', 12], ['truck', 'Truck', 16], ['bitruck', 'Bitruck', 18], ['carreta', 'Carreta', 30], ['vuc', 'VUC / 3/4', 8], ['outro', 'Outro', 0]];
+  function veiculoDe(k) { return VEICULOS.find(function(v) { return v[0] === k; }) || null; }
+  function veiculoTexto(m) {
+    var v = veiculoDe(m && m.veiculoTipo), cap = Number(m && m.capacidadePaletes) || (v ? v[2] : 0);
+    return (v ? v[1] : '') + (cap ? (v ? ' · ' : '') + cap + ' plt' : '');
+  }
+  function transportadoraDe(m) { return m && m.transportadoraId ? transportadoras.find(function(t) { return t.id === m.transportadoraId; }) || null : null; }
+  function motoristasDaTransportadora(t) { return motoristas.filter(function(m) { return m.transportadoraId === t.id; }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); }); }
+  function subscribeTransportadoras() {
+    if (!session || session.role !== 'admin') return;
+    db.collection('transportadoras').onSnapshot(function(snap) {
+      transportadoras = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      if (session) { renderDriversAdmin(); renderMotoristaPage(false); }
+    }, function(err) { console.error('transportadoras', err); });
+  }
+  function loadLocalTransportadoras() { try { transportadoras = JSON.parse(localStorage.getItem(TRANSP_LOCAL_KEY) || '[]') || []; } catch (e) { transportadoras = []; } }
+  function gravarTransportadora(id, dados, apagar) {
+    if (mode === 'db' && db) return apagar ? db.collection('transportadoras').doc(id).delete() : db.collection('transportadoras').doc(id).set(dados, { merge: true });
+    var i = transportadoras.findIndex(function(t) { return t.id === id; });
+    if (apagar) { if (i >= 0) transportadoras.splice(i, 1); } else if (i >= 0) transportadoras[i] = Object.assign({}, transportadoras[i], dados); else transportadoras.push(Object.assign({ id: id }, dados));
+    try { localStorage.setItem(TRANSP_LOCAL_KEY, JSON.stringify(transportadoras)); } catch (e) {}
+    renderDriversAdmin();
+    return Promise.resolve();
+  }
+  function abrirTransportadoraForm(t) {
+    var dono = t && t.donoMotoristaId ? motoristas.find(function(m) { return m.id === t.donoMotoristaId; }) : null;
+    gerAbrir({
+      titulo: t ? 'Editar transportadora' : 'Nova transportadora', botao: 'Salvar',
+      html: '<label>Nome da transportadora <span class="req">*</span><input type="text" id="tp-nome" maxlength="80" autocomplete="off" value="' + escapeHtml(t ? t.nome : '') + '" /></label>' +
+        '<label>Dono ou responsável <span class="opt">(quem recebe o pagamento)</span><input type="text" id="tp-dono" maxlength="80" autocomplete="off" value="' + escapeHtml(t ? t.dono || '' : '') + '" /></label>' +
+        '<label>O dono também dirige? <span class="opt">(escolha o motorista)</span><select id="tp-dono-mot"><option value="">Não / não informado</option>' +
+          motoristas.slice().sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); }).map(function(m) { return '<option value="' + escapeHtml(m.id) + '"' + (dono && dono.id === m.id ? ' selected' : '') + '>' + escapeHtml(m.nome) + '</option>'; }).join('') + '</select></label>' +
+        '<div class="row-2"><label>CNPJ <span class="opt">(opcional)</span><input type="text" id="tp-cnpj" maxlength="18" inputmode="numeric" autocomplete="off" value="' + escapeHtml(t ? t.cnpj || '' : '') + '" /></label>' +
+          '<label>Celular <span class="opt">(opcional)</span><input type="tel" id="tp-tel" maxlength="16" inputmode="tel" autocomplete="off" value="' + escapeHtml(t && t.telefone ? telMask(t.telefone) : '') + '" /></label></div>' +
+        '<label>Observação <span class="opt">(opcional: dados de pagamento, PIX…)</span><input type="text" id="tp-obs" maxlength="200" autocomplete="off" value="' + escapeHtml(t ? t.obs || '' : '') + '" /></label>' +
+        (t ? '<p class="field-hint">' + (motoristasDaTransportadora(t).length ? 'Motoristas: ' + escapeHtml(motoristasDaTransportadora(t).map(function(m) { return m.nome; }).join(', ')) + '.' : 'Nenhum motorista ligado ainda.') + ' Para ligar um motorista, abra o cadastro dele.</p>' : ''),
+      salvar: function() {
+        var nome = gerVal('tp-nome').replace(/\s+/g, ' '), tel = telMask(gerVal('tp-tel')), cnpj = gerVal('tp-cnpj').replace(/\D/g, '');
+        if (!nome) return gerErro('Informe o nome da transportadora.');
+        if (transportadoras.some(function(x) { return (!t || x.id !== t.id) && normNome(x.nome) === normNome(nome); })) return gerErro('Já existe uma transportadora com esse nome.');
+        if (cnpj && cnpj.length !== 14) return gerErro('O CNPJ tem 14 números.');
+        if (tel && !waNumero(tel)) return gerErro('Celular incompleto: informe DDD e número.');
+        var donoMot = document.getElementById('tp-dono-mot').value;
+        var dados = { nome: nome, dono: gerVal('tp-dono').replace(/\s+/g, ' '), donoMotoristaId: donoMot, cnpj: cnpj ? cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5') : '', telefone: tel, obs: gerVal('tp-obs'), atualizadoEm: new Date().toISOString() };
+        if (!t) dados.criadoEm = dados.atualizadoEm;
+        var id = t ? t.id : 'tr-' + (normNome(nome).replace(/[^a-z0-9]+/g, '-').slice(0, 30) || uid());
+        if (!t && transportadoras.some(function(x) { return x.id === id; })) id += '-' + uid().slice(-4);
+        // o dono que dirige fica ligado à própria transportadora
+        var liga = donoMot ? saveMotorista(donoMot, { transportadoraId: id }) : Promise.resolve();
+        return gravarTransportadora(id, dados).then(function() { return liga; }).then(function() { showToast('Transportadora salva.'); });
+      }
+    });
+  }
+  // lista de motoristas em Cadastros, agrupada por transportadora
+  function htmlMotoristaLinha(m) {
+    if (confirmDeleteDriver === m.id) {
+      return '<div class="driver-confirm">Remover ' + escapeHtml(m.nome) + '? Pedidos já lançados no nome dele não são afetados.' +
+        '<button class="btn-text danger" data-action="confirm-remove-driver" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
+        '<button class="btn-text" data-action="cancel-remove-driver">Cancelar</button></div>';
+    }
+    var sub = [], t = transportadoraDe(m), vt = veiculoTexto(m);
+    if (vt) sub.push(escapeHtml(vt));
+    if (t && t.donoMotoristaId === m.id) sub.push('dono');
+    if (m.vinculo) sub.push(escapeHtml(vinculoCurto(m.vinculo)));
+    if (m.telefone) sub.push(escapeHtml(telMask(m.telefone)));
+    if (session && session.role === 'admin' && fretesTabela) {
+      var rf = resumoFretesMotorista(m);
+      if (rf.nApagar) sub.push('<span class="apagar">' + fmtBRL(rf.apagar) + ' a pagar</span>');
+      if (rf.nConfirmar) sub.push('<span class="alerta">' + rf.nConfirmar + (rf.nConfirmar === 1 ? ' frete a confirmar' : ' fretes a confirmar') + '</span>');
+    }
+    var avisosDoc = alertasDocsMotorista(m);
+    if (avisosDoc.length) sub.push('<span class="alerta">' + escapeHtml(avisosDoc.map(function(x) { return x.nome + ' ' + x.v.texto; }).join(', ')) + '</span>');
+    return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nome) + (sub.length ? '<span class="driver-sub">' + sub.join(' · ') + '</span>' : '') + '</span>' +
+      '<button class="btn-text" data-action="open-driver" data-id="' + escapeHtml(m.id) + '">Abrir</button>' +
+      '<button class="btn-text danger" data-action="remove-driver" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
+  }
+  function htmlMotoristasAgrupados() {
+    var html = '', semT = motoristas.filter(function(m) { return !transportadoraDe(m); }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+    transportadoras.slice().sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }).forEach(function(t) {
+      var ms = motoristasDaTransportadora(t);
+      html += '<div class="transp-grupo"><div class="transp-cab"><span><b>🚚 ' + escapeHtml(t.nome) + '</b><span class="driver-sub">' + escapeHtml([t.dono ? 'dono: ' + t.dono : '', ms.length + (ms.length === 1 ? ' motorista' : ' motoristas'), t.cnpj ? 'CNPJ ' + t.cnpj : ''].filter(Boolean).join(' · ')) + '</span></span>' +
+        '<button class="btn-text" data-action="transp-editar" data-id="' + escapeHtml(t.id) + '">Editar</button>' +
+        (!ms.length ? '<button class="btn-text danger" data-action="transp-remover" data-id="' + escapeHtml(t.id) + '">Remover</button>' : '') + '</div>' +
+        (ms.length ? ms.map(htmlMotoristaLinha).join('') : '<p class="field-hint">Nenhum motorista ligado: abra o cadastro do motorista e escolha esta transportadora.</p>') + '</div>';
+    });
+    if (semT.length) html += (transportadoras.length ? '<div class="transp-grupo"><div class="transp-cab"><span><b>Autônomos e próprios</b><span class="driver-sub">sem transportadora</span></span></div>' : '<div>') + semT.map(htmlMotoristaLinha).join('') + '</div>';
+    return html;
+  }
+  // aba Fretes: a pagar por transportadora (os autônomos, um a um)
+  function resumoFretesTransportadora(t) {
+    var r = { apagar: 0, nApagar: 0, nConfirmar: 0, nAprovar: 0, aprovar: 0 };
+    motoristasDaTransportadora(t).forEach(function(m) { var x = resumoFretesMotorista(m); r.apagar += x.apagar; r.nApagar += x.nApagar; r.nConfirmar += x.nConfirmar; r.nAprovar += x.nAprovar || 0; r.aprovar += x.aprovar || 0; });
+    return r;
+  }
+  function fretesDaTransportadora(t, filtro) {
+    var todas = [];
+    motoristasDaTransportadora(t).forEach(function(m) { cargasDoMotorista(m).forEach(function(c) { var f = freteDaCarga(c); f.motoristaNome = m.nome; f.motoristaVeiculo = veiculoTexto(m); todas.push(f); }); });
+    todas.sort(function(a, b) { return String(b.carga.data || '').localeCompare(String(a.carga.data || '')); });
+    var lista = filtro === 'apagar' ? todas.filter(function(x) { return x.estado !== 'pago'; }) : filtro === 'tudo' ? todas : todas.filter(function(x) { return String(x.carga.data || '').slice(0, 7) === filtro; });
+    var meses = [];
+    todas.forEach(function(x) { var ym = String(x.carga.data || '').slice(0, 7); if (ym && meses.indexOf(ym) < 0) meses.push(ym); });
+    return { lista: lista, meses: meses, periodo: filtro === 'apagar' ? 'A pagar e a confirmar' : filtro === 'tudo' ? 'Todas as viagens' : nomeMes(filtro) };
+  }
+  function abrirFretesTransportadora(t) {
+    var filtro = 'apagar';
+    function corpo() {
+      var ff = fretesDaTransportadora(t, filtro), tt = totaisFretes(ff.lista);
+      var porMot = {};
+      ff.lista.forEach(function(f) { var k = f.motoristaNome; porMot[k] = porMot[k] || { n: 0, v: 0, veic: f.motoristaVeiculo }; if (f.estado === 'apagar') { porMot[k].n++; porMot[k].v += f.valor; } });
+      return '<div class="frete-filtro"><label>Mostrar<select id="tpf-filtro">' + ['apagar'].concat(ff.meses).concat(['tudo']).map(function(v) { return '<option value="' + escapeHtml(v) + '"' + (v === filtro ? ' selected' : '') + '>' + escapeHtml(v === 'apagar' ? 'A pagar e a confirmar' : v === 'tudo' ? 'Todas as viagens' : nomeMes(v)) + '</option>'; }).join('') + '</select></label></div>' +
+        '<div class="frete-totais"><div class="resumo-row"><span class="resumo-k">A pagar</span><span class="resumo-v mono">' + fmtBRL(tt.apagar) + ' <span class="opt">(' + tt.nApagar + (tt.nApagar === 1 ? ' viagem' : ' viagens') + ')</span></span></div>' +
+          (tt.nAprovar ? '<div class="resumo-row ask"><span class="resumo-k">Aguardando aprovação</span><span class="resumo-v mono">' + fmtBRL(tt.aprovar) + '</span></div>' : '') +
+          (tt.nConfirmar ? '<div class="resumo-row ask"><span class="resumo-k">A confirmar</span><span class="resumo-v mono">' + tt.nConfirmar + (tt.nConfirmar === 1 ? ' viagem' : ' viagens') + ' · sugestão ' + fmtBRL(tt.confirmar) + '</span></div>' : '') +
+          (tt.nPago ? '<div class="resumo-row ok"><span class="resumo-k">Pago</span><span class="resumo-v mono">' + fmtBRL(tt.pago) + '</span></div>' : '') + '</div>' +
+        '<ul class="oc-itens">' + Object.keys(porMot).map(function(k) { return '<li><b>' + escapeHtml(k) + '</b>' + (porMot[k].veic ? ' · ' + escapeHtml(porMot[k].veic) : '') + '<small>' + (porMot[k].n ? fmtBRL(porMot[k].v) + ' a pagar (' + porMot[k].n + (porMot[k].n === 1 ? ' frete' : ' fretes') + ')' : 'nada a pagar') + '</small></li>'; }).join('') + '</ul>' +
+        (ff.lista.length ? '<button type="button" class="btn btn-secondary btn-sm" data-ger="tpf-pdf">Relatório da transportadora em PDF</button>' : '<p class="empty-state">Nenhuma viagem neste período.</p>') +
+        (tt.nApagar ? ' <button type="button" class="btn-text" data-ger="tpf-pagar">Marcar os ' + tt.nApagar + ' fretes a pagar como pagos</button>' : '');
+    }
+    gerAbrir({
+      titulo: 'Fretes · ' + t.nome, html: '<div id="tpf-corpo">' + corpo() + '</div>',
+      change: function(el) { if (el.id === 'tpf-filtro') { filtro = el.value; document.getElementById('tpf-corpo').innerHTML = corpo(); } },
+      acao: function(a, b) {
+        var ff = fretesDaTransportadora(t, filtro);
+        if (a === 'tpf-pdf') {
+          var pseudo = { id: '', nome: t.nome, transportadora: t, vinculo: 'terceiro' };
+          gerFechar();
+          openDoc('Relatório de fretes', function() { return renderRelatorioFretes(pseudo, ff.lista, ff.periodo); },
+            { modo: 'arquivo', numero: '', texto: 'Relatório de fretes — ' + t.nome + ' — ' + ff.periodo + '.' });
+        } else if (a === 'tpf-pagar') {
+          if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Tocar de novo para marcar como pago hoje'; return; }
+          var agora = new Date().toISOString(), lista = ff.lista.filter(function(x) { return x.estado === 'apagar'; });
+          Promise.all(lista.map(function(x) { return salvarFrete(x.carga.id, registroConfirmado(x, x.valor, { pagoEm: agora })); }))
+            .then(function() { showToast(lista.length + (lista.length === 1 ? ' frete marcado' : ' fretes marcados') + ' como pago (' + t.nome + ').'); var c2 = document.getElementById('tpf-corpo'); if (c2) c2.innerHTML = corpo(); renderFretesTudo(); })
+            .catch(function(e) { console.error('pagar transportadora', e); showToast('Não foi possível marcar agora.'); });
+        }
+      }
+    });
+  }
+  // planilha de todos os fretes, com a transportadora e o motorista (para o financeiro)
+  function exportarFretesPlanilha() {
+    var esc = function(v) { var s = String(v == null ? '' : v); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    var linhas = [['Transportadora', 'Dono / responsável', 'CNPJ', 'Motorista', 'Veículo', 'Data', 'Carga', 'Destinos', 'Paletes', 'Valor', 'Situação', 'Pago em'].join(';')];
+    motoristas.slice().sort(function(a, b) { var ta = transportadoraDe(a), tb = transportadoraDe(b); return String(ta ? ta.nome : '~').localeCompare(String(tb ? tb.nome : '~'), 'pt-BR') || a.nome.localeCompare(b.nome, 'pt-BR'); }).forEach(function(m) {
+      var t = transportadoraDe(m);
+      cargasDoMotorista(m).forEach(function(c) {
+        var f = freteDaCarga(c);
+        linhas.push([t ? t.nome : 'Autônomo / próprio', t ? t.dono || '' : m.nome, t ? t.cnpj || '' : '', m.nome, veiculoTexto(m), formatDateBR(c.data), cargaCode(c), f.destinos.join(' + '), f.paletes,
+          String(arred2(f.estado === 'confirmar' ? f.sugerido : f.valor)).replace('.', ','), estadoFreteTexto(f.estado), f.reg && f.reg.pagoEm ? formatDateBR(String(f.reg.pagoEm).slice(0, 10)) : ''].map(esc).join(';'));
+      });
+    });
+    triggerDownload(new Blob(['﻿' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-fretes-' + todayIso() + '.csv');
+  }
+  // =====================================================================================================
   // MINHA AGENDA (pedido de 20/10/2026): agenda individual de cada pessoa com acesso próprio ao app. Só o dono e quem
   // ele incluiu veem o compromisso; quem foi incluído recebe o aviso e o compromisso aparece na agenda dele. Trabalho ou
   // pessoal. Tabela "compromissos" (migração 0023), gravada só pelas funções do banco.
@@ -19684,6 +19889,7 @@
     subscribeCompras();
     subscribeTrocas();
     subscribeDatas();
+    subscribeTransportadoras();
     subscribeCadastroPedidos();
     subscribeAgOnline();
     subscribeMetas();
