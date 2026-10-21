@@ -684,6 +684,37 @@
   .ph-linha { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin: 0 0 8px; background: var(--card); }
   .ph-linha-t { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
   .ph-grande { width: 100%; min-height: 56px; font-size: 1.05rem; margin: 6px 0 14px; }
+  .pr-barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
+  .pr-barra input[type=date], .pr-barra input[type=month] { width: auto; min-width: 150px; }
+  .pr-mes-nome { font-size: 1rem; }
+  .pr-tab-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 0 0 8px; }
+  .pr-tab { width: 100%; border-collapse: collapse; font-size: 0.875rem; min-width: 640px; }
+  .pr-tab th { text-align: left; font-size: 0.6875rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); padding: 8px; border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; }
+  .pr-tab td { padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+  .pr-tab tbody tr:first-child td { border-top: 0; }
+  .pr-tab select, .pr-tab input { min-height: 38px; padding: 4px 8px; font-size: 0.875rem; margin: 0; }
+  .pr-tab select[data-campo=hora] { min-width: 92px; }
+  .pr-tab .pr-q { width: 96px; text-align: right; font-family: var(--font-mono); }
+  .pr-tab td small, .pr-quem small { display: block; color: var(--muted); font-size: 0.6875rem; margin-top: 2px; }
+  .pr-tab tr.pr-dup td { background: color-mix(in srgb, var(--laranja) 10%, var(--card)); }
+  .pr-tab tr.pr-editado td:first-child { box-shadow: inset 3px 0 0 var(--roxo); }
+  .pr-tab tr.pr-conf td { background: var(--bg); font-weight: 600; }
+  .pr-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  @media (max-width: 900px) { .pr-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .pr-sec { margin-top: 6px; }
+  .pr-barras { list-style: none; margin: 0; padding: 0; }
+  .pr-barras li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 0.875rem; }
+  .pr-barras li:first-child { border-top: 0; }
+  .pr-b-n small { display: block; color: var(--muted); font-size: 0.75rem; }
+  .pr-b-t { height: 10px; border-radius: 5px; background: var(--bg); overflow: hidden; }
+  .pr-b-t i { display: block; height: 100%; border-radius: 5px; background: var(--verde); }
+  .pr-b-v { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; text-align: right; }
+  .pr-dias { display: flex; align-items: flex-end; gap: 2px; height: 140px; padding: 6px 0 18px; }
+  .pr-col { position: relative; flex: 1 1 0; height: 100%; display: flex; align-items: flex-end; min-width: 0; }
+  .pr-col i { display: block; width: 100%; border-radius: 3px 3px 0 0; background: var(--verde); }
+  .pr-col.hoje i { background: var(--roxo); }
+  .pr-col small { position: absolute; bottom: -16px; left: 50%; transform: translateX(-50%); font-size: 0.625rem; color: var(--muted); }
+  @media (max-width: 559px) { .pr-barras li { grid-template-columns: minmax(0, 1fr) auto; } .pr-b-t { grid-column: 1 / -1; grid-row: 2; } }
   .ph-lista { list-style: none; margin: 0 0 8px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
   .ph-lista li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; padding: 9px 12px; border-top: 1px solid var(--line); }
   .ph-lista li:first-child { border-top: 0; }
@@ -1620,18 +1651,27 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-producao">
+    <nav class="segmented mp-areas" id="pr-sub-tabs" aria-label="Partes da produção">
+      <button type="button" class="seg-btn" data-pr="ordens">Ordens de produção</button>
+      <button type="button" class="seg-btn" data-pr="lancamentos">Lançamentos dos líderes</button>
+      <button type="button" class="seg-btn" data-pr="indicadores">Indicadores do mês</button>
+    </nav>
+    <div id="pr-ordens">
     <p class="tagline">Lance a <b>ordem de produção</b> com a quantidade de cada produto: o app mostra a matéria-prima que vai ser usada e confere o estoque. Ao concluir, a produção entra no estoque de produtos e a matéria-prima sai do estoque.</p>
     <div class="est-cards" id="op-cards"></div>
     <div class="est-alertas hidden" id="op-alertas" role="status"></div>
     <section class="drivers-admin" aria-label="Ordens abertas">
       <div class="section-head"><h2 class="section-title">Ordens abertas</h2><span class="count-chip" id="op-abertas-n"></span></div>
-      <p class="hint">A matéria-prima é reservada na ordem da fila (data de produção, depois número da OP).</p>
+      <p class="hint">A fila segue a <b>urgência</b>, depois a <b>data limite</b>, o dia de produção e o número da OP. A matéria-prima é reservada nessa ordem.</p>
       <div id="op-abertas"></div>
     </section>
     <section class="drivers-admin" aria-label="Ordens concluídas">
       <div class="section-head"><h2 class="section-title">Concluídas</h2></div>
       <div id="op-concluidas"></div>
     </section>
+    </div>
+    <div id="pr-lancamentos" class="hidden"></div>
+    <div id="pr-indicadores" class="hidden"></div>
   </div>
 
   <div class="tab-panel hidden" id="tab-materia">
@@ -2650,6 +2690,7 @@
         </label>
       </div>
       <label class="check"><input type="checkbox" id="f-equipe-org" /> Vê a aba <b>Organograma</b> <span class="opt">(onde está na empresa: quem está acima e abaixo)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-lanc-prod" /> Vê e corrige os <b>lançamentos da produção</b> <span class="opt">(Produção › Lançamentos dos líderes, hora a hora)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-brindes" /> Vê a aba <b>Brindes e presentes</b> <span class="opt">(ideias e aprovação de brindes)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-alerta-est" /> Recebe o <b>alerta de falta de estoque</b> no Início <span class="opt">(cargas dos próximos 2 dias que o estoque não cobre)</span></label>
       <div class="homen-set" role="group" aria-label="Homenagens">
@@ -6033,7 +6074,8 @@
     if (session && session.role === 'equipe') {
       var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
       return ['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
-        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : []);
+        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : [])
+        .concat(escolhidas && !temPermissao('aba:producao') && podeVerLancProducao() ? ['producao'] : []);
     }
     var org = podeVerOrganograma(), brd = podeVerBrindes();
     return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd) && t !== 'producaohora'; });
@@ -12140,6 +12182,7 @@
       var id = o.id || ('local-' + uid());
       if (o.col === 'estoque') {
         if (o.op === 'delete') estoqueMovs = estoqueMovs.filter(function(m) { return m.id !== id; });
+        else if (o.op === 'update') estoqueMovs = estoqueMovs.map(function(m) { return m.id === id ? Object.assign({}, m, o.data) : m; });
         else estoqueMovs.push(Object.assign({ id: id }, o.data));
         saveLocalEstoque();
         return;
@@ -12240,13 +12283,12 @@
     return tem ? arred3(q) : null;
   }
   function ordensAbertas() {
-    return mp.ordens.filter(function(o) { return o.status === 'aberta'; }).sort(function(a, b) {
-      return String(a.data || '').localeCompare(String(b.data || '')) || ((Number(a.numero) || 0) - (Number(b.numero) || 0));
-    });
+    return mp.ordens.filter(function(o) { return o.status === 'aberta'; }).sort(function(a, b) { var x = chaveFila(a), y = chaveFila(b); return x < y ? -1 : x > y ? 1 : 0; });
   }
   function materiaisDaOrdem(o) { return materiaisDe(o.itens || [], false); }
-  function chaveFila(o) { return String(o.data || '') + '|' + String(1000000 + (Number(o.numero) || 999999)).slice(-7); }
-  // Matéria-prima reservada pelas ordens abertas que vêm antes na fila (data, depois número). Sem ref: todas.
+  // fila (21/10/2026): urgência (1 urgente … 4 baixa), data limite, dia de produção e número da OP
+  function chaveFila(o) { return String(Number(o.urgencia) || 3) + '|' + String(o.dataLimite || '9999-12-31') + '|' + String(o.data || '') + '|' + String(1000000 + (Number(o.numero) || 999999)).slice(-7); }
+  // Matéria-prima reservada pelas ordens abertas que vêm antes na fila. Sem ref: todas.
   function reservadoAntes(insumoId, ref) {
     var k = ref ? chaveFila(ref) : null, tot = 0;
     ordensAbertas().forEach(function(o) {
@@ -12319,7 +12361,7 @@
     return '<div class="frete-item est-' + sit.cls + '">' +
       '<div class="frete-top"><span><b>OP nº ' + escapeHtml(String(o.numero || '—')) + '</b> · produzir ' + escapeHtml(rotuloDia(o.data, hoje).replace('Hoje', 'hoje').replace('Amanhã', 'amanhã')) +
         (o.data < hoje ? ' <span class="alerta">(atrasada)</span>' : '') + '</span><span class="frete-valor">' + escapeHtml(fmtPal(paletesOp(o.itens))) + ' pal</span></div>' +
-      '<div style="margin-top:4px"><span class="chip-est ' + sit.cls + '" style="margin-left:0">' + escapeHtml(sit.txt) + '</span></div>' +
+      '<div style="margin-top:4px">' + opChipsUrgPrazo(o) + '<span class="chip-est ' + sit.cls + '" style="margin-left:0">' + escapeHtml(sit.txt) + '</span></div>' +
       '<div class="frete-sub">' + escapeHtml(resumoItensOp(o.itens)) + '</div>' +
       (o.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(o.obs) + '</div>' : '') +
       (aberto ? '<div class="op-mat">' + materiaisHtml(a.conf, a.mat.semFicha) + '</div>' : '') +
@@ -12328,6 +12370,8 @@
   function renderProducao() {
     var lista = document.getElementById('op-abertas');
     if (!lista || !session || !ehEscritorio()) return;
+    renderPrSubs();
+    if (prSubAtual() !== 'ordens') return;
     var hoje = todayIso(), analise = analisarOrdens();
     var comProblema = analise.filter(function(a) { return a.faltas.length || a.mat.semFicha.length; });
     var concl = mp.ordens.filter(function(o) { return o.status === 'concluida'; }).sort(function(a, b) { return String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); });
@@ -12339,7 +12383,9 @@
         '<span class="est-card-s">' + (conclHoje.length ? 'produzido hoje (' + conclHoje.length + (conclHoje.length === 1 ? ' OP concluída)' : ' OPs concluídas)') : 'nenhuma OP concluída hoje') + '</span>' +
         '<button type="button" class="btn btn-primary btn-sm" data-mp="op-nova">+ Nova ordem de produção</button></div>' +
       '<div class="est-card c-saldo"><span class="est-card-k">Ordens abertas</span><span class="est-card-v">' + analise.length + '</span>' +
-        '<span class="est-card-s">' + (analise.length ? fmtPal(palAbertas) + ' paletes a produzir' : 'nenhuma ordem aberta') + '</span></div>' +
+        '<span class="est-card-s">' + (analise.length ? fmtPal(palAbertas) + ' paletes a produzir' : 'nenhuma ordem aberta') +
+        (function() { var u = analise.filter(function(a) { return urgenciaOp(a.o).v === 1; }).length, v = analise.filter(function(a) { return a.o.dataLimite && a.o.dataLimite < hoje; }).length;
+          return (u ? ' · ' + u + (u === 1 ? ' urgente' : ' urgentes') : '') + (v ? ' · <b class="alerta">' + v + ' com prazo vencido</b>' : ''); })() + '</span></div>' +
       '<div class="est-card c-futuro' + (comProblema.length ? ' alerta' : '') + '"><span class="est-card-k">Matéria-prima</span>' +
         '<span class="est-card-v">' + (comProblema.length ? comProblema.length + (comProblema.length === 1 ? ' OP' : ' OPs') : (analise.length ? 'ok' : '—')) + '</span>' +
         '<span class="est-card-s">' + (comProblema.length ? 'com falta de matéria-prima ou sem ficha' : analise.length ? 'tudo disponível para as ordens abertas' : 'sem ordens para conferir') + '</span>' +
@@ -12364,7 +12410,8 @@
         ? '<div class="driver-confirm">Desfazer a conclusão da OP nº ' + escapeHtml(String(o.numero)) + '? A entrada no estoque de produtos e a baixa da matéria-prima são desfeitas e a ordem volta a ficar aberta.' +
           '<button class="btn-text danger" data-mp="op-desfazer-ok" data-id="' + id + '">Desfazer</button><button class="btn-text" data-mp="op-desfazer-nao">Cancelar</button></div>' : '';
       return desf || ('<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(o.numero)) + '<span class="driver-sub">' + escapeHtml(resumoItensOp(o.produzido || o.itens)) + '</span>' +
-        '<span class="driver-sub">concluída em ' + escapeHtml(formatDateTimeBR(o.concluidoEm)) + ' · entrou no estoque' + ((o.consumo || []).length ? ' · ' + o.consumo.length + ' insumos baixados' : '') + '</span></span>' +
+        '<span class="driver-sub">concluída em ' + escapeHtml(formatDateTimeBR(o.concluidoEm)) + ' · entrou no estoque' + ((o.consumo || []).length ? ' · ' + o.consumo.length + ' insumos baixados' : '') +
+        (o.dataLimite ? ' · ' + (opNoPrazo(o) ? 'no prazo' : '<b class="alerta">fora do prazo</b>') + ' (limite ' + escapeHtml(formatDateBR(o.dataLimite).slice(0, 5)) + ')' : '') + '</span></span>' +
         (ehMestre() ? '<button class="btn-text danger" data-mp="op-desfazer" data-id="' + id + '">Desfazer</button>' : '') + '</div>');
     }).join('') : '<p class="empty-state">Nenhuma ordem concluída ainda.</p>') +
       (concl.length > 15 ? '<button type="button" class="btn-text" data-mp="op-todas">' + (opUi.todas ? 'Mostrar só as últimas' : 'Mostrar todas (' + concl.length + ')') + '</button>' : '');
@@ -12653,6 +12700,9 @@
       modo: 'op', id: o ? o.id : null, ordem: o || null, titulo: o ? 'Editar OP nº ' + o.numero : 'Nova ordem de produção', botao: o ? 'Salvar ordem' : 'Lançar ordem',
       html: '<div class="row-2"><label>Produzir em <span class="req">*</span><input type="date" id="mp-op-data" value="' + escapeHtml((o && o.data) || (pre && pre.data) || todayIso()) + '" /></label>' +
         '<label>Observações <span class="opt">(opcional)</span><input type="text" id="mp-op-obs" maxlength="200" value="' + escapeHtml((o && o.obs) || (pre && pre.obs) || '') + '" /></label></div>' +
+        '<div class="row-2"><label>Data limite <span class="opt">(prazo para ficar pronta)</span><input type="date" id="mp-op-limite" value="' + escapeHtml((o && o.dataLimite) || (pre && pre.dataLimite) || '') + '" /></label>' +
+        '<label>Urgência<select id="mp-op-urg">' + OP_URGENCIAS.map(function(u) { var at = Number((o && o.urgencia) || (pre && pre.urgencia)) || 3; return '<option value="' + u.v + '"' + (u.v === at ? ' selected' : '') + '>' + u.ico + escapeHtml(u.nome) + '</option>'; }).join('') + '</select></label></div>' +
+        '<p class="field-hint">Na fila, as ordens mais urgentes vêm primeiro (e reservam a matéria-prima antes); na mesma urgência, a de prazo mais curto.</p>' +
         '<p class="hint">Digite em paletes ou na unidade do produto. A matéria-prima é calculada pela ficha técnica e conferida no estoque, logo abaixo.</p>' +
         '<div class="est-form-head"><span>Produto</span><span>Paletes</span><span>Quantidade</span></div><div class="est-rows">' + rows + '</div>' +
         '<div class="section-head"><h2 class="section-title">Matéria-prima desta ordem</h2></div><div id="mp-vivo"></div>'
@@ -12800,7 +12850,8 @@
     if (!box) return;
     if (mpSheet.modo === 'op') {
       var dEl = document.getElementById('mp-op-data');
-      var ref = { id: mpSheet.id, data: dEl ? dEl.value : todayIso(), numero: mpSheet.ordem ? mpSheet.ordem.numero : null };
+      var lEl = document.getElementById('mp-op-limite'), uEl = document.getElementById('mp-op-urg');
+      var ref = { id: mpSheet.id, data: dEl ? dEl.value : todayIso(), numero: mpSheet.ordem ? mpSheet.ordem.numero : null, dataLimite: lEl ? lEl.value : '', urgencia: uEl ? Number(uEl.value) : 3 };
       var mat = materiaisDe(itensDoFormProdutos(), false);
       box.innerHTML = materiaisHtml(conferirMateriais(mat.lista, ref), mat.semFicha);
     } else if (mpSheet.modo === 'op-concluir') {
@@ -12836,7 +12887,7 @@
     var t = e.target;
     if (!mpSheet) return;
     if (t.id === 'gf-data' && mpSheet.modo === 'fechamento') { if (t.value) abrirFechamento(t.value); return; }
-    if (t.id === 'mp-op-data') { atualizarMpSheet(); return; }
+    if (t.id === 'mp-op-data' || t.id === 'mp-op-limite' || t.id === 'mp-op-urg') { atualizarMpSheet(); return; }
     if (mpSheet.modo !== 'ficha') return;
     if (t.id === 'mp-ficha-copiar' && t.value) {
       mpSheet.linhas = fichaDe(t.value).map(function(l) { return { insumoId: l.insumoId, qtd: l.qtd, base: l.base || 'unidade' }; });
@@ -12867,12 +12918,14 @@
       var itens = itensDoFormProdutos(), data = document.getElementById('mp-op-data').value;
       if (!data) return erroMpSheet('Informe a data da produção.');
       if (!itens.length) return erroMpSheet('Informe a quantidade de ao menos um produto.');
+      var limite = document.getElementById('mp-op-limite').value || '', urg = Number(document.getElementById('mp-op-urg').value) || 3;
+      if (limite && limite < data) return erroMpSheet('A data limite não pode ser antes do dia de produção.');
       var mat = materiaisDe(itens, false);
-      var rec = { data: data, obs: document.getElementById('mp-op-obs').value.trim(), itens: itens,
+      var rec = { data: data, dataLimite: limite, urgencia: urg, obs: document.getElementById('mp-op-obs').value.trim(), itens: itens,
         materiais: mat.lista.map(function(m) { return { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, qtd: m.qtd }; }), atualizadoEm: agora };
       if (!s.id) Object.assign(rec, { numero: proximoNumeroOp(), status: 'aberta', criadoEm: agora });
       ops.push({ op: s.id ? 'update' : 'set', col: MP_COL.ordens, id: s.id, data: rec });
-      var falta = conferirMateriais(mat.lista, { id: s.id, data: data, numero: s.id ? s.ordem.numero : rec.numero }).some(function(c) { return c.falta > 0; });
+      var falta = conferirMateriais(mat.lista, { id: s.id, data: data, dataLimite: limite, urgencia: urg, numero: s.id ? s.ordem.numero : rec.numero }).some(function(c) { return c.falta > 0; });
       msg = (s.id ? 'OP nº ' + s.ordem.numero + ' atualizada' : 'OP nº ' + rec.numero + ' lançada') + (falta ? ' — atenção: falta matéria-prima.' : '.');
     } else if (s.modo === 'op-concluir') {
       var prod = itensDoFormProdutos(), dp = document.getElementById('mp-op-dataprod').value || todayIso();
@@ -17616,6 +17669,7 @@
       if (supM) chips += '<span class="func-chip">responde a ' + escapeHtml(supM.nomeCurto || supM.nome) + '</span>';
       if (m.veOrganograma) chips += '<span class="func-chip">vê o Organograma</span>';
       if (m.veBrindes) chips += '<span class="func-chip">vê Brindes</span>';
+      if (m.veLancProducao) chips += '<span class="func-chip">corrige lançamentos da produção</span>';
       if (m.alertaEstoque) chips += '<span class="func-chip">alerta de estoque</span>';
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nomeCompleto || m.nome) + '<span class="driver-sub">no app: ' + escapeHtml(m.nome) + '</span>' + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
@@ -17652,6 +17706,7 @@
     document.getElementById('f-equipe-h-pai').checked = !!hm.pai;
     document.getElementById('f-equipe-org').checked = !!(m && m.veOrganograma);
     document.getElementById('f-equipe-brindes').checked = !!(m && m.veBrindes);
+    document.getElementById('f-equipe-lanc-prod').checked = !!(m && m.veLancProducao);
     document.getElementById('f-equipe-alerta-est').checked = !!(m && m.alertaEstoque);
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
@@ -17748,7 +17803,7 @@
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
         superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
-        veBrindes: document.getElementById('f-equipe-brindes').checked, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
+        veBrindes: document.getElementById('f-equipe-brindes').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
       if (hash) patch.pinHash = hash;
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
@@ -20486,6 +20541,221 @@
     if (!el) return;
     el.innerHTML = phQuadroHtml(todayIso(), null);
   }
+
+  // =====================================================================================================
+  // PRODUÇÃO (pedido de 21/10/2026): data limite e urgência na ordem de produção (a fila e a reserva da matéria-prima
+  // seguem a urgência, depois a data limite); aba "Lançamentos dos líderes", como uma planilha, para ver e corrigir os
+  // lançamentos hora a hora (senha mestre e quem tiver "Vê e corrige os lançamentos da produção" em Cadastros › Equipe);
+  // aba "Indicadores" com os principais números do mês escolhido.
+  var OP_URGENCIAS = [{ v: 1, nome: 'Urgente', cls: 'falta', ico: '🔴 ' }, { v: 2, nome: 'Alta', cls: 'confirmar', ico: '🟠 ' }, { v: 3, nome: 'Normal', cls: '', ico: '' }, { v: 4, nome: 'Baixa', cls: '', ico: '' }];
+  function urgenciaOp(o) { var n = Number(o && o.urgencia) || 3; return OP_URGENCIAS.find(function(u) { return u.v === n; }) || OP_URGENCIAS[2]; }
+  function prazoOp(o) {
+    if (!o || !o.dataLimite) return null;
+    var d = diasAte(o.dataLimite);
+    if (d < 0) return { cls: 'falta', txt: 'prazo vencido há ' + (-d) + (d === -1 ? ' dia' : ' dias') + ' (' + formatDateBR(o.dataLimite).slice(0, 5) + ')' };
+    if (d === 0) return { cls: 'confirmar', txt: 'prazo: hoje' };
+    if (d === 1) return { cls: 'confirmar', txt: 'prazo: amanhã' };
+    return { cls: d <= 3 ? 'confirmar' : '', txt: 'prazo: ' + formatDateBR(o.dataLimite).slice(0, 5) + ' (em ' + d + ' dias)' };
+  }
+  function opNoPrazo(o) { return !!o.dataLimite && String(o.dataProducao || isoLocal(o.concluidoEm) || '') <= o.dataLimite; }
+  function opChipsUrgPrazo(o) {
+    var u = urgenciaOp(o), p = prazoOp(o), st = 'margin-left:0;margin-right:6px';
+    return (u.v !== 3 ? '<span class="chip-est ' + u.cls + '" style="' + st + '">' + u.ico + escapeHtml(u.nome) + '</span>' : '') +
+      (p ? '<span class="chip-est ' + p.cls + '" style="' + st + '">' + escapeHtml(p.txt) + '</span>' : '');
+  }
+
+  var prUi = { sub: '', dia: '', mes: '', apagar: null, pendente: false };
+  function podeVerLancProducao() { if (!session) return false; if (session.ref === 'mestre') return true; var m = meuMembro(); return !!(m && m.veLancProducao); }
+  function podeCorrigirLancProducao() { return podeVerLancProducao() && !session.soInclui && !session.soVer; }
+  // quem veio para a Produção só pela marca dos lançamentos (sem a aba Produção) não vê as ordens
+  function temOrdensProducao() { if (!session) return false; if (session.role !== 'equipe') return true; return (session.modulos || []).indexOf('abas') < 0 || temPermissao('aba:producao'); }
+  function prSubsPermitidas() { var l = []; if (temOrdensProducao()) l.push('ordens'); if (podeVerLancProducao()) l.push('lancamentos'); l.push('indicadores'); return l; }
+  // a escolha da pessoa fica guardada; enquanto ela não vale (ex.: a equipe ainda carregando), mostra a primeira permitida
+  function prSubAtual() { var subs = prSubsPermitidas(); return subs.indexOf(prUi.sub) >= 0 ? prUi.sub : subs[0]; }
+  function renderPrSubs() {
+    var subs = prSubsPermitidas(), atual = prSubAtual();
+    document.querySelectorAll('#pr-sub-tabs .seg-btn').forEach(function(b) {
+      var on = b.dataset.pr === atual; b.classList.toggle('hidden', subs.indexOf(b.dataset.pr) < 0); b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    ['ordens', 'lancamentos', 'indicadores'].forEach(function(s) { document.getElementById('pr-' + s).classList.toggle('hidden', s !== atual); });
+    if (atual === 'lancamentos') renderPrLanc(); else if (atual === 'indicadores') renderPrInd();
+  }
+
+  // ----- Lançamentos dos líderes (planilha) -----
+  function prOpcoesProduto(sel, nomeAtual) {
+    var achou = false;
+    var h = phMarcas().map(function(mk) {
+      var ps = phProdutosDaMarca(mk);
+      return ps.length ? '<optgroup label="' + escapeHtml(mk) + '">' + ps.map(function(p) { if (p.id === sel) achou = true; return '<option value="' + escapeHtml(p.id) + '"' + (p.id === sel ? ' selected' : '') + '>' + escapeHtml(phNomeSemMarca(p)) + '</option>'; }).join('') + '</optgroup>' : '';
+    }).join('');
+    return (achou ? '' : '<option value="' + escapeHtml(sel || '') + '" selected>' + escapeHtml(nomeAtual || '—') + '</option>') + h;
+  }
+  function renderPrLanc() {
+    var box = document.getElementById('pr-lancamentos');
+    if (!box || !session) return;
+    var ae = document.activeElement;
+    if (ae && box.contains(ae) && /^(INPUT|SELECT)$/.test(ae.tagName) && ae.classList.contains('pr-c')) { prUi.pendente = true; return; } // não atrapalha quem está digitando
+    prUi.pendente = false;
+    var hoje = todayIso(), dia = prUi.dia || hoje, ed = podeCorrigirLancProducao(), l = phLancamentosDoDia(dia), cont = {}, porProd = {}, ordem = [], pal = 0;
+    l.forEach(function(m) { var k = m.hora + '|' + m.produtoId; cont[k] = (cont[k] || 0) + 1; });
+    var linhas = l.map(function(m) {
+      var p = findProduto(m.produtoId), id = escapeHtml(m.id), dup = cont[m.hora + '|' + m.produtoId] > 1, nome = (m.marca || PH_MARCA_PADRAO) + ' · ' + (p ? phNomeSemMarca(p) : m.produtoNome);
+      var v = p ? emPaletes(p, Number(m.quantidade) || 0) : null;
+      if (v) pal += v;
+      if (!porProd[nome]) { porProd[nome] = { q: 0, u: m.unidade }; ordem.push(nome); }
+      porProd[nome].q += Number(m.quantidade) || 0;
+      if (prUi.apagar === m.id) return '<tr class="pr-conf"><td colspan="' + (ed ? 6 : 5) + '">Apagar o lançamento das ' + escapeHtml(m.hora) + ' (' + escapeHtml(nome) + ', ' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + ')? Sai do estoque também.' +
+        ' <button type="button" class="btn-text danger" data-pr-a="apagar-ok" data-id="' + id + '">Apagar</button><button type="button" class="btn-text" data-pr-a="apagar-nao">Manter</button></td></tr>';
+      var quem = '<span class="pr-quem">' + escapeHtml((m.lider && m.lider.nome) || '—') + (m.editadoPor ? '<small>corrigido por ' + escapeHtml(m.editadoPor.nome || '—') + ' às ' + escapeHtml(horaMsg(m.editadoEm)) + '</small>' : '') + '</span>';
+      var cls = (dup ? ' pr-dup' : '') + (m.editadoEm ? ' pr-editado' : '');
+      if (!ed) return '<tr class="' + cls + '"><td>' + escapeHtml(m.hora) + '</td><td>' + escapeHtml(nome) + (dup ? ' <b class="alerta">repetido</b>' : '') + '</td><td class="num">' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + '</td><td>' + quem + '</td><td>' + escapeHtml(m.obs || '') + '</td></tr>';
+      return '<tr class="' + cls + '" data-id="' + id + '">' +
+        '<td><select class="pr-c" data-campo="hora" aria-label="Hora">' + Array.apply(null, Array(24)).map(function(x, h) { var hv = pad2(h) + ':00'; return '<option value="' + hv + '"' + (hv === m.hora ? ' selected' : '') + '>' + hv + '</option>'; }).join('') + '</select></td>' +
+        '<td><select class="pr-c" data-campo="produtoId" aria-label="Produto">' + prOpcoesProduto(m.produtoId, m.produtoNome) + '</select>' + (dup ? '<small class="alerta">mesma hora e produto lançados mais de uma vez</small>' : '') + '</td>' +
+        '<td class="num"><input class="pr-c pr-q" data-campo="quantidade" type="number" min="1" step="1" inputmode="numeric" value="' + escapeHtml(m.quantidade) + '" aria-label="Quantidade"><small>' + escapeHtml(m.unidade || '') + '</small></td>' +
+        '<td>' + quem + '</td>' +
+        '<td><input class="pr-c" data-campo="obs" type="text" maxlength="200" value="' + escapeHtml(m.obs || '') + '" aria-label="Observação"></td>' +
+        '<td><button type="button" class="btn-text danger" data-pr-a="apagar" data-id="' + id + '">Apagar</button></td></tr>';
+    }).join('');
+    box.innerHTML = '<p class="tagline">Os lançamentos hora a hora dos líderes, como numa planilha.' + (ed ? ' Corrija a hora, o produto, a quantidade ou a observação: grava na hora e o estoque acompanha.' : '') + '</p>' +
+      '<div class="pr-barra"><button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-ant" aria-label="Dia anterior">‹</button>' +
+        '<input type="date" id="pr-dia" value="' + escapeHtml(dia) + '" max="' + escapeHtml(hoje) + '" aria-label="Dia" />' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-prox" aria-label="Dia seguinte"' + (dia >= hoje ? ' disabled' : '') + '>›</button>' +
+        (dia !== hoje ? '<button type="button" class="btn-text" data-pr-a="dia-hoje">Hoje</button>' : '') +
+        (ed ? '<button type="button" class="btn btn-primary btn-sm" data-pr-a="lancar">+ Lançar uma hora</button>' : '') + '</div>' +
+      (l.length ? '<p class="field-hint">' + l.length + (l.length === 1 ? ' lançamento' : ' lançamentos') + ' em ' + escapeHtml(formatDateBR(dia)) + (pal ? ' · ' + fmtPal(pal) + ' paletes' : '') + '</p>' +
+        '<div class="pr-tab-wrap"><table class="pr-tab"><thead><tr><th>Hora</th><th>Marca · produto</th><th>Quantidade</th><th>Líder</th><th>Observação</th>' + (ed ? '<th aria-label="Ações"></th>' : '') + '</tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+        '<p class="field-hint"><b>Total do dia:</b> ' + ordem.map(function(k) { return escapeHtml(k) + ' ' + escapeHtml(qtdUnidade(porProd[k].q, porProd[k].u)); }).join(' · ') + '</p>'
+        : '<p class="empty-state">Nenhum lançamento hora a hora em ' + escapeHtml(formatDateBR(dia)) + '.</p>');
+  }
+  function prCorrigir(el) {
+    var tr = el.closest('tr[data-id]'), id = tr && tr.dataset.id, m = estoqueMovs.find(function(x) { return x.id === id; });
+    if (!m || !podeCorrigirLancProducao()) return;
+    var campo = el.dataset.campo, v = el.value, patch = {}, de = m[campo], para = v;
+    if (campo === 'hora') { var h = Number(String(v).slice(0, 2)); patch = { hora: pad2(h) + ':00', horaFim: pad2((h + 1) % 24) + ':00' }; para = patch.hora; }
+    else if (campo === 'produtoId') {
+      var p = findProduto(v); if (!p) return;
+      patch = { produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), marca: phMarcaDoProduto(p) }; de = m.produtoNome; para = p.nome;
+    } else if (campo === 'quantidade') {
+      var q = numCampo(v);
+      if (q === null || q <= 0) { showToast('A quantidade precisa ser maior que zero. Para tirar o lançamento, use “Apagar”.'); renderPrLanc(); return; }
+      patch = { quantidade: Math.round(q) }; para = patch.quantidade;
+    } else if (campo === 'obs') { patch = { obs: String(v).trim().slice(0, 200) }; para = patch.obs; }
+    else return;
+    if (String(de == null ? '' : de) === String(para)) return;
+    var agora = new Date().toISOString();
+    patch.editadoPor = { nome: quemSessao(), ref: minhaRef() }; patch.editadoEm = agora;
+    patch.historico = (m.historico || []).concat([{ em: agora, por: quemSessao(), campo: campo, de: de == null ? '' : de, para: para }]).slice(-20);
+    mpGravar([{ op: 'update', col: 'estoque', id: id, data: patch }]).then(function() { showToast('Lançamento das ' + (patch.hora || m.hora) + ' corrigido.'); })
+      .catch(function(e) { console.error('corrigir lançamento', e); showToast('Não foi possível gravar a correção agora.'); renderPrLanc(); });
+  }
+
+  // ----- Indicadores do mês -----
+  function prMesAnterior(ym) { var a = Number(ym.slice(0, 4)), mm = Number(ym.slice(5, 7)) - 1; if (mm < 1) { mm = 12; a--; } return a + '-' + pad2(mm); }
+  function prMesSeguinte(ym) { var a = Number(ym.slice(0, 4)), mm = Number(ym.slice(5, 7)) + 1; if (mm > 12) { mm = 1; a++; } return a + '-' + pad2(mm); }
+  function prDadosMes(ym) {
+    var r = { ents: [], pal: 0, semPalete: 0, dias: {}, prod: {}, marca: {}, hora: {}, lider: {}, fonte: { hora: 0, op: 0, outros: 0 }, horas: {} };
+    estoqueMovs.forEach(function(m) {
+      if (m.tipo !== 'entrada' || !m.produtoId) return;
+      var d = String(m.data || isoLocal(m.em) || '');
+      if (d.slice(0, 7) !== ym) return;
+      var p = findProduto(m.produtoId), q = Number(m.quantidade) || 0, v = p ? emPaletes(p, q) : null, pv = v || 0;
+      r.ents.push(m); r.pal += pv; if (v === null) r.semPalete++;
+      r.dias[d] = (r.dias[d] || 0) + pv;
+      var nome = (p && p.nome) || m.produtoNome || '—';
+      r.prod[nome] = r.prod[nome] || { q: 0, u: m.unidade || (p && unidadeDe(p)) || '', pal: 0 }; r.prod[nome].q += q; r.prod[nome].pal += pv;
+      var mk = m.marca || (p ? phMarcaDoProduto(p) : PH_MARCA_PADRAO); r.marca[mk] = (r.marca[mk] || 0) + pv;
+      if (m.porHora) {
+        r.fonte.hora += pv; r.horas[d + '|' + m.hora] = true;
+        var h = String(m.hora || '').slice(0, 2); r.hora[h] = (r.hora[h] || 0) + pv;
+        var ln = (m.lider && m.lider.nome) || '—'; r.lider[ln] = r.lider[ln] || { n: 0, pal: 0 }; r.lider[ln].n++; r.lider[ln].pal += pv;
+      } else if (m.opId) r.fonte.op += pv; else r.fonte.outros += pv;
+    });
+    return r;
+  }
+  function prBarras(lista, opts) {
+    opts = opts || {};
+    var max = lista.reduce(function(a, x) { return Math.max(a, x.v); }, 0) || 1;
+    return '<ul class="pr-barras">' + lista.map(function(x) {
+      return '<li><span class="pr-b-n">' + escapeHtml(x.nome) + (x.sub ? '<small>' + escapeHtml(x.sub) + '</small>' : '') + '</span><span class="pr-b-t" aria-hidden="true"><i style="width:' + Math.max(2, Math.round(x.v / max * 100)) + '%"></i></span><span class="pr-b-v">' + escapeHtml(x.txt) + '</span></li>';
+    }).join('') + '</ul>';
+  }
+  function renderPrInd() {
+    var box = document.getElementById('pr-indicadores');
+    if (!box || !session) return;
+    var hoje = todayIso(), mesHoje = hoje.slice(0, 7), mes = prUi.mes || mesHoje, r = prDadosMes(mes), ant = prDadosMes(prMesAnterior(mes));
+    var nDias = Object.keys(r.dias).length, nHoras = Object.keys(r.horas).length;
+    var ops = mp.ordens || [];
+    var lancOps = ops.filter(function(o) { return String(isoLocal(o.criadoEm) || '').slice(0, 7) === mes; });
+    var conc = ops.filter(function(o) { return o.status === 'concluida' && String(o.dataProducao || isoLocal(o.concluidoEm) || '').slice(0, 7) === mes; });
+    var comPrazo = conc.filter(function(o) { return o.dataLimite; }), noPrazo = comPrazo.filter(opNoPrazo);
+    var abertas = ops.filter(function(o) { return o.status === 'aberta'; });
+    var vencidas = abertas.filter(function(o) { return o.dataLimite && o.dataLimite < hoje; }), urgentes = abertas.filter(function(o) { return urgenciaOp(o).v === 1; });
+    var varia = ant.pal ? Math.round((r.pal - ant.pal) / ant.pal * 100) : null;
+    var card = function(k, v, s, cls) { return '<div class="est-card ' + (cls || 'c-saldo') + '"><span class="est-card-k">' + escapeHtml(k) + '</span><span class="est-card-v">' + v + '</span><span class="est-card-s">' + s + '</span></div>'; };
+    var h = '<div class="pr-barra"><button type="button" class="btn btn-secondary btn-sm" data-pr-a="mes-ant" aria-label="Mês anterior">‹</button>' +
+      '<input type="month" id="pr-mes" value="' + escapeHtml(mes) + '" max="' + escapeHtml(mesHoje) + '" aria-label="Mês" />' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="mes-prox" aria-label="Mês seguinte"' + (mes >= mesHoje ? ' disabled' : '') + '>›</button>' +
+      '<b class="pr-mes-nome">' + escapeHtml(nomeMes(mes)) + '</b></div>';
+    h += '<div class="est-cards pr-cards">' +
+      card('Produção do mês', r.pal ? fmtPal(r.pal) + ' pal' : '—', (varia === null ? (ant.pal ? '' : 'sem produção no mês anterior') : (varia >= 0 ? '▲ ' : '▼ ') + Math.abs(varia) + '% sobre ' + escapeHtml(nomeMes(prMesAnterior(mes)).split(' ')[0].toLowerCase())) + (r.semPalete ? ' · ' + r.semPalete + ' lançamento(s) sem palete cadastrado' : ''), 'c-entrada') +
+      card('Média por dia produtivo', nDias ? fmtPal(r.pal / nDias) + ' pal' : '—', nDias + (nDias === 1 ? ' dia com produção' : ' dias com produção')) +
+      card('Média por hora (líderes)', nHoras ? fmtPal(r.fonte.hora / nHoras) + ' pal' : '—', nHoras + (nHoras === 1 ? ' hora lançada' : ' horas lançadas')) +
+      card('Ordens de produção', conc.length + (conc.length === 1 ? ' concluída' : ' concluídas'), lancOps.length + ' lançada(s) no mês' + (comPrazo.length ? ' · ' + Math.round(noPrazo.length / comPrazo.length * 100) + '% no prazo (' + noPrazo.length + ' de ' + comPrazo.length + ')' : ''), 'c-futuro' + (vencidas.length ? ' alerta' : '')) +
+      '</div>';
+    if (vencidas.length || urgentes.length) h += '<div class="est-alertas" role="status"><p class="est-alertas-t">Agora</p><ul>' +
+      (urgentes.length ? '<li>' + urgentes.length + (urgentes.length === 1 ? ' OP urgente aberta' : ' OPs urgentes abertas') + ': nº ' + urgentes.map(function(o) { return o.numero; }).join(', ') + '</li>' : '') +
+      (vencidas.length ? '<li class="neg">' + vencidas.length + (vencidas.length === 1 ? ' OP aberta com o prazo vencido' : ' OPs abertas com o prazo vencido') + ': nº ' + vencidas.map(function(o) { return o.numero; }).join(', ') + '</li>' : '') + '</ul></div>';
+    if (!r.ents.length) return void (box.innerHTML = h + '<p class="empty-state">Nenhuma produção lançada em ' + escapeHtml(nomeMes(mes).toLowerCase()) + '.</p>');
+    var diasMes = new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0).getDate(), maxD = 0, colunas = '';
+    Object.keys(r.dias).forEach(function(d) { maxD = Math.max(maxD, r.dias[d]); });
+    for (var i = 1; i <= diasMes; i++) {
+      var di = mes + '-' + pad2(i), vd = r.dias[di] || 0;
+      colunas += '<span class="pr-col' + (di === hoje ? ' hoje' : '') + '" title="' + escapeHtml(formatDateBR(di) + ': ' + fmtPal(vd) + ' pal') + '"><i style="height:' + (vd ? Math.max(4, Math.round(vd / (maxD || 1) * 100)) : 0) + '%"></i><small>' + (i === 1 || i % 5 === 0 ? i : '') + '</small></span>';
+    }
+    var sec = function(t, c) { return '<section class="drivers-admin pr-sec"><div class="section-head"><h2 class="section-title">' + escapeHtml(t) + '</h2></div>' + c + '</section>'; };
+    var fontes = [['Hora a hora (líderes)', r.fonte.hora], ['Conclusão de OP', r.fonte.op], ['Entrada em paletes', r.fonte.outros]].filter(function(x) { return x[1] > 0; });
+    h += sec('Produção por dia (paletes)', '<div class="pr-dias" role="img" aria-label="' + escapeHtml('Produção por dia em ' + nomeMes(mes) + ', maior dia ' + fmtPal(maxD) + ' paletes') + '">' + colunas + '</div><p class="field-hint">Maior dia: ' + fmtPal(maxD) + ' pal.</p>');
+    h += sec('Por produto', prBarras(Object.keys(r.prod).map(function(k) { var x = r.prod[k]; return { nome: k, sub: qtdUnidade(x.q, x.u), v: x.pal, txt: x.pal ? fmtPal(x.pal) + ' pal · ' + Math.round(x.pal / (r.pal || 1) * 100) + '%' : '—' }; }).sort(function(a, b) { return b.v - a.v; })));
+    h += sec('Por marca (rótulo)', prBarras(Object.keys(r.marca).map(function(k) { return { nome: k, v: r.marca[k], txt: fmtPal(r.marca[k]) + ' pal · ' + Math.round(r.marca[k] / (r.pal || 1) * 100) + '%' }; }).sort(function(a, b) { return b.v - a.v; })));
+    if (Object.keys(r.hora).length) h += sec('Por hora do dia (lançamentos dos líderes)', prBarras(Object.keys(r.hora).sort().map(function(k) { return { nome: k + 'h', v: r.hora[k], txt: fmtPal(r.hora[k]) + ' pal' }; })));
+    if (Object.keys(r.lider).length) h += sec('Por líder', prBarras(Object.keys(r.lider).map(function(k) { var x = r.lider[k]; return { nome: k, sub: x.n + (x.n === 1 ? ' hora lançada' : ' horas lançadas'), v: x.pal, txt: fmtPal(x.pal) + ' pal' }; }).sort(function(a, b) { return b.v - a.v; })));
+    if (fontes.length > 1) h += sec('De onde veio o lançamento', prBarras(fontes.map(function(x) { return { nome: x[0], v: x[1], txt: fmtPal(x[1]) + ' pal' }; })) +
+      '<p class="field-hint">Se a mesma produção foi lançada hora a hora e também na conclusão da OP, ela entrou duas vezes no estoque.</p>');
+    box.innerHTML = h;
+  }
+
+  (function() {
+    var tab = document.getElementById('tab-producao');
+    tab.addEventListener('click', function(e) {
+      var s = e.target.closest('[data-pr]');
+      if (s) { prUi.sub = s.dataset.pr; prUi.apagar = null; if (prSubAtual() === 'ordens') renderProducao(); else renderPrSubs(); return; }
+      var b = e.target.closest('[data-pr-a]');
+      if (!b) return;
+      var a = b.dataset.prA, hoje = todayIso();
+      if (a === 'dia-ant') { prUi.dia = addDiasIso(prUi.dia || hoje, -1); renderPrLanc(); }
+      else if (a === 'dia-prox') { prUi.dia = addDiasIso(prUi.dia || hoje, 1); if (prUi.dia > hoje) prUi.dia = hoje; renderPrLanc(); }
+      else if (a === 'dia-hoje') { prUi.dia = hoje; renderPrLanc(); }
+      else if (a === 'lancar') abrirProducaoHora();
+      else if (a === 'apagar') { prUi.apagar = b.dataset.id; renderPrLanc(); }
+      else if (a === 'apagar-nao') { prUi.apagar = null; renderPrLanc(); }
+      else if (a === 'apagar-ok') {
+        prUi.apagar = null;
+        if (!podeCorrigirLancProducao()) return;
+        deleteEstoqueMov(b.dataset.id).then(function() { showToast('Lançamento apagado (saiu do estoque).'); }, function(x) { console.error('apagar lançamento', x); showToast('Não foi possível apagar agora.'); renderPrLanc(); });
+      }
+      else if (a === 'mes-ant') { prUi.mes = prMesAnterior(prUi.mes || hoje.slice(0, 7)); renderPrInd(); }
+      else if (a === 'mes-prox') { var mx = prMesSeguinte(prUi.mes || hoje.slice(0, 7)); prUi.mes = mx > hoje.slice(0, 7) ? hoje.slice(0, 7) : mx; renderPrInd(); }
+    });
+    tab.addEventListener('change', function(e) {
+      var t = e.target;
+      if (t.id === 'pr-dia') { prUi.dia = t.value && t.value <= todayIso() ? t.value : todayIso(); renderPrLanc(); }
+      else if (t.id === 'pr-mes') { prUi.mes = /^\d{4}-\d{2}$/.test(t.value) ? t.value : ''; renderPrInd(); }
+      else if (t.classList && t.classList.contains('pr-c')) prCorrigir(t);
+    });
+    // terminou de editar uma célula: se chegou novidade enquanto digitava, mostra agora
+    tab.addEventListener('focusout', function() { setTimeout(function() { if (prUi.pendente) renderPrLanc(); }, 0); });
+  })();
 
   // ---------- init ----------
   function preenchido(v) { return !!v && String(v).indexOf('COLE' + '_AQUI') === -1; } // (o marcador é montado em partes de propósito)
