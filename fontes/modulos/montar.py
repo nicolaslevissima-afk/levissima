@@ -128,6 +128,46 @@ TROCAS_MANUTENCAO_FICHAS = [
      "'<div class=\"ev\"><div class=\"w\">' + fmtData(x.data) + (x.resultado === 'X' ? ' · <b style=\"color:var(--crit)\">X anormal</b>' : x.resultado === 'O' ? ' · O normal' : '') + (x.horas != null ?"),
 ]
 
+# Manutenção, pedidos de 21/10/2026 (código novo em manutencao-extra.js):
+# - só o Nicolas (senha mestre) apaga chamado (regra também no banco, 0029); ele atende e conclui pelo fluxo normal;
+# - documentação do equipamento em PDF e etiqueta com QR que abre a máquina (histórico);
+# - materiais usados no atendimento com baixa no estoque; no fechamento, as peças da máquina à mão;
+# - estoque de peças por máquina (aba, cadastro da peça e planilha) e fotos da peça;
+# - selecionar vários itens e excluir de uma vez.
+TROCAS_MANUTENCAO_2110 = [
+    ("function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão'; }",
+     "function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão' || levSouNicolas(); }"),
+    ("  if (fechado(c) && man) out.push(b('os-reabrir', '', 'refresh', 'Reabrir'));\n  return out.join('');",
+     "  if (fechado(c) && man) out.push(b('os-reabrir', '', 'refresh', 'Reabrir'));\n  levRodapeChamado(c, out, b);\n  return out.join('');"),
+    ("  if (c.status === 'cancelado') h += '<div class=\"blk\"><h3>Motivo do cancelamento</h3>",
+     "  h += levMateriaisHtml(c);\n  if (c.status === 'cancelado') h += '<div class=\"blk\"><h3>Motivo do cancelamento</h3>"),
+    ("      + pecasEditor('cc', [])\n",
+     "      + levMateriaisJa(c) + levChipsPecas(c.equipId, 'cc') + pecasEditor('cc', [])\n"),
+    ("solucao: { causa: s.causa || '', acao: s.acao, intervencao: s.intervencao || '', pecas: s.pecas || [],",
+     "solucao: { causa: s.causa || '', acao: s.acao, intervencao: s.intervencao || '', pecas: levMateriaisDoChamado(c).concat(s.pecas || []),"),
+    ("  const novoEl = podeEscrever() ?", "  h += levDocsHtml(e);\n  const novoEl = podeEscrever() ?"),
+    ("  h += fichasDoEquipHtml(e);\n", "  h += levPecasMaquinaHtml(e);\n  h += fichasDoEquipHtml(e);\n"),
+    ("[['saldo', 'Saldo'], ['mov', 'Movimentações'], ['compras', 'Compras']]",
+     "[['saldo', 'Saldo'], ['maquina', 'Por máquina'], ['mov', 'Movimentações'], ['compras', 'Compras']]"),
+    ("    body.innerHTML = this.f.aba === 'mov' ? this.movs() : this.f.aba === 'compras' ? this.compras() : this.saldo();",
+     "    body.innerHTML = this.f.aba === 'mov' ? this.movs() : this.f.aba === 'compras' ? this.compras() : this.f.aba === 'maquina' ? levPecasPorMaquina(this) : this.saldo();"),
+    ("&& (!q || norm([p.codigo, p.descricao, p.fabricante, p.modelo, p.local, p.fornecedor, p.categoria].join(' ')).includes(q)));",
+     "&& (!q || norm([p.codigo, p.descricao, p.fabricante, p.modelo, p.local, p.fornecedor, p.categoria, levNomesMaquinas(p)].join(' ')).includes(q)));"),
+    ('placeholder="Buscar código, descrição, modelo ou local"', 'placeholder="Buscar código, descrição, modelo, local ou máquina"'),
+    ("'<div class=\"row clickable wrap-sm\" data-act=\"peca\" data-id=\"' + p.id + '\" role=\"button\" tabindex=\"0\"><span class=\"grow\">",
+     "'<div class=\"row clickable wrap-sm\" data-act=\"peca\" data-id=\"' + p.id + '\" role=\"button\" tabindex=\"0\">' + levFotoMini(p) + '<span class=\"grow\">"),
+    ("  h += '<div class=\"blk\"><h3>Onde é usada · ' + u.n", "  h += levFotosPecaHtml(p);\n  h += '<div class=\"blk\"><h3>Onde é usada · ' + u.n"),
+    ("      + fArea('pc-obs', 'Observações', p.obs, { name: 'obs', rows: 2 })",
+     "      + levCampoMaquinas(p)\n      + fArea('pc-obs', 'Observações', p.obs, { name: 'obs', rows: 2 })"),
+    ("    ativo: antigo ? d.ativo === '1' : true, atualizadoEm: Date.now()\n  });",
+     "    ativo: antigo ? d.ativo === '1' : true, maquinas: Array.isArray(d.maquinas) ? d.maquinas : [], atualizadoEm: Date.now()\n  });"),
+    ("    { k: 'custo', l: 'Custo unitário', s: ['custo', 'valor unitario', 'preco', 'valor'] }\n  ] },",
+     "    { k: 'custo', l: 'Custo unitário', s: ['custo', 'valor unitario', 'preco', 'valor'] },\n"
+     "    { k: 'maquina', l: 'Máquina(s) onde é usada', s: ['maquina', 'maquinas', 'equipamento', 'equipamentos', 'aplicacao', 'onde usa'] }\n  ] },"),
+    ("custo: parseNumBR(r.custo) != null ? parseNumBR(r.custo) : (ex ? ex.custo : null), atualizadoEm: agora",
+     "custo: parseNumBR(r.custo) != null ? parseNumBR(r.custo) : (ex ? ex.custo : null), maquinas: levMaquinasDaCelula(r.maquina, ex), atualizadoEm: agora"),
+]
+
 MODULOS = {
     'manutencao': {
         'titulo': ('<title>Manutenção Levíssima</title>', '<title>Manutenção · LEVÍSSIMA</title>'),
@@ -145,8 +185,8 @@ MODULOS = {
             ("'<span class=\"small muted\">A IA fica disponível ao usar o app pelo Claude com sua conta.</span>'", "''"),
             ("'Banco compartilhado: todos que usam este app pelo link do Claude veem os mesmos dados, ao vivo.'",
              "'Banco do LEVÍSSIMA: todos com acesso ao módulo Manutenção veem os mesmos dados, ao vivo.'"),
-        ] + TROCAS_MANUTENCAO_1710 + TROCAS_MANUTENCAO_FICHAS,
-        'inserir_antes': ('/* =====================================================================\n   Inicialização', 'manutencao-fichas.js'),
+        ] + TROCAS_MANUTENCAO_1710 + TROCAS_MANUTENCAO_FICHAS + TROCAS_MANUTENCAO_2110,
+        'inserir_antes': ('/* =====================================================================\n   Inicialização', ['manutencao-fichas.js', 'manutencao-extra.js']),
     },
     'uniformes': {
         'titulo': ('<title>Levíssima Uniformes e EPI</title>', '<title>Uniformes e EPI · LEVÍSSIMA</title>'),
@@ -200,11 +240,12 @@ def montar(saida, url=None, chave=None):
             assert s.count(a) == 1, (nome, a[:70], s.count(a))
             s = s.replace(a, b)
         if cfg.get('inserir_antes'):
-            ancora, arquivo = cfg['inserir_antes']
+            ancora, arquivos = cfg['inserir_antes']
             assert s.count(ancora) == 1, (nome, ancora)
-            extra = open(os.path.join(AQUI, arquivo), encoding='utf-8').read()
-            assert '</script' not in extra.lower(), arquivo
-            s = s.replace(ancora, extra.rstrip() + '\n\n' + ancora)
+            for arquivo in ([arquivos] if isinstance(arquivos, str) else arquivos):
+                extra = open(os.path.join(AQUI, arquivo), encoding='utf-8').read()
+                assert '</script' not in extra.lower(), arquivo
+                s = s.replace(ancora, extra.rstrip() + '\n\n' + ancora)
         s = sem_tema_escuro(s)
         i = s.lower().index('<head>') + len('<head>')
         s = s[:i] + cabeca(nome) + s[i:]

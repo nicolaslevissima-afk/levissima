@@ -26,7 +26,18 @@
   var RAIZ = (script && script.getAttribute('data-raiz')) || '../';
   var NOME_MODULO = NOMES[MODULO] || 'Módulo';
 
-  function irParaLogin() { location.replace(RAIZ + 'index.html#ir=' + encodeURIComponent(MODULO)); }
+  // o endereço com # (ex.: o QR de uma máquina: #equip=<id>) volta depois da senha (pedido de 21/10/2026)
+  var VOLTA_HASH = 'levissima-volta-' + MODULO;
+  function irParaLogin() {
+    try { if (location.hash && location.hash.length > 1) sessionStorage.setItem(VOLTA_HASH, location.hash); } catch (e) {}
+    location.replace(RAIZ + 'index.html#ir=' + encodeURIComponent(MODULO));
+  }
+  (function voltarComHash() {
+    var h = ''; try { h = sessionStorage.getItem(VOLTA_HASH) || ''; sessionStorage.removeItem(VOLTA_HASH); } catch (e) {}
+    if (h && (!location.hash || location.hash.length < 2) && /^#[A-Za-z0-9=._-]{1,120}$/.test(h)) {
+      try { history.replaceState(null, '', location.pathname + location.search + h); } catch (e) {}
+    }
+  })();
   function voltarAoInicio() { location.href = RAIZ + 'index.html'; }
 
   // ---------- quem está logado (vem do token do login) ----------
@@ -148,7 +159,7 @@
     var claims = lerToken(s.access_token);
     var meta = claims.app_metadata || (s.user && s.user.app_metadata) || {};
     var nivel = nivelNoModulo(meta, MODULO);
-    ident = { uid: claims.sub || (s.user && s.user.id) || '', nome: meta.nome || '', papel: meta.papel || '', nivel: nivel };
+    ident = { uid: claims.sub || (s.user && s.user.id) || '', nome: meta.nome || '', papel: meta.papel || '', nivel: nivel, ref: meta.ref || '', soInclui: meta.so_inclui === true };
     // acesso que exige o rosto: só entra no módulo quem passou pelo rosto neste uso do app (pedido de 18/10/2026)
     if (meta.biometria === true) {
       var rostoOk = ''; try { rostoOk = sessionStorage.getItem('levissima-rosto-ok') || ''; } catch (e) {}
@@ -173,7 +184,8 @@
     var limite = new Promise(function (ok) { setTimeout(function () { ok(null); }, 4000); });
     return Promise.race([sb.rpc('minha_identificacao').then(function (r) { return r && !r.error ? r.data : null; }, function () { return null; }), limite])
       .then(function (d) {
-        quem = Object.freeze(Object.assign(base, d && typeof d === 'object' ? d : {}));
+        // ref (quem é: 'mestre' = Nicolas) vem do login, não da identificação
+        quem = Object.freeze(Object.assign(base, d && typeof d === 'object' ? d : {}, { ref: (ident && ident.ref) || '', soInclui: !!(ident && ident.soInclui) }));
         window.LEV_QUEM = quem.nome ? quem : null;
       });
   }
@@ -236,6 +248,28 @@
       }, function () { img.alt = 'Foto indisponível'; img.classList.add('lev-foto-erro'); });
     });
   }
+  // ---------- documentos em PDF (manuais, diagramas elétricos): bucket privado "modulos-docs", pasta <módulo>/ ----------
+  var BUCKET_DOCS = 'modulos-docs', DOC_MAX = 30 * 1024 * 1024;
+  function enviarDoc(arquivo, pasta) {
+    return pronto.then(function () {
+      if (!arquivo || !(/pdf$/i.test(arquivo.type || '') || /\.pdf$/i.test(arquivo.name || ''))) throw { code: 'invalid_argument', message: 'Escolha um arquivo PDF.' };
+      if (arquivo.size > DOC_MAX) throw { code: 'invalid_argument', message: 'O PDF tem mais de 30 MB. Diminua o arquivo e tente de novo.' };
+      var caminho = MODULO + '/' + String(pasta || 'docs').replace(/[^a-z0-9-]/gi, '') + '/' + novoId() + '.pdf';
+      return sb.storage.from(BUCKET_DOCS).upload(caminho, arquivo, { contentType: 'application/pdf', upsert: false }).then(function (r) {
+        if (r.error) throw erroDe(r.error, 'envio do PDF');
+        return caminho;
+      });
+    });
+  }
+  function urlDoc(caminho) {
+    return pronto.then(function () {
+      return sb.storage.from(BUCKET_DOCS).createSignedUrl(caminho, 3600).then(function (r) { if (r.error) throw erroDe(r.error, 'abrir o PDF'); return r.data.signedUrl; });
+    });
+  }
+  function apagarDoc(caminho) {
+    return pronto.then(function () { return sb.storage.from(BUCKET_DOCS).remove([caminho]).then(function (r) { return !r.error; }, function () { return false; }); });
+  }
+
   var fotosTimer = null;
   function ligarFotos() {
     var css = document.createElement('style');
@@ -573,9 +607,16 @@
         },
         'delete': function () {
           return semPronto().then(function () {
-            return sb.from('modulo_docs').delete().eq('modulo', MODULO).eq('caminho', caminho).eq('id', id);
+            return sb.from('modulo_docs').delete().eq('modulo', MODULO).eq('caminho', caminho).eq('id', id).select('id');
           }).then(function (r) {
             if (r && r.error) throw r.error;
+            // nada apagado: ou já não existia, ou a regra do banco não deixa (ex.: chamado, só a senha mestre apaga)
+            if (r && Array.isArray(r.data) && !r.data.length) {
+              return sb.from('modulo_docs').select('id').eq('modulo', MODULO).eq('caminho', caminho).eq('id', id).then(function (v) {
+                if (v && Array.isArray(v.data) && v.data.length) throw { code: 'not_granted', message: 'O seu acesso não pode apagar este registro.' };
+                aplicar(caminho, id, null);
+              });
+            }
             aplicar(caminho, id, null);
           }).catch(function (e) { throw erroDe(e, 'exclusão'); });
         },
@@ -720,7 +761,8 @@
   window.LEVISSIMA = Object.freeze({
     modulo: MODULO, nomeModulo: NOME_MODULO, raiz: RAIZ, voltar: voltarAoInicio,
     quem: function () { return pronto.then(function () { return quem; }); },
-    fotos: Object.freeze({ preparar: prepararFoto, enviar: enviarFoto, url: urlFoto, ver: verFoto })
+    fotos: Object.freeze({ preparar: prepararFoto, enviar: enviarFoto, url: urlFoto, ver: verFoto }),
+    docs: Object.freeze({ enviar: enviarDoc, url: urlDoc, apagar: apagarDoc })
   });
 
   iniciar();
