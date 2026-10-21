@@ -139,14 +139,14 @@ const espera = (ms) => new Promise((r) => setTimeout(r, ms));
   await and.waitForTimeout(300);
   ok(/Mensagem apagada/.test(await texto(and, '#chat-conteudo .chat-msgs')) && !/Mensagem de ontem/.test(await texto(and, '#chat-conteudo .chat-msgs')), 'some na hora também para o André');
 
-  // Solicitações: editar e apagar a própria; sem reações
+  // Solicitações: editar e apagar a própria; 👍/👎 também nas solicitações (pedido de 21/10/2026)
   await aba(ang, 'solicitacoes');
   await enviar(ang, '#sol-conteudo', 'Quero um relatório');
   const idSol = idDe('Quero um relatório');
   await ang.click(bolha('#sol-conteudo', idSol) + ' .chat-txt');
   await ang.waitForTimeout(150);
   const acSol = await texto(ang, bolha('#sol-conteudo', idSol) + ' .chat-acoes');
-  ok(/Editar/.test(acSol) && /Apagar/.test(acSol) && !/👍/.test(acSol), 'Solicitações: edita e apaga a própria, sem reações');
+  ok(/Editar/.test(acSol) && /Apagar/.test(acSol) && /👍/.test(acSol) && /👎/.test(acSol), 'Solicitações: edita, apaga e reage 👍/👎');
   await ang.click(bolha('#sol-conteudo', idSol) + ' [data-chat-editar]');
   await ang.fill('#chat-texto', 'Quero um relatório das devoluções');
   await ang.press('#chat-texto', 'Escape');
