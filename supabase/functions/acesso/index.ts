@@ -57,7 +57,8 @@ type Quem = { papel: string; ref: string; soInclui: boolean };
 // ('canhotos': controle de canhotos e fotos do caminhão; 'liberar_carga': libera carga sem leitura e sem fotos)
 // e as abas que a pessoa vê ('aba:<id>', com a marca 'abas' quando a lista de abas foi escolhida).
 const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
-const PERMISSOES = ['canhotos', 'liberar_carga', 'abas'];
+// 'lider_producao' (21/10/2026): o acesso só lança a produção hora a hora (o app mostra só essa tela)
+const PERMISSOES = ['canhotos', 'liberar_carga', 'abas', 'lider_producao'];
 const ABAS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas'];
 // nível de cada aba marcada (19/10/2026): 'ver:<aba>' = só visualiza, 'inclui:<aba>' = só inclui; sem nada = edita
 const NIVEIS = ['ver', 'inclui'];

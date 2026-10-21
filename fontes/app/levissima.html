@@ -315,11 +315,13 @@
   .est-card-v { font-family: var(--font-mono); font-size: 1.375rem; font-weight: 700; color: var(--ink); }
   .est-card-s { font-size: 0.75rem; color: var(--muted); flex: 1; }
   .est-card .btn { margin-top: 8px; align-self: flex-start; }
+  .est-card .est-card-sub { align-self: flex-start; font-size: 0.75rem; padding: 2px 0; }
   @media (max-width: 559px) {
     .est-cards { grid-template-columns: 1fr; gap: 8px; }
     .est-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; padding: 10px 12px; }
     .est-card-k, .est-card-v, .est-card-s { grid-column: 1; }
     .est-card .btn { grid-column: 2; grid-row: 1 / span 3; margin: 0; align-self: center; max-width: 150px; white-space: normal; line-height: 1.2; }
+    .est-card .est-card-sub { grid-column: 1 / -1; }
   }
   .est-alertas { border: 1px solid var(--laranja); border-left: 4px solid var(--laranja); background: var(--card); border-radius: 8px; padding: 10px 12px; margin: 0 0 16px; font-size: 0.875rem; }
   .est-alertas-t { margin: 0 0 6px; font-weight: 700; color: var(--laranja-texto); }
@@ -678,6 +680,17 @@
   .ini-falta li small { display: block; color: var(--muted); }
   .ini-falta-ir { display: block; text-align: right; font-size: 0.8125rem; font-weight: 700; color: var(--danger); margin-top: 4px; }
   .mural-aniv { border-color: #F2C14E; background: #FFF8E1; }
+  /* produção hora a hora (21/10/2026) */
+  .ph-linha { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin: 0 0 8px; background: var(--card); }
+  .ph-linha-t { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+  .ph-grande { width: 100%; min-height: 56px; font-size: 1.05rem; margin: 6px 0 14px; }
+  .ph-lista { list-style: none; margin: 0 0 8px; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .ph-lista li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: baseline; padding: 9px 12px; border-top: 1px solid var(--line); }
+  .ph-lista li:first-child { border-top: 0; }
+  .ph-h { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 700; white-space: nowrap; }
+  .ph-p { min-width: 0; font-size: 0.875rem; }
+  .ph-p small { display: block; color: var(--muted); font-size: 0.75rem; }
+  .ph-q { font-family: var(--font-mono); font-weight: 700; white-space: nowrap; text-align: right; }
   .ini-conv-t { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.9375rem; }
   .ini-conv ul { list-style: none; margin: 8px 0 0; padding: 0; }
   .ini-conv-it { width: 100%; text-align: left; background: transparent; border: 0; border-top: 1px solid var(--line); padding: 8px 0; font: inherit; font-size: 0.875rem; color: var(--ink); cursor: pointer; }
@@ -1445,6 +1458,7 @@
       <button type="button" class="seg-btn" data-tab="metas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span class="tab-txt">Metas</span></button>
       <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
       <button type="button" class="seg-btn" data-tab="trocas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="tab-txt">Trocas e devoluções</span></button>
+      <button type="button" class="seg-btn" data-tab="producaohora"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><span class="tab-txt">Lançar produção</span></button>
       <button type="button" class="seg-btn" data-tab="brindes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg></span><span class="tab-txt">Brindes e presentes</span></button>
       <button type="button" class="seg-btn" data-tab="canhotos"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 11.5h6"/><path d="M9.5 16.5l1.8 1.8 3.7-3.7"/></svg></span><span class="tab-txt">Canhotos</span></button>
       <button type="button" class="seg-btn" data-tab="minhaagenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15" r="2"/></svg></span><span class="tab-txt">Minha agenda</span></button>
@@ -1539,6 +1553,10 @@
       <div class="section-head"><h2 class="section-title">Estoque por local</h2></div>
       <p class="hint" id="est-locais-hint"></p>
       <div id="est-locais-tab"></div>
+    </section>
+    <section class="drivers-admin" aria-label="Produção de hoje, hora a hora">
+      <div class="section-head"><h2 class="section-title">Produção de hoje, hora a hora</h2></div>
+      <div id="estoque-ph"></div>
     </section>
     <section class="drivers-admin" aria-label="Últimos lançamentos do estoque">
       <div class="section-head"><h2 class="section-title">Últimos lançamentos</h2></div>
@@ -1701,6 +1719,9 @@
   <div class="tab-panel hidden" id="tab-trocas">
     <div id="trocas-conteudo"></div>
   </div>
+  <div class="tab-panel hidden" id="tab-producaohora">
+    <div id="ph-conteudo"></div>
+  </div>
   <div class="tab-panel hidden" id="tab-brindes">
     <div id="br-conteudo"></div>
   </div>
@@ -1829,7 +1850,7 @@
 </div>
 <button class="fab hidden" id="btn-new">+ Novo pedido</button>
 <button class="fab" id="btn-new-carga">+ Nova carga</button>
-<button class="fab hidden" id="btn-new-entrada">+ Entrada de produção</button>
+<button class="fab hidden" id="btn-new-entrada">+ Lançar produção</button>
 </div>
 
 <div id="setor-view" class="hidden">
@@ -5987,7 +6008,7 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'producaohora', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   var ABAS_COMUNICACAO = ['minhaagenda', 'chat', 'solicitacoes']; // todo mundo do escritório tem (19 e 20/10/2026)
   // Organograma (20/10/2026): escondido de todos; a senha mestre marca em Cadastros › Equipe com senha quem vê a aba
   function podeVerOrganograma() { if (!session) return false; if (session.ref === 'mestre' || (session.role === 'admin' && !session.soInclui && !session.ref)) return true; var m = meuMembro(); return !!(m && m.veOrganograma); }
@@ -6008,13 +6029,14 @@
     return session.soInclui ? 'inclui' : 'edita';
   }
   function abasPermitidas() {
+    if (ehLiderProducao()) return ['producaohora']; // líder de produção: só lança a produção hora a hora (21/10/2026)
     if (session && session.role === 'equipe') {
       var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
       return ['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
         .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : []);
     }
     var org = podeVerOrganograma(), brd = podeVerBrindes();
-    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd); });
+    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd) && t !== 'producaohora'; });
   }
   function abaPadrao(permitidas) { return permitidas.indexOf('cargas') >= 0 ? 'cargas' : permitidas[0]; }
   function applyTab() {
@@ -6041,6 +6063,7 @@
     if (ui.tab === 'canhotos') renderCanhotos();
     if (ui.tab === 'trocas') renderTrocas();
     if (ui.tab === 'brindes') renderBrindes();
+    if (ui.tab === 'producaohora') renderProducaoHora();
     if (ui.tab !== 'chat' && ui.tab !== 'solicitacoes') chat.montada = '';
     if (ui.tab === 'chat' || ui.tab === 'solicitacoes' || ui.tab === 'minhaagenda') { ligarComunicacao(); carregarPessoasChat(); }
     if (ui.tab === 'minhaagenda') renderMinhaAgenda();
@@ -10974,7 +10997,8 @@
       '<div class="est-card c-entrada"><span class="est-card-k">1 · Entrada de produção</span>' +
         '<span class="est-card-v">' + (palHoje ? '+ ' + fmtPal(palHoje) + ' pal' : '—') + '</span>' +
         '<span class="est-card-s">' + (entradasHoje.length ? 'produzido hoje (' + entradasHoje.length + (entradasHoje.length === 1 ? ' lançamento)' : ' lançamentos)') : 'nada lançado hoje') + '</span>' +
-        '<button type="button" class="btn btn-primary btn-sm" data-est="entrada">+ Lançar produção</button></div>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-est="entrada">+ Lançar produção (hora a hora)</button>' +
+        '<button type="button" class="btn-text est-card-sub" data-est="entrada-paletes">ou lançar em paletes, sem a hora</button></div>' +
       '<div class="est-card c-saldo"><span class="est-card-k">2 · Saldo em estoque</span>' +
         '<span class="est-card-v">' + (comSaldo.length ? fmtPal(palAtual) + ' pal' : '—') + '</span>' +
         '<span class="est-card-s">' + (ultCont ? 'última contagem em ' + escapeHtml(formatDateTimeBR(ultCont.em)) : 'faça a primeira contagem') + '</span>' +
@@ -11032,7 +11056,8 @@
   document.getElementById('estoque-cards').addEventListener('click', function(e) {
     var b = e.target.closest('[data-est]');
     if (!b) return;
-    if (b.dataset.est === 'entrada') openEstoqueForm('entrada');
+    if (b.dataset.est === 'entrada') abrirProducaoHora();
+    else if (b.dataset.est === 'entrada-paletes') openEstoqueForm('entrada');
     else if (b.dataset.est === 'contagem') openEstoqueForm('contagem');
     else if (b.dataset.est === 'dias') { var s = document.getElementById('estoque-dias-sec'); if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
@@ -11042,6 +11067,8 @@
     renderEstoquePainel(planoE);
     renderCronogramaSaida(planoE);
     renderEstoqueLocais();
+    renderProducaoHoraEstoque();
+    if (ui.tab === 'producaohora') renderProducaoHora();
     var movs = estoqueMovs.slice().sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); }).slice(0, 30);
     document.getElementById('estoque-movs').innerHTML = movs.length ? movs.map(function(m) {
       if (confirmDeleteMov === m.id) {
@@ -11052,7 +11079,7 @@
       var p = findProduto(m.produtoId);
       var u = m.unidade || unidadeDe(p);
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml((p ? p.nome : m.produtoNome) || '—') +
-          '<span class="driver-tel">' + escapeHtml(formatDateTimeBR(m.em) + ' · ' + (m.tipo === 'contagem' ? 'contagem' : 'entrada de produção') + (m.obs ? ' · ' + m.obs : '')) + '</span></span>' +
+          '<span class="driver-tel">' + escapeHtml(formatDateTimeBR(m.em) + ' · ' + (m.tipo === 'contagem' ? 'contagem' : m.porHora ? 'produção de ' + formatDateBR(m.data).slice(0, 5) + ' ' + m.hora + '–' + (m.horaFim || '') + (m.marca ? ' · ' + m.marca : '') + (m.lider ? ' · por ' + m.lider.nome : '') : 'entrada de produção') + (m.obs ? ' · ' + m.obs : '')) + '</span></span>' +
         '<span class="mov-qtd ' + (m.tipo === 'contagem' ? '' : 'figure-teal') + '">' + (m.tipo === 'contagem' ? '= ' : '+ ') + escapeHtml(qtdUnidade(m.quantidade, u)) + '</span>' +
         '<button class="btn-text danger" data-action="delete-mov" data-id="' + escapeHtml(m.id) + '">Excluir</button></div>';
     }).join('') : '<p class="empty-state">Nenhum lançamento ainda. Comece pela contagem do estoque.</p>';
@@ -11091,7 +11118,7 @@
     document.getElementById('estoque-sheet-overlay').classList.remove('hidden');
   }
   function closeEstoqueForm() { document.getElementById('estoque-sheet-overlay').classList.add('hidden'); estCont = null; }
-  document.getElementById('btn-new-entrada').addEventListener('click', function() { openEstoqueForm('entrada'); });
+  document.getElementById('btn-new-entrada').addEventListener('click', function() { abrirProducaoHora(); });
   document.getElementById('btn-close-estoque-sheet').addEventListener('click', closeEstoqueForm);
   document.getElementById('btn-estoque-cancel').addEventListener('click', closeEstoqueForm);
   document.getElementById('estoque-sheet-overlay').addEventListener('click', function(e) {
@@ -17447,7 +17474,7 @@
   function iconeDaAba(t) { var i = document.querySelector('#admin-tabs .seg-btn[data-tab="' + t + '"] .tab-ico'); return i ? i.innerHTML : ''; }
   var INI_ATALHOS = [
     { tab: 'cargas', txt: 'Nova carga', fn: function() { openCargaForm(null); } },
-    { tab: 'estoque', txt: 'Entrada de produção', fn: function() { document.getElementById('btn-new-entrada').click(); } },
+    { tab: 'estoque', txt: 'Lançar produção (hora a hora)', fn: function() { document.getElementById('btn-new-entrada').click(); } },
     { tab: 'producao', txt: 'Ordem de produção', fn: function() { abrirOpForm(null); } },
     { tab: 'estoque', txt: 'Programar saída', fn: function() { spAbrir(null, 'levissima'); } },
     { tab: 'materia', txt: 'Agendar entrega de insumo', fn: function() { abrirAgendamento(null, null); } },
@@ -18537,7 +18564,8 @@
   // =====================================================================================================
   // ACESSO AO APP DE CADA PESSOA DA EQUIPE (pedido de 19/10/2026): dentro de Cadastros › Equipe com senha, cada nome
   // tem a senha própria de acesso ao app (ref escritorio:<id da pessoa>) e caixas de assinalar do que ela acessa.
-  var PERMISSOES_ESPECIAIS = [['canhotos', 'Canhotos e fotos do caminhão (aba Canhotos)'], ['liberar_carga', 'Libera carga sem leitura do código de barras e sem fotos do caminhão']];
+  var PERMISSOES_ESPECIAIS = [['canhotos', 'Canhotos e fotos do caminhão (aba Canhotos)'], ['liberar_carga', 'Libera carga sem leitura do código de barras e sem fotos do caminhão'],
+    ['lider_producao', 'Líder de produção: só lança a produção hora a hora (não vê o resto do app)']];
   var acessoFormPendente = false;
   function gereAcessos() { return mode === 'db' && !!session && session.role === 'admin' && !session.soInclui; }
   function acessoDoMembro(m) {
@@ -18557,7 +18585,7 @@
     var sv = ABAS_EQUIPE.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0 && l.indexOf('ver:' + a[0]) >= 0; }).length;
     var si = ABAS_EQUIPE.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0 && l.indexOf('inclui:' + a[0]) >= 0; }).length;
     return [abas + (abas === 1 ? ' aba' : ' abas') + (sv ? ' (' + sv + ' só vê' + (si ? ', ' + si + ' só inclui' : '') + ')' : si ? ' (' + si + ' só inclui)' : ''), mods ? mods + (mods === 1 ? ' módulo' : ' módulos') : '',
-      l.indexOf('canhotos') >= 0 ? 'Canhotos' : '', l.indexOf('liberar_carga') >= 0 ? 'Libera carga' : ''].filter(Boolean).join(' · ');
+      l.indexOf('canhotos') >= 0 ? 'Canhotos' : '', l.indexOf('liberar_carga') >= 0 ? 'Libera carga' : ''].filter(Boolean).join(' · ').replace(/^.*$/, function(t) { return l.indexOf('lider_producao') >= 0 ? 'Líder de produção (só lança a produção)' : t; });
   }
   function renderAcessoChecks(lista) {
     function tem(k) { return lista.indexOf(k) >= 0; }
@@ -18584,6 +18612,9 @@
     if (u2 && !u2.checked) { var g2 = document.querySelector('#equipe-acesso-checks [data-acesso-gerir="' + u2.dataset.acesso + '"]'); if (g2) g2.checked = false; }
   });
   function lerAcessoChecks() {
+    // líder de produção: só a tela de lançar a produção (no banco, só inclui no estoque)
+    var lider = document.querySelector('#equipe-acesso-checks [data-acesso="lider_producao"]');
+    if (lider && lider.checked) return ['abas', 'aba:estoque', 'inclui:estoque', 'lider_producao'];
     var out = ['abas'];
     Array.prototype.forEach.call(document.querySelectorAll('#equipe-acesso-checks [data-acesso]'), function(i) { if (i.checked) out.push(i.dataset.acesso); });
     Array.prototype.forEach.call(document.querySelectorAll('#equipe-acesso-checks [data-acesso-nivel]'), function(sel) {
@@ -20327,6 +20358,134 @@
       brGravar(x.id, null, true).then(function() { showToast('Ideia apagada.'); }).catch(falha);
     }
   });
+
+  // =====================================================================================================
+  // PRODUÇÃO HORA A HORA (pedido de 21/10/2026): a entrada de produção passa a ser lançada por hora, como no formulário
+  // que a fábrica já usa — hora, marca (rótulo), produto e quantidade produzida na hora. Cada lançamento é uma entrada
+  // no estoque (coleção "estoque", tipo "entrada", com hora, marca e quem lançou). O acesso de líder de produção
+  // (Cadastros › Equipe › acesso › "Líder de produção") só vê esta tela.
+  var PH_MARCA_PADRAO = 'Levíssima';
+  function phMarcas() { return [PH_MARCA_PADRAO].concat(MARCAS_V3.map(function(m) { return m.marca; })); }
+  function phMarcaDoProduto(p) {
+    var n = normNome(p && p.nome);
+    var m = MARCAS_V3.find(function(x) { return n.indexOf(normNome(x.marca)) === 0; });
+    return m ? m.marca : PH_MARCA_PADRAO;
+  }
+  function phNomeSemMarca(p) {
+    var mk = phMarcaDoProduto(p), nome = String((p && p.nome) || '');
+    return mk !== PH_MARCA_PADRAO && nome.toLowerCase().indexOf(mk.toLowerCase()) === 0 ? nome.slice(mk.length).trim() : nome;
+  }
+  function phProdutosDaMarca(mk) { return produtosOrdenados().filter(function(p) { return p.ativo !== false && phMarcaDoProduto(p) === mk; }); }
+  function phHoraTxt(h) { return pad2(h) + ':00 às ' + pad2((h + 1) % 24) + ':00'; }
+  function phHoraAnterior() { var h = new Date().getHours(); return (h + 23) % 24; }
+  function ehLiderProducao() { return !!session && session.role === 'equipe' && temPermissao('lider_producao'); }
+  function phLancamentosDoDia(dia) {
+    return estoqueMovs.filter(function(m) { return m.tipo === 'entrada' && m.porHora && m.data === dia; })
+      .sort(function(a, b) { return String(a.hora || '').localeCompare(String(b.hora || '')) || String(a.em || '').localeCompare(String(b.em || '')); });
+  }
+  function phLinhaHtml(r, i) {
+    var prods = phProdutosDaMarca(r.marca);
+    var p = findProduto(r.produtoId);
+    return '<div class="ph-linha" data-i="' + i + '"><div class="ph-linha-t"><b>' + (i + 1) + '.</b>' + (ger.linhas.length > 1 ? '<button type="button" class="btn-text danger" data-ger="ph-tirar" data-i="' + i + '">Tirar</button>' : '') + '</div>' +
+      '<div class="row-2"><label>Hora <span class="req">*</span><select class="ph-hora" data-i="' + i + '">' + Array.apply(null, Array(24)).map(function(x, h) { return '<option value="' + h + '"' + (h === r.hora ? ' selected' : '') + '>' + phHoraTxt(h) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Marca (rótulo) <span class="req">*</span><select class="ph-marca" data-i="' + i + '">' + phMarcas().map(function(m) { return '<option' + (m === r.marca ? ' selected' : '') + '>' + escapeHtml(m) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div class="row-2"><label>Produto <span class="req">*</span><select class="ph-prod" data-i="' + i + '"><option value="">— escolha —</option>' + prods.map(function(x) { return '<option value="' + escapeHtml(x.id) + '"' + (x.id === r.produtoId ? ' selected' : '') + '>' + escapeHtml(phNomeSemMarca(x)) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Quantidade na hora <span class="req">*</span><input type="number" class="ph-qtd" data-i="' + i + '" min="0" step="1" inputmode="numeric" value="' + escapeHtml(r.quantidade) + '" placeholder="' + escapeHtml(p ? unidadeDe(p) : 'quantidade') + '" /></label></div></div>';
+  }
+  function phRenderLinhas() { var box = document.getElementById('ph-linhas'); if (box && ger && ger.linhas) box.innerHTML = ger.linhas.map(phLinhaHtml).join(''); }
+  function phLerLinhas() {
+    if (!ger || !ger.linhas) return;
+    document.querySelectorAll('#ph-linhas .ph-linha').forEach(function(el) {
+      var r = ger.linhas[Number(el.dataset.i)]; if (!r) return;
+      r.hora = Number(el.querySelector('.ph-hora').value); r.marca = el.querySelector('.ph-marca').value; r.produtoId = el.querySelector('.ph-prod').value; r.quantidade = el.querySelector('.ph-qtd').value;
+    });
+  }
+  function abrirProducaoHora() {
+    // já vem com a marca e o produto do último lançamento desta pessoa hoje (o mais recente, não a hora mais tarde)
+    var ult = phLancamentosDoDia(todayIso()).filter(function(m) { return m.lider && m.lider.ref === minhaRef(); })
+      .sort(function(x, y) { return String(x.em || '').localeCompare(String(y.em || '')); }).pop();
+    var base = { hora: phHoraAnterior(), marca: ult ? ult.marca || PH_MARCA_PADRAO : PH_MARCA_PADRAO, produtoId: ult ? ult.produtoId : '', quantidade: '' };
+    gerAbrir({
+      titulo: 'Lançar produção (hora a hora)', botao: 'Salvar produção', linhas: [base], confirmarRepetido: false,
+      html: '<p class="hint">Uma linha por hora: a hora, a marca (rótulo), o produto e quanto foi produzido naquela hora. Entra no estoque na hora.</p>' +
+        '<label>Dia <input type="date" id="ph-data" value="' + escapeHtml(todayIso()) + '" max="' + escapeHtml(todayIso()) + '" /></label>' +
+        '<div id="ph-linhas"></div><button type="button" class="btn-text" data-ger="ph-mais">+ outra hora</button>' +
+        '<label>Observação <span class="opt">(opcional: parada, troca de rótulo…)</span><input type="text" id="ph-obs" maxlength="200" autocomplete="off" /></label>' +
+        '<p class="field-hint">Lançado por <b>' + escapeHtml(quemSessao()) + '</b>.</p>',
+      depois: phRenderLinhas,
+      change: function(t) {
+        if (t.classList.contains('ph-marca')) { phLerLinhas(); var r = ger.linhas[Number(t.dataset.i)]; if (r) { r.produtoId = ''; } phRenderLinhas(); }
+        else if (t.closest && t.closest('#ph-linhas')) phLerLinhas();
+        if (ger.confirmarRepetido) { ger.confirmarRepetido = false; document.getElementById('btn-ger-submit').textContent = 'Salvar produção'; }
+      },
+      input: function(t) {
+        if (t.closest && t.closest('#ph-linhas')) phLerLinhas();
+        if (ger.confirmarRepetido) { ger.confirmarRepetido = false; document.getElementById('btn-ger-submit').textContent = 'Salvar produção'; }
+      },
+      acao: function(a, b) {
+        phLerLinhas();
+        if (a === 'ph-mais') { var u = ger.linhas[ger.linhas.length - 1]; ger.linhas.push({ hora: (u.hora + 1) % 24, marca: u.marca, produtoId: u.produtoId, quantidade: '' }); phRenderLinhas(); }
+        else if (a === 'ph-tirar') { ger.linhas.splice(Number(b.dataset.i), 1); phRenderLinhas(); }
+      },
+      salvar: function() {
+        phLerLinhas();
+        var dia = gerVal('ph-data') || todayIso(), obs = gerVal('ph-obs'), agora = new Date().toISOString(), lista = [], erro = '', vistos = {};
+        if (dia > todayIso()) return gerErro('O dia não pode ser no futuro.');
+        ger.linhas.forEach(function(r, i) {
+          if (erro) return;
+          var q = numCampo(r.quantidade), p = findProduto(r.produtoId);
+          if (!p && !q) return;
+          if (!p) { erro = 'Escolha o produto da linha ' + (i + 1) + '.'; return; }
+          if (q === null || q <= 0) { erro = 'Informe a quantidade produzida na linha ' + (i + 1) + ' (' + phHoraTxt(r.hora) + ').'; return; }
+          var k = r.hora + '|' + p.id;
+          if (vistos[k]) { erro = 'A hora ' + phHoraTxt(r.hora) + ' de ' + p.nome + ' está duas vezes.'; return; }
+          vistos[k] = true;
+          lista.push({ tipo: 'entrada', porHora: true, produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), quantidade: Math.round(q), data: dia, hora: pad2(r.hora) + ':00', horaFim: pad2((r.hora + 1) % 24) + ':00',
+            marca: r.marca, lider: { nome: quemSessao(), ref: minhaRef() }, em: agora, obs: obs, criadoEm: agora });
+        });
+        if (erro) return gerErro(erro);
+        if (!lista.length) return gerErro('Informe ao menos uma hora: produto e quantidade.');
+        var jaTem = lista.filter(function(x) { return phLancamentosDoDia(dia).some(function(m) { return m.hora === x.hora && m.produtoId === x.produtoId; }); });
+        if (jaTem.length && !ger.confirmarRepetido) {
+          ger.confirmarRepetido = true;
+          document.getElementById('btn-ger-submit').textContent = 'Salvar mesmo assim';
+          return gerErro('Já tem lançamento de ' + jaTem.map(function(x) { return x.hora + ' (' + x.produtoNome + ')'; }).join(', ') + ' neste dia. Confira para não lançar duas vezes; se for outra parte da produção, toque em “Salvar mesmo assim”.');
+        }
+        return addEstoqueMovs(lista).then(function() {
+          var tot = lista.reduce(function(a, x) { return a + x.quantidade; }, 0);
+          showToast('Produção lançada: ' + lista.length + (lista.length === 1 ? ' hora' : ' horas') + ' · ' + fmtInt(tot) + ' no total.');
+          if (ui.tab === 'producaohora') renderProducaoHora();
+        });
+      }
+    });
+  }
+  // quadro do dia: cada hora, o que foi produzido (marca, produto, quantidade, quem lançou)
+  function phQuadroHtml(dia, so) {
+    var l = phLancamentosDoDia(dia).filter(function(m) { return !so || (m.lider && m.lider.ref === so); });
+    if (!l.length) return '<p class="empty-state">' + (so ? 'Você ainda não lançou a produção de hoje.' : 'Nenhuma produção lançada hora a hora hoje.') + '</p>';
+    var porProd = {}, ordem = [];
+    function nomeDe(m) { var p = findProduto(m.produtoId); return (m.marca || PH_MARCA_PADRAO) + ' · ' + (p ? phNomeSemMarca(p) : m.produtoNome); }
+    l.forEach(function(m) { var k = nomeDe(m); if (!porProd[k]) { porProd[k] = { q: 0, u: m.unidade }; ordem.push(k); } porProd[k].q += Number(m.quantidade) || 0; });
+    return '<ul class="ph-lista">' + l.map(function(m) {
+      return '<li><span class="ph-h">' + escapeHtml(m.hora + '–' + (m.horaFim || '')) + '</span><span class="ph-p">' + escapeHtml(nomeDe(m)) +
+        (so ? '' : '<small>' + escapeHtml((m.lider && m.lider.nome) || '—') + (m.obs ? ' · ' + escapeHtml(m.obs) : '') + '</small>') + '</span>' +
+        '<span class="ph-q">' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + '</span></li>';
+    }).join('') + '</ul><p class="field-hint"><b>Total do dia:</b> ' + ordem.map(function(k) { return escapeHtml(k) + ' ' + escapeHtml(qtdUnidade(porProd[k].q, porProd[k].u)); }).join(' · ') + '</p>';
+  }
+  function renderProducaoHora() {
+    var box = document.getElementById('ph-conteudo');
+    if (!box || !session) return;
+    var hoje = todayIso();
+    box.innerHTML = '<p class="tagline">Lance a produção de <b>cada hora</b>: hora, marca (rótulo), produto e quantidade. Entra direto no estoque.</p>' +
+      '<button type="button" class="btn btn-primary ph-grande" data-ph="lancar">+ Lançar a produção da hora</button>' +
+      '<h3 class="q-plano-t">Hoje · ' + escapeHtml(formatDateBR(hoje)) + '</h3>' + phQuadroHtml(hoje, null);
+  }
+  document.getElementById('tab-producaohora').addEventListener('click', function(e) { if (e.target.closest('[data-ph="lancar"]')) abrirProducaoHora(); });
+  function renderProducaoHoraEstoque() {
+    var el = document.getElementById('estoque-ph');
+    if (!el) return;
+    el.innerHTML = phQuadroHtml(todayIso(), null);
+  }
 
   // ---------- init ----------
   function preenchido(v) { return !!v && String(v).indexOf('COLE' + '_AQUI') === -1; } // (o marcador é montado em partes de propósito)
