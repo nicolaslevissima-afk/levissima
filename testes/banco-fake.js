@@ -80,7 +80,13 @@ function criarBanco() {
       apagada: false, apagada_em: null, apagada_por: null, editada_em: null, reacoes: {} }, dados);
     b.chat.push(m); eventos('chat_msgs', 'INSERT', m, null); return copia(m);
   }
-  // mesmas regras das funções do banco (0019, 0023, 0025)
+  function citar(row, p) {
+    if (p.p_responde == null) return row;
+    const c = b.chat.find((m) => m.id === p.p_responde && m.tipo === row.tipo && m.conversa === row.conversa);
+    if (!c) return row;
+    return atualizarMsg(msgAtual(row.id), { responde: c.id, responde_texto: c.apagada ? '(mensagem apagada)' : String(c.texto).slice(0, 160), responde_de_nome: c.de_nome });
+  }
+  // mesmas regras das funções do banco (0019, 0023, 0025, 0027)
   const RPC = {
     doc_gravar: (p) => ({ data: docSet({ colecao: p.p_colecao, id: p.p_id, dados: p.p_dados, mesclar: p.p_mesclar, uniao: p.p_uniao }) }),
     doc_atualizar: (p) => { const a = b.docs.get(p.p_colecao + '/' + p.p_id); return { data: gravarDoc(p.p_colecao, p.p_id, mesclarCaminhos(a ? a.data : {}, p.p_dados)) }; },
@@ -101,6 +107,15 @@ function criarBanco() {
       const t = String(p.p_texto || '').trim(); if (!t) return erro('texto');
       if (eu.ref === 'mestre') return { data: novaMsg({ tipo: 'sol', conversa: p.p_conversa, de: 'mestre', de_nome: eu.nome, para: p.p_conversa, texto: t }) };
       return { data: novaMsg({ tipo: 'sol', conversa: eu.ref, de: eu.ref, de_nome: eu.nome, para: 'mestre', texto: t }) };
+    },
+    // 0027: responder uma mensagem (responde + trecho) e número de cada solicitação de quem pede
+    chat_enviar2: (p, eu) => { const r = RPC.chat_enviar(p, eu); return r.data ? { data: citar(r.data, p) } : r; },
+    sol_enviar2: (p, eu) => {
+      const r = RPC.sol_enviar(p, eu); if (!r.data) return r;
+      const extra = {};
+      if (eu.ref !== 'mestre') extra.numero = b.chat.filter((m) => m.tipo === 'sol' && m.conversa === r.data.conversa && m.de !== 'mestre' && m.id !== r.data.id).reduce((a, m) => Math.max(a, m.numero || 0), 0) + 1;
+      if (Object.keys(extra).length) atualizarMsg(msgAtual(r.data.id), extra);
+      return { data: citar(Object.assign(r.data, extra), p) };
     },
     chat_lidas: (p, eu) => { let n = 0; b.chat.forEach((m) => { if (m.para === eu.ref && m.tipo === p.p_tipo && m.conversa === p.p_conversa && !m.lida) { atualizarMsg(m, { lida: true, lida_em: new Date().toISOString() }); n++; } }); return { data: n }; },
     sol_resolvido: (p, eu) => { const m = msgAtual(p.p_id); if (!m || m.tipo !== 'sol' || m.de !== 'mestre' || !(m.para === eu.ref || eu.ref === 'mestre')) return erro('permissao'); return { data: atualizarMsg(m, { resolvido: p.p_resolvido, resolvido_em: new Date().toISOString() }) }; },
@@ -123,7 +138,7 @@ function criarBanco() {
       if (!chatPode(eu)) return erro('permissao');
       const r = p.p_reacao == null ? null : String(p.p_reacao).trim() || null;
       if (r && r !== '👍' && r !== '👎') return erro('reacao');
-      const m = msgAtual(p.p_id); if (!m || m.tipo !== 'chat' || !(m.de === eu.ref || m.para === eu.ref)) return erro('permissao');
+      const m = msgAtual(p.p_id); if (!m || (m.tipo !== 'chat' && m.tipo !== 'sol') || !(m.de === eu.ref || m.para === eu.ref)) return erro('permissao');
       if (m.apagada) return erro('apagada');
       const reacoes = Object.assign({}, m.reacoes); if (r) reacoes[eu.ref] = r; else delete reacoes[eu.ref];
       return { data: atualizarMsg(m, { reacoes }) };

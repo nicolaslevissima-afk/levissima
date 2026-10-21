@@ -798,6 +798,14 @@
   .chat-reacao { display: inline-flex; align-items: center; gap: 2px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: 0.8125rem; padding: 1px 8px; min-height: 0; border-radius: 999px; cursor: pointer; }
   span.chat-reacao { cursor: default; }
   .chat-reacao.minha { border-color: var(--wood); background: rgba(var(--wood-rgb), 0.12); }
+  /* responder uma mensagem e número da solicitação (21/10/2026) */
+  .chat-cita { display: block; width: 100%; text-align: left; border: 0; border-left: 3px solid var(--wood); background: rgba(var(--wood-rgb), 0.08); color: var(--ink); font: inherit; font-size: 0.8125rem; line-height: 1.3; padding: 4px 8px; margin: 0 0 4px; border-radius: 6px; cursor: pointer; min-height: 0; }
+  .chat-cita b { display: block; font-size: 0.75rem; color: var(--wood-dark, var(--wood)); }
+  .chat-cita span { display: block; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-respondendo { display: flex; align-items: center; gap: 8px; border-left: 3px solid var(--wood); background: rgba(var(--wood-rgb), 0.08); padding: 6px 8px; border-radius: 6px; font-size: 0.8125rem; }
+  .chat-respondendo > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-bolha.destaque { box-shadow: 0 0 0 3px var(--laranja); transition: box-shadow 0.3s; }
+  .sol-num { font-weight: 800; margin-right: 4px; }
   .chat-escrever { flex-wrap: wrap; }
   .chat-editando { flex-basis: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 0.8125rem; color: var(--ink); background: rgba(255, 106, 19, 0.12); border-left: 3px solid var(--laranja); border-radius: 6px; padding: 4px 8px; }
   .chat-editando.hidden { display: none; }
@@ -15827,6 +15835,9 @@
   }
   function ocVisiveis() { return ordensCompra.filter(ocVeCompleta); }
   function ocPodeComprar(m) { return !!m && (!!m.compras || aprovaCompraFinal(m)); }
+  // gestão: coordenador, supervisor, gerente, diretoria (ou área Gestão) — o pedido dela já sai autorizado
+  function ocDaGestao(m) { return !!m && (autorizaAntesCotacao(m) || aprovaCompraFinal(m) || normNome(m.area) === normNome('Gestão')); }
+  function ocNomesCotacao() { var l = []; equipe.forEach(function(m) { if (m.compras) { var n = primeiroNome(m.nomeCompleto || m.nome); if (n && l.indexOf(n) < 0) l.push(n); } }); return l.join(' ou '); }
   function ocNomesCompra() {
     var l = [];
     equipe.filter(ocPodeComprar).sort(function(a, b) { return (b.compras ? 1 : 0) - (a.compras ? 1 : 0) || String(a.nome).localeCompare(String(b.nome), 'pt-BR'); })
@@ -16015,7 +16026,7 @@
     var nomes = membrosConvidaveis().map(function(m) { return m.nome; }), eu = ocEu();
     gerAbrir({
       titulo: 'Novo pedido de compra', botao: 'Enviar pedido', itens: [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }],
-      html: '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para um coordenador ou supervisor autorizar.</p>' +
+      html: '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para um coordenador ou supervisor autorizar' + (eu && ocDaGestao(eu.m) ? ' — <b>como você é da gestão, ele já sai autorizado e vai direto para a cotação</b>' : '; pedido de quem é da gestão já vai direto para a cotação') + '.</p>' +
         '<div class="row-2"><label>Setor <span class="req">*</span><select id="oc-setor"><option value="">— escolha —</option>' + SETORES_SALA.map(function(x) { return '<option>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
         '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente">Urgente</option></select></label></div>' +
         '<div id="oc-itens"></div><button type="button" class="btn-text" data-ger="it-add">+ outro item</button>' +
@@ -16058,6 +16069,9 @@
         function gravar(quem) {
           var agora = new Date().toISOString();
           dados.pedido = Object.assign({ ref: minhaRef() }, quem); dados.numero = ocProximoNumero(); dados.criadoEm = agora; dados.atualizadoEm = agora;
+          // pedido de quem é da gestão: a autorização (etapa 2) é automática e vai direto para a cotação (pedido de 21/10/2026)
+          var gestao = ocDaGestao(quem.id ? equipe.find(function(x) { return x.id === quem.id; }) : null) || (!quem.id && session && session.role === 'admin' && !quem.semSenha);
+          if (gestao) { dados.status = 'cotacao'; dados.coord = { nome: quem.nome, id: quem.id || '', ref: minhaRef(), em: agora, decisao: 'aprovado', automatica: true, obs: 'Autorização automática: pedido de quem é da gestão' }; }
           var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
           // fotos de cada item (até 3): sobem antes, no bucket "compras", pasta compras/<OC>/
           var ocId = mode === 'db' && db ? db.collection(OC_COL).doc().id : null;
@@ -16068,7 +16082,7 @@
             arqs.forEach(function(f, k) { envio = envio.then(function() { return enviarFotoBucket(BUCKET_COMPRAS, 'compras/' + ocId + '/' + (ix + 1) + '-' + (k + 1) + '-' + uid(), f).then(function(c) { it.fotos.push(c); }); }); });
           });
           envio.then(function() { return ocId ? db.collection(OC_COL).doc(ocId).set(dados) : ocGravar(null, dados); })
-            .then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + '. Agora é com o coordenador ou supervisor (' + setor + ').'); })
+            .then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + (gestao ? '. Pedido da gestão: autorizado na hora, agora é a cotação com compras' + (ocNomesCotacao() ? ' (' + ocNomesCotacao() + ')' : '') + '.' : '. Agora é com o coordenador ou supervisor (' + setor + ').')); })
             .catch(function(err) { btn.disabled = false; if (err && err.codigo === 'grande') gerErro('Foto grande demais (máximo 8 MB).'); else if (err && !err.codigo && !/permission|42501|row-level/i.test(String(err.message || ''))) gerErro('Não foi possível enviar as fotos ou o pedido agora. Verifique a internet e tente de novo.'); else falhaOc(err); });
         }
         if (membro) ocAssinar('nome', 'está na equipe', 'Assinar o pedido', '', function(m) { return m.id === membro.id ? null : 'Essa senha não é de ' + membro.nome + '.'; },
@@ -18906,14 +18920,14 @@
 
   // ----- mensagens: Chat e Solicitações -----
   var chat = { msgs: [], carregado: false, carregando: false, canal: null, de: null, pessoas: null, pessoasEm: 0, aberta: null, solAberta: null, rascunho: {}, montada: '', enviando: false,
-    acoesMsg: null, editando: null, antesDaEdicao: '' }; // acoesMsg: mensagem com as ações abertas; editando: { id }
+    acoesMsg: null, editando: null, antesDaEdicao: '', respondendo: null }; // acoesMsg: mensagem com as ações abertas; editando: { id }; respondendo: id da mensagem citada
   function chatLigar() {
     if (!comunicacaoLigada()) return;
     var ref = minhaRef();
     if (chat.de === ref && (chat.carregado || chat.carregando)) return;
     if (chat.canal) { try { sbCliente.removeChannel(chat.canal); } catch (e) {} chat.canal = null; }
     chat.de = ref; chat.msgs = []; chat.carregado = false; chat.carregando = true; chat.pessoas = null; chat.aberta = null; chat.solAberta = null; chat.montada = '';
-    chat.acoesMsg = null; chat.editando = null; chat.antesDaEdicao = '';
+    chat.acoesMsg = null; chat.editando = null; chat.antesDaEdicao = ''; chat.respondendo = null;
     chat.pend = [];
     chat.canal = sbCliente.channel('levissima-chat-' + ref.replace(/[^a-z0-9]/gi, '')).on('postgres_changes', { event: '*', schema: 'public', table: 'chat_msgs' }, function(p) {
       var row = p && p.new && p.new.id != null ? p.new : null;
@@ -18956,9 +18970,9 @@
     if (nova) { chat.msgs.push(row); chat.msgs.sort(function(a, b) { return a.id - b.id; }); } else chat.msgs[i] = row;
     if (nova && avisar && row.para === minhaRef()) chatAvisarNova(row);
     // reagiram à minha mensagem (com a conversa fechada): avisa
-    if (!nova && avisar && antes && row.tipo === 'chat' && row.de === minhaRef()) {
+    if (!nova && avisar && antes && row.de === minhaRef()) {
       var r1 = reacaoDe(row, row.para);
-      if (r1 && r1 !== reacaoDe(antes, row.para) && !chatVendo('chat', row.para)) showToast(r1 + ' ' + pessoaNome(row.para) + ' reagiu à sua mensagem.');
+      if (r1 && r1 !== reacaoDe(antes, row.para) && !chatVendo(row.tipo, row.para)) showToast(r1 + ' ' + pessoaNome(row.para) + ' reagiu à sua ' + (row.tipo === 'sol' ? 'solicitação' : 'mensagem') + '.');
     }
     chatAtualizarTela();
   }
@@ -19009,14 +19023,14 @@
     return msgs.map(function(m) {
       var minha = m.de === eu, dia = diaLocal(m.criado_em), sep = '';
       // editar e apagar: cada um, a própria mensagem, a qualquer hora; a senha mestre apaga qualquer uma das conversas
-      // dela; reagir com 👍/👎: só no Chat (pedidos de 20/10/2026)
-      var podeApagar = !m.apagada && (souMestre || minha), podeEditar = !m.apagada && minha, podeReagir = !m.apagada && tipo === 'chat';
+      // dela (20/10/2026); reagir com 👍/👎 e responder: Chat e Solicitações (21/10/2026)
+      var podeApagar = !m.apagada && (souMestre || minha), podeEditar = !m.apagada && minha, podeReagir = !m.apagada, podeResponder = !m.apagada;
       if (dia && dia !== ultimoDia) { ultimoDia = dia; sep = '<div class="chat-dia">' + escapeHtml(dia === todayIso() ? 'Hoje' : dia === addDiasIso(todayIso(), -1) ? 'Ontem' : formatDateBR(dia)) + '</div>'; }
       var res = '';
       if (m.apagada) {
         return sep + '<div class="chat-bolha apagada ' + (minha ? 'eu' : 'outro') + '"><div class="chat-txt">🚫 Mensagem apagada' + (m.apagada_por === 'mestre' && m.de !== 'mestre' ? ' pelo Nicolas' : '') + '</div><span class="chat-hora">' + escapeHtml(horaMsg(m.criado_em)) + '</span></div>';
       }
-      var temAcoes = podeApagar || podeEditar || podeReagir, aberta = temAcoes && chat.acoesMsg === m.id;
+      var temAcoes = podeApagar || podeEditar || podeReagir || podeResponder, aberta = temAcoes && chat.acoesMsg === m.id;
       var editando = chat.editando && chat.editando.id === m.id;
       if (tipo === 'sol' && m.de === 'mestre') {
         if (!souMestre) {
@@ -19028,18 +19042,28 @@
       var minhaR = reacaoDe(m, eu), acoes = '';
       if (aberta) {
         acoes = '<div class="chat-acoes" role="group" aria-label="Ações da mensagem">' +
+          (podeResponder ? '<button type="button" class="chat-acao" data-chat-responder="' + m.id + '">↩️ Responder</button>' : '') +
           (podeReagir ? CHAT_REACOES.map(function(r) {
             return '<button type="button" class="chat-acao chat-acao-r' + (minhaR === r[0] ? ' ativa' : '') + '" data-chat-reagir="' + r[0] + '" data-id="' + m.id + '" aria-pressed="' + (minhaR === r[0]) + '" aria-label="' + r[1] + '">' + r[0] + '</button>';
           }).join('') : '') +
           (podeEditar ? '<button type="button" class="chat-acao" data-chat-editar="' + m.id + '">✏️ Editar</button>' : '') +
           (podeApagar ? '<button type="button" class="chat-acao perigo" data-chat-apagar="' + m.id + '" data-rotulo="🗑️ Apagar">🗑️ Apagar</button>' : '') + '</div>';
       }
-      return sep + '<div class="chat-bolha ' + (minha ? 'eu' : 'outro') + (aberta ? ' aberta' : '') + (editando ? ' editando' : '') + '"' + (temAcoes ? ' data-chat-msg="' + m.id + '"' : '') + '>' +
-        '<div class="chat-txt">' + escapeHtml(m.texto).replace(/\n/g, '<br>') + '</div>' +
+      return sep + '<div class="chat-bolha ' + (minha ? 'eu' : 'outro') + (aberta ? ' aberta' : '') + (editando ? ' editando' : '') + '" data-msg-id="' + m.id + '"' + (temAcoes ? ' data-chat-msg="' + m.id + '"' : '') + '>' +
+        citacaoHtml(m) +
+        '<div class="chat-txt">' + (tipo === 'sol' && m.numero ? '<span class="sol-num">' + escapeHtml(String(m.numero)) + '.</span>' : '') + escapeHtml(m.texto).replace(/\n/g, '<br>') + '</div>' +
         '<span class="chat-hora">' + (editando ? '✏️ editando · ' : '') + escapeHtml(horaMsg(m.criado_em)) + (m.editada_em ? ' · editada' : '') + (minha && tipo === 'chat' ? (m.lida ? ' · lida' : '') : '') +
-        (temAcoes ? ' <button type="button" class="chat-mais" data-chat-msg="' + m.id + '" aria-expanded="' + aberta + '" aria-label="' + (podeReagir ? 'Reagir, editar ou apagar' : 'Editar ou apagar') + '">⋯</button>' : '') + '</span>' +
+        (temAcoes ? ' <button type="button" class="chat-mais" data-chat-msg="' + m.id + '" aria-expanded="' + aberta + '" aria-label="Responder, reagir, editar ou apagar">⋯</button>' : '') + '</span>' +
         reacoesHtml(m, eu, podeReagir) + res + acoes + '</div>';
     }).join('');
+  }
+  // mensagem respondida: o trecho citado (da própria lista, se ainda estiver na tela; senão, o guardado no envio)
+  function citacaoHtml(m) {
+    if (!m.responde) return '';
+    var o = chat.msgs.find(function(x) { return x.id === m.responde; });
+    var quem = o ? (o.de === minhaRef() ? 'Você' : pessoaNome(o.de)) : nomePessoa(m.responde_de_nome || '');
+    var txt = o ? (o.apagada ? 'mensagem apagada' : (o.tipo === 'sol' && o.numero ? o.numero + '. ' : '') + o.texto) : (m.responde_texto || 'mensagem anterior');
+    return '<button type="button" class="chat-cita" data-chat-ir="' + m.responde + '" aria-label="' + escapeHtml('Ir para a mensagem respondida de ' + (quem || 'alguém')) + '"><b>↩️ ' + escapeHtml(quem || 'Mensagem') + '</b><span>' + escapeHtml(String(txt).slice(0, 160)) + '</span></button>';
   }
   // 👍 / 👎 de cada mensagem: { ref: emoji }; aparece embaixo da bolha com quantas pessoas e quem
   var CHAT_REACOES = [['👍', 'Reagir com joinha (gostei)'], ['👎', 'Reagir com polegar para baixo (não gostei)']];
@@ -19064,13 +19088,14 @@
     var lista = chat.msgs.filter(function(m) { return m.tipo === tipo && outroDa(m) === outro; });
     if (chat.montada !== chave || !box.querySelector('.chat-msgs')) {
       chat.montada = chave;
-      chat.editando = null; chat.antesDaEdicao = ''; chat.acoesMsg = null;
+      chat.editando = null; chat.antesDaEdicao = ''; chat.acoesMsg = null; chat.respondendo = null;
       // só uma conversa montada por vez (Chat ou Solicitações): a caixa de texto é uma só
       ['chat-conteudo', 'sol-conteudo'].forEach(function(id) { var o = document.getElementById(id); if (o && o !== box && o.querySelector('.chat-tela')) o.innerHTML = ''; });
       box.innerHTML = '<div class="chat-tela">' +
         '<div class="chat-cab">' + (comVoltar ? '<button type="button" class="btn-text" data-chat="voltar" aria-label="Voltar">‹ Voltar</button>' : '') + '<div><b>' + escapeHtml(titulo) + '</b>' + (sub ? '<span class="driver-sub">' + escapeHtml(sub) + '</span>' : '') + '</div></div>' +
         '<div class="chat-msgs" aria-live="polite"></div>' +
         '<form class="chat-escrever" data-chat-form="' + tipo + '"><div class="chat-editando hidden" id="chat-editando"><span>✏️ Editando a mensagem</span><button type="button" class="btn-text" data-chat="cancelar-edicao">Cancelar</button></div>' +
+        '<div class="chat-respondendo hidden" id="chat-respondendo"><span></span><button type="button" class="btn-text" data-chat="cancelar-resposta">Cancelar</button></div>' +
         '<textarea id="chat-texto" rows="2" maxlength="2000" placeholder="' + (tipo === 'sol' ? (minhaRef() === 'mestre' ? 'Responder…' : 'Escreva a sua solicitação ou sugestão…') : 'Escreva uma mensagem…') + '" aria-label="Mensagem"></textarea>' +
         '<button type="submit" class="btn btn-primary">Enviar</button></form></div>';
       var ta = box.querySelector('#chat-texto');
@@ -19082,6 +19107,12 @@
     if (chat.editando && !lista.some(function(m) { return m.id === chat.editando.id && !m.apagada; })) cancelarEdicao(false);
     var barraEd = box.querySelector('#chat-editando'), btnEnv = box.querySelector('.chat-escrever button[type=submit]');
     if (barraEd) barraEd.classList.toggle('hidden', !chat.editando);
+    var resp = chat.respondendo ? lista.find(function(m) { return m.id === chat.respondendo && !m.apagada; }) : null, barraR = box.querySelector('#chat-respondendo');
+    if (chat.respondendo && !resp) chat.respondendo = null;
+    if (barraR) {
+      barraR.classList.toggle('hidden', !resp);
+      if (resp) barraR.querySelector('span').innerHTML = '↩️ Respondendo a <b>' + escapeHtml(resp.de === minhaRef() ? 'você' : pessoaNome(resp.de)) + '</b>: ' + escapeHtml((resp.tipo === 'sol' && resp.numero ? resp.numero + '. ' : '') + String(resp.texto).slice(0, 90));
+    }
     if (btnEnv) btnEnv.textContent = chat.editando ? 'Salvar' : 'Enviar';
     var cx = box.querySelector('.chat-msgs'), noFim = cx.scrollHeight - cx.scrollTop - cx.clientHeight < 80 || !cx.dataset.n;
     cx.innerHTML = bolhasHtml(lista, tipo);
@@ -19093,7 +19124,7 @@
     var box = document.getElementById('chat-conteudo');
     if (!box || !session) return;
     if (!comunicacaoLigada()) { chat.montada = ''; box.innerHTML = '<p class="empty-state">O chat precisa do banco on-line e do acesso individual de cada pessoa (senha própria de acesso ao app).</p>'; return; }
-    if (chat.aberta) { montarConversa(box, 'chat', chat.aberta, pessoaNome(chat.aberta), 'Toque numa mensagem para reagir com 👍 ou 👎, editar ou apagar.', true); return; }
+    if (chat.aberta) { montarConversa(box, 'chat', chat.aberta, pessoaNome(chat.aberta), 'Toque numa mensagem para responder, reagir com 👍 ou 👎, editar ou apagar.', true); return; }
     chat.montada = '';
     var eu = minhaRef(), refs = {};
     (chat.pessoas || []).forEach(function(p) { refs[p.ref] = true; });
@@ -19118,10 +19149,10 @@
     if (!comunicacaoLigada()) { chat.montada = ''; box.innerHTML = '<p class="empty-state">As solicitações precisam do banco on-line e do acesso individual (senha própria de acesso ao app).</p>'; return; }
     var eu = minhaRef();
     if (eu !== 'mestre') {
-      montarConversa(box, 'sol', 'mestre', 'Solicitações ao Nicolas', 'Peça melhorias e mande sugestões para o app. Só o Nicolas lê e responde aqui.', false);
+      montarConversa(box, 'sol', 'mestre', 'Solicitações ao Nicolas', 'Peça melhorias e mande sugestões para o app. Só o Nicolas lê e responde aqui. Cada solicitação ganha um número; toque numa mensagem para responder ou reagir com 👍 ou 👎.', false);
       return;
     }
-    if (chat.solAberta) { montarConversa(box, 'sol', chat.solAberta, pessoaNome(chat.solAberta), 'Solicitações e sugestões', true); return; }
+    if (chat.solAberta) { montarConversa(box, 'sol', chat.solAberta, pessoaNome(chat.solAberta), 'Solicitações e sugestões · toque numa mensagem para responder a ela ou reagir com 👍 ou 👎', true); return; }
     chat.montada = '';
     var conv = {};
     chat.msgs.forEach(function(m) { if (m.tipo === 'sol') { var r = outroDa(m); (conv[r] = conv[r] || []).push(m); } });
@@ -19136,7 +19167,7 @@
         var chip = l.esperando ? '<span class="sol-chip esp">aguardando resposta</span>' : l.res === true ? '<span class="sol-chip ok">✓ resolvido</span>' : l.res === false ? '<span class="sol-chip nao">✗ não resolvido</span>' : '<span class="sol-chip">respondida</span>';
         return '<button type="button" class="chat-pessoa' + (l.n ? ' nova' : '') + '" data-chat="sol-abrir" data-ref="' + escapeHtml(l.ref) + '">' +
           '<span class="chat-av" aria-hidden="true">' + escapeHtml(primeiroNome(l.nome).charAt(0).toUpperCase()) + '</span>' +
-          '<span class="chat-pessoa-txt"><b>' + escapeHtml(l.nome) + '</b> ' + chip + '<span class="driver-sub">' + escapeHtml((l.ult.de === 'mestre' ? 'Você: ' : '') + (l.ult.apagada ? 'mensagem apagada' : String(l.ult.texto).slice(0, 80))) + '</span></span>' +
+          '<span class="chat-pessoa-txt"><b>' + escapeHtml(l.nome) + '</b> ' + chip + '<span class="driver-sub">' + escapeHtml((l.ult.de === 'mestre' ? 'Você: ' : '') + (l.ult.numero ? l.ult.numero + '. ' : '') + (l.ult.apagada ? 'mensagem apagada' : String(l.ult.texto).slice(0, 80))) + '</span></span>' +
           '<span class="chat-pessoa-fim"><small>' + escapeHtml(horaMsg(l.ult.criado_em)) + '</small>' + (l.n ? '<b class="chat-n">' + l.n + '</b>' : '') + '</span></button>';
       }).join('') + '</div>' : '<p class="empty-state">' + (chat.carregado ? 'Nenhuma solicitação ainda. Quando alguém escrever, aparece aqui (e no selo da aba).' : 'Carregando…') + '</p>');
   }
@@ -19145,7 +19176,7 @@
     var m = chat.msgs.find(function(x) { return x.id === id; }), ta = caixaTexto();
     if (!m || m.apagada || m.de !== minhaRef() || !ta) return;
     if (!chat.editando) chat.antesDaEdicao = ta.value;
-    chat.editando = { id: id }; chat.acoesMsg = null;
+    chat.editando = { id: id }; chat.acoesMsg = null; chat.respondendo = null;
     ta.value = m.texto;
     chatAtualizarTela();
     setTimeout(function() { try { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {} }, 30);
@@ -19179,13 +19210,15 @@
     if (chat.editando) { salvarEdicao(form, ta, txt); return; }
     var eu = minhaRef(), outro = tipo === 'chat' ? chat.aberta : (eu === 'mestre' ? chat.solAberta : 'mestre');
     if (!outro) return;
-    var p = tipo === 'chat' ? db.rpc('chat_enviar', { p_para: outro, p_texto: txt }) : db.rpc('sol_enviar', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null });
+    var resp = chat.respondendo || null;
+    var p = tipo === 'chat' ? db.rpc('chat_enviar2', { p_para: outro, p_texto: txt, p_responde: resp }) : db.rpc('sol_enviar2', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp });
     var btn = form.querySelector('button[type=submit]');
     chat.enviando = true; btn.disabled = true;
     p.then(function(row) {
       chat.enviando = false; btn.disabled = false;
       ta.value = ''; delete chat.rascunho[tipo + '|' + outro];
-      if (row && row.id != null) chatAplicar(row, false);
+      if (chat.respondendo === resp) chat.respondendo = null;
+      if (row && row.id != null) chatAplicar(row, false); else chatAtualizarTela();
       if (tipo === 'sol' && eu !== 'mestre') showToast('Enviado para o Nicolas.');
       try { ta.focus(); } catch (e) {}
     }).catch(function(e) {
@@ -19206,8 +19239,21 @@
       .catch(function(err) { console.warn('reagir', err); m.reacoes = antes; chatAtualizarTela(); showToast('Não foi possível reagir agora. Verifique a internet.'); });
   }
   function cliqueChat(e) {
-    var b = e.target.closest('[data-chat],[data-sol-res],[data-chat-apagar],[data-chat-reagir],[data-chat-editar],[data-chat-msg]');
+    var b = e.target.closest('[data-chat],[data-sol-res],[data-chat-apagar],[data-chat-reagir],[data-chat-editar],[data-chat-responder],[data-chat-ir],[data-chat-msg]');
     if (!b) return;
+    if (b.dataset.chatResponder) {
+      if (chat.editando) cancelarEdicao(false);
+      chat.respondendo = Number(b.dataset.chatResponder); chat.acoesMsg = null;
+      chatAtualizarTela();
+      setTimeout(function() { var ta = caixaTexto(); if (ta) try { ta.focus(); } catch (e3) {} }, 30);
+      return;
+    }
+    if (b.dataset.chatIr) {
+      var alvoB = b.closest('.chat-msgs') && b.closest('.chat-msgs').querySelector('[data-msg-id="' + b.dataset.chatIr + '"]');
+      if (alvoB) { alvoB.scrollIntoView({ block: 'center', behavior: 'smooth' }); alvoB.classList.add('destaque'); setTimeout(function() { alvoB.classList.remove('destaque'); }, 1600); }
+      else showToast('A mensagem respondida não está mais na conversa.');
+      return;
+    }
     if (b.dataset.chatApagar) {
       if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Tocar de novo para apagar'; setTimeout(function() { if (b.isConnected) { b.dataset.ok = ''; b.textContent = b.dataset.rotulo || 'Apagar'; } }, 5000); return; }
       b.disabled = true;
@@ -19238,6 +19284,7 @@
     if (a === 'abrir') { chat.aberta = b.dataset.ref; renderChat(); }
     else if (a === 'sol-abrir') { chat.solAberta = b.dataset.ref; renderSolicitacoes(); }
     else if (a === 'cancelar-edicao') { cancelarEdicao(); try { caixaTexto().focus(); } catch (e2) {} }
+    else if (a === 'cancelar-resposta') { chat.respondendo = null; chatAtualizarTela(); }
     else if (a === 'voltar') { if (chat.editando) cancelarEdicao(false); guardarRascunho(); if (ui.tab === 'chat') { chat.aberta = null; renderChat(); } else { chat.solAberta = null; renderSolicitacoes(); } }
   }
   function guardarRascunho() { var ta = caixaTexto(); if (ta && chat.montada) chat.rascunho[chat.montada] = chat.editando ? chat.antesDaEdicao : ta.value; }
