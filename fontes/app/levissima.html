@@ -662,6 +662,22 @@
   .sl-pst.st-convidado { border-color: var(--laranja); box-shadow: inset 3px 0 0 var(--laranja); }
   .sl-resp { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 10px; }
   .ini-conv { border: 1px solid var(--line); border-left: 4px solid #702082; border-radius: 10px; background: var(--card); padding: 10px 12px; margin: 0 0 14px; }
+  /* novidades de cada um e alerta de falta de estoque (21/10/2026) */
+  .ini-nov { border: 1px solid rgba(255, 106, 19, 0.45); border-left: 4px solid var(--laranja); border-radius: 12px; background: #FFF6EF; padding: 10px 12px; margin: 0 0 14px; }
+  .ini-nov-t { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+  .ini-nov-t span { background: var(--laranja); color: #fff; border-radius: 999px; font-size: 0.75rem; font-weight: 800; padding: 1px 8px; }
+  .ini-nov ul { list-style: none; margin: 0; padding: 0; }
+  .ini-nov-it { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; border: 0; border-top: 1px solid rgba(255, 106, 19, 0.2); background: transparent; color: var(--ink); font: inherit; font-size: 0.875rem; padding: 9px 2px; cursor: pointer; min-height: 0; }
+  .ini-nov li:first-child .ini-nov-it { border-top: 0; }
+  .ini-nov-it:hover { background: rgba(255, 106, 19, 0.06); }
+  .ini-nov-ico { font-size: 1.1rem; }
+  .ini-nov-txt { flex: 1; min-width: 0; }
+  .ini-falta { display: block; width: 100%; text-align: left; border: 1px solid rgba(208, 59, 59, 0.5); border-left: 4px solid var(--danger); border-radius: 12px; background: #FDF0F0; color: var(--ink); font: inherit; padding: 10px 12px; margin: 0 0 14px; cursor: pointer; }
+  .ini-falta-t { display: block; font-weight: 800; color: var(--danger); margin-bottom: 4px; }
+  .ini-falta ul { margin: 0; padding-left: 18px; font-size: 0.875rem; }
+  .ini-falta li small { display: block; color: var(--muted); }
+  .ini-falta-ir { display: block; text-align: right; font-size: 0.8125rem; font-weight: 700; color: var(--danger); margin-top: 4px; }
+  .mural-aniv { border-color: #F2C14E; background: #FFF8E1; }
   .ini-conv-t { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 0.9375rem; }
   .ini-conv ul { list-style: none; margin: 8px 0 0; padding: 0; }
   .ini-conv-it { width: 100%; text-align: left; background: transparent; border: 0; border-top: 1px solid var(--line); padding: 8px 0; font: inherit; font-size: 0.875rem; color: var(--ink); cursor: pointer; }
@@ -823,6 +839,9 @@
   .ag2-item.pessoal { border-left-color: var(--teal); }
   .ag2-item.novo { box-shadow: 0 0 0 2px rgba(255, 106, 19, 0.35); }
   .ag2-item.cancelado { opacity: 0.6; }
+  .ag2-item.recusado { opacity: 0.65; }
+  .ag2-resp { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+  .ag2-falta { color: var(--laranja); }
   .ag2-item.cancelado .ag2-txt > b { text-decoration: line-through; }
   .ag2-hora { font-family: var(--font-mono); font-weight: 700; font-size: 0.875rem; }
   .ag2-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
@@ -1426,6 +1445,7 @@
       <button type="button" class="seg-btn" data-tab="metas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span class="tab-txt">Metas</span></button>
       <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
       <button type="button" class="seg-btn" data-tab="trocas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="tab-txt">Trocas e devoluções</span></button>
+      <button type="button" class="seg-btn" data-tab="brindes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg></span><span class="tab-txt">Brindes e presentes</span></button>
       <button type="button" class="seg-btn" data-tab="canhotos"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 11.5h6"/><path d="M9.5 16.5l1.8 1.8 3.7-3.7"/></svg></span><span class="tab-txt">Canhotos</span></button>
       <button type="button" class="seg-btn" data-tab="minhaagenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15" r="2"/></svg></span><span class="tab-txt">Minha agenda</span></button>
       <button type="button" class="seg-btn" data-tab="chat"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg></span><span class="tab-txt">Chat</span></button>
@@ -1440,6 +1460,8 @@
 
   <div class="tab-panel hidden" id="tab-inicio">
     <div class="ini-topo"><div><h2 class="ini-saud" id="ini-saud"></h2><p class="ini-data" id="ini-data"></p></div></div>
+    <div id="ini-novidades" aria-live="polite"></div>
+    <div id="ini-alerta-estoque"></div>
     <div id="ini-festa" class="ini-festa hidden" aria-live="polite"></div>
     <div class="postit">
       <div class="postit-cab"><label for="postit-texto">📌 Meu lembrete</label><small id="postit-status">Só você vê este lembrete</small></div>
@@ -1678,6 +1700,9 @@
   </div>
   <div class="tab-panel hidden" id="tab-trocas">
     <div id="trocas-conteudo"></div>
+  </div>
+  <div class="tab-panel hidden" id="tab-brindes">
+    <div id="br-conteudo"></div>
   </div>
   <div class="tab-panel hidden" id="tab-minhaagenda">
     <div id="ag2-conteudo"></div>
@@ -2604,6 +2629,8 @@
         </label>
       </div>
       <label class="check"><input type="checkbox" id="f-equipe-org" /> Vê a aba <b>Organograma</b> <span class="opt">(onde está na empresa: quem está acima e abaixo)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-brindes" /> Vê a aba <b>Brindes e presentes</b> <span class="opt">(ideias e aprovação de brindes)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-alerta-est" /> Recebe o <b>alerta de falta de estoque</b> no Início <span class="opt">(cargas dos próximos 2 dias que o estoque não cobre)</span></label>
       <div class="homen-set" role="group" aria-label="Homenagens">
         <span class="field-hint">Recebe as mensagens de:</span>
         <label class="check"><input type="checkbox" id="f-equipe-h-mulher" /> Dia da Mulher</label>
@@ -3147,7 +3174,7 @@
     loadLocalSalas();
     loadLocalQualidade();
     loadLocalSup();
-    loadLocalCompras();
+    loadLocalCompras(); loadLocalBrindes();
     loadLocalTrocas();
     loadLocalDatas();
     loadLocalTransportadoras();
@@ -5960,7 +5987,7 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   var ABAS_COMUNICACAO = ['minhaagenda', 'chat', 'solicitacoes']; // todo mundo do escritório tem (19 e 20/10/2026)
   // Organograma (20/10/2026): escondido de todos; a senha mestre marca em Cadastros › Equipe com senha quem vê a aba
   function podeVerOrganograma() { if (!session) return false; if (session.ref === 'mestre' || (session.role === 'admin' && !session.soInclui && !session.ref)) return true; var m = meuMembro(); return !!(m && m.veOrganograma); }
@@ -5984,10 +6011,10 @@
     if (session && session.role === 'equipe') {
       var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
       return ['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
-        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []);
+        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : []);
     }
-    var org = podeVerOrganograma();
-    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return t !== 'organograma' || org; });
+    var org = podeVerOrganograma(), brd = podeVerBrindes();
+    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd); });
   }
   function abaPadrao(permitidas) { return permitidas.indexOf('cargas') >= 0 ? 'cargas' : permitidas[0]; }
   function applyTab() {
@@ -6013,6 +6040,7 @@
     if (ui.tab === 'metas') renderMetas();
     if (ui.tab === 'canhotos') renderCanhotos();
     if (ui.tab === 'trocas') renderTrocas();
+    if (ui.tab === 'brindes') renderBrindes();
     if (ui.tab !== 'chat' && ui.tab !== 'solicitacoes') chat.montada = '';
     if (ui.tab === 'chat' || ui.tab === 'solicitacoes' || ui.tab === 'minhaagenda') { ligarComunicacao(); carregarPessoasChat(); }
     if (ui.tab === 'minhaagenda') renderMinhaAgenda();
@@ -15643,13 +15671,36 @@
     return murais.filter(function(m) { return m.ativo !== false && String(m.texto || '').trim() && muralParaMim(m) && !muralFechados[m.id]; })
       .sort(function(a, b) { return String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || '')); });
   }
+  // aniversariante do dia no topo, para todos os acessos (pedido de 21/10/2026): nome e setor, pela função do banco
+  // aniversariantes_hoje (0028), que não abre o resto do cadastro; sem banco, pela lista da equipe
+  var anivHojeL = { dia: '', lista: [], carregando: false };
+  function carregarAniversariosHoje() {
+    var hoje = todayIso();
+    if (!session || anivHojeL.carregando || anivHojeL.dia === hoje) return;
+    if (mode !== 'db' || !db) {
+      anivHojeL = { dia: hoje, lista: equipe.filter(function(m) { return m.aniversario && anivHoje(m.aniversario, hoje); }).map(function(m) { return { nome: m.nomeCompleto || m.nome, setor: m.area || '' }; }), carregando: false };
+      renderMural(); return;
+    }
+    anivHojeL.carregando = true;
+    db.rpc('aniversariantes_hoje').then(function(l) {
+      anivHojeL = { dia: hoje, lista: (Array.isArray(l) ? l : []).filter(function(x) { return x && x.nome; }), carregando: false };
+      renderMural();
+    }).catch(function(e) { anivHojeL.carregando = false; anivHojeL.dia = hoje; console.warn('aniversariantes', e); });
+  }
   function renderMural() {
     var el = document.getElementById('mural');
     if (!el) return;
     var lista = session ? recadosVisiveis() : [];
-    el.classList.toggle('hidden', !lista.length);
-    document.body.classList.toggle('com-mural', !!lista.length);
-    el.innerHTML = lista.map(function(m) {
+    if (session) carregarAniversariosHoje();
+    var aniv = session && anivHojeL.dia === todayIso() ? anivHojeL.lista.filter(function(x, i) { return !muralFechados['aniv-' + anivHojeL.dia + '-' + i]; }) : [];
+    var tem = lista.length || aniv.length;
+    el.classList.toggle('hidden', !tem);
+    document.body.classList.toggle('com-mural', !!tem);
+    el.innerHTML = aniv.map(function(x) {
+      var i = anivHojeL.lista.indexOf(x);
+      return '<div class="mural mural-aniv"><span class="mural-ico" aria-hidden="true">🎂</span><p class="mural-txt"><span class="mural-tag">Aniversariante do dia</span> ' + escapeHtml(x.nome) + (x.setor ? ' · ' + escapeHtml(x.setor) : '') + '</p>' +
+        '<button type="button" class="mural-x" data-mural-x="aniv-' + escapeHtml(anivHojeL.dia) + '-' + i + '" aria-label="Fechar o aviso de aniversário">✕</button></div>';
+    }).join('') + lista.map(function(m) {
       var pessoal = Array.isArray(m.para) && m.para.length;
       return '<div class="mural"><span class="mural-ico">' + iconeRecado(m) + '</span><p class="mural-txt">' + (pessoal ? '<span class="mural-tag">Para você</span>' : '') + escapeHtml(String(m.texto).trim()) + '</p>' +
         '<button type="button" class="mural-x" data-mural-x="' + escapeHtml(m.id) + '" aria-label="Fechar o recado">✕</button></div>';
@@ -15836,7 +15887,7 @@
   function ocVisiveis() { return ordensCompra.filter(ocVeCompleta); }
   function ocPodeComprar(m) { return !!m && (!!m.compras || aprovaCompraFinal(m)); }
   // gestão: coordenador, supervisor, gerente, diretoria (ou área Gestão) — o pedido dela já sai autorizado
-  function ocDaGestao(m) { return !!m && (autorizaAntesCotacao(m) || aprovaCompraFinal(m) || normNome(m.area) === normNome('Gestão')); }
+  function ocDaGestao(m) { return !!m && (!!m.gestao || autorizaAntesCotacao(m) || aprovaCompraFinal(m) || normNome(m.area) === normNome('Gestão')); }
   function ocNomesCotacao() { var l = []; equipe.forEach(function(m) { if (m.compras) { var n = primeiroNome(m.nomeCompleto || m.nome); if (n && l.indexOf(n) < 0) l.push(n); } }); return l.join(' ou '); }
   function ocNomesCompra() {
     var l = [];
@@ -15959,6 +16010,7 @@
   function renderCompras() {
     var box = document.getElementById('oc-conteudo');
     if (!box || !session || !ehEscritorio()) return;
+    if (ui.tab === 'compras' && !document.hidden) novMarcarComprasVistas();
     var vis = ocVisiveis(), tudo = ocVeTudo();
     var n = function(s) { return vis.filter(function(o) { return o.status === s; }).length; };
     var nReceber = ordensCompra.filter(function(o) { return o.status === 'comprado'; }).length;
@@ -17414,6 +17466,8 @@
     document.getElementById('ini-saud').textContent = (h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite') + (nomeIni ? ', ' + nomeIni : '') + '!';
     ligarComunicacao();
     renderComemoracoesInicio();
+    renderNovidadesInicio();
+    renderAlertaEstoqueInicio();
     document.getElementById('ini-data').textContent = rotuloDiaLongo(hoje).replace(/^Hoje, /, '') + ' · o que precisa de atenção hoje';
     var atr = 0, ph = 0, via = 0, semFat = 0;
     cargas.forEach(function(c) { var k = cargaStatusKey(c); if (k === 'atrasada') atr++; else if (k === 'hoje') ph++; else if (k === 'concluida' && faseViagem(c) === 'viagem') via++; if (k !== 'concluida' && !c.faturamentoOk) semFat++; });
@@ -17470,8 +17524,10 @@
         '<span class="ini-k">' + escapeHtml(x.t) + '</span><span class="ini-v">' + fmtInt(x.v) + '<small>' + escapeHtml(x.u) + '</small></span><span class="ini-s">' + escapeHtml(x.s) + '</span><span class="ini-ir" aria-hidden="true">›</span></button>';
     }).join('');
     renderConvitesInicio();
-    document.getElementById('ini-atalhos').innerHTML = INI_ATALHOS.filter(function(a) { return perm.indexOf(a.tab) >= 0; }).map(function(a, i) {
-      return '<button type="button" class="ini-atalho" data-atalho="' + i + '">+ ' + escapeHtml(a.txt) + '</button>';
+    // o número do atalho é a posição na lista completa (antes, a posição na lista filtrada abria o atalho errado
+    // para quem não vê todas as abas — corrigido em 21/10/2026)
+    document.getElementById('ini-atalhos').innerHTML = INI_ATALHOS.map(function(a, i) {
+      return perm.indexOf(a.tab) >= 0 && (!a.mostra || a.mostra()) ? '<button type="button" class="ini-atalho" data-atalho="' + i + '">+ ' + escapeHtml(a.txt) + '</button>' : '';
     }).join('');
   }
   document.getElementById('tab-inicio').addEventListener('click', function(e) {
@@ -17532,6 +17588,8 @@
       if (m.aniversario) chips += '<span class="func-chip">🎂 ' + escapeHtml(m.aniversario.split('-').reverse().join('/')) + '</span>';
       if (supM) chips += '<span class="func-chip">responde a ' + escapeHtml(supM.nomeCurto || supM.nome) + '</span>';
       if (m.veOrganograma) chips += '<span class="func-chip">vê o Organograma</span>';
+      if (m.veBrindes) chips += '<span class="func-chip">vê Brindes</span>';
+      if (m.alertaEstoque) chips += '<span class="func-chip">alerta de estoque</span>';
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nomeCompleto || m.nome) + '<span class="driver-sub">no app: ' + escapeHtml(m.nome) + '</span>' + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
         '<button class="btn-text danger" data-action="remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button></div>';
@@ -17566,6 +17624,8 @@
     document.getElementById('f-equipe-h-mae').checked = !!hm.mae;
     document.getElementById('f-equipe-h-pai').checked = !!hm.pai;
     document.getElementById('f-equipe-org').checked = !!(m && m.veOrganograma);
+    document.getElementById('f-equipe-brindes').checked = !!(m && m.veBrindes);
+    document.getElementById('f-equipe-alerta-est').checked = !!(m && m.alertaEstoque);
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
     document.getElementById('f-equipe-fin').checked = m ? !!m.financeiro : false;
@@ -17660,7 +17720,8 @@
       if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
-        superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked };
+        superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
+        veBrindes: document.getElementById('f-equipe-brindes').checked, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
       if (hash) patch.pinHash = hash;
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
@@ -19511,9 +19572,16 @@
     }).catch(function(e) { console.error('agenda', e); if (ag2.de === ref) { ag2.carregando = false; ag2.carregado = true; agendaAtualizarTela(); } });
   }
   function agendaAplicar(row, avisar) {
-    var i = ag2.itens.findIndex(function(c) { return c.id === row.id; });
+    var i = ag2.itens.findIndex(function(c) { return c.id === row.id; }), antes = i >= 0 ? ag2.itens[i] : null;
     if (i < 0) ag2.itens.push(row); else ag2.itens[i] = row;
     var eu = minhaRef(), chave = row.id + '|' + row.atualizado_em;
+    // sou o dono: alguém aceitou ou não aceitou (21/10/2026)
+    if (avisar && antes && row.dono === eu) {
+      Object.keys(row.respostas || {}).forEach(function(r) {
+        var v = row.respostas[r];
+        if (v && v !== (antes.respostas || {})[r]) showToast((v === 'aceito' ? '✅ ' : '❌ ') + nomePessoa((row.participantes_nomes || {})[r] || pessoaNome(r)) + (v === 'aceito' ? ' aceitou: ' : ' não aceitou: ') + row.titulo + ' (' + agendaQuando(row) + ').');
+      });
+    }
     if (avisar && row.dono !== eu && (row.participantes || []).indexOf(eu) >= 0 && (row.vistos || []).indexOf(eu) < 0 && (row.saiu || []).indexOf(eu) < 0 && !ag2.avisados[chave]) {
       ag2.avisados[chave] = true;
       if (ui.tab === 'minhaagenda' && !document.hidden) agendaMarcarVistos(); else showToast(agendaAvisoTexto(row));
@@ -19527,6 +19595,13 @@
   function agendaAvisoTexto(c) {
     var quem = nomePessoa(c.dono_nome) || 'Alguém';
     return c.cancelado ? '📅 ' + quem + ' cancelou: ' + c.titulo + ' (' + agendaQuando(c) + ').' : '📅 ' + quem + ' marcou um compromisso com você: ' + c.titulo + ' · ' + agendaQuando(c) + '.';
+  }
+  // resposta de quem foi chamado: 'aceito', 'recusado' ou '' (sem resposta)
+  function agendaResposta(c, ref) { var v = (c.respostas || {})[ref || minhaRef()]; return v === 'aceito' || v === 'recusado' ? v : ''; }
+  // chamados para mim que ainda esperam a minha resposta (de hoje em diante)
+  function agendaSemResposta() {
+    var eu = minhaRef(), hoje = todayIso();
+    return ag2.itens.filter(function(c) { return c.dono !== eu && !c.cancelado && c.data >= hoje && (c.participantes || []).indexOf(eu) >= 0 && (c.saiu || []).indexOf(eu) < 0 && !agendaResposta(c, eu); });
   }
   // compromissos em que fui incluído e ainda não vi (o selo da aba)
   function agendaNaoVistos() {
@@ -19547,8 +19622,10 @@
   function renderMinhaAgendaBadge() {
     var b = document.querySelector('#admin-tabs .seg-btn[data-tab="minhaagenda"]');
     if (!b) return;
-    var n = agendaLigada() ? agendaNaoVistos().length : 0;
-    seloAba(b, n, n + (n === 1 ? ' compromisso novo marcado por outra pessoa' : ' compromissos novos marcados por outras pessoas'));
+    var ids = {};
+    if (agendaLigada()) agendaNaoVistos().concat(agendaSemResposta()).forEach(function(c) { ids[c.id] = true; });
+    var n = Object.keys(ids).length;
+    seloAba(b, n, n + (n === 1 ? ' compromisso esperando a sua resposta' : ' compromissos esperando a sua resposta'));
   }
   function agendaAtualizarTela() {
     renderMinhaAgendaBadge();
@@ -19557,7 +19634,7 @@
   }
   function agendaDeHoje() {
     var hoje = todayIso();
-    return agendaMeus().filter(function(c) { return c.data === hoje && !c.cancelado; }).sort(agendaOrdem);
+    return agendaMeus().filter(function(c) { return c.data === hoje && !c.cancelado && agendaResposta(c) !== 'recusado'; }).sort(agendaOrdem);
   }
   function agendaOrdem(a, b) { return String(a.data).localeCompare(String(b.data)) || String(a.inicio || '').localeCompare(String(b.inicio || '')) || a.id - b.id; }
   function rotuloDiaAgenda(iso) {
@@ -19571,20 +19648,26 @@
   }
   function compromissoHtml(c) {
     var eu = minhaRef(), meu = c.dono === eu, novo = !meu && (c.vistos || []).indexOf(eu) < 0;
-    var nomes = (c.participantes || []).map(function(r) { var n = (c.participantes_nomes || {})[r]; return nomePessoa(n || pessoaNome(r)) + ((c.saiu || []).indexOf(r) >= 0 ? ' (saiu)' : ''); });
+    var nomes = (c.participantes || []).map(function(r) {
+      var n = (c.participantes_nomes || {})[r], resp = agendaResposta(c, r);
+      return nomePessoa(n || pessoaNome(r)) + ((c.saiu || []).indexOf(r) >= 0 ? ' (saiu)' : resp === 'aceito' ? ' ✅ aceitou' : resp === 'recusado' ? ' ❌ não aceitou' : ' ⏳ sem resposta');
+    });
+    var minhaResp = meu ? '' : agendaResposta(c, eu);
     var hora = c.inicio ? String(c.inicio).slice(0, 5) + (c.fim ? '–' + String(c.fim).slice(0, 5) : '') : 'dia todo';
     var acoes = '';
     if (ag2.confirmar === 'cancelar:' + c.id) acoes = '<span>Cancelar este compromisso' + (nomes.length ? ' (avisa quem foi incluído)' : '') + '?</span><button type="button" class="btn-text danger" data-ag2="cancelar-ok" data-id="' + c.id + '">Cancelar compromisso</button><button type="button" class="btn-text" data-ag2="nao">Manter</button>';
     else if (meu && !c.cancelado) acoes = '<button type="button" class="btn-text" data-ag2="editar" data-id="' + c.id + '">Editar</button><button type="button" class="btn-text danger" data-ag2="cancelar" data-id="' + c.id + '">Cancelar</button>';
     else if (meu && c.cancelado) acoes = '<button type="button" class="btn-text" data-ag2="editar" data-id="' + c.id + '">Reabrir / editar</button>';
-    else acoes = '<button type="button" class="btn-text danger" data-ag2="sair" data-id="' + c.id + '">Tirar da minha agenda</button>';
-    return '<div class="ag2-item ' + c.tipo + (c.cancelado ? ' cancelado' : '') + (novo ? ' novo' : '') + '">' +
+    else acoes = (c.cancelado ? '' : '<span class="ag2-resp" role="group" aria-label="Sua resposta"><button type="button" class="btn btn-sm ' + (minhaResp === 'aceito' ? 'btn-primary' : 'btn-secondary') + '" data-ag2="responder" data-r="aceito" data-id="' + c.id + '" aria-pressed="' + (minhaResp === 'aceito') + '">✅ Aceitar</button>' +
+      '<button type="button" class="btn btn-sm ' + (minhaResp === 'recusado' ? 'btn-primary' : 'btn-secondary') + '" data-ag2="responder" data-r="recusado" data-id="' + c.id + '" aria-pressed="' + (minhaResp === 'recusado') + '">❌ Não aceitar</button></span>') +
+      '<button type="button" class="btn-text danger" data-ag2="sair" data-id="' + c.id + '">Tirar da minha agenda</button>';
+    return '<div class="ag2-item ' + c.tipo + (c.cancelado ? ' cancelado' : '') + (novo ? ' novo' : '') + (minhaResp === 'recusado' ? ' recusado' : '') + '">' +
       '<div class="ag2-hora">' + escapeHtml(hora) + '</div>' +
       '<div class="ag2-txt"><b>' + escapeHtml(c.titulo) + '</b>' + (novo ? ' <span class="sol-chip esp">novo</span>' : '') + (c.cancelado ? ' <span class="sol-chip nao">cancelado</span>' : '') +
         ' <span class="ag2-tipo ' + c.tipo + '">' + (c.tipo === 'pessoal' ? 'Pessoal' : 'Trabalho') + '</span>' +
         (c.local ? '<span class="driver-sub">📍 ' + escapeHtml(c.local) + '</span>' : '') +
         (c.obs ? '<span class="driver-sub">' + escapeHtml(c.obs) + '</span>' : '') +
-        (!meu ? '<span class="driver-sub">Marcado por <b>' + escapeHtml(nomePessoa(c.dono_nome) || '—') + '</b></span>' : '') +
+        (!meu ? '<span class="driver-sub">Marcado por <b>' + escapeHtml(nomePessoa(c.dono_nome) || '—') + '</b>' + (c.cancelado ? '' : minhaResp === 'aceito' ? ' · você aceitou' : minhaResp === 'recusado' ? ' · você não aceitou' : ' · <b class="ag2-falta">responda: aceita ou não?</b>') + '</span>' : '') +
         (nomes.length ? '<span class="driver-sub">Com: ' + escapeHtml(nomes.join(', ')) + '</span>' : '') +
         '<div class="frete-acoes">' + acoes + '</div></div></div>';
   }
@@ -19661,6 +19744,14 @@
     else if (a === 'tipo') { ag2.tipo = b.dataset.t; renderMinhaAgenda(); }
     else if (a === 'editar' && c) abrirCompromisso(c);
     else if (a === 'cancelar' && c) { ag2.confirmar = 'cancelar:' + c.id; renderMinhaAgenda(); }
+    else if (a === 'responder' && c) {
+      var nova = agendaResposta(c) === b.dataset.r ? null : b.dataset.r;
+      b.disabled = true;
+      db.rpc('compromisso_responder', { p_id: c.id, p_resposta: nova }).then(function(row) {
+        if (row && row.id != null) agendaAplicar(row, false);
+        showToast(nova === 'aceito' ? 'Você aceitou: ' + c.titulo + '. ' + (nomePessoa(c.dono_nome) || 'Quem marcou') + ' vê a resposta.' : nova === 'recusado' ? 'Você não aceitou: ' + c.titulo + '. ' + (nomePessoa(c.dono_nome) || 'Quem marcou') + ' vê a resposta.' : 'Resposta tirada.');
+      }).catch(function(err) { b.disabled = false; console.error('agenda', err); showToast('Não foi possível responder agora.'); });
+    }
     else if (a === 'nao') { ag2.confirmar = null; renderMinhaAgenda(); }
     else if (a === 'cancelar-ok' && c) {
       ag2.confirmar = null;
@@ -19981,6 +20072,262 @@
     var b = e.target.closest('[data-org]');
     if (b && b.dataset.org === 'tudo') { orgUi.tudo = !orgUi.tudo; renderOrganograma(); }
   });
+  // =====================================================================================================
+  // NOVIDADES DE CADA UM e ALERTA DE FALTA DE ESTOQUE (pedidos de 21/10/2026)
+  // * No topo do Início, só para a pessoa: o que mudou para ela (mensagens, respostas das solicitações, compromissos
+  //   esperando aceite, pedidos de compra que mudaram de etapa ou esperam a assinatura dela, brindes para aprovar).
+  //   Tocar leva direto ao lugar.
+  // * Alerta de falta de estoque: produtos das cargas dos próximos 2 dias (e das atrasadas) que o estoque não cobre.
+  //   Aparece para quem tiver "Recebe o alerta de falta de estoque" marcado em Cadastros › Equipe.
+  var novUi = { itens: [] };
+  function novChaveOc() { return 'levissima-novidades-oc-' + (minhaRef() || 'x'); }
+  function novOcVistas() { try { return JSON.parse(localStorage.getItem(novChaveOc()) || 'null'); } catch (e) { return null; } }
+  function novGuardarOc(m) { try { localStorage.setItem(novChaveOc(), JSON.stringify(m)); } catch (e) {} }
+  // ao abrir Compras: as etapas atuais dos meus pedidos passam a ser as "vistas"
+  function novMarcarComprasVistas() {
+    var m = novOcVistas() || {};
+    ordensCompra.forEach(function(o) { if (ocMinha(o)) m[o.id] = o.status; });
+    novGuardarOc(m);
+  }
+  function novidadesDoUsuario() {
+    var l = [], eu = minhaRef(), perm = abasPermitidas(), tem = function(t) { return perm.indexOf(t) >= 0; };
+    if (comunicacaoLigada()) {
+      if (tem('chat')) {
+        var porPessoa = {};
+        chat.msgs.forEach(function(m) { if (m.tipo === 'chat' && m.para === eu && !m.lida) porPessoa[m.de] = (porPessoa[m.de] || 0) + 1; });
+        Object.keys(porPessoa).forEach(function(r) { var n = porPessoa[r]; l.push({ ico: '💬', txt: n + (n === 1 ? ' mensagem nova de ' : ' mensagens novas de ') + pessoaNome(r), ir: 'chat', chat: r }); });
+      }
+      if (tem('solicitacoes')) {
+        if (eu === 'mestre') {
+          var porP = {};
+          chat.msgs.forEach(function(m) { if (m.tipo === 'sol' && m.para === eu && !m.lida) porP[m.de] = (porP[m.de] || 0) + 1; });
+          Object.keys(porP).forEach(function(r) { var n = porP[r]; l.push({ ico: '📨', txt: n + (n === 1 ? ' solicitação nova de ' : ' solicitações novas de ') + pessoaNome(r), ir: 'solicitacoes', sol: r }); });
+        } else {
+          var ns = naoLidas('sol');
+          if (ns) l.push({ ico: '📨', txt: 'O Nicolas respondeu ' + (ns === 1 ? 'a sua solicitação' : ns + ' vezes as suas solicitações'), ir: 'solicitacoes' });
+        }
+      }
+      if (tem('minhaagenda') && agendaLigada()) {
+        agendaSemResposta().slice(0, 5).forEach(function(c) { l.push({ ico: '📅', txt: (nomePessoa(c.dono_nome) || 'Alguém') + ' chamou você: ' + c.titulo + ' · ' + agendaQuando(c) + ' — aceita ou não?', ir: 'minhaagenda' }); });
+        agendaNaoVistos().filter(function(c) { return c.cancelado; }).slice(0, 3).forEach(function(c) { l.push({ ico: '📅', txt: (nomePessoa(c.dono_nome) || 'Alguém') + ' cancelou: ' + c.titulo + ' · ' + agendaQuando(c), ir: 'minhaagenda' }); });
+      }
+    }
+    if (tem('compras') && ehEscritorio()) {
+      var vistas = novOcVistas();
+      if (!vistas) { vistas = {}; ordensCompra.forEach(function(o) { if (ocMinha(o)) vistas[o.id] = o.status; }); novGuardarOc(vistas); }
+      ordensCompra.forEach(function(o) {
+        if (!ocMinha(o) || !vistas[o.id] || vistas[o.id] === o.status) return;
+        var st = OC_STATUS[o.status] || { txt: o.status };
+        l.push({ ico: '🛒', txt: 'Seu pedido de compra OC nº ' + o.numero + ' — ' + st.txt + (o.status === 'recebido' ? ' (confirme a entrega)' : ''), ir: 'compras', filtro: o.status === 'recebido' ? 'recebido' : 'abertas' });
+      });
+      var esp = ocEsperando().filter(function(o) { return !(o.status === 'recebido' && ocMinha(o) && vistas[o.id] !== o.status); });
+      if (esp.length) l.push({ ico: '✍️', txt: esp.length + (esp.length === 1 ? ' pedido de compra espera a sua assinatura' : ' pedidos de compra esperam a sua assinatura') + ' (OC nº ' + esp.slice(0, 4).map(function(o) { return o.numero; }).join(', ') + (esp.length > 4 ? '…' : '') + ')', ir: 'compras', filtro: 'abertas' });
+    }
+    if (tem('brindes') && eu === 'mestre') {
+      var nb = brindes.filter(function(x) { return x.status === 'aprovacao'; }).length;
+      if (nb) l.push({ ico: '🎁', txt: nb + (nb === 1 ? ' brinde ou presente esperando a sua aprovação' : ' brindes ou presentes esperando a sua aprovação'), ir: 'brindes', filtro: 'aprovacao' });
+    }
+    return l;
+  }
+  function renderNovidadesInicio() {
+    var el = document.getElementById('ini-novidades');
+    if (!el) return;
+    var l = session ? novidadesDoUsuario() : [];
+    novUi.itens = l;
+    el.innerHTML = l.length ? '<section class="ini-nov" aria-label="Novidades para você"><div class="ini-nov-t"><b>🔔 Novidades para você</b><span>' + l.length + '</span></div><ul>' +
+      l.slice(0, 8).map(function(x, i) { return '<li><button type="button" class="ini-nov-it" data-nov="' + i + '"><span class="ini-nov-ico" aria-hidden="true">' + x.ico + '</span><span class="ini-nov-txt">' + escapeHtml(x.txt) + '</span><span class="ini-ir" aria-hidden="true">›</span></button></li>'; }).join('') +
+      '</ul>' + (l.length > 8 ? '<p class="field-hint">e mais ' + (l.length - 8) + '…</p>' : '') + '</section>' : '';
+  }
+  document.getElementById('ini-novidades').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-nov]');
+    if (!b) return;
+    var x = novUi.itens[Number(b.dataset.nov)];
+    if (!x) return;
+    if (x.chat) chat.aberta = x.chat;
+    if (x.sol) chat.solAberta = x.sol;
+    if (x.ir === 'compras' && x.filtro) ocUi.filtro = x.filtro;
+    if (x.ir === 'brindes' && x.filtro) brUi.filtro = x.filtro;
+    if (x.ir === 'minhaagenda') ag2.filtro = 'proximos';
+    setTab(x.ir);
+  });
+
+  // ----- alerta de falta de estoque (cargas dos próximos 2 dias) -----
+  function recebeAlertaEstoque() { var m = meuMembro(); return !!(m && m.alertaEstoque); }
+  function faltasEstoque2Dias() {
+    var hoje = todayIso(), ate = addDiasIso(hoje, 2), dem = {}, onde = {}, un = {};
+    cargas.forEach(function(c) {
+      if (c.status === 'concluida' || !c.data || c.data > ate) return;
+      (c.clientes || []).forEach(function(cl) {
+        (cl.itens || []).forEach(function(it) {
+          var q = Number(it.quantidade) || 0;
+          if (!it.produtoId || q <= 0) return;
+          dem[it.produtoId] = (dem[it.produtoId] || 0) + q;
+          un[it.produtoId] = un[it.produtoId] || it.unidade || '';
+          (onde[it.produtoId] = onde[it.produtoId] || []).push(formatDateBR(c.data).slice(0, 5) + ' ' + (cl.cliente || c.motorista || 'carga'));
+        });
+      });
+    });
+    var out = [];
+    Object.keys(dem).forEach(function(pid) {
+      var e = estoqueDe(pid, null);
+      if (!e || e.estoque >= dem[pid]) return; // sem controle de estoque: não dá para dizer que falta
+      var p = findProduto(pid);
+      out.push({ pid: pid, nome: p ? p.nome : pid, pedido: dem[pid], estoque: e.estoque, falta: dem[pid] - Math.max(0, e.estoque), unidade: un[pid], onde: onde[pid] });
+    });
+    return out.sort(function(a, b) { return b.falta - a.falta; });
+  }
+  function renderAlertaEstoqueInicio() {
+    var el = document.getElementById('ini-alerta-estoque');
+    if (!el) return;
+    var l = session && ehEscritorio() && recebeAlertaEstoque() ? faltasEstoque2Dias() : [];
+    el.innerHTML = l.length ? '<button type="button" class="ini-falta" data-ir="estoque"><span class="ini-falta-t">⚠️ Falta de estoque nos próximos 2 dias · ' + l.length + (l.length === 1 ? ' produto' : ' produtos') + '</span><ul>' +
+      l.slice(0, 6).map(function(x) {
+        return '<li><b>' + escapeHtml(x.nome) + '</b>: pedido ' + escapeHtml(qtdUnidade(x.pedido, x.unidade)) + ', estoque ' + escapeHtml(qtdUnidade(Math.max(0, x.estoque), x.unidade)) + ' → <b>faltam ' + escapeHtml(qtdUnidade(x.falta, x.unidade)) + '</b><small>' + escapeHtml(x.onde.slice(0, 3).join(' · ') + (x.onde.length > 3 ? ' · …' : '')) + '</small></li>';
+      }).join('') + '</ul><span class="ini-falta-ir">Ver o estoque ›</span></button>' : '';
+  }
+
+  // =====================================================================================================
+  // BRINDES E PRESENTES (pedido de 21/10/2026): ideias de brindes e presentes para funcionários, vendedores e clientes;
+  // a ideia é lançada para aprovação e o Nicolas aprova ou reprova. De início só a senha mestre vê a aba; em
+  // Cadastros › Equipe, "Vê a aba Brindes e presentes" libera para outras pessoas (coleção "brindes", regra no banco 0028).
+  var BR_COL = 'brindes', brindes = [], brUi = { filtro: 'ideia' };
+  var BR_PARA = [['funcionarios', 'Funcionários'], ['vendedores', 'Vendedores'], ['clientes', 'Clientes']];
+  var BR_STATUS = { ideia: { txt: 'Ideia', cls: 'apagar' }, aprovacao: { txt: 'Aguardando aprovação', cls: 'aprovar' }, aprovado: { txt: 'Aprovado', cls: 'pago' }, reprovado: { txt: 'Reprovado', cls: 'falta' }, entregue: { txt: 'Entregue', cls: 'pago' } };
+  function podeVerBrindes() { if (!session) return false; if (session.ref === 'mestre') return true; var m = meuMembro(); return !!(m && m.veBrindes); }
+  function brAprova() { return !!session && session.ref === 'mestre'; }
+  function subscribeBrindes() {
+    if (!ehEscritorio()) return;
+    db.collection(BR_COL).onSnapshot(function(snap) {
+      brindes = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      if (session) { renderBrindes(); renderBrindesBadge(); if (ui.tab === 'inicio') renderInicio(); }
+    }, function(err) { console.warn(BR_COL, err); });
+  }
+  function brLocalKey() { return 'levissima-brindes-v1'; }
+  function loadLocalBrindes() { try { brindes = JSON.parse(localStorage.getItem(brLocalKey()) || '[]') || []; } catch (e) { brindes = []; } }
+  function brGravar(id, dados, apagar) {
+    if (mode === 'db' && db) return apagar ? db.collection(BR_COL).doc(id).delete() : id ? db.collection(BR_COL).doc(id).set(dados, { merge: true }) : db.collection(BR_COL).doc().set(dados);
+    if (apagar) brindes = brindes.filter(function(x) { return x.id !== id; });
+    else if (id) { var i = brindes.findIndex(function(x) { return x.id === id; }); if (i >= 0) brindes[i] = Object.assign({}, brindes[i], dados); }
+    else brindes.push(Object.assign({ id: 'local-' + uid() }, dados));
+    try { localStorage.setItem(brLocalKey(), JSON.stringify(brindes)); } catch (e) {}
+    renderBrindes(); renderBrindesBadge();
+    return Promise.resolve();
+  }
+  function brQuem() { return { nome: quemSessao(), ref: minhaRef(), em: new Date().toISOString() }; }
+  function brTotal(x) { var q = Number((x.lancamento && x.lancamento.quantidade) || x.quantidade) || 0, v = Number((x.lancamento && x.lancamento.valorUnit) || x.valorUnit) || 0; return q * v; }
+  function brParaTexto(x) { return (x.para || []).map(function(k) { var p = BR_PARA.find(function(y) { return y[0] === k; }); return p ? p[1] : k; }).join(', '); }
+  function renderBrindesBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="brindes"]');
+    if (!b) return;
+    var n = brAprova() ? brindes.filter(function(x) { return x.status === 'aprovacao'; }).length : 0;
+    seloAba(b, n, n + (n === 1 ? ' brinde esperando a sua aprovação' : ' brindes esperando a sua aprovação'));
+  }
+  function brCardHtml(x) {
+    var st = BR_STATUS[x.status] || { txt: x.status, cls: '' }, id = escapeHtml(x.id), l = x.lancamento || {}, d = x.decisao || {}, tot = brTotal(x), acoes = [];
+    var link = linkSeguro(x.link);
+    if (x.status === 'ideia') { acoes.push('<button class="btn-text" data-br="lancar" data-id="' + id + '"><b>Lançar para aprovação</b></button>'); acoes.push('<button class="btn-text" data-br="editar" data-id="' + id + '">Editar</button>'); acoes.push('<button class="btn-text danger" data-br="apagar" data-id="' + id + '">Apagar</button>'); }
+    if (x.status === 'aprovacao') acoes.push(brAprova() ? '<button class="btn-text" data-br="decidir" data-id="' + id + '"><b>Aprovar ou reprovar</b></button>' : '<span class="field-hint">Aguardando a aprovação do Nicolas.</span>');
+    if (x.status === 'aprovado') acoes.push('<button class="btn-text" data-br="entregue" data-id="' + id + '">Marcar como entregue</button>');
+    if (x.status === 'reprovado') acoes.push('<button class="btn-text" data-br="reabrir" data-id="' + id + '">Voltar para ideias</button>');
+    return '<div class="frete-item est-' + st.cls + ' br-card"><div class="frete-top"><span><b>' + escapeHtml(x.titulo) + '</b></span><span class="chip-est ' + st.cls + '">' + escapeHtml(st.txt) + '</span></div>' +
+      '<div class="frete-sub">Para: <b>' + escapeHtml(brParaTexto(x) || '—') + '</b>' + (x.ocasiao ? ' · ' + escapeHtml(x.ocasiao) : '') + '</div>' +
+      ((l.quantidade || x.quantidade) ? '<div class="frete-sub">' + escapeHtml(String(l.quantidade || x.quantidade)) + ' un' + ((l.valorUnit || x.valorUnit) ? ' × ' + escapeHtml(fmtBRL(Number(l.valorUnit || x.valorUnit))) + ' = <b>' + escapeHtml(fmtBRL(tot)) + '</b>' : '') + (l.data ? ' · para ' + escapeHtml(formatDateBR(l.data)) : '') + '</div>' : '') +
+      (l.destinatarios ? '<div class="frete-sub">Quem recebe: ' + escapeHtml(l.destinatarios) + '</div>' : '') +
+      (x.obs ? '<div class="frete-sub">' + escapeHtml(x.obs) + '</div>' : '') +
+      (link ? '<a class="oc-link-a" href="' + escapeHtml(link) + '" target="_blank" rel="noopener noreferrer">🔗 ' + escapeHtml(link.replace(/^https?:\/\//i, '').slice(0, 60)) + '</a>' : '') +
+      '<div class="frete-sub">Ideia de ' + escapeHtml((x.ideiaPor && x.ideiaPor.nome) || '—') + (x.ideiaPor && x.ideiaPor.em ? ' em ' + escapeHtml(formatDateBR(x.ideiaPor.em.slice(0, 10))) : '') + (l.nome ? ' · lançado por ' + escapeHtml(l.nome) : '') + '</div>' +
+      (d.nome ? '<div class="frete-sub' + (d.decisao === 'reprovado' ? ' alerta' : '') + '">' + (d.decisao === 'reprovado' ? 'Reprovado' : 'Aprovado') + ' por ' + escapeHtml(d.nome) + ' em ' + escapeHtml(formatDateTimeBR(d.em)) + (d.obs ? ': ' + escapeHtml(d.obs) : '') + '</div>' : '') +
+      (x.entregue ? '<div class="frete-sub">Entregue · marcado por ' + escapeHtml(x.entregue.nome) + ' em ' + escapeHtml(formatDateTimeBR(x.entregue.em)) + '</div>' : '') +
+      '<div class="frete-acoes">' + acoes.join('') + '</div></div>';
+  }
+  var BR_FILTROS = [['ideia', 'Ideias'], ['aprovacao', 'Aprovação'], ['aprovado', 'Aprovados'], ['entregue', 'Entregues'], ['reprovado', 'Reprovados']];
+  function renderBrindes() {
+    var box = document.getElementById('br-conteudo');
+    if (!box || !session) return;
+    if (!podeVerBrindes()) { box.innerHTML = '<p class="empty-state">Sem acesso a esta aba.</p>'; return; }
+    var lista = brindes.filter(function(x) { return x.status === brUi.filtro; }).sort(function(a, b) { return String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || '')); });
+    var totAprov = brindes.filter(function(x) { return x.status === 'aprovacao'; }).reduce(function(a, x) { return a + brTotal(x); }, 0);
+    box.innerHTML = '<p class="tagline">Brindes e presentes para <b>funcionários, vendedores e clientes</b>: anote as ideias, lance a escolhida para aprovação e o <b>Nicolas aprova ou reprova</b>.</p>' +
+      '<div class="ag2-topo"><button type="button" class="btn btn-primary" data-br="nova">+ Nova ideia</button>' + (totAprov ? '<span class="sol-chip esp">aguardando aprovação: ' + escapeHtml(fmtBRL(totAprov)) + '</span>' : '') + '</div>' +
+      '<div class="est-loc-chips" role="group" aria-label="Filtrar">' + BR_FILTROS.map(function(f) {
+        var n = brindes.filter(function(x) { return x.status === f[0]; }).length;
+        return '<button type="button" class="est-loc' + (brUi.filtro === f[0] ? ' on' : '') + '" data-br="filtro" data-f="' + f[0] + '">' + f[1] + (n ? '<b>' + n + '</b>' : '') + '</button>';
+      }).join('') + '</div>' +
+      (lista.length ? lista.map(brCardHtml).join('') : '<p class="empty-state">' + (brUi.filtro === 'ideia' ? 'Nenhuma ideia ainda. Toque em “+ Nova ideia”.' : 'Nada aqui.') + '</p>');
+  }
+  function abrirBrindeIdeia(x) {
+    gerAbrir({
+      titulo: x ? 'Editar ideia' : 'Nova ideia de brinde ou presente', botao: 'Salvar ideia',
+      html: '<label>O quê <span class="req">*</span><input type="text" id="br-titulo" maxlength="100" autocomplete="off" value="' + escapeHtml(x ? x.titulo : '') + '" placeholder="Ex.: kit garrafa térmica com logo" /></label>' +
+        '<p class="acesso-titulo">Para quem <span class="req">*</span></p><div class="mural-para" id="br-para">' + BR_PARA.map(function(p) { return '<label class="check"><input type="checkbox" value="' + p[0] + '"' + (x && (x.para || []).indexOf(p[0]) >= 0 ? ' checked' : '') + ' /> ' + p[1] + '</label>'; }).join('') + '</div>' +
+        '<label>Ocasião <span class="opt">(opcional)</span><input type="text" id="br-ocasiao" maxlength="80" autocomplete="off" value="' + escapeHtml(x ? x.ocasiao || '' : '') + '" placeholder="Ex.: Natal, aniversário da empresa, visita ao cliente" /></label>' +
+        '<div class="row-2"><label>Quantidade <span class="opt">(estimada)</span><input type="number" id="br-qtd" min="0" step="1" inputmode="numeric" value="' + escapeHtml(x && x.quantidade ? String(x.quantidade) : '') + '" /></label>' +
+        '<label>Valor por unidade (R$) <span class="opt">(estimado)</span><input type="text" id="br-valor" inputmode="decimal" maxlength="14" autocomplete="off" value="' + escapeHtml(x && x.valorUnit ? ocValorTexto(x.valorUnit) : '') + '" /></label></div>' +
+        '<label>Link do produto <span class="opt">(opcional)</span><input type="text" id="br-link" maxlength="500" autocomplete="off" inputmode="url" value="' + escapeHtml(x ? x.link || '' : '') + '" placeholder="https://…" /></label>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="br-obs" maxlength="300" autocomplete="off" value="' + escapeHtml(x ? x.obs || '' : '') + '" /></label>',
+      salvar: function() {
+        var titulo = gerVal('br-titulo'), para = Array.prototype.map.call(document.querySelectorAll('#br-para input:checked'), function(i) { return i.value; });
+        if (!titulo) return gerErro('Escreva o brinde ou presente.');
+        if (!para.length) return gerErro('Marque para quem é (funcionários, vendedores ou clientes).');
+        var lk = gerVal('br-link'); if (lk && !/^https?:\/\//i.test(lk)) lk = 'https://' + lk;
+        if (lk && !linkSeguro(lk)) return gerErro('O link não parece um endereço da internet.');
+        var q = numCampo(gerVal('br-qtd')), v = ocValor(gerVal('br-valor')), agora = new Date().toISOString();
+        var dados = { titulo: titulo, para: para, ocasiao: gerVal('br-ocasiao'), quantidade: q && q > 0 ? Math.round(q) : null, valorUnit: v && v > 0 ? Math.round(v * 100) / 100 : null, link: lk, obs: gerVal('br-obs'), atualizadoEm: agora };
+        if (!x) { dados.status = 'ideia'; dados.ideiaPor = brQuem(); dados.criadoEm = agora; }
+        return brGravar(x ? x.id : null, dados).then(function() { brUi.filtro = 'ideia'; showToast(x ? 'Ideia salva.' : 'Ideia anotada. Quando escolher, toque em “Lançar para aprovação”.'); });
+      }
+    });
+  }
+  function abrirBrindeLancar(x) {
+    gerAbrir({
+      titulo: 'Lançar para aprovação', botao: 'Enviar para aprovação',
+      html: '<p class="hint"><b>' + escapeHtml(x.titulo) + '</b> · para ' + escapeHtml(brParaTexto(x)) + (x.ocasiao ? ' · ' + escapeHtml(x.ocasiao) : '') + '</p>' +
+        '<div class="row-2"><label>Quantidade <span class="req">*</span><input type="number" id="brl-qtd" min="1" step="1" inputmode="numeric" value="' + escapeHtml(x.quantidade ? String(x.quantidade) : '') + '" /></label>' +
+        '<label>Valor por unidade (R$) <span class="req">*</span><input type="text" id="brl-valor" inputmode="decimal" maxlength="14" autocomplete="off" value="' + escapeHtml(x.valorUnit ? ocValorTexto(x.valorUnit) : '') + '" /></label></div>' +
+        '<label>Para quando <span class="opt">(opcional)</span><input type="date" id="brl-data" /></label>' +
+        '<label>Quem recebe <span class="opt">(nomes, setor ou clientes)</span><input type="text" id="brl-dest" maxlength="300" autocomplete="off" placeholder="Ex.: todos os funcionários da fábrica; 20 melhores clientes" /></label>',
+      salvar: function() {
+        var q = numCampo(gerVal('brl-qtd')), v = ocValor(gerVal('brl-valor'));
+        if (!q || q <= 0) return gerErro('Informe a quantidade.');
+        if (v === null || v <= 0) return gerErro('Informe o valor por unidade.');
+        var l = Object.assign(brQuem(), { quantidade: Math.round(q), valorUnit: Math.round(v * 100) / 100, data: gerVal('brl-data'), destinatarios: gerVal('brl-dest') });
+        return brGravar(x.id, { status: 'aprovacao', lancamento: l, atualizadoEm: new Date().toISOString() }).then(function() { brUi.filtro = 'aprovacao'; showToast('Lançado para aprovação: ' + fmtBRL(l.quantidade * l.valorUnit) + '.'); });
+      }
+    });
+  }
+  function abrirBrindeDecisao(x) {
+    if (!brAprova()) { showToast('Só o Nicolas aprova os brindes e presentes.'); return; }
+    gerAbrir({
+      titulo: 'Aprovar ou reprovar', botao: null,
+      html: brCardHtml(x).replace(/<div class="frete-acoes">[\s\S]*<\/div><\/div>$/, '</div>') +
+        '<label>Observação <span class="opt">(obrigatória para reprovar)</span><input type="text" id="brd-obs" maxlength="200" autocomplete="off" /></label>' +
+        '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovado">Aprovar (' + escapeHtml(fmtBRL(brTotal(x))) + ')</button><button type="button" class="btn btn-secondary oc-reprovar" data-ger="reprovado">Reprovar</button></div>',
+      acao: function(dec) {
+        var obs = gerVal('brd-obs');
+        if (dec === 'reprovado' && !obs) { gerErro('Escreva o motivo da reprovação.'); return; }
+        brGravar(x.id, { status: dec, decisao: Object.assign(brQuem(), { decisao: dec, obs: obs }), atualizadoEm: new Date().toISOString() })
+          .then(function() { gerFechar(); brUi.filtro = dec; showToast(dec === 'aprovado' ? 'Aprovado.' : 'Reprovado.'); }).catch(function(e) { console.error('brindes', e); showToast('Não foi possível salvar agora.'); });
+      }
+    });
+  }
+  document.getElementById('tab-brindes').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-br]');
+    if (!b) return;
+    var a = b.dataset.br, x = b.dataset.id ? brindes.find(function(y) { return y.id === b.dataset.id; }) : null;
+    var falha = function(err) { console.error('brindes', err); showToast('Não foi possível salvar agora.'); };
+    if (a === 'nova') abrirBrindeIdeia(null);
+    else if (a === 'filtro') { brUi.filtro = b.dataset.f; renderBrindes(); }
+    else if (a === 'editar' && x) abrirBrindeIdeia(x);
+    else if (a === 'lancar' && x) abrirBrindeLancar(x);
+    else if (a === 'decidir' && x) abrirBrindeDecisao(x);
+    else if (a === 'entregue' && x) brGravar(x.id, { status: 'entregue', entregue: brQuem(), atualizadoEm: new Date().toISOString() }).then(function() { showToast('Marcado como entregue.'); }).catch(falha);
+    else if (a === 'reabrir' && x) brGravar(x.id, { status: 'ideia', atualizadoEm: new Date().toISOString() }).then(function() { brUi.filtro = 'ideia'; showToast('De volta às ideias.'); }).catch(falha);
+    else if (a === 'apagar' && x) {
+      if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Tocar de novo para apagar'; return; }
+      brGravar(x.id, null, true).then(function() { showToast('Ideia apagada.'); }).catch(falha);
+    }
+  });
+
   // ---------- init ----------
   function preenchido(v) { return !!v && String(v).indexOf('COLE' + '_AQUI') === -1; } // (o marcador é montado em partes de propósito)
   function carregarScript(src) {
@@ -20253,6 +20600,7 @@
     subscribeSuprimentos();
     subscribeCompras();
     subscribeTrocas();
+    subscribeBrindes();
     subscribeDatas();
     subscribeTransportadoras();
     subscribeCadastroPedidos();
