@@ -215,16 +215,16 @@
   .subsection-title { font-size: 0.8125rem; font-weight: 600; color: var(--muted); margin: 18px 0 8px; }
   /* lançamento: lista fixa de produtos por cliente, na ordem do catálogo */
   .pt-table { margin: 4px 0 10px; }
-  /* Produto | Quantidade | Fileiras (por palete) | Paletes | Chapatex */
-  .pt-head, .pt-row { display: grid; grid-template-columns: minmax(0, 1fr) 62px 44px 40px 50px; gap: 5px; align-items: center; }
-  @media (min-width: 560px) { .pt-head, .pt-row { grid-template-columns: minmax(0, 1fr) 84px 64px 58px 66px; gap: 8px; } }
+  /* Produto | Quantidade | Paletes | Chapatex (calculados pelo padrão; paletes diferentes e soltos ficam embaixo) */
+  .pt-head, .pt-row { display: grid; grid-template-columns: minmax(0, 1fr) 70px 48px 58px; gap: 6px; align-items: center; }
+  @media (min-width: 560px) { .pt-head, .pt-row { grid-template-columns: minmax(0, 1fr) 92px 66px 74px; gap: 8px; } }
   .pt-head { font-size: 0.6875rem; color: var(--muted); padding-bottom: 4px; border-bottom: 1px solid var(--line); }
   .pt-head span:not(:first-child) { text-align: right; }
   .pt-row { padding: 5px 0; border-bottom: 1px solid var(--line); }
   .pt-bat { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 0.8125rem; }
   .pt-bat:empty { display: none; }
-  .pt-bat-l { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 0.8125rem; font-weight: 600; cursor: pointer; color: inherit; }
-  .pt-bat-l input { width: 18px; height: 18px; margin: 0; }
+  .pt-bat-l { display: inline-flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 0.8125rem; font-weight: 600; cursor: pointer; color: inherit; line-height: 1.3; }
+  .pt-bat-l input { width: 18px; height: 18px; margin: 0; flex: none; }
   .pt-bat-obs { font-weight: 400; opacity: 0.85; }
   .pt-bat-q { display: inline-flex; align-items: center; gap: 6px; }
   .pt-bat-q input { width: 84px; min-height: 34px; padding: 4px 8px; margin: 0; }
@@ -232,13 +232,21 @@
   .pt-grp { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; width: 100%; }
   .pt-grp-l { display: inline-flex; align-items: center; gap: 5px; }
   .pt-grp-l input { width: 62px; min-height: 34px; padding: 4px 6px; margin: 0; }
-  .pt-grp-r { font-size: 0.75rem; opacity: 0.9; }
+  .pt-grp-r { font-size: 0.75rem; opacity: 0.9; width: 100%; }
+  .pt-grp-i { font-size: 0.75rem; opacity: 0.85; }
   .pt-row .btn-text { color: inherit; text-decoration: underline; }
   #admin-tabs .mod-tab { text-decoration: none; color: inherit; }
-  #admin-tabs .tab-sep { display: none; }
-  @media (min-width: 1024px) { #admin-tabs .tab-sep { display: block; font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); padding: 14px 12px 4px; font-weight: 700; } }
   #tab-producao.pr-leitura [data-mp="op-nova"], #tab-producao.pr-leitura [data-mp="op-editar"], #tab-producao.pr-leitura [data-mp="op-concluir"], #tab-producao.pr-leitura [data-mp="op-excluir"], #tab-producao.pr-leitura [data-mp="ir-materia"], #tab-producao.pr-leitura [data-mp="op-desfazer"] { display: none; }
   .pr-ltm select { display: block; width: 100%; min-width: 120px; margin: 2px 0 !important; }
+  .aceite-chip { margin: 6px 0 2px; padding: 4px 9px; border-radius: 8px; font-size: 0.8125rem; font-weight: 600; border: 1px solid var(--line); border-left-width: 4px; }
+  .aceite-chip.ac-aguardando, .aceite-card.ac-aguardando { border-left-color: var(--laranja); }
+  .aceite-chip.ac-aguardando { color: var(--laranja-texto); }
+  .aceite-chip.ac-aceito, .aceite-card.ac-aceito { border-left-color: var(--verde); }
+  .aceite-chip.ac-aceito { color: var(--verde-texto); }
+  .aceite-chip.ac-recusado, .aceite-card.ac-recusado { border-left-color: var(--danger); }
+  .aceite-chip.ac-recusado { color: var(--danger); }
+  .aceite-card { border-left-width: 4px; }
+  .aceite-card .aceite-resp { margin: 8px 0 4px; font-size: 0.9375rem; }
   .cn-ficha th { text-align: left; width: 42%; color: var(--muted); font-weight: 600; }
   .figure-bat { color: var(--laranja-texto, #a35200); }
   .pt-row:last-child { border-bottom: none; }
@@ -2569,7 +2577,7 @@
       </label>
 
       <div class="section-head"><h2 class="section-title">Clientes desta carga</h2></div>
-      <p class="hint">Os paletes saem pelo padrão de cada produto. Palete com fileira a mais: troque o número em <b>Fileiras</b> (ex.: 7 em vez de 6) e o app recalcula paletes e chapatex. No copo, corrija direto o número de paletes.</p>
+      <p class="hint">Paletes e chapatex saem pelo padrão de cada produto. Se algum palete vai com outra quantidade, marque <b>Paletes com quantidade diferente do padrão</b> e escreva quantos paletes com quantos fardos (ex.: 2 paletes com 175): cada um conta 1 palete e 1 chapatex por fileira. <b>Fardos soltos</b> vão por cima, sem palete e sem chapatex.</p>
       <p class="field-hint warn hidden" id="cg-sem-produtos-hint">Cadastre ao menos um produto em "Produtos cadastrados" antes de montar uma carga.</p>
       <div id="cg-clientes-list"></div>
       <div class="header-row cg-add-row">
@@ -2601,7 +2609,7 @@
       <div class="pedido-resumo" id="cgc-resumo"></div>
 
       <div class="section-head"><h2 class="section-title">Conferência por cliente</h2></div>
-      <p class="hint">Confira as quantidades carregadas. Palete com fileira a mais: troque o número em <b>Fileiras</b>; no copo, corrija o número de paletes. O chapatex segue as fileiras (no copo, 1 por palete).</p>
+      <p class="hint">Confira as quantidades carregadas. Palete com outra quantidade: marque <b>Paletes com quantidade diferente do padrão</b> e escreva quantos paletes com quantos fardos. O chapatex segue as fileiras de cada palete (no copo, 1 por palete).</p>
       <div id="cgc-clientes-list"></div>
       <div class="pedido-resumo" id="cgc-totais"></div>
 
@@ -3937,96 +3945,114 @@
     render();
     return Promise.resolve();
   }
-  // Paletes seguem o padrão do produto: quantidade ÷ quantidade por palete, arredondado para cima
-  // (ex.: 1.500 fardos de 510ml ÷ 150 = 10 paletes).
-  // Palete com fileira a mais (ou a menos): quem lança informa quantas fileiras vão em cada palete
-  // (ex.: 7 em vez de 6) e os paletes são recalculados — 175 fardos de 510ml com 7 fileiras = 1 palete.
-  // Casos misturados (ou copo, que não tem fileira): corrige-se direto o número de paletes e o app
-  // avisa o produto que ficou acima do padrão.
-  // Chapatex:
-  //   fileira = 1 por fileira, mesmo incompleta (não depende de quantos paletes);
-  //   copo (base) = 1 por palete, só a chapa da base, mesmo com caixas a mais;
-  //   cadastro antigo = paletes × chapatex por palete.
+  // Paletes e chapatex seguem sempre o padrão do produto (pedido de 22/10/2026): quantidade ÷ quantidade por palete,
+  // arredondado para cima (ex.: 1.000 fardos de 510ml ÷ 150 = 7 paletes, o último com 100).
+  // Paletes fora do padrão: quem lança marca "Paletes com quantidade diferente do padrão" e escreve quantos paletes
+  // com quantos fardos (ex.: 2 paletes com 175 fardos). Cada um conta 1 palete e o resto da linha segue o padrão.
+  // Chapatex, palete por palete:
+  //   fileira = 1 por fileira, mesmo incompleta (palete de 175 fardos de 510ml = 7 fileiras de 25 = 7 chapatex);
+  //   copo (base) = 1 por palete, só a chapa da base;
+  //   cadastro antigo = chapatex por palete.
+  // Fardos soltos (batidos por cima, 21/10/2026): não usam palete nem chapatex e saem da conta antes de tudo.
   function temFileiras(p) { return !!p && p.tipoChapatex === 'fileira' && (Number(p.unidadesPorFileira) || 0) > 0; }
   function fileirasPadraoDe(p) {
     var upp = Number(p && p.unidadesPorPalete) || 0;
     return (temFileiras(p) && upp > 0) ? Math.ceil(upp / Number(p.unidadesPorFileira)) : 0;
   }
-  // batidos (21/10/2026): fardos soltos por cima da carga, sem palete e sem chapatex; o resto segue paletizado
-  function calcItem(p, quantidade, paletesAjuste, fileirasAjuste, batidos, grupos) {
+  function chapatexDoPalete(p, q) {
+    if (!p || !(q > 0)) return 0;
+    if (p.tipoChapatex === 'base') return 1;
+    if (p.tipoChapatex === 'fileira') { var upf = Number(p.unidadesPorFileira) || 0; return upf > 0 ? Math.ceil(q / upf) : 0; }
+    return Number(p.chapatexPorPalete) || 0;
+  }
+  function fileirasDoPalete(p, q) { return temFileiras(p) && q > 0 ? Math.ceil(q / Number(p.unidadesPorFileira)) : 0; }
+  // q unidades em paletes de "por" cada (o último pode ir incompleto)
+  function paletizar(p, q, por) {
+    if (!(q > 0)) return { paletes: 0, chapatex: 0, resto: 0 };
+    if (!(por > 0)) return { paletes: 1, chapatex: chapatexDoPalete(p, q), resto: 0 };
+    var cheios = Math.floor(q / por), resto = q % por;
+    return { paletes: cheios + (resto ? 1 : 0), chapatex: cheios * chapatexDoPalete(p, por) + (resto ? chapatexDoPalete(p, resto) : 0), resto: resto };
+  }
+  // grupos: [{ n: paletes, q: unidades em cada palete }] (só os paletes fora do padrão)
+  function calcItem(p, quantidade, batidos, grupos) {
     var qtd = Math.max(0, Math.floor(Number(quantidade) || 0));
     var r = { paletes: 0, chapatex: 0, paletesAuto: 0, paletesManual: false, ajustado: false, excedente: 0, resto: 0,
-              fileiras: 0, fileirasPadrao: fileirasPadraoDe(p), fileirasAjustadas: false, batidos: 0, paletizado: 0 };
+              fileiras: fileirasPadraoDe(p), fileirasPadrao: fileirasPadraoDe(p), fileirasAjustadas: false,
+              batidos: 0, paletizado: 0, porPalete: Number(p && p.unidadesPorPalete) || 0, grupos: [], paletesResto: 0, sobraGrupos: 0 };
     if (!p || qtd <= 0) return r;
     r.batidos = Math.min(qtd, Math.max(0, Math.floor(Number(batidos) || 0)));
     qtd -= r.batidos; r.paletizado = qtd;
     if (qtd <= 0) return r;
-    var upp = Number(p.unidadesPorPalete) || 0;
-    var upf = temFileiras(p) ? Number(p.unidadesPorFileira) : 0;
-    var porPalete = upp;
-    if (upf) {
-      var f = parseInt(fileirasAjuste, 10);
-      r.fileirasAjustadas = r.fileirasPadrao > 0 && !isNaN(f) && f >= 1 && f !== r.fileirasPadrao;
-      r.fileiras = r.fileirasAjustadas ? f : r.fileirasPadrao;
-      if (r.fileirasAjustadas) porPalete = f * upf;
-    }
-    // paletes de formas diferentes (21/10/2026): grupos "N paletes com F fileiras" (ex.: 175 ou 200 fardos); o resto
-    // vai no padrão (ou nas fileiras da coluna); os batidos já saíram da conta
-    var gs = (grupos || []).map(function(g) { return { n: parseInt(g.n, 10), f: parseInt(g.f, 10) }; }).filter(function(g) { return g.n >= 1 && g.f >= 1; });
-    if (upf && gs.length) {
-      var rest = qtd, pals = 0; r.grupos = [];
-      gs.forEach(function(g) { if (rest <= 0) return; var per = g.f * upf, q = Math.min(rest, g.n * per), n = Math.ceil(q / per); rest -= q; pals += n; r.grupos.push({ paletes: n, fileiras: g.f, quantidade: q }); });
-      var porResto = porPalete;
-      r.paletesResto = rest > 0 ? (porResto > 0 ? Math.ceil(rest / porResto) : 1) : 0;
-      r.paletesAuto = pals + r.paletesResto; r.paletes = r.paletesAuto; r.paletesManual = false; r.ajustado = true;
-      r.excedente = 0; r.resto = r.paletesResto && porResto > 0 ? rest % porResto : 0;
-      if (p.tipoChapatex === 'base') r.chapatex = r.paletes;
-      else if (p.tipoChapatex === 'fileira') r.chapatex = Math.ceil(qtd / upf);
-      else r.chapatex = r.paletes * (Number(p.chapatexPorPalete) || 0);
-      return r;
-    }
-    r.paletesAuto = porPalete > 0 ? Math.ceil(qtd / porPalete) : 1;
-    var aj = parseInt(paletesAjuste, 10);
-    r.paletesManual = !isNaN(aj) && aj >= 1 && aj !== r.paletesAuto;
-    r.paletes = r.paletesManual ? aj : r.paletesAuto;
-    r.ajustado = r.paletesManual || r.fileirasAjustadas;
-    r.excedente = porPalete > 0 ? Math.max(0, qtd - r.paletes * porPalete) : 0;   // produto a mais nos paletes, além do que cabe
-    r.resto = (!r.paletesManual && porPalete > 0) ? qtd % porPalete : 0;           // último palete incompleto
-    if (r.fileirasAjustadas && r.paletes === 1) r.resto = 0;                       // palete único: as fileiras já dizem tudo
-    if (p.tipoChapatex === 'base') r.chapatex = r.paletes;
-    else if (p.tipoChapatex === 'fileira') r.chapatex = upf > 0 ? Math.ceil(qtd / upf) : 0;
-    else r.chapatex = r.paletes * (Number(p.chapatexPorPalete) || 0);
+    var upp = r.porPalete;
+    r.paletesAuto = paletizar(p, qtd, upp).paletes;
+    var rest = qtd;
+    (grupos || []).forEach(function(g) {
+      var n = parseInt(g.n, 10), q = parseInt(g.q, 10);
+      if (!(n >= 1 && q >= 1)) return;
+      var pedido = n * q, usa = Math.min(rest, pedido);
+      if (pedido > usa) r.sobraGrupos += pedido - usa;
+      if (usa <= 0) return;
+      var z = paletizar(p, usa, q);
+      rest -= usa;
+      r.grupos.push({ paletes: z.paletes, porPalete: q, fileiras: fileirasDoPalete(p, q), quantidade: usa, chapatex: z.chapatex });
+      r.paletes += z.paletes; r.chapatex += z.chapatex;
+    });
+    var padrao = paletizar(p, rest, upp);
+    r.paletes += padrao.paletes; r.chapatex += padrao.chapatex; r.resto = padrao.resto;
+    if (r.grupos.length) { r.paletesResto = padrao.paletes; r.ajustado = true; }
     return r;
   }
-  // Aviso da linha do produto: fileiras fora do padrão, produto acima do que cabe nos paletes, ou último palete incompleto.
+  // Aviso da linha do produto: paletes fora do padrão, último palete incompleto (e, nas cargas antigas, fileiras
+  // corrigidas ou produto acima do que cabia nos paletes).
+  function grupoTexto(g, u) {
+    return fmtInt(g.paletes) + (g.paletes === 1 ? ' palete' : ' paletes') + ' com ' +
+      (Number(g.porPalete) > 0 ? qtdUnidade(g.porPalete, u) + (g.fileiras ? ' (' + fmtInt(g.fileiras) + (g.fileiras === 1 ? ' fileira)' : ' fileiras)') : '') : fmtInt(g.fileiras) + ' fileiras');
+  }
   function avisoTexto(u, c) {
     var partes = [], alerta = false;
     if (c.grupos && c.grupos.length) {
-      partes.push(c.grupos.map(function(g) { return fmtInt(g.paletes) + (g.paletes === 1 ? ' palete' : ' paletes') + ' com ' + fmtInt(g.fileiras) + ' fileiras (' + qtdUnidade(g.quantidade, u) + ')'; }).join(' + ') +
+      partes.push(c.grupos.map(function(g) { return grupoTexto(g, u); }).join(' + ') +
         (c.paletesResto ? ' + ' + fmtInt(c.paletesResto) + (c.paletesResto === 1 ? ' palete' : ' paletes') + (c.fileirasAjustadas ? ' com ' + fmtInt(c.fileiras) + ' fileiras' : ' no padrão') : ''));
       alerta = true;
     } else if (c.fileirasAjustadas) {
       partes.push(fmtInt(c.fileiras) + (c.fileiras === 1 ? ' fileira' : ' fileiras') + (c.paletes > 1 ? ' por palete' : ' no palete') + ' (padrão ' + fmtInt(c.fileirasPadrao) + ')');
       alerta = true;
     }
+    if (c.sobraGrupos) { partes.push('faltam ' + qtdUnidade(c.sobraGrupos, u) + ' para completar os paletes diferentes'); alerta = true; }
     if (c.excedente) { partes.push(aMaisTexto(c.excedente, u, c.paletes)); alerta = true; }
     else if (c.resto) partes.push((c.paletes > 1 ? 'último palete com ' : 'palete incompleto, com ') + qtdUnidade(c.resto, u));
     return partes.length ? { texto: partes.join('; '), alerta: alerta } : null;
   }
   function avisoPalete(p, c) { return avisoTexto(unidadeDe(p), c); }
+  function soltosTexto(n, u) { return qtdUnidade(n, u) + ' soltos por cima (batidos, sem palete e sem chapatex)'; }
   // O mesmo aviso, a partir do item gravado na carga (detalhes e ordem de carregamento).
   function avisoItem(it) {
     var b = Number(it.batidos) || 0, a = avisoItemPalete(it);
     if (!b) return a;
-    var t = qtdUnidade(b, it.unidade || '') + ' batidos por cima (sem palete e sem chapatex)';
+    var t = soltosTexto(b, it.unidade || '');
     return { texto: t + (a ? '; ' + a.texto : ''), alerta: a ? a.alerta : false };
   }
   function avisoItemPalete(it) {
     return avisoTexto(it.unidade || '', {
-      grupos: it.paletesMistos || [], paletesResto: Number(it.paletesResto) || 0,
+      grupos: it.paletesMistos || [], paletesResto: Number(it.paletesResto) || 0, sobraGrupos: Number(it.sobraGrupos) || 0,
       fileirasAjustadas: !!it.fileirasAjustadas, fileiras: Number(it.fileirasPorPalete) || 0, fileirasPadrao: Number(it.fileirasPadrao) || 0,
       excedente: Number(it.excedente) || 0, resto: Number(it.resto) || 0, paletes: Number(it.paletes) || 0
     });
+  }
+  // Paletes fora do padrão de um item gravado, como o editor usa ({ n paletes, q em cada palete }). Cargas antigas
+  // (fileiras por palete ou paletes corrigidos à mão) viram o mesmo formato ao editar.
+  function gruposDoItem(it) {
+    var upf = Number(it.unidadesPorFileira) || 0, pal = Number(it.paletes) || 0;
+    var qtd = Math.max(0, (Number(it.quantidade) || 0) - (Number(it.batidos) || 0));
+    if ((it.paletesMistos || []).length) {
+      return it.paletesMistos.map(function(g) {
+        var q = Number(g.porPalete) || (Number(g.fileiras) || 0) * upf;
+        return q > 0 && Number(g.paletes) > 0 ? { n: String(g.paletes), q: String(q) } : null;
+      }).filter(Boolean);
+    }
+    if (it.fileirasAjustadas && upf && Number(it.fileirasPorPalete) > 0 && pal > 0) return [{ n: String(pal), q: String(upf * Number(it.fileirasPorPalete)) }];
+    if (it.paletesAjustados && pal > 0 && qtd > 0) return [{ n: String(pal), q: String(Math.ceil(qtd / pal)) }];
+    return [];
   }
 
   // ---------- estoque: cálculo ----------
@@ -4075,7 +4101,7 @@
   function subscribeCargas() {
     db.collection('cargas').onSnapshot(function(snap) {
       cargas = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-      if (session) render();
+      if (session) { avisarAceites(); render(); }
     }, function(err) { console.error('cargas error', err); });
   }
   function addOrUpdateCarga(rec, editingId) {
@@ -5004,13 +5030,14 @@
   }
   function linkModulo(id) { return 'modulos/' + id + '.html'; }
   function renderModulosNav() {
-    // os módulos da fábrica ficam no menu das abas (à esquerda no computador), junto dos demais setores (21/10/2026)
+    // os módulos da fábrica ficam no menu das abas (à esquerda no computador), iguais aos demais setores,
+    // sem grupo separado (21 e 22/10/2026)
     var nav = document.getElementById('modulos-nav'), tabs = document.getElementById('admin-tabs');
     var mods = modulosDaSessao();
     nav.classList.add('hidden'); nav.innerHTML = '';
     tabs.querySelectorAll('.mod-tab, .tab-sep').forEach(function(x) { x.parentNode.removeChild(x); });
     if (!mods.length) return;
-    tabs.insertAdjacentHTML('beforeend', '<span class="tab-sep" aria-hidden="true">Fábrica</span>' + mods.map(function(m) {
+    tabs.insertAdjacentHTML('beforeend', mods.map(function(m) {
       var selo = m.id === 'empilhadeiras' && oleoEmp && oleoEmp.length
         ? '<span class="tab-alerta" title="' + escapeHtml(oleoEmpTexto()) + '">' + oleoEmp.length + '</span>' : '';
       return '<a class="seg-btn mod-tab" href="' + linkModulo(m.id) + '" data-mod="' + m.id + '"><span class="tab-ico" aria-hidden="true">' + iconeMod(m.id) + '</span><span class="tab-txt">' + escapeHtml(m.curto) + '</span>' + selo + '</a>';
@@ -5369,6 +5396,7 @@
     return '<article class="carga-card ' + st.cls + '" data-id="' + id + '">' + head +
       '<div class="carga-card-body">' +
         '<div class="carga-top"><span class="carga-driver-name">' + escapeHtml(c.motorista || '—') + '</span>' + pager + '</div>' +
+        (done ? '' : aceiteChipHtml(c)) +
         '<div class="carga-clientes-line">' + escapeHtml(cargaClientesResumo(c) || '—') + '</div>' +
         cargaProdutosHtml(c) +
         (esperaAtual(c) != null ? '<div class="carga-sub espera' + (esperaAtual(c) >= ESPERA_LONGA_MIN ? ' longa' : '') + '">No pátio há ' + fmtDuracao(esperaAtual(c)) + '</div>' : '') +
@@ -5415,6 +5443,10 @@
       ? row('Faturamento', escapeHtml('ok de ' + (nomePessoa(c.faturamentoPor) || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')) +
           '<button type="button" class="btn-text" data-action="fat-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
       : row('Faturamento', 'aguardando ok<button type="button" class="btn-text" data-action="fat-ok" data-id="' + id + '">Dar ok</button>');
+    if (!done && aceiteEstado(c)) {
+      var ae = aceiteEstado(c);
+      info += row('Aceite do motorista', escapeHtml(aceiteTexto(c)) + (ae !== 'aceito' ? '<button type="button" class="btn-text" data-action="aceite-registrar" data-id="' + id + '">Registrar resposta (telefone)</button>' : ''), ae === 'aceito' ? 'ok' : 'ask');
+    }
     info += fvDetailRows(c, id, row);
     info += duplaDetailRow(c, id, row);
     var dev = devolucaoAnteriorTexto(c);
@@ -6050,6 +6082,7 @@
     if (action === 'edit-carga') { closeCargaDetail(); openCargaForm(c); return; }
     if (action === 'ordem-carga') { closeCargaDetail(); openOrdemCarregamento(c); return; }
     if (action === 'fat-ok') { darOkFaturamento(id); return; }
+    if (action === 'aceite-registrar') { closeCargaDetail(); aceiteRegistrarEscritorio(id); return; }
     if (action === 'fat-desfazer') { desfazerOkFaturamento(id); return; }
     if (action === 'delete-carga') { ui.confirmDeleteCarga = id; renderCargaDetail(); return; }
     if (action === 'confirm-delete-carga') { closeCargaDetail(); deleteCargaById(id); return; }
@@ -6252,7 +6285,7 @@
       el.textContent = 'Padrão: ' + fmtInt(v.unidadesPorPalete) + ' ' + v.unidade + ' por palete, com 1 chapatex (só a base). Palete com ' + v.unidade + ' a mais é informado no lançamento, corrigindo os paletes, e continua com 1 chapatex.';
     } else if (v.unidadesPorFileira > 0) {
       var cheio = Math.ceil(v.unidadesPorPalete / v.unidadesPorFileira);
-      el.textContent = 'Padrão: ' + fmtInt(v.unidadesPorPalete) + ' ' + v.unidade + ' por palete, com ' + fmtInt(cheio) + ' chapatex (' + fmtInt(cheio) + ' fileiras de ' + fmtInt(v.unidadesPorFileira) + '). Cada fileira, mesmo incompleta, leva 1 chapatex. Palete com fileira a mais é informado no lançamento, no campo Fileiras.';
+      el.textContent = 'Padrão: ' + fmtInt(v.unidadesPorPalete) + ' ' + v.unidade + ' por palete, com ' + fmtInt(cheio) + ' chapatex (' + fmtInt(cheio) + ' fileiras de ' + fmtInt(v.unidadesPorFileira) + '). Cada fileira, mesmo incompleta, leva 1 chapatex. Palete com outra quantidade é informado na carga, em “Paletes com quantidade diferente do padrão”.';
     } else {
       el.textContent = 'Informe ' + quantasDe(v.unidade) + ' formam uma fileira.';
     }
@@ -6646,8 +6679,9 @@
       g.entregas.sort(function(a, b) { return (Number(a.ordemEntrega) || ordemPeloId(a.id)) - (Number(b.ordemEntrega) || ordemPeloId(b.id)); });
     });
     avulsas.sort(function(a, b) { return (a.data || '').localeCompare(b.data || ''); });
-    var html = convitePesquisaHtml() + viagens.map(viagemCardHtml).join('') + avulsas.map(function(r) { return renderDriverPendingItem(r, false); }).join('');
-    document.getElementById('driver-pending-list').innerHTML = (viagens.length || avulsas.length) ? html : html + '<p class="empty-state">Nenhuma entrega aguardando no momento.</p>';
+    var aCarregar = minhasCargasACarregar();
+    var html = convitePesquisaHtml() + aCarregar.map(aceiteCardHtml).join('') + viagens.map(viagemCardHtml).join('') + avulsas.map(function(r) { return renderDriverPendingItem(r, false); }).join('');
+    document.getElementById('driver-pending-list').innerHTML = (viagens.length || avulsas.length || aCarregar.length) ? html : html + '<p class="empty-state">Nenhuma entrega aguardando no momento.</p>';
     document.getElementById('driver-done-list').innerHTML = done.length
       ? done.map(renderDriverDoneItem).join('')
       : '<p class="empty-state">Nenhuma entrega concluída ainda.</p>';
@@ -6749,6 +6783,144 @@
     return '<div class="viagem-card" data-carga="' + id + '">' + topo + controle +
       g.entregas.map(function(r) { return renderDriverPendingItem(r, true); }).join('') + '</div>';
   }
+  // ---------- aceite do motorista (pedido de 22/10/2026) ----------
+  // O escritório escolhe o motorista na carga; o motorista aceita no app e confirma que vem carregar (com a hora em
+  // que chega). Trocar o motorista, a data ou a hora da carga pede um novo aceite. Quem não usa o app responde por
+  // telefone ou WhatsApp: o escritório registra a resposta (fica o nome de quem registrou).
+  // carga.aceite = { motorista, estado: 'aceito' | 'recusado', em, data, hora, chegada, motivo, registradoPor }
+  function aceiteDaCarga(c) {
+    var a = c && c.aceite;
+    if (!c || !c.motorista || !a || !mesmoMotorista(a.motorista, c.motorista)) return null;
+    if ((a.data || '') !== (c.data || '') || (a.hora || '') !== (c.hora || '')) return null;
+    return a.estado === 'aceito' || a.estado === 'recusado' ? a : null;
+  }
+  function aceiteEstado(c) {
+    if (!c || !c.motorista || c.status === 'concluida') return '';
+    var a = aceiteDaCarga(c);
+    return a ? a.estado : 'aguardando';
+  }
+  function aceiteTexto(c) {
+    var e = aceiteEstado(c), a = aceiteDaCarga(c), m = c.motorista || 'o motorista';
+    if (e === 'aguardando') return '⏳ Aguardando o aceite de ' + m;
+    if (e === 'aceito') return '✅ ' + m + ' aceitou e vem carregar' + (a.chegada ? ' às ' + a.chegada : '') + (a.registradoPor ? ' (registrado por ' + nomePessoa(a.registradoPor) + ')' : '');
+    if (e === 'recusado') return '❌ ' + m + ' não aceitou' + (a.motivo ? ': ' + a.motivo : '') + ' · escolha outro motorista';
+    return '';
+  }
+  function aceiteChipHtml(c) {
+    var e = aceiteEstado(c);
+    return e ? '<div class="aceite-chip ac-' + e + '">' + escapeHtml(aceiteTexto(c)) + '</div>' : '';
+  }
+  function gravarAceite(c, dados) {
+    var a = Object.assign({ motorista: c.motorista || '', data: c.data || '', hora: c.hora || '', em: new Date().toISOString(), chegada: '', motivo: '', registradoPor: '' }, dados);
+    return setCargaFields(c.id, { aceite: a });
+  }
+  function minhasCargasACarregar() {
+    if (!session || session.role !== 'motorista') return [];
+    return cargas.filter(function(c) { return c.status !== 'concluida' && mesmoMotorista(c.motorista, session.nome); })
+      .sort(function(a, b) { return String((a.data || '') + (a.hora || '')).localeCompare(String((b.data || '') + (b.hora || ''))); });
+  }
+  function cargaQuandoTexto(c) { return formatDateBR(c.data) + (c.hora ? ' às ' + c.hora : ''); }
+  function cargaDestinosTexto(c) {
+    return (c.clientes || []).map(function(cl) { return (cl.cliente || '—') + (cl.destino ? ' (' + cl.destino + ')' : ''); }).join(', ');
+  }
+  function aceiteCardHtml(c) {
+    var id = escapeHtml(c.id), e = aceiteEstado(c), a = aceiteDaCarga(c);
+    var resp = e === 'aceito'
+      ? '<p class="aceite-resp">✅ Você confirmou que vem carregar' + (a.chegada ? ' às <b>' + escapeHtml(a.chegada) + '</b>' : '') + '.</p>' +
+        '<button type="button" class="btn-text" data-action="aceite-nao" data-id="' + id + '">Não vou mais poder</button>'
+      : e === 'recusado'
+        ? '<p class="aceite-resp">❌ Você não aceitou esta carga.</p><button type="button" class="btn-text" data-action="aceite-sim" data-id="' + id + '">Aceitar mesmo assim</button>'
+        : '<p class="aceite-resp"><b>Você aceita esta carga e vem carregar?</b></p>' +
+          '<div class="frete-acoes"><button type="button" class="btn btn-primary btn-sm" data-action="aceite-sim" data-id="' + id + '">✅ Aceito, vou carregar</button>' +
+          '<button type="button" class="btn btn-secondary btn-sm" data-action="aceite-nao" data-id="' + id + '">❌ Não posso</button></div>';
+    return '<div class="viagem-card aceite-card ac-' + e + '" data-carga="' + id + '"><div class="viagem-head"><div>' +
+      '<span class="viagem-titulo">Carga para carregar · ' + escapeHtml(cargaQuandoTexto(c)) + '</span>' +
+      '<span class="viagem-sub">' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) + ' · ' + fmtInt(c.totalChapatex) + ' chapatex' +
+        (Number(c.totalBatidos) ? ' · ' + fmtInt(c.totalBatidos) + ' soltos por cima' : '') + '</span>' +
+      (cargaDestinosTexto(c) ? '<span class="viagem-sub">' + escapeHtml(cargaDestinosTexto(c)) + '</span>' : '') +
+      '</div></div>' + resp + '</div>';
+  }
+  function aceiteResponder(id, sim) {
+    var c = findCarga(id);
+    if (!c || !session) return;
+    var resumo = '<p class="hint">Carga de <b>' + escapeHtml(cargaQuandoTexto(c)) + '</b> · ' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) +
+      (cargaDestinosTexto(c) ? ' · ' + escapeHtml(cargaDestinosTexto(c)) : '') + '</p>';
+    if (sim) {
+      gerAbrir({
+        titulo: 'Aceitar a carga', botao: 'Aceito e vou carregar',
+        html: resumo + '<label>Que horas você chega para carregar?<input type="time" id="ac-chegada" value="' + escapeHtml(c.hora || '') + '" /></label>' +
+          '<label class="check-row"><input type="checkbox" id="ac-confirmo" /> Confirmo que vou carregar esta carga no dia ' + escapeHtml(formatDateBR(c.data)) + '.</label>',
+        salvar: function() {
+          if (!document.getElementById('ac-confirmo').checked) return gerErro('Marque a confirmação de que você vem carregar.');
+          var ch = gerVal('ac-chegada');
+          return gravarAceite(c, { estado: 'aceito', chegada: ch }).then(function() {
+            showToast('Carga aceita. O escritório já vê que você vem carregar' + (ch ? ' às ' + ch : '') + '.');
+            renderDriverView();
+          });
+        }
+      });
+      return;
+    }
+    gerAbrir({
+      titulo: 'Não posso carregar', botao: 'Avisar o escritório',
+      html: resumo + '<p class="hint">O escritório vê na hora e escolhe outro motorista.</p>' +
+        '<label>Motivo <span class="opt">(opcional)</span><input type="text" id="ac-motivo" maxlength="140" autocomplete="off" /></label>',
+      salvar: function() {
+        return gravarAceite(c, { estado: 'recusado', motivo: gerVal('ac-motivo') }).then(function() {
+          showToast('Pronto: o escritório foi avisado de que você não vem.');
+          renderDriverView();
+        });
+      }
+    });
+  }
+  // escritório: o motorista respondeu por telefone ou WhatsApp
+  function aceiteRegistrarEscritorio(id) {
+    var c = findCarga(id);
+    if (!c || !c.motorista) return;
+    gerAbrir({
+      titulo: 'Resposta de ' + c.motorista, botao: 'Registrar',
+      html: '<p class="hint">Carga de <b>' + escapeHtml(cargaQuandoTexto(c)) + '</b>. Use quando o motorista respondeu por telefone ou WhatsApp; fica registrado o seu nome.</p>' +
+        '<label>Resposta<select id="ac-estado"><option value="aceito">Aceitou e vem carregar</option><option value="recusado">Não aceitou</option></select></label>' +
+        '<label>Hora que chega <span class="opt">(se aceitou)</span><input type="time" id="ac-chegada" value="' + escapeHtml(c.hora || '') + '" /></label>' +
+        '<label>Motivo <span class="opt">(se não aceitou)</span><input type="text" id="ac-motivo" maxlength="140" autocomplete="off" /></label>',
+      salvar: function() {
+        var est = gerVal('ac-estado');
+        return gravarAceite(c, { estado: est, chegada: est === 'aceito' ? gerVal('ac-chegada') : '', motivo: est === 'recusado' ? gerVal('ac-motivo') : '', registradoPor: quemSessao() })
+          .then(function() { showToast('Resposta de ' + c.motorista + ' registrada.'); setTimeout(function() { openCargaDetail(c.id); }, 0); });
+      }
+    });
+  }
+  // Avisos na hora: o motorista fica sabendo da carga nova; o escritório, de quem aceitou ou não.
+  var aceitesVistos = null;
+  function avisarAceites() {
+    if (!session || session.role === 'representante') return;
+    var agora = {};
+    cargas.forEach(function(c) { var e = aceiteEstado(c); if (e) agora[c.id] = e + '|' + (c.motorista || '') + '|' + (c.data || '') + '|' + (c.hora || ''); });
+    var antes = aceitesVistos;
+    aceitesVistos = agora;
+    if (!antes) return;
+    if (session.role === 'motorista') {
+      var novas = cargas.filter(function(c) { return mesmoMotorista(c.motorista, session.nome) && aceiteEstado(c) === 'aguardando' && antes[c.id] !== agora[c.id]; });
+      if (novas.length) showToast('🚚 ' + (novas.length === 1 ? 'Carga para você: ' + cargaQuandoTexto(novas[0]) : novas.length + ' cargas para você') + '. Aceite no app e confirme que vem carregar.');
+      return;
+    }
+    cargas.forEach(function(c) {
+      var e = aceiteEstado(c), a = aceiteDaCarga(c);
+      if ((e === 'aceito' || e === 'recusado') && antes[c.id] && antes[c.id] !== agora[c.id] && a && !a.registradoPor) showToast(aceiteTexto(c) + ' (carga de ' + cargaQuandoTexto(c) + ').');
+    });
+  }
+  // Início do escritório: motorista que não aceitou e cargas de hoje e amanhã ainda sem resposta
+  function aceiteNovidades() {
+    var l = [], hoje = todayIso(), amanha = addDiasIso(hoje, 1);
+    var abertas = cargas.filter(function(c) { return aceiteEstado(c) && (c.data || '') >= addDiasIso(hoje, -1); });
+    abertas.filter(function(c) { return aceiteEstado(c) === 'recusado'; }).slice(0, 4).forEach(function(c) {
+      l.push({ ico: '❌', txt: c.motorista + ' não aceitou a carga de ' + cargaQuandoTexto(c) + ': escolha outro motorista', ir: 'cargas' });
+    });
+    var esperando = abertas.filter(function(c) { return aceiteEstado(c) === 'aguardando' && (c.data || '') <= amanha; });
+    if (esperando.length) l.push({ ico: '⏳', txt: esperando.length + (esperando.length === 1 ? ' carga de hoje ou amanhã ainda sem o aceite do motorista' : ' cargas de hoje e amanhã ainda sem o aceite do motorista') + ' (' + esperando.slice(0, 3).map(function(c) { return c.motorista; }).join(', ') + (esperando.length > 3 ? '…' : '') + ')', ir: 'cargas' });
+    return l;
+  }
+
   // Identificação do pedido: cada linha só aparece quando preenchida (pedidos gerados pela carga podem vir sem NF/CPF).
   function pedidoMetaHtml(r, withDoc) {
     var c = r.cargaId ? findCarga(r.cargaId) : null;
@@ -7040,20 +7212,19 @@
 
   // ---------- cargas: lançamento por cliente em lista fixa de produtos (sempre na ordem do catálogo) ----------
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, pal: {}, fil: {}, bat: {}, batOn: {}, grp: {}, nf: null }; }
+  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, bat: {}, batOn: {}, grp: {}, grpOn: {}, nf: null }; }
   // Converte os clientes salvos de uma carga para o editor. Produto que saiu do catálogo continua
   // aparecendo (com a regra gravada na carga), para não perder nada ao editar.
   function editorStateFromCarga(carga) {
     var extras = [];
     var clientes = ((carga && carga.clientes) || []).map(function(cl) {
-      var qtd = {}, pal = {}, fil = {}, bat = {}, batOn = {}, grp = {};
+      var qtd = {}, bat = {}, batOn = {}, grp = {}, grpOn = {};
       (cl.itens || []).forEach(function(it) {
         if (!it.produtoId) return;
         qtd[it.produtoId] = String((Number(qtd[it.produtoId]) || 0) + (Number(it.quantidade) || 0));
-        if ((it.paletesMistos || []).length) grp[it.produtoId] = it.paletesMistos.map(function(g) { return { n: String(g.paletes), f: String(g.fileiras) }; });
+        var gs = gruposDoItem(it);
+        if (gs.length) { grpOn[it.produtoId] = true; grp[it.produtoId] = (grp[it.produtoId] || []).concat(gs); }
         if (Number(it.batidos) > 0) { batOn[it.produtoId] = true; bat[it.produtoId] = String((Number(bat[it.produtoId]) || 0) + Number(it.batidos)); }
-        if (it.fileirasAjustadas && Number(it.fileirasPorPalete) > 0) fil[it.produtoId] = String(it.fileirasPorPalete);
-        if (it.paletesAjustados) pal[it.produtoId] = String(it.paletes);
         if (!findProduto(it.produtoId) && !extras.some(function(x) { return x.id === it.produtoId; })) {
           extras.push({
             id: it.produtoId, nome: it.produtoNome || 'Produto removido do catálogo', unidade: it.unidade || 'unidades', ordem: 9999,
@@ -7062,59 +7233,80 @@
           });
         }
       });
-      Object.keys(bat).forEach(function(pid) { if (Number(bat[pid]) >= (Number(qtd[pid]) || 0)) bat[pid] = ''; }); // tudo batido: "todos"
-      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, pal: pal, fil: fil, bat: bat, batOn: batOn, grp: grp, nf: cl.nf || null };
+      Object.keys(bat).forEach(function(pid) { if (Number(bat[pid]) >= (Number(qtd[pid]) || 0)) bat[pid] = ''; }); // tudo solto: "todos"
+      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, bat: bat, batOn: batOn, grp: grp, grpOn: grpOn, nf: cl.nf || null };
     });
     return { clientes: clientes, extras: extras };
   }
 
+  // Tabela de produtos de cada cliente da carga (22/10/2026): a quantidade calcula paletes e chapatex pelo padrão.
+  // "Paletes com quantidade diferente do padrão" abre as linhas "N paletes com Q fardos" (cada um conta 1 palete e
+  // 1 chapatex por fileira); "Fardos soltos" vão por cima, sem palete e sem chapatex.
   function makeClientesEditor(containerId, prefix, opts) {
     opts = opts || {};
     var allowClienteEdit = !!opts.allowClienteEdit;
-    var allowAjuste = !!opts.allowAjustePaletes; // fileiras por palete e correção direta dos paletes
-    var allowBatido = !!opts.allowBatido; // só quem inclui a carga marca os fardos batidos (21/10/2026)
+    var allowAjuste = !!opts.allowAjustePaletes; // paletes com quantidade diferente do padrão
+    var allowBatido = !!opts.allowBatido; // só quem inclui a carga marca os fardos soltos (21/10/2026)
     var container = document.getElementById(containerId);
     var state = [];
     var extras = [];
 
     function lista() { return produtosOrdenados().concat(extras.filter(function(x) { return !findProduto(x.id); })); }
     function prod(pid) { return findProduto(pid) || extras.find(function(x) { return x.id === pid; }); }
-    // batidos: vazio = todos os fardos da linha; número = só essa parte (o resto vai paletizado)
+    function garantir(cl) { ['qtd', 'bat', 'batOn', 'grp', 'grpOn'].forEach(function(k) { if (!cl[k]) cl[k] = {}; }); }
+    // soltos: vazio = todos os fardos da linha; número = só essa parte (o resto vai paletizado)
     function batidosDe(cl, pid) {
       if (!(cl.batOn || {})[pid]) return 0;
       var q = Math.max(0, Math.floor(Number(cl.qtd[pid]) || 0)), v = (cl.bat || {})[pid];
       return v === '' || v == null ? q : Math.min(q, Math.max(0, Math.floor(Number(v) || 0)));
     }
-    function calc(cl, pid) { return calcItem(prod(pid), cl.qtd[pid], (cl.pal || {})[pid], (cl.fil || {})[pid], batidosDe(cl, pid), (cl.grp || {})[pid]); }
+    function gruposDe(cl, pid) { return (cl.grpOn || {})[pid] ? ((cl.grp || {})[pid] || []) : []; }
+    function calc(cl, pid) { return calcItem(prod(pid), cl.qtd[pid], batidosDe(cl, pid), gruposDe(cl, pid)); }
     function totals(cl) {
       return lista().reduce(function(a, p) { var c = calc(cl, p.id); a.p += c.paletes; a.c += c.chapatex; a.b += c.batidos; return a; }, { p: 0, c: 0, b: 0 });
     }
     function batHtml(cl, p, c) { return grpHtml(cl, p, c) + batOnlyHtml(cl, p, c); }
-    // paletes com outra quantidade de fileiras na mesma linha (os demais seguem o padrão)
+    function attrsDe(cl, p) { return ' data-cliente="' + cl.uid + '" data-produto="' + escapeHtml(p.id) + '"'; }
+    // um palete com q unidades: fileiras e chapatex (o que o app conta sozinho)
+    function grpInfoTexto(p, g) {
+      var q = parseInt(g.q, 10);
+      if (!(q >= 1)) return '';
+      var f = fileirasDoPalete(p, q), ch = chapatexDoPalete(p, q);
+      return '= ' + (f ? fmtInt(f) + (f === 1 ? ' fileira, ' : ' fileiras, ') : '') + fmtInt(ch) + ' chapatex cada';
+    }
+    function grpRestoTexto(p, c) {
+      var u = unidadeDe(p), upp = Number(p.unidadesPorPalete) || 0;
+      var t = c.paletesResto ? 'e ' + fmtInt(c.paletesResto) + (c.paletesResto === 1 ? ' palete' : ' paletes') + ' no padrão' + (upp ? ' (' + qtdUnidade(upp, u) + ')' : '') : 'nenhum palete no padrão';
+      return t + (c.sobraGrupos ? ' · faltam ' + qtdUnidade(c.sobraGrupos, u) + ' para completar os paletes acima' : '');
+    }
+    // paletes com quantidade diferente do padrão (os demais seguem o padrão)
     function grpHtml(cl, p, c) {
-      var has = (Number(cl.qtd[p.id]) || 0) > 0;
-      if (!allowAjuste || !has || !temFileiras(p)) return '';
-      var gs = (cl.grp || {})[p.id] || [], attrs = ' data-cliente="' + cl.uid + '" data-produto="' + escapeHtml(p.id) + '"';
-      return '<span class="pt-grp">' + gs.map(function(g, i) {
+      var has = (Number(cl.qtd[p.id]) || 0) > 0, on = !!(cl.grpOn || {})[p.id], attrs = attrsDe(cl, p);
+      if (!allowAjuste || !has) return '';
+      var u = unidadeDe(p), upp = Number(p.unidadesPorPalete) || 0;
+      var h = '<label class="pt-bat-l"><input type="checkbox" class="' + prefix + '-grp-check"' + attrs + (on ? ' checked' : '') + ' /><span>Paletes com quantidade diferente do padrão' +
+        (upp ? ' <span class="pt-bat-obs">(padrão: ' + escapeHtml(qtdUnidade(upp, u)) + ')</span>' : '') + '</span></label>';
+      if (!on) return '<span class="pt-grp">' + h + '</span>';
+      var gs = (cl.grp || {})[p.id] || [];
+      return '<span class="pt-grp">' + h + gs.map(function(g, i) {
         return '<span class="pt-grp-l"><input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-grp-n"' + attrs + ' data-i="' + i + '" value="' + escapeHtml(g.n) + '" placeholder="0" aria-label="Quantos paletes" /> paletes com ' +
-          '<input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-grp-f"' + attrs + ' data-i="' + i + '" value="' + escapeHtml(g.f) + '" placeholder="' + (c.fileirasPadrao + 1) + '" aria-label="Fileiras por palete" /> fileiras' +
+          '<input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-grp-q"' + attrs + ' data-i="' + i + '" value="' + escapeHtml(g.q) + '" placeholder="' + (upp || '') + '" aria-label="Quantos ' + escapeHtml(u) + ' em cada palete" /> ' + escapeHtml(u) +
+          ' <span class="pt-grp-i" id="' + escapeHtml(rid('grpi' + i, cl, p.id)) + '">' + escapeHtml(grpInfoTexto(p, g)) + '</span>' +
           '<button type="button" class="btn-text danger ' + prefix + '-grp-x"' + attrs + ' data-i="' + i + '" aria-label="Tirar">✕</button></span>';
-      }).join('') + (gs.length ? '<span class="pt-grp-r" id="' + escapeHtml(rid('grpr', cl, p.id)) + '">' + escapeHtml(grpRestoTexto(c)) + '</span>' : '') +
-        '<button type="button" class="btn-text ' + prefix + '-grp-mais"' + attrs + '>+ paletes com outra quantidade de fileiras</button></span>';
+      }).join('') + '<span class="pt-grp-r" id="' + escapeHtml(rid('grpr', cl, p.id)) + '">' + escapeHtml(grpRestoTexto(p, c)) + '</span>' +
+        '<button type="button" class="btn-text ' + prefix + '-grp-mais"' + attrs + '>+ outra quantidade</button></span>';
     }
-    function grpRestoTexto(c) {
-      return c.paletesResto ? fmtInt(c.paletesResto) + (c.paletesResto === 1 ? ' palete' : ' paletes') + ' no padrão (' + fmtInt(c.fileirasAjustadas ? c.fileiras : c.fileirasPadrao) + ' fileiras)' : 'nenhum palete no padrão';
-    }
+    function soltosRotulo(p) { return unidadeDe(p) === 'fardos' ? 'Fardos soltos' : 'Soltos'; }
     function batOnlyHtml(cl, p, c) {
-      var has = (Number(cl.qtd[p.id]) || 0) > 0, on = !!(cl.batOn || {})[p.id], attrs = ' data-cliente="' + cl.uid + '" data-produto="' + escapeHtml(p.id) + '"';
-      if (!allowBatido) return c.batidos ? '<span class="pt-bat-ro">🧱 ' + escapeHtml(qtdUnidade(c.batidos, unidadeDe(p))) + ' batidos por cima (sem palete)</span>' : '';
+      var has = (Number(cl.qtd[p.id]) || 0) > 0, on = !!(cl.batOn || {})[p.id], attrs = attrsDe(cl, p);
+      if (!allowBatido) return c.batidos ? '<span class="pt-bat-ro">🧱 ' + escapeHtml(soltosTexto(c.batidos, unidadeDe(p))) + '</span>' : '';
       if (!has) return '';
-      return '<label class="pt-bat-l" title="Fardos soltos por cima da carga: não usam palete nem chapatex"><input type="checkbox" class="' + prefix + '-bat-check"' + attrs + (on ? ' checked' : '') + ' /> 🧱 Fardo batido <span class="pt-bat-obs">(sem palete e sem chapatex)</span></label>' +
-        (on ? '<span class="pt-bat-q"><input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-bat-input"' + attrs + ' value="' + escapeHtml((cl.bat || {})[p.id] || '') + '" placeholder="todos" aria-label="Quantos batidos de ' + escapeHtml(p.nome) + '" />' +
+      return '<label class="pt-bat-l" title="Vão soltos por cima da carga: não usam palete nem chapatex"><input type="checkbox" class="' + prefix + '-bat-check"' + attrs + (on ? ' checked' : '') + ' /><span>🧱 ' + soltosRotulo(p) + ' <span class="pt-bat-obs">(batidos por cima, sem palete e sem chapatex)</span></span></label>' +
+        (on ? '<span class="pt-bat-q"><input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-bat-input"' + attrs + ' value="' + escapeHtml((cl.bat || {})[p.id] || '') + '" placeholder="todos" aria-label="Quantos soltos de ' + escapeHtml(p.nome) + '" />' +
           '<span id="' + escapeHtml(rid('batq', cl, p.id)) + '">' + escapeHtml(batRestoTexto(p, c)) + '</span></span>' : '');
     }
     function batRestoTexto(p, c) {
-      return 'batidos' + (c.paletizado ? '; ' + qtdUnidade(c.paletizado, unidadeDe(p)) + ' paletizados' : ' (a linha toda)');
+      return 'soltos' + (c.paletizado ? '; ' + qtdUnidade(c.paletizado, unidadeDe(p)) + ' paletizados' : ' (a linha toda)');
     }
     function rid(kind, cl, pid) { return prefix + '-' + kind + '-' + cl.uid + '-' + pid; }
     // Quanto desta carga é deste produto (todos os clientes juntos), para comparar com o estoque.
@@ -7128,7 +7320,8 @@
     }
     // Unidade + avisos (fileiras fora do padrão, produto acima do que cabe, último palete incompleto, falta de estoque).
     function unidLinha(p, c) {
-      var a = avisoPalete(p, c), est = c.paletes ? faltaEstoque(p) : '';
+      // os paletes diferentes já aparecem nas linhas embaixo: aqui fica só o resto do aviso
+      var a = avisoPalete(p, allowAjuste && c.grupos && c.grupos.length ? Object.assign({}, c, { grupos: [], paletesResto: 0 }) : c), est = c.paletes ? faltaEstoque(p) : '';
       var partes = [unidadeDe(p)];
       if (a) partes.push(a.texto);
       if (est) partes.push(est);
@@ -7136,7 +7329,7 @@
     }
     function subtotalHtml(t) {
       return '<span class="figure-wood">' + fmtInt(t.p) + palavraPaletes(t.p) + '</span> · <span class="figure-teal">' + fmtInt(t.c) + ' chapatex</span>' +
-        (t.b ? ' · <span class="figure-bat">' + fmtInt(t.b) + ' batidos</span>' : '');
+        (t.b ? ' · <span class="figure-bat">' + fmtInt(t.b) + ' soltos</span>' : '');
     }
     // Cobrança: o que o cliente tem em aberto (de entregas anteriores) — o motorista recolhe.
     function saldoTexto(cl) {
@@ -7173,24 +7366,12 @@
     }
     function rowHtml(cl, p) {
       var c = calc(cl, p.id), q = cl.qtd[p.id] || '', has = (Number(q) || 0) > 0;
-      var nome = escapeHtml(p.nome), pid = escapeHtml(p.id);
-      var attrs = ' data-cliente="' + cl.uid + '" data-produto="' + pid + '"';
-      // Fileiras em cada palete: só nos produtos com fileira (no copo não existe).
-      var filCell = (allowAjuste && temFileiras(p))
-        ? '<input type="number" min="1" step="1" inputmode="numeric" class="pt-fil ' + prefix + '-fil-input' + (c.fileirasAjustadas ? ' pt-adjusted' : '') + '"' + attrs +
-          ' id="' + escapeHtml(rid('fil', cl, p.id)) + '" value="' + (has ? c.fileiras : '') + '"' + (has ? '' : ' disabled') +
-          ' title="Fileiras em cada palete (padrão ' + c.fileirasPadrao + ')" aria-label="Fileiras por palete de ' + nome + '" />'
-        : '<span class="pt-num pt-na" id="' + escapeHtml(rid('fil', cl, p.id)) + '">' + (temFileiras(p) && has ? fmtInt(c.fileiras) : '–') + '</span>';
-      var palCell = allowAjuste
-        ? '<input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-pal-input' + (c.paletesManual ? ' pt-adjusted' : '') + '"' + attrs +
-          ' id="' + escapeHtml(rid('pal', cl, p.id)) + '" value="' + (has ? c.paletes : '') + '"' + (has && !(c.grupos && c.grupos.length) ? '' : ' disabled') +
-          (c.paletesManual ? ' title="Calculado: ' + c.paletesAuto + '"' : '') + ' aria-label="Paletes de ' + nome + '" />'
-        : '<span class="pt-num" id="' + escapeHtml(rid('pal', cl, p.id)) + '">' + (has ? fmtInt(c.paletes) : '–') + '</span>';
+      var nome = escapeHtml(p.nome), attrs = attrsDe(cl, p);
       var u = unidLinha(p, c);
       return '<div class="pt-row pcor pc-' + corDoProduto(p.nome) + (has ? ' has-qtd' : '') + '" id="' + escapeHtml(rid('row', cl, p.id)) + '">' +
         '<span class="pt-nome">' + logoMarcaHtml(marcaDoTexto(p.nome)) + '<span class="pt-txt">' + nome + '<span class="pt-unid' + (u.alerta ? ' alerta' : '') + '" id="' + escapeHtml(rid('unid', cl, p.id)) + '">' + escapeHtml(u.texto) + '</span></span></span>' +
         '<input type="number" min="0" step="1" inputmode="numeric" class="' + prefix + '-qtd-input"' + attrs + ' value="' + escapeHtml(q) + '" placeholder="0" aria-label="Quantidade de ' + nome + ' em ' + escapeHtml(unidadeDe(p)) + '" />' +
-        filCell + palCell +
+        '<span class="pt-num" id="' + escapeHtml(rid('pal', cl, p.id)) + '">' + (has ? fmtInt(c.paletes) : '–') + '</span>' +
         '<span class="pt-num chx" id="' + escapeHtml(rid('chx', cl, p.id)) + '">' + (has ? fmtInt(c.chapatex) : '–') + '</span>' +
         '<div class="pt-bat" id="' + escapeHtml(rid('bat', cl, p.id)) + '">' + batHtml(cl, p, c) + '</div>' +
         '</div>';
@@ -7214,7 +7395,7 @@
           ? '<div class="header-row"><span></span><button type="button" class="btn-text danger ' + prefix + '-remove-cliente" data-cliente="' + cl.uid + '">Remover cliente</button></div>' : '';
         var tabela = prods.length
           ? '<div class="pt-table" role="group" aria-label="Produtos de ' + escapeHtml(cl.cliente || ('cliente ' + (ci + 1))) + '">' +
-              '<div class="pt-head"><span>Produto</span><span>Quantidade</span><span>Fileiras</span><span>Paletes</span><span>Chapatex</span></div>' +
+              '<div class="pt-head"><span>Produto</span><span>Quantidade</span><span>Paletes</span><span>Chapatex</span></div>' +
               prods.map(function(p) { return rowHtml(cl, p); }).join('') +
             '</div>'
           : '<p class="field-hint warn">Nenhum produto cadastrado.</p>';
@@ -7226,39 +7407,23 @@
     }
     function findCl(cliUid) { return state.find(function(x) { return x.uid === cliUid; }); }
     // Atualiza só a linha do produto, o subtotal e o total — sem redesenhar (o cursor continua no campo).
-    function refreshRow(cl, pid, forceValue) {
+    function refreshRow(cl, pid) {
       var p = prod(pid), c = calc(cl, pid), has = (Number(cl.qtd[pid]) || 0) > 0;
       var row = document.getElementById(rid('row', cl, pid));
       if (row) row.classList.toggle('has-qtd', has);
-      var fil = document.getElementById(rid('fil', cl, pid));
-      if (fil) {
-        if (fil.tagName === 'INPUT') {
-          if (forceValue || document.activeElement !== fil) fil.value = has ? c.fileiras : '';
-          fil.disabled = !has;
-          fil.classList.toggle('pt-adjusted', c.fileirasAjustadas);
-        } else {
-          fil.textContent = (temFileiras(p) && has) ? fmtInt(c.fileiras) : '–';
-        }
-      }
       var pal = document.getElementById(rid('pal', cl, pid));
-      if (pal) {
-        if (pal.tagName === 'INPUT') {
-          if (forceValue || document.activeElement !== pal) pal.value = has ? c.paletes : '';
-          pal.disabled = !has || !!(c.grupos && c.grupos.length);
-          pal.classList.toggle('pt-adjusted', c.paletesManual);
-          pal.title = c.paletesManual ? 'Calculado: ' + c.paletesAuto : '';
-        } else {
-          pal.textContent = has ? fmtInt(c.paletes) : '–';
-        }
-      }
+      if (pal) pal.textContent = has ? fmtInt(c.paletes) : '–';
       var chx = document.getElementById(rid('chx', cl, pid));
       if (chx) chx.textContent = has ? fmtInt(c.chapatex) : '–';
-      var batEl = document.getElementById(rid('bat', cl, pid)), batQ = document.getElementById(rid('batq', cl, pid));
-      if (batEl && !(document.activeElement && batEl.contains(document.activeElement) && document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'number')) batEl.innerHTML = batHtml(cl, p, c);
-      else {
+      var batEl = document.getElementById(rid('bat', cl, pid));
+      var digitando = batEl && document.activeElement && batEl.contains(document.activeElement) && document.activeElement.tagName === 'INPUT' && document.activeElement.type === 'number';
+      if (batEl && !digitando) batEl.innerHTML = batHtml(cl, p, c);
+      else if (batEl) {
+        var batQ = document.getElementById(rid('batq', cl, pid));
         if (batQ) batQ.textContent = batRestoTexto(p, c);
         var grR = document.getElementById(rid('grpr', cl, pid));
-        if (grR) grR.textContent = grpRestoTexto(c);
+        if (grR) grR.textContent = grpRestoTexto(p, c);
+        ((cl.grp || {})[pid] || []).forEach(function(g, i) { var el = document.getElementById(rid('grpi' + i, cl, pid)); if (el) el.textContent = grpInfoTexto(p, g); });
       }
       // o aviso de estoque depende do total da carga: atualiza a linha deste produto em todos os clientes
       state.forEach(function(outro) {
@@ -7270,15 +7435,35 @@
       refreshNf(cl);
       if (opts.onChange) opts.onChange();
     }
+    function focarGrupo(cl, pid, i) {
+      var el = container.querySelector('input.' + prefix + '-grp-n[data-cliente="' + cl.uid + '"][data-produto="' + pid + '"][data-i="' + i + '"]');
+      if (el) el.focus();
+    }
+    // caixas de marcar: alguns navegadores mandam "input", outros só "change"
+    function marcar(cl, t) {
+      var pid = t.dataset.produto;
+      if (allowBatido && t.classList.contains(prefix + '-bat-check')) {
+        if (!!cl.batOn[pid] === t.checked) return true;
+        cl.batOn[pid] = t.checked;
+        if (t.checked) cl.bat[pid] = '';
+        refreshRow(cl, pid);
+        return true;
+      }
+      if (allowAjuste && t.classList.contains(prefix + '-grp-check')) {
+        if (!!cl.grpOn[pid] === t.checked) return true;
+        cl.grpOn[pid] = t.checked;
+        if (t.checked && !(cl.grp[pid] || []).length) cl.grp[pid] = [{ n: '', q: '' }];
+        refreshRow(cl, pid);
+        if (t.checked) focarGrupo(cl, pid, 0);
+        return true;
+      }
+      return false;
+    }
     container.addEventListener('input', function(e) {
       var t = e.target, cli = t.dataset.cliente;
       if (!cli) return;
       var cl = findCl(cli); if (!cl) return;
-      if (!cl.pal) cl.pal = {};
-      if (!cl.fil) cl.fil = {};
-      if (!cl.bat) cl.bat = {};
-      if (!cl.batOn) cl.batOn = {};
-      if (!cl.grp) cl.grp = {};
+      garantir(cl);
       if (t.classList.contains(prefix + '-cliente-nome')) { cl.cliente = t.value; refreshSaldo(cl); return; }
       if (t.classList.contains(prefix + '-cliente-nf')) { cl.pedidoNf = t.value; return; }
       if (t.classList.contains(prefix + '-cliente-destino')) { cl.destino = t.value; return; }
@@ -7290,42 +7475,24 @@
       }
       var pid = t.dataset.produto;
       if (!pid) return;
+      if (t.type === 'checkbox') { marcar(cl, t); return; }
       if (t.classList.contains(prefix + '-qtd-input')) {
         cl.qtd[pid] = t.value;
-        cl.pal[pid] = ''; // mudou a quantidade: os paletes voltam a ser calculados (as fileiras continuam)
-        refreshRow(cl, pid, true);
-      } else if (t.classList.contains(prefix + '-fil-input')) {
-        cl.fil[pid] = t.value;
-        cl.pal[pid] = ''; // mudou as fileiras: os paletes são recalculados por elas
-        refreshRow(cl, pid, false);
-      } else if (t.classList.contains(prefix + '-pal-input')) {
-        cl.pal[pid] = t.value;
-        refreshRow(cl, pid, false);
-      } else if (t.classList.contains(prefix + '-grp-n') || t.classList.contains(prefix + '-grp-f')) {
+        refreshRow(cl, pid);
+      } else if (t.classList.contains(prefix + '-grp-n') || t.classList.contains(prefix + '-grp-q')) {
         var g = (cl.grp[pid] || [])[Number(t.dataset.i)];
-        if (g) { g[t.classList.contains(prefix + '-grp-n') ? 'n' : 'f'] = t.value; cl.pal[pid] = ''; refreshRow(cl, pid, false); }
+        if (g) { g[t.classList.contains(prefix + '-grp-n') ? 'n' : 'q'] = t.value; refreshRow(cl, pid); }
       } else if (allowBatido && t.classList.contains(prefix + '-bat-input')) {
         cl.bat[pid] = t.value;
-        cl.pal[pid] = ''; // mudou o que vai batido: os paletes voltam a ser calculados
-        refreshRow(cl, pid, false);
-      } else if (allowBatido && t.classList.contains(prefix + '-bat-check')) {
-        cl.batOn[pid] = t.checked;
-        if (t.checked) cl.bat[pid] = '';
-        cl.pal[pid] = '';
-        refreshRow(cl, pid, true);
+        refreshRow(cl, pid);
       }
     });
     container.addEventListener('change', function(e) {
       var t = e.target, cli = t.dataset.cliente;
       if (!cli) return;
       var cl = findCl(cli); if (!cl) return;
-      if (allowBatido && t.classList.contains(prefix + '-bat-check') && t.dataset.produto) {
-        // navegadores que não mandam "input" na caixa de marcar
-        if (!cl.batOn) cl.batOn = {};
-        if (!cl.bat) cl.bat = {};
-        if (!!cl.batOn[t.dataset.produto] !== t.checked) { cl.batOn[t.dataset.produto] = t.checked; if (t.checked) cl.bat[t.dataset.produto] = ''; if (cl.pal) cl.pal[t.dataset.produto] = ''; refreshRow(cl, t.dataset.produto, true); }
-        return;
-      }
+      garantir(cl);
+      if (t.type === 'checkbox' && t.dataset.produto) { marcar(cl, t); return; }
       if (t.classList.contains(prefix + '-cliente-nome')) {
         // cliente conhecido: puxa o último CPF/CNPJ usado (igual ao pedido avulso)
         var known = !cl.numeroDocumento ? lastDocumentFor(t.value) : '';
@@ -7348,27 +7515,21 @@
         if (oficial && oficial !== t.value) { t.value = oficial; cl.destino = oficial; }
         return;
       }
-      // ao sair do campo de fileiras ou de paletes, mostra o que vale (vazio volta ao padrão)
-      if (t.classList.contains(prefix + '-pal-input') || t.classList.contains(prefix + '-fil-input')) refreshRow(cl, t.dataset.produto, true);
-    });
-    // Ao tocar em Fileiras ou Paletes, o número fica selecionado: é só digitar o novo.
-    container.addEventListener('focusin', function(e) {
-      var t = e.target;
-      if (t.classList && (t.classList.contains(prefix + '-fil-input') || t.classList.contains(prefix + '-pal-input'))) {
-        setTimeout(function() { try { t.select(); } catch (err) {} }, 0);
+      // ao sair de um campo dos paletes diferentes ou dos soltos, a linha mostra o que vale
+      if (t.dataset.produto && (t.classList.contains(prefix + '-grp-n') || t.classList.contains(prefix + '-grp-q') || t.classList.contains(prefix + '-bat-input'))) {
+        setTimeout(function() { var b = document.getElementById(rid('bat', cl, t.dataset.produto)); if (!(b && b.contains(document.activeElement))) refreshRow(cl, t.dataset.produto); }, 0);
       }
     });
     container.addEventListener('click', function(e) {
       var gb = e.target.closest('button[data-produto]');
       if (gb && (gb.classList.contains(prefix + '-grp-mais') || gb.classList.contains(prefix + '-grp-x'))) {
         var gcl = findCl(gb.dataset.cliente); if (!gcl) return;
-        gcl.grp = gcl.grp || {}; gcl.pal = gcl.pal || {};
-        var gl = gcl.grp[gb.dataset.produto] = gcl.grp[gb.dataset.produto] || [];
-        if (gb.classList.contains(prefix + '-grp-mais')) gl.push({ n: '', f: '' }); else gl.splice(Number(gb.dataset.i), 1);
-        gcl.pal[gb.dataset.produto] = '';
-        refreshRow(gcl, gb.dataset.produto, true);
-        var foco = container.querySelector('input.' + prefix + '-grp-n[data-cliente="' + gcl.uid + '"][data-produto="' + gb.dataset.produto + '"][data-i="' + (gl.length - 1) + '"]');
-        if (foco && gb.classList.contains(prefix + '-grp-mais')) foco.focus();
+        garantir(gcl);
+        var gpid = gb.dataset.produto, gl = gcl.grp[gpid] = gcl.grp[gpid] || [];
+        if (gb.classList.contains(prefix + '-grp-mais')) gl.push({ n: '', q: '' }); else gl.splice(Number(gb.dataset.i), 1);
+        if (!gl.length) gcl.grpOn[gpid] = false; // tirou todos: volta ao padrão
+        refreshRow(gcl, gpid);
+        if (gb.classList.contains(prefix + '-grp-mais')) focarGrupo(gcl, gpid, gl.length - 1);
         return;
       }
       var btn = e.target.closest('button[data-cliente]');
@@ -7387,10 +7548,10 @@
             produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), quantidade: Math.floor(Number(cl.qtd[p.id]) || 0),
             unidadesPorPalete: Number(p.unidadesPorPalete) || 0, tipoChapatex: p.tipoChapatex || '',
             unidadesPorFileira: Number(p.unidadesPorFileira) || 0, chapatexPorPalete: Number(p.chapatexPorPalete) || 0,
-            paletes: c.paletes, paletesCalculados: c.paletesAuto, paletesAjustados: c.paletesManual, chapatex: c.chapatex,
-            fileirasPorPalete: c.fileiras, fileirasPadrao: c.fileirasPadrao, fileirasAjustadas: c.fileirasAjustadas,
-            excedente: c.excedente, resto: c.resto
-          }, c.batidos ? { batidos: c.batidos } : {}, c.grupos && c.grupos.length ? { paletesMistos: c.grupos, paletesResto: c.paletesResto } : {});
+            paletes: c.paletes, paletesCalculados: c.paletesAuto, paletesAjustados: false, chapatex: c.chapatex,
+            fileirasPorPalete: c.fileirasPadrao, fileirasPadrao: c.fileirasPadrao, fileirasAjustadas: false,
+            excedente: 0, resto: c.resto
+          }, c.batidos ? { batidos: c.batidos } : {}, c.grupos.length ? { paletesMistos: c.grupos, paletesResto: c.paletesResto } : {}, c.sobraGrupos ? { sobraGrupos: c.sobraGrupos } : {});
         });
         var out = { cliente: (cl.cliente || '').trim(), numeroDocumento: docMask(cl.numeroDocumento || ''), pedidoNf: (cl.pedidoNf || '').trim(), itens: itens };
         if (String(cl.destino || '').trim()) out.destino = String(cl.destino).trim();
@@ -7409,7 +7570,7 @@
       if (nf.destDoc) cl.numeroDocumento = docMask(nf.destDoc);
       cl.pedidoNf = 'NF ' + nf.numero + (nf.pedido ? ' · Pedido ' + nf.pedido : '');
       if (!String(cl.destino || '').trim()) cl.destino = destinoPorCidade(nf.destMun, cl.cliente) || destinoNoTexto(nf.destTexto, cl.cliente) || ultimoDestinoDe(cl.cliente) || '';
-      cl.qtd = {}; cl.pal = {}; cl.fil = {}; cl.bat = {}; cl.batOn = {}; cl.grp = {};
+      cl.qtd = {}; cl.bat = {}; cl.batOn = {}; cl.grp = {}; cl.grpOn = {};
       linhas.forEach(function(l) { cl.qtd[l.produtoId] = String(l.quantidade); });
       cl.nf = { numero: nf.numero, serie: nf.serie || '', chave: nf.chave || '', emitidaEm: nf.emitidaEm || '', pedido: nf.pedido || '', arquivo: nf.arquivo || '', itens: linhas };
       render();
@@ -7430,7 +7591,7 @@
   function renderCgTotaisInto(elId, editor) {
     var t = editor.totalGeral();
     document.getElementById(elId).innerHTML = '<div class="resumo-row"><span class="resumo-k">Total da carga</span><span class="resumo-v mono"><span class="figure-wood">' + fmtInt(t.p) + palavraPaletes(t.p) + '</span> · <span class="figure-teal">' + fmtInt(t.c) + ' chapatex</span>' +
-      (t.b ? ' · <span class="figure-bat">' + fmtInt(t.b) + ' fardos batidos</span>' : '') + '</span></div>';
+      (t.b ? ' · <span class="figure-bat">' + fmtInt(t.b) + ' soltos (batidos)</span>' : '') + '</span></div>';
   }
 
   var cgEditor = makeClientesEditor('cg-clientes-list', 'cg', { allowClienteEdit: true, allowAjustePaletes: true, allowBatido: true, getCargaId: function() { return editingCargaId; }, onChange: function() { renderCgTotaisInto('cg-totais', cgEditor); } });
@@ -8457,6 +8618,7 @@
         return;
       }
       if (action === 'sair-viagem') { sairParaEntrega(id); return; }
+      if (action === 'aceite-sim' || action === 'aceite-nao') { aceiteResponder(id, action === 'aceite-sim'); return; }
       if (action === 'lona-foto') { pedirFotoLona(id, actionBtn.dataset.lado); return; }
       if (action === 'canhoto-enviar') { abrirEnvioCanhoto(id); return; }
       if (action === 'pesq-responder') { openPesquisaMotorista(id); return; }
@@ -9729,6 +9891,7 @@
     return (c.clientes || []).some(function(cl) {
       return (cl.itens || []).some(function(it) {
         var upf = Number(it.unidadesPorFileira) || 0, fil = Number(it.fileirasPorPalete) || 0;
+        if ((it.paletesMistos || []).some(function(g) { return (Number(g.porPalete) || (Number(g.fileiras) || 0) * upf) === 175; })) return true;
         var porPalete = (it.fileirasAjustadas && upf && fil) ? upf * fil : (Number(it.unidadesPorPalete) || 0);
         return porPalete === 175;
       });
@@ -20368,6 +20531,7 @@
       var nb = brindes.filter(function(x) { return x.status === 'aprovacao'; }).length;
       if (nb) l.push({ ico: '🎁', txt: nb + (nb === 1 ? ' brinde ou presente esperando a sua aprovação' : ' brindes ou presentes esperando a sua aprovação'), ir: 'brindes', filtro: 'aprovacao' });
     }
+    if (tem('cargas') && ehEscritorio()) l = l.concat(aceiteNovidades());
     l = l.concat(cnNovidades());
     return l;
   }
