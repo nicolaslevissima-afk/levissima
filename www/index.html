@@ -712,6 +712,35 @@
   .ph-linha { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin: 0 0 8px; background: var(--card); }
   .ph-linha-t { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
   .ph-grande { width: 100%; min-height: 56px; font-size: 1.05rem; margin: 6px 0 14px; }
+  .ph-grupo { border: 0; padding: 0; margin: 12px 0 4px; min-width: 0; }
+  .ph-grupo legend { font-size: 0.875rem; font-weight: 600; padding: 0; margin-bottom: 4px; }
+  .ph-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ph-chip { display: inline-flex; align-items: center; gap: 6px; margin: 0; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; font-weight: 600; font-size: 0.9375rem; cursor: pointer; }
+  .ph-chip input { width: 18px; height: 18px; margin: 0; }
+  .ph-chip:has(input:checked) { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); }
+  .ph-maq { display: block; margin: 8px 0; }
+  .ph-maq .field-hint:empty { min-height: 0; margin: 0; }
+  .ph-maq-in { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .ph-maq-in input { max-width: 150px; margin: 0; font-family: var(--font-mono); text-align: right; }
+  .ph-un { font-size: 0.8125rem; color: var(--muted); }
+  .ph-parada { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 6px 0; }
+  .ph-parada select { flex: 1 1 150px; width: auto; margin: 0; }
+  .ph-pmin-l { display: inline-flex; align-items: center; gap: 4px; }
+  .ph-parada input.ph-pmin { width: 76px; margin: 0; text-align: right; }
+  .ph-parada input.ph-ptxt { flex: 1 1 160px; width: auto; margin: 0; }
+  .ph-faltam { display: inline-flex; flex-wrap: wrap; gap: 6px; vertical-align: middle; }
+  .ph-par { color: var(--laranja-texto); }
+  .pl-linha { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 12px 0; min-width: 0; }
+  .pl-linha legend { font-weight: 700; padding: 0 4px; }
+  .pl-maq { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--line); }
+  .pl-maq input[type="text"] { flex: 1 1 150px; width: auto; margin: 0; }
+  .pl-maq input[type="number"] { width: 140px; margin: 0; }
+  .pl-maq select { width: auto; margin: 0; }
+  .pl-maq .check-row { margin: 0; }
+  .pr-mq { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 2px 0; }
+  .pr-mq small { margin: 0 !important; white-space: nowrap; }
+  .pr-tab .pr-mq .pr-q { width: 92px; }
+  .pr-acoes { white-space: nowrap; }
   .pr-barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
   .pr-barra input[type=date], .pr-barra input[type=month] { width: auto; min-width: 150px; }
   .pr-mes-nome { font-size: 1rem; }
@@ -2726,8 +2755,8 @@
       </div>
       <label class="check"><input type="checkbox" id="f-equipe-org" /> Vê a aba <b>Organograma</b> <span class="opt">(onde está na empresa: quem está acima e abaixo)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-aprova-cli" /> <b>Aprova cliente novo</b> da força de vendas <span class="opt">(análise junto com o financeiro)</span></label>
-      <div class="row-2"><label>Líder de produção da linha <span class="opt">(opcional)</span><select id="f-equipe-linha-prod"><option value="">—</option><option value="ret1">Retornável 1</option><option value="ret2">Retornável 2</option><option value="desc1">DESC 1</option><option value="desc2">DESC 2</option><option value="desc3">DESC 3</option></select></label>
-        <label>Turno <span class="opt">(opcional)</span><select id="f-equipe-turno-prod"><option value="">—</option><option>Dia</option><option>Noite</option></select></label></div>
+      <div class="row-2"><label>Líder de produção da linha <span class="opt">(opcional)</span><select id="f-equipe-linha-prod"><option value="">—</option></select></label>
+        <label>Turno <span class="opt">(opcional)</span><select id="f-equipe-turno-prod"><option value="">—</option></select></label></div>
       <label class="check"><input type="checkbox" id="f-equipe-lanc-prod" /> Vê e corrige os <b>lançamentos da produção</b> <span class="opt">(Produção › Lançamentos dos líderes, hora a hora)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-brindes" /> Vê a aba <b>Brindes e presentes</b> <span class="opt">(ideias e aprovação de brindes)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-alerta-est" /> Recebe o <b>alerta de falta de estoque</b> no Início <span class="opt">(cargas dos próximos 2 dias que o estoque não cobre)</span></label>
@@ -17983,7 +18012,7 @@
       if (m.veBrindes) chips += '<span class="func-chip">vê Brindes</span>';
       if (m.veLancProducao) chips += '<span class="func-chip">corrige lançamentos da produção</span>';
       if (m.aprovaCliente) chips += '<span class="func-chip">aprova cliente novo</span>';
-      if (m.linhaProducao) chips += '<span class="func-chip">líder · ' + escapeHtml(phLinhaNome(m.linhaProducao) + (m.turnoProducao ? ' (' + m.turnoProducao + ')' : '')) + '</span>';
+      if (m.linhaProducao) chips += '<span class="func-chip">líder · ' + escapeHtml(phLinhaNome(m.linhaProducao) + (phTurnoDe(m.linhaProducao, m.turnoProducao) ? ' · ' + phTurnoDe(m.linhaProducao, m.turnoProducao) : '')) + '</span>';
       if (m.alertaEstoque) chips += '<span class="func-chip">alerta de estoque</span>';
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nomeCompleto || m.nome) + '<span class="driver-sub">no app: ' + escapeHtml(m.nome) + '</span>' + chips + '</span>' +
         '<button class="btn-text" data-action="reset-membro" data-id="' + escapeHtml(m.id) + '">Editar</button>' +
@@ -18022,8 +18051,7 @@
     document.getElementById('f-equipe-brindes').checked = !!(m && m.veBrindes);
     document.getElementById('f-equipe-lanc-prod').checked = !!(m && m.veLancProducao);
     document.getElementById('f-equipe-aprova-cli').checked = !!(m && m.aprovaCliente);
-    document.getElementById('f-equipe-linha-prod').value = (m && m.linhaProducao) || '';
-    document.getElementById('f-equipe-turno-prod').value = (m && m.turnoProducao) || '';
+    phEquipeSelects((m && m.linhaProducao) || '', (m && m.turnoProducao) || '');
     document.getElementById('f-equipe-alerta-est').checked = !!(m && m.alertaEstoque);
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
     document.getElementById('f-equipe-conf').checked = m ? !!m.conferente : false;
@@ -20758,89 +20786,224 @@
     return estoqueMovs.filter(function(m) { return m.tipo === 'entrada' && m.porHora && m.data === dia; })
       .sort(function(a, b) { return String(a.hora || '').localeCompare(String(b.hora || '')) || String(a.em || '').localeCompare(String(b.em || '')); });
   }
-  function phLinhaHtml(r, i) {
-    var prods = phProdutosDaMarca(r.marca);
-    var p = findProduto(r.produtoId);
-    return '<div class="ph-linha" data-i="' + i + '"><div class="ph-linha-t"><b>' + (i + 1) + '.</b>' + (ger.linhas.length > 1 ? '<button type="button" class="btn-text danger" data-ger="ph-tirar" data-i="' + i + '">Tirar</button>' : '') + '</div>' +
-      '<div class="row-2"><label>Hora <span class="req">*</span><select class="ph-hora" data-i="' + i + '">' + Array.apply(null, Array(24)).map(function(x, h) { return '<option value="' + h + '"' + (h === r.hora ? ' selected' : '') + '>' + phHoraTxt(h) + '</option>'; }).join('') + '</select></label>' +
-      '<label>Marca (rótulo) <span class="req">*</span><select class="ph-marca" data-i="' + i + '">' + phMarcas().map(function(m) { return '<option' + (m === r.marca ? ' selected' : '') + '>' + escapeHtml(m) + '</option>'; }).join('') + '</select></label></div>' +
-      '<div class="row-2"><label>Produto <span class="req">*</span><select class="ph-prod" data-i="' + i + '"><option value="">— escolha —</option>' + prods.map(function(x) { return '<option value="' + escapeHtml(x.id) + '"' + (x.id === r.produtoId ? ' selected' : '') + '>' + escapeHtml(phNomeSemMarca(x)) + '</option>'; }).join('') + '</select></label>' +
-      '<label>Quantidade na hora <span class="req">*</span><input type="number" class="ph-qtd" data-i="' + i + '" min="0" step="1" inputmode="numeric" value="' + escapeHtml(r.quantidade) + '" placeholder="' + escapeHtml(p ? unidadeDe(p) : 'quantidade') + '" /></label></div></div>';
+  // ----- lançamento da hora (22/10/2026): como o formulário "Controle de Produtividade" que os líderes usavam
+  // (horário, turno, produto, marca, o contador de cada máquina, descrição do horário, responsável e motivo de parada),
+  // melhorado: linha, turno e responsável já vêm de quem lança; a hora vem na primeira que falta; o produto só mostra o
+  // que a linha roda; a parada leva os minutos; número muito fora da média da máquina pede conferência; hora já
+  // lançada também. O contador da máquina de produção (Empacotadora, em fardos) é o que entra no estoque.
+  function phHoraNum(m) { return Number(String((m && m.hora) || '').slice(0, 2)); }
+  function phLancsLT(dia, linha, turno) {
+    return phLancamentosDoDia(dia).filter(function(m) { return phLinhaId(m.linha) === linha && (!turno || phTurnoDe(m.linha, m.turno) === turno); });
   }
-  function phRenderLinhas() { var box = document.getElementById('ph-linhas'); if (box && ger && ger.linhas) box.innerHTML = ger.linhas.map(phLinhaHtml).join(''); }
-  function phLerLinhas() {
-    if (!ger || !ger.linhas) return;
-    document.querySelectorAll('#ph-linhas .ph-linha').forEach(function(el) {
-      var r = ger.linhas[Number(el.dataset.i)]; if (!r) return;
-      r.hora = Number(el.querySelector('.ph-hora').value); r.marca = el.querySelector('.ph-marca').value; r.produtoId = el.querySelector('.ph-prod').value; r.quantidade = el.querySelector('.ph-qtd').value;
-    });
+  // horas sem lançamento no dia: da primeira hora lançada (linha e turno) até a hora que acabou de fechar
+  function phHorasFaltando(dia, linha, turno) {
+    if (!linha) return [];
+    var feitas = {};
+    phLancsLT(dia, linha, turno).forEach(function(m) { feitas[phHoraNum(m)] = true; });
+    var hs = Object.keys(feitas).map(Number);
+    if (!hs.length) return [];
+    var ini = Math.min.apply(null, hs), fim = dia === todayIso() ? new Date().getHours() - 1 : Math.max.apply(null, hs), out = [];
+    for (var h = ini; h <= fim; h++) if (!feitas[h]) out.push(h);
+    return out;
   }
-  function abrirProducaoHora() {
-    // já vem com a marca e o produto do último lançamento desta pessoa hoje (o mais recente, não a hora mais tarde)
-    var ult = phLancamentosDoDia(todayIso()).filter(function(m) { return m.lider && m.lider.ref === minhaRef(); })
-      .sort(function(x, y) { return String(x.em || '').localeCompare(String(y.em || '')); }).pop();
-    var base = { hora: phHoraAnterior(), marca: ult ? ult.marca || PH_MARCA_PADRAO : PH_MARCA_PADRAO, produtoId: ult ? ult.produtoId : '', quantidade: '' };
+  function phMediaMaquina(linha, nome, excetoId) {
+    var vals = estoqueMovs.filter(function(m) { return m.porHora && m.id !== excetoId && phLinhaId(m.linha) === linha && m.maquinas && Number(m.maquinas[nome]) > 0; })
+      .sort(function(a, b) { return String(b.data + ' ' + b.hora).localeCompare(String(a.data + ' ' + a.hora)); }).slice(0, 12)
+      .map(function(m) { return Number(m.maquinas[nome]); });
+    return vals.length >= 3 ? vals.reduce(function(a, x) { return a + x; }, 0) / vals.length : 0;
+  }
+  function phForaDoNormal(v, media) { return media > 0 && v > 0 && (v > media * 1.5 || v < media * 0.5); }
+  function phParadasTexto(ps) { return (ps || []).map(function(p) { return (p.motivo === 'Outro' && p.texto ? p.texto : p.motivo) + ' ' + p.minutos + ' min'; }).join('; '); }
+  function phMaqsTexto(m) { var o = m.maquinas || {}; return Object.keys(o).map(function(k) { return k + ' ' + fmtInt(o[k]); }).join(' · '); }
+  function phResumoLanc(m) {
+    return [m.hora, phLinhaNome(m.linha), phTurnoDe(m.linha, m.turno), m.produtoNome, qtdUnidade(m.quantidade, m.unidade), phMaqsTexto(m), phParadasTexto(m.paradas)].filter(Boolean).join(' · ');
+  }
+  // o que aparece embaixo do contador: hora anterior, % da capacidade e o aviso de número fora do normal
+  function phMaqDica(s, mq, v) {
+    var partes = [], warn = false, n = numCampo(v);
+    var ant = phLancsLT(s.dia, s.linha, s.turno).filter(function(m) { return m.id !== s.id && phHoraNum(m) < s.hora && m.maquinas && m.maquinas[mq.nome] != null; }).pop();
+    if (ant) partes.push('hora anterior: ' + fmtInt(ant.maquinas[mq.nome]));
+    if (n !== null && n > 0 && mq.porHora) partes.push(Math.round(n / mq.porHora * 100) + '% da capacidade');
+    var md = phMediaMaquina(s.linha, mq.nome, s.id);
+    if (n !== null && phForaDoNormal(n, md)) { partes.push('⚠ confira: a média é ' + fmtInt(Math.round(md)) + ' por hora'); warn = true; }
+    return { txt: partes.join(' · '), warn: warn };
+  }
+  function phEstadoInicial(opts) {
+    opts = opts || {};
+    var e = opts.editar;
+    if (e) {
+      return { id: e.id, dia: e.data || todayIso(), hora: phHoraNum(e), linha: phLinhaId(e.linha), turno: phTurnoDe(e.linha, e.turno), marca: e.marca || PH_MARCA_PADRAO, produtoId: e.produtoId || '',
+        maquinas: Object.assign({}, e.maquinas || {}), quantidade: e.quantidade, paradas: (e.paradas || []).map(function(p) { return Object.assign({}, p); }), obs: e.obs || '', resp: '', respNome: (e.lider && e.lider.nome) || '' };
+    }
+    var hoje = todayIso(), pad = phMeuPadrao();
+    var ult = phLancamentosDoDia(hoje).filter(function(m) { return m.lider && m.lider.ref === minhaRef(); }).sort(function(x, y) { return String(x.em || '').localeCompare(String(y.em || '')); }).pop();
+    var linha = (ult && phLinhaId(ult.linha)) || pad.linha || (phLinhas()[0] || {}).id || '';
+    var turno = (ult && phTurnoDe(ult.linha, ult.turno)) || pad.turno || '';
+    if (phTurnos(linha).indexOf(turno) < 0) turno = phTurnos(linha).length === 1 ? phTurnos(linha)[0] : '';
+    var faltam = phHorasFaltando(hoje, linha, turno), hAnt = phHoraAnterior();
+    var jaAnt = phLancsLT(hoje, linha, turno).some(function(m) { return phHoraNum(m) === hAnt; });
+    var hora = opts.hora != null && !isNaN(opts.hora) ? opts.hora : faltam.length ? faltam[0] : jaAnt ? new Date().getHours() : hAnt;
+    return { dia: hoje, hora: hora, linha: linha, turno: turno, marca: ult ? ult.marca || PH_MARCA_PADRAO : PH_MARCA_PADRAO, produtoId: ult ? ult.produtoId : '', maquinas: {}, quantidade: '', paradas: [], obs: '', resp: '' };
+  }
+  function phFormHtml(s) {
+    var hoje = todayIso(), turnos = phTurnos(s.linha), maqs = phMaquinas(s.linha), prodM = phMaquinaProducao(s.linha);
+    var prods = phProdutosDaLinha(s.linha, s.marca), pAtual = findProduto(s.produtoId);
+    if (pAtual && phMarcaDoProduto(pAtual) === s.marca && !prods.some(function(p) { return p.id === pAtual.id; })) prods = prods.concat([pAtual]);
+    var feitas = {};
+    phLancsLT(s.dia, s.linha, s.turno).forEach(function(m) { if (m.id !== s.id) feitas[phHoraNum(m)] = true; });
+    var h = '<p class="hint">Marque só números: o que cada máquina fez <b>nesta hora</b>.' + (prodM ? ' O contador da ' + escapeHtml(prodM.nome) + ' (' + escapeHtml(prodM.unidade) + ') entra no estoque.' : ' A quantidade produzida entra no estoque.') + '</p>';
+    h += '<div class="row-2"><label>Dia<input type="date" id="ph-data" value="' + escapeHtml(s.dia) + '" max="' + escapeHtml(hoje) + '" /></label>' +
+      '<label>Horário <span class="req">*</span><select id="ph-hora">' + Array.apply(null, Array(24)).map(function(x, hh) { return '<option value="' + hh + '"' + (hh === s.hora ? ' selected' : '') + '>' + phHoraTxt(hh) + (feitas[hh] ? ' ✓ lançada' : '') + '</option>'; }).join('') + '</select></label></div>';
+    h += '<label>Linha <span class="req">*</span><select id="ph-linha">' + phOpcoes(phLinhas(), s.linha, '— escolha —') + '</select></label>';
+    if (turnos.length) h += '<fieldset class="ph-grupo"><legend>Turno <span class="req">*</span></legend><div class="ph-chips">' + turnos.map(function(t) {
+      return '<label class="ph-chip"><input type="radio" name="ph-turno" value="' + escapeHtml(t) + '"' + (t === s.turno ? ' checked' : '') + ' /> ' + escapeHtml(t) + '</label>';
+    }).join('') + '</div></fieldset>';
+    h += '<div class="row-2"><label>Marca <span class="req">*</span><select id="ph-marca">' + phMarcas().map(function(m) { return '<option' + (m === s.marca ? ' selected' : '') + '>' + escapeHtml(m) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Produto <span class="req">*</span><select id="ph-prod"><option value="">— escolha —</option>' + prods.map(function(p) { return '<option value="' + escapeHtml(p.id) + '"' + (p.id === s.produtoId ? ' selected' : '') + '>' + escapeHtml(phNomeSemMarca(p)) + '</option>'; }).join('') + '</select></label></div>';
+    if (s.linha && !prods.length) h += '<p class="field-hint warn">Nenhum produto desta marca para a linha. Confira a marca (ou peça para cadastrar o produto).</p>';
+    if (maqs.length) {
+      h += '<fieldset class="ph-grupo"><legend>Contador de cada máquina nesta hora</legend>' + maqs.map(function(mq, i) {
+        var v = s.maquinas[mq.nome]; v = v == null ? '' : String(v);
+        var d = phMaqDica(s, mq, v);
+        return '<label class="ph-maq">' + escapeHtml(mq.nome) + (mq.obrigatoria ? ' <span class="req">*</span>' : ' <span class="opt">(opcional)</span>') +
+          '<span class="ph-maq-in"><input type="number" class="ph-mq" data-nome="' + escapeHtml(mq.nome) + '" data-i="' + i + '" min="0" step="1" inputmode="numeric" value="' + escapeHtml(v) + '" placeholder="0" />' +
+          '<span class="ph-un">' + escapeHtml(mq.unidade || '') + (mq.producao ? ' · entra no estoque' : '') + '</span></span>' +
+          '<span class="field-hint' + (d.warn ? ' warn' : '') + '" id="ph-mq-h-' + i + '">' + escapeHtml(d.txt) + '</span></label>';
+      }).join('') + '</fieldset>';
+    }
+    if (!prodM) h += '<label>Quantidade produzida na hora <span class="req">*</span><input type="number" id="ph-qtd" min="0" step="1" inputmode="numeric" value="' + escapeHtml(s.quantidade == null ? '' : s.quantidade) + '" placeholder="' + escapeHtml(pAtual ? unidadeDe(pAtual) : 'quantidade') + '" /></label>';
+    h += '<fieldset class="ph-grupo"><legend>Parada nesta hora <span class="opt">(se teve)</span></legend>' + s.paradas.map(function(p, i) {
+      return '<div class="ph-parada"><select class="ph-pm" data-i="' + i + '" aria-label="Motivo da parada"><option value="">— motivo —</option>' + PH_MOTIVOS.map(function(o) { return '<option' + (o === p.motivo ? ' selected' : '') + '>' + escapeHtml(o) + '</option>'; }).join('') + '</select>' +
+        '<span class="ph-pmin-l"><input type="number" class="ph-pmin" data-i="' + i + '" min="1" max="60" step="1" inputmode="numeric" value="' + escapeHtml(p.minutos == null ? '' : p.minutos) + '" placeholder="0" aria-label="Minutos parados" /> min</span>' +
+        (p.motivo === 'Outro' ? '<input type="text" class="ph-ptxt" data-i="' + i + '" maxlength="80" value="' + escapeHtml(p.texto || '') + '" placeholder="Qual foi?" aria-label="Qual foi o motivo" autocomplete="off" />' : '') +
+        '<button type="button" class="btn-text danger" data-ger="ph-parada-x" data-i="' + i + '" aria-label="Tirar a parada">✕</button></div>';
+    }).join('') + '<button type="button" class="btn-text" data-ger="ph-parada">' + (s.paradas.length ? '+ outra parada' : '+ Teve parada') + '</button></fieldset>';
+    h += '<label>Descrição do horário <span class="opt">(opcional)</span><input type="text" id="ph-obs" maxlength="200" value="' + escapeHtml(s.obs || '') + '" placeholder="Ex.: troca de rótulo, falta de pré-forma…" autocomplete="off" /></label>';
+    if (ehLiderProducao() && !s.id) h += '<p class="field-hint">Responsável: <b>' + escapeHtml(quemSessao()) + '</b>.</p>';
+    else {
+      var lds = phLideres(s.linha);
+      h += '<label>Responsável<select id="ph-resp"><option value="">' + escapeHtml(s.id ? (s.respNome || '—') + ' (como foi lançado)' : 'Eu (' + quemSessao() + ')') + '</option>' +
+        lds.map(function(m) { var v = 'escritorio:' + m.id; return '<option value="' + escapeHtml(v) + '"' + (s.resp === v ? ' selected' : '') + '>' + escapeHtml(nomePessoa(m.nome) + (m.turnoProducao || PH_LEGADO[m.linhaProducao] ? ' · ' + phTurnoDe(m.linhaProducao, m.turnoProducao) : '')) + '</option>'; }).join('') + '</select></label>';
+    }
+    return h;
+  }
+  function phLer(s) {
+    var body = document.getElementById('ger-form-body'), g = function(id) { var el = document.getElementById(id); return el ? el.value : null; };
+    body.querySelectorAll('.ph-mq').forEach(function(el) { s.maquinas[el.dataset.nome] = el.value; });
+    if (g('ph-data') !== null) s.dia = g('ph-data') || todayIso();
+    if (g('ph-hora') !== null) s.hora = Number(g('ph-hora'));
+    var t = body.querySelector('input[name="ph-turno"]:checked');
+    if (t) s.turno = t.value;
+    if (g('ph-linha') !== null && g('ph-linha') !== s.linha) {
+      s.linha = g('ph-linha');
+      var ts = phTurnos(s.linha);
+      if (ts.indexOf(s.turno) < 0) s.turno = ts.length === 1 ? ts[0] : '';
+    }
+    if (g('ph-marca') !== null) s.marca = g('ph-marca');
+    if (g('ph-prod') !== null) s.produtoId = g('ph-prod');
+    if (g('ph-qtd') !== null) s.quantidade = g('ph-qtd');
+    body.querySelectorAll('.ph-pm').forEach(function(el) { var p = s.paradas[Number(el.dataset.i)]; if (p) p.motivo = el.value; });
+    body.querySelectorAll('.ph-pmin').forEach(function(el) { var p = s.paradas[Number(el.dataset.i)]; if (p) p.minutos = el.value; });
+    body.querySelectorAll('.ph-ptxt').forEach(function(el) { var p = s.paradas[Number(el.dataset.i)]; if (p) p.texto = el.value; });
+    if (g('ph-obs') !== null) s.obs = g('ph-obs');
+    if (g('ph-resp') !== null) s.resp = g('ph-resp');
+  }
+  function phRedesenhar() {
+    if (!ger || !ger.ph) return;
+    phLer(ger.ph);
+    var body = document.getElementById('ger-form-body'), y = document.querySelector('#ger-sheet-overlay .sheet').scrollTop;
+    body.innerHTML = phFormHtml(ger.ph);
+    document.querySelector('#ger-sheet-overlay .sheet').scrollTop = y;
+  }
+  function phDesconfirmar() {
+    if (ger && ger.confirmado) { ger.confirmado = ''; var b = document.getElementById('btn-ger-submit'); if (b) b.textContent = ger.ph && ger.ph.id ? 'Salvar correção' : 'Salvar produção'; }
+  }
+  function abrirProducaoHora(opts) {
+    opts = opts || {};
+    var s = phEstadoInicial(opts);
     gerAbrir({
-      titulo: 'Lançar produção (hora a hora)', botao: 'Salvar produção', linhas: [base], confirmarRepetido: false,
-      html: '<p class="hint">Uma linha por hora: a hora, a marca (rótulo), o produto e quanto foi produzido naquela hora. Entra no estoque na hora.</p>' +
-        '<label>Dia <input type="date" id="ph-data" value="' + escapeHtml(todayIso()) + '" max="' + escapeHtml(todayIso()) + '" /></label>' +
-        '<div class="row-2"><label>Linha <span class="req">*</span><select id="ph-linha">' + phOpcoes(PH_LINHAS, phPadraoLinha(ult), '— escolha —') + '</select></label>' +
-        '<label>Turno<select id="ph-turno">' + phOpcoes(PH_TURNOS, (ult && ult.turno) || ((meuMembro() || {}).turnoProducao) || phTurnoAgora()) + '</select></label></div>' +
-        '<label id="ph-maq-l">Máquina <span class="opt">(opcional)</span><select id="ph-maq">' + phOpcoes(phMaquinas(phPadraoLinha(ult)), (ult && ult.maquina) || '', '— sem máquina —') + '</select></label>' +
-        '<div id="ph-linhas"></div><button type="button" class="btn-text" data-ger="ph-mais">+ outra hora</button>' +
-        '<label>Observação <span class="opt">(opcional: parada, troca de rótulo…)</span><input type="text" id="ph-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Lançado por <b>' + escapeHtml(quemSessao()) + '</b>.</p>',
-      depois: function() { phRenderLinhas(); phMaqOpcoes(); },
+      titulo: s.id ? 'Corrigir o lançamento das ' + pad2(s.hora) + ':00' : 'Lançar a produção da hora', botao: s.id ? 'Salvar correção' : 'Salvar produção', ph: s, confirmado: '',
+      html: phFormHtml(s),
       change: function(t) {
-        if (t.id === 'ph-linha') { phMaqOpcoes(); return; }
-        if (t.classList.contains('ph-marca')) { phLerLinhas(); var r = ger.linhas[Number(t.dataset.i)]; if (r) { r.produtoId = ''; } phRenderLinhas(); }
-        else if (t.closest && t.closest('#ph-linhas')) phLerLinhas();
-        if (ger.confirmarRepetido) { ger.confirmarRepetido = false; document.getElementById('btn-ger-submit').textContent = 'Salvar produção'; }
+        phDesconfirmar();
+        if (t.id === 'ph-linha' || t.id === 'ph-marca' || t.id === 'ph-data' || t.name === 'ph-turno' || t.classList.contains('ph-pm')) {
+          if (t.id === 'ph-marca') { phLer(ger.ph); ger.ph.produtoId = ''; }
+          phRedesenhar();
+        }
       },
       input: function(t) {
-        if (t.closest && t.closest('#ph-linhas')) phLerLinhas();
-        if (ger.confirmarRepetido) { ger.confirmarRepetido = false; document.getElementById('btn-ger-submit').textContent = 'Salvar produção'; }
+        phDesconfirmar();
+        if (t.classList.contains('ph-mq')) {
+          var mq = phMaquinas(ger.ph.linha)[Number(t.dataset.i)], el = document.getElementById('ph-mq-h-' + t.dataset.i);
+          if (mq && el) { var d = phMaqDica(ger.ph, mq, t.value); el.textContent = d.txt; el.classList.toggle('warn', d.warn); }
+        }
       },
       acao: function(a, b) {
-        phLerLinhas();
-        if (a === 'ph-mais') { var u = ger.linhas[ger.linhas.length - 1]; ger.linhas.push({ hora: (u.hora + 1) % 24, marca: u.marca, produtoId: u.produtoId, quantidade: '' }); phRenderLinhas(); }
-        else if (a === 'ph-tirar') { ger.linhas.splice(Number(b.dataset.i), 1); phRenderLinhas(); }
+        if (a === 'ph-parada') { phLer(ger.ph); ger.ph.paradas.push({ motivo: '', minutos: '', texto: '' }); phRedesenhar(); var el = document.querySelector('#ger-form-body .ph-pm[data-i="' + (ger.ph.paradas.length - 1) + '"]'); if (el) el.focus(); }
+        else if (a === 'ph-parada-x') { phLer(ger.ph); ger.ph.paradas.splice(Number(b.dataset.i), 1); phRedesenhar(); }
+        phDesconfirmar();
       },
-      salvar: function() {
-        phLerLinhas();
-        var dia = gerVal('ph-data') || todayIso(), obs = gerVal('ph-obs'), agora = new Date().toISOString(), lista = [], erro = '', vistos = {};
-        if (dia > todayIso()) return gerErro('O dia não pode ser no futuro.');
-        var linhaP = gerVal('ph-linha'), turnoP = gerVal('ph-turno'), maqP = gerVal('ph-maq');
-        if (!linhaP) return gerErro('Escolha a linha.');
-        ger.linhas.forEach(function(r, i) {
-          if (erro) return;
-          var q = numCampo(r.quantidade), p = findProduto(r.produtoId);
-          if (!p && !q) return;
-          if (!p) { erro = 'Escolha o produto da linha ' + (i + 1) + '.'; return; }
-          if (q === null || q <= 0) { erro = 'Informe a quantidade produzida na linha ' + (i + 1) + ' (' + phHoraTxt(r.hora) + ').'; return; }
-          var k = r.hora + '|' + p.id;
-          if (vistos[k]) { erro = 'A hora ' + phHoraTxt(r.hora) + ' de ' + p.nome + ' está duas vezes.'; return; }
-          vistos[k] = true;
-          lista.push({ tipo: 'entrada', porHora: true, produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), quantidade: Math.round(q), data: dia, hora: pad2(r.hora) + ':00', horaFim: pad2((r.hora + 1) % 24) + ':00',
-            marca: r.marca, linha: linhaP, turno: turnoP, maquina: maqP, lider: { nome: quemSessao(), ref: minhaRef() }, em: agora, obs: obs, criadoEm: agora });
-        });
-        if (erro) return gerErro(erro);
-        if (!lista.length) return gerErro('Informe ao menos uma hora: produto e quantidade.');
-        var jaTem = lista.filter(function(x) { return phLancamentosDoDia(dia).some(function(m) { return m.hora === x.hora && m.produtoId === x.produtoId && (m.linha || '') === (x.linha || ''); }); });
-        if (jaTem.length && !ger.confirmarRepetido) {
-          ger.confirmarRepetido = true;
-          document.getElementById('btn-ger-submit').textContent = 'Salvar mesmo assim';
-          return gerErro('Já tem lançamento de ' + jaTem.map(function(x) { return x.hora + ' (' + x.produtoNome + ')'; }).join(', ') + ' neste dia. Confira para não lançar duas vezes; se for outra parte da produção, toque em “Salvar mesmo assim”.');
-        }
-        return addEstoqueMovs(lista).then(function() {
-          var tot = lista.reduce(function(a, x) { return a + x.quantidade; }, 0);
-          showToast('Produção lançada: ' + lista.length + (lista.length === 1 ? ' hora' : ' horas') + ' · ' + fmtInt(tot) + ' no total.');
-          if (ui.tab === 'producaohora') renderProducaoHora();
-        });
-      }
+      salvar: function() { return phSalvar(ger.ph); }
     });
   }
-  // quadro do dia: cada hora, o que foi produzido (marca, produto, quantidade, quem lançou)
+  function phSalvar(s) {
+    phLer(s);
+    var hoje = todayIso(), lin = phLinha(s.linha), maqs = phMaquinas(s.linha), prodM = phMaquinaProducao(s.linha), p = findProduto(s.produtoId);
+    if (s.dia > hoje) return gerErro('O dia não pode ser no futuro.');
+    if (!lin) return gerErro('Escolha a linha.');
+    if (phTurnos(s.linha).length && !s.turno) return gerErro('Escolha o turno.');
+    if (!p) return gerErro('Escolha a marca e o produto.');
+    var cont = {};
+    for (var i = 0; i < maqs.length; i++) {
+      var mq = maqs[i], raw = String(s.maquinas[mq.nome] == null ? '' : s.maquinas[mq.nome]).trim();
+      if (raw === '') { if (mq.obrigatoria) return gerErro('Informe o contador da ' + mq.nome + ' (0 se ficou parada).'); continue; }
+      var n = numCampo(raw);
+      if (n === null || n < 0) return gerErro('Contador da ' + mq.nome + ': só números.');
+      cont[mq.nome] = Math.round(n);
+    }
+    var q = prodM ? cont[prodM.nome] : numCampo(s.quantidade);
+    if (q == null || isNaN(q) || q < 0) return gerErro(prodM ? 'Informe o contador da ' + prodM.nome + ' (é o que entra no estoque).' : 'Informe a quantidade produzida na hora.');
+    var paradas = [], minTot = 0;
+    for (var j = 0; j < s.paradas.length; j++) {
+      var pp = s.paradas[j], mins = numCampo(pp.minutos);
+      if (!pp.motivo && !String(pp.minutos == null ? '' : pp.minutos).trim()) continue;
+      if (!pp.motivo) return gerErro('Escolha o motivo da parada ' + (j + 1) + '.');
+      if (mins === null || mins < 1 || mins > 60) return gerErro('Quantos minutos parou (' + pp.motivo + ')? De 1 a 60.');
+      if (pp.motivo === 'Outro' && !String(pp.texto || '').trim()) return gerErro('Escreva qual foi o motivo da parada.');
+      paradas.push({ motivo: pp.motivo, minutos: Math.round(mins), texto: pp.motivo === 'Outro' ? String(pp.texto).trim().slice(0, 80) : '' });
+      minTot += Math.round(mins);
+    }
+    if (minTot > 60) return gerErro('As paradas somam ' + minTot + ' minutos, e a hora tem 60.');
+    if (Math.round(q) === 0 && !paradas.length) return gerErro('Produção zero nesta hora: informe a parada (motivo e minutos).');
+    var hv = pad2(s.hora) + ':00', avisos = [];
+    if (phLancsLT(s.dia, s.linha, s.turno).some(function(m) { return m.hora === hv && m.id !== s.id; })) avisos.push('a hora ' + phHoraTxt(s.hora) + ' já foi lançada para ' + lin.nome + (s.turno ? ' · ' + s.turno : '') + ' neste dia');
+    maqs.forEach(function(mq) { var md = phMediaMaquina(s.linha, mq.nome, s.id); if (cont[mq.nome] != null && phForaDoNormal(cont[mq.nome], md)) avisos.push(mq.nome + ' com ' + fmtInt(cont[mq.nome]) + ' (a média é ' + fmtInt(Math.round(md)) + ')'); });
+    var chave = avisos.join('|');
+    if (avisos.length && ger.confirmado !== chave) {
+      ger.confirmado = chave;
+      document.getElementById('btn-ger-submit').textContent = 'Salvar mesmo assim';
+      return gerErro('Confira antes de salvar: ' + avisos.join('; ') + '. Se estiver certo, toque em “Salvar mesmo assim”.');
+    }
+    var agora = new Date().toISOString(), eu = { nome: quemSessao(), ref: minhaRef() }, resp = eu;
+    if (s.resp) { var lm = equipe.find(function(x) { return 'escritorio:' + x.id === s.resp; }); if (lm) resp = { nome: nomePessoa(lm.nome), ref: s.resp }; }
+    var dados = { produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), quantidade: Math.round(q), data: s.dia, hora: hv, horaFim: pad2((s.hora + 1) % 24) + ':00',
+      marca: s.marca, linha: s.linha, turno: s.turno || '', maquinas: cont, paradas: paradas, minutosParados: minTot, obs: String(s.obs || '').trim().slice(0, 200) };
+    if (s.id) {
+      var orig = estoqueMovs.find(function(x) { return x.id === s.id; }) || {};
+      if (s.resp) dados.lider = resp;
+      dados.maquina = '';
+      dados.editadoPor = eu; dados.editadoEm = agora;
+      dados.historico = (orig.historico || []).concat([{ em: agora, por: quemSessao(), campo: 'lançamento', de: phResumoLanc(orig), para: phResumoLanc(Object.assign({}, orig, dados)) }]).slice(-20);
+      return mpGravar([{ op: 'update', col: 'estoque', id: s.id, data: dados }]).then(function() { showToast('Lançamento das ' + hv + ' corrigido.'); });
+    }
+    var rec = Object.assign({ tipo: 'entrada', porHora: true, lider: resp, em: agora, criadoEm: agora }, dados);
+    if (resp.ref !== eu.ref) rec.lancadoPor = eu;
+    return addEstoqueMovs([rec]).then(function() {
+      showToast('Produção das ' + hv + ' lançada: ' + qtdUnidade(rec.quantidade, rec.unidade) + (minTot ? ' · parada ' + minTot + ' min' : '') + '.');
+      renderProducaoHora();
+    });
+  }
+  // quadro do dia: cada hora, o que foi produzido (marca, produto, quantidade, contadores, paradas e quem lançou)
   function phQuadroHtml(dia, so) {
     var l = phLancamentosDoDia(dia).filter(function(m) { return !so || (m.lider && m.lider.ref === so); });
     if (!l.length) return '<p class="empty-state">' + (so ? 'Você ainda não lançou a produção de hoje.' : 'Nenhuma produção lançada hora a hora hoje.') + '</p>';
@@ -20848,10 +21011,31 @@
     function nomeDe(m) { var p = findProduto(m.produtoId); return (m.marca || PH_MARCA_PADRAO) + ' · ' + (p ? phNomeSemMarca(p) : m.produtoNome); }
     l.forEach(function(m) { var k = nomeDe(m); if (!porProd[k]) { porProd[k] = { q: 0, u: m.unidade }; ordem.push(k); } porProd[k].q += Number(m.quantidade) || 0; });
     return '<ul class="ph-lista">' + l.map(function(m) {
+      var info = [(m.lider && m.lider.nome) || '—', m.linha ? phLinhaNome(m.linha) : '', phTurnoDe(m.linha, m.turno), m.maquina || ''].filter(Boolean).join(' · ');
+      var par = phParadasTexto(m.paradas);
       return '<li><span class="ph-h">' + escapeHtml(m.hora + '–' + (m.horaFim || '')) + '</span><span class="ph-p">' + escapeHtml(nomeDe(m)) +
-        (so ? '' : '<small>' + escapeHtml([(m.lider && m.lider.nome) || '—', m.linha ? phLinhaNome(m.linha) : '', m.turno || '', m.maquina || ''].filter(Boolean).join(' · ')) + (m.obs ? ' · ' + escapeHtml(m.obs) : '') + '</small>') + '</span>' +
+        '<small>' + escapeHtml(info) + (m.obs ? ' · ' + escapeHtml(m.obs) : '') + '</small>' +
+        (m.maquinas && Object.keys(m.maquinas).length ? '<small>' + escapeHtml(phMaqsTexto(m)) + '</small>' : '') +
+        (par ? '<small class="ph-par">Parada: ' + escapeHtml(par) + '</small>' : '') + '</span>' +
         '<span class="ph-q">' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + '</span></li>';
     }).join('') + '</ul><p class="field-hint"><b>Total do dia:</b> ' + ordem.map(function(k) { return escapeHtml(k) + ' ' + escapeHtml(qtdUnidade(porProd[k].q, porProd[k].u)); }).join(' · ') + '</p>';
+  }
+  // horas que faltam lançar hoje: o líder vê as da linha e do turno dele; o escritório, as de cada linha e turno lançados
+  function phFaltasHtml(dia) {
+    var grupos = [];
+    if (ehLiderProducao()) { var pad = phMeuPadrao(); if (pad.linha) grupos.push({ linha: pad.linha, turno: pad.turno }); }
+    else {
+      var vistos = {};
+      phLancamentosDoDia(dia).forEach(function(m) { var li = phLinhaId(m.linha), tu = phTurnoDe(m.linha, m.turno), k = li + '|' + tu; if (li && !vistos[k]) { vistos[k] = true; grupos.push({ linha: li, turno: tu }); } });
+    }
+    var h = grupos.map(function(g) {
+      var f = phHorasFaltando(dia, g.linha, g.turno);
+      if (!f.length) return '';
+      return '<li><b>' + escapeHtml(phLinhaNome(g.linha) + (g.turno ? ' · ' + g.turno : '')) + ':</b> <span class="ph-faltam">' + f.map(function(hh) {
+        return '<button type="button" class="btn btn-secondary btn-sm" data-ph="lancar" data-hora="' + hh + '">' + pad2(hh) + ':00</button>';
+      }).join('') + '</span></li>';
+    }).join('');
+    return h ? '<div class="est-alertas" role="status"><p class="est-alertas-t">Horas sem lançamento hoje (toque para lançar)</p><ul>' + h + '</ul></div>' : '';
   }
   function renderProducaoHora() {
     if (!session) return;
@@ -20859,11 +21043,16 @@
     if (!caixas.length) return;
     var box = { set innerHTML(v) { caixas.forEach(function(b) { b.innerHTML = v; }); } };
     var hoje = todayIso();
-    box.innerHTML = '<p class="tagline">Lance a produção de <b>cada hora</b>: hora, marca (rótulo), produto e quantidade. Entra direto no estoque.</p>' +
-      '<button type="button" class="btn btn-primary ph-grande" data-ph="lancar">+ Lançar a produção da hora</button>' +
+    box.innerHTML = '<p class="tagline">Lance a produção de <b>cada hora</b>: o contador de cada máquina, a marca e o produto, e se teve parada. A produção entra direto no estoque.</p>' +
+      '<button type="button" class="btn btn-primary ph-grande" data-ph="lancar">+ Lançar a produção da hora</button>' + phFaltasHtml(hoje) +
       '<h3 class="q-plano-t">Hoje · ' + escapeHtml(formatDateBR(hoje)) + '</h3>' + phQuadroHtml(hoje, null);
   }
-  document.getElementById('tab-producaohora').addEventListener('click', function(e) { if (e.target.closest('[data-ph="lancar"]')) abrirProducaoHora(); });
+  function phCliqueLancar(e) {
+    var b = e.target.closest('[data-ph="lancar"]');
+    if (!b) return;
+    abrirProducaoHora(b.dataset.hora != null && b.dataset.hora !== '' ? { hora: Number(b.dataset.hora) } : {});
+  }
+  document.getElementById('tab-producaohora').addEventListener('click', phCliqueLancar);
   function renderProducaoHoraEstoque() {
     var el = document.getElementById('estoque-ph');
     if (!el) return;
@@ -20926,38 +21115,48 @@
     if (ae && box.contains(ae) && /^(INPUT|SELECT)$/.test(ae.tagName) && ae.classList.contains('pr-c')) { prUi.pendente = true; return; } // não atrapalha quem está digitando
     prUi.pendente = false;
     var hoje = todayIso(), dia = prUi.dia || hoje, ed = podeCorrigirLancProducao(), l = phLancamentosDoDia(dia), cont = {}, porProd = {}, ordem = [], pal = 0;
-    l.forEach(function(m) { var k = m.hora + '|' + m.produtoId + '|' + (m.linha || ''); cont[k] = (cont[k] || 0) + 1; });
+    var chaveL = function(m) { return m.hora + '|' + phLinhaId(m.linha) + '|' + phTurnoDe(m.linha, m.turno) + (m.linha ? '' : '|' + m.produtoId); };
+    l.forEach(function(m) { var k = chaveL(m); cont[k] = (cont[k] || 0) + 1; });
     var linhas = l.map(function(m) {
-      var p = findProduto(m.produtoId), id = escapeHtml(m.id), dup = cont[m.hora + '|' + m.produtoId + '|' + (m.linha || '')] > 1, nome = (m.marca || PH_MARCA_PADRAO) + ' · ' + (p ? phNomeSemMarca(p) : m.produtoNome);
+      var p = findProduto(m.produtoId), id = escapeHtml(m.id), dup = cont[chaveL(m)] > 1, nome = (m.marca || PH_MARCA_PADRAO) + ' · ' + (p ? phNomeSemMarca(p) : m.produtoNome);
       var v = p ? emPaletes(p, Number(m.quantidade) || 0) : null;
       if (v) pal += v;
       if (!porProd[nome]) { porProd[nome] = { q: 0, u: m.unidade }; ordem.push(nome); }
       porProd[nome].q += Number(m.quantidade) || 0;
-      if (prUi.apagar === m.id) return '<tr class="pr-conf"><td colspan="' + (ed ? 7 : 6) + '">Apagar o lançamento das ' + escapeHtml(m.hora) + ' (' + escapeHtml(nome) + ', ' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + ')? Sai do estoque também.' +
+      var maqsL = phMaquinas(m.linha), prodM = phMaquinaProducao(m.linha), par = phParadasTexto(m.paradas), tu = phTurnoDe(m.linha, m.turno);
+      if (prUi.apagar === m.id) return '<tr class="pr-conf"><td colspan="' + (ed ? 9 : 8) + '">Apagar o lançamento das ' + escapeHtml(m.hora) + ' (' + escapeHtml(nome) + ', ' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + ')? Sai do estoque também.' +
         ' <button type="button" class="btn-text danger" data-pr-a="apagar-ok" data-id="' + id + '">Apagar</button><button type="button" class="btn-text" data-pr-a="apagar-nao">Manter</button></td></tr>';
-      var quem = '<span class="pr-quem">' + escapeHtml((m.lider && m.lider.nome) || '—') + (m.editadoPor ? '<small>corrigido por ' + escapeHtml(m.editadoPor.nome || '—') + ' às ' + escapeHtml(horaMsg(m.editadoEm)) + '</small>' : '') + '</span>';
+      var quem = '<span class="pr-quem">' + escapeHtml((m.lider && m.lider.nome) || '—') + (m.lancadoPor ? '<small>lançado por ' + escapeHtml(m.lancadoPor.nome || '—') + '</small>' : '') + (m.editadoPor ? '<small>corrigido por ' + escapeHtml(m.editadoPor.nome || '—') + ' às ' + escapeHtml(horaMsg(m.editadoEm)) + '</small>' : '') + '</span>';
       var cls = (dup ? ' pr-dup' : '') + (m.editadoEm ? ' pr-editado' : '');
-      var ltm = [m.linha ? phLinhaNome(m.linha) : '', m.turno || '', m.maquina || ''].filter(Boolean).join(' · ') || '—';
-      if (!ed) return '<tr class="' + cls + '"><td>' + escapeHtml(m.hora) + '</td><td>' + escapeHtml(ltm) + '</td><td>' + escapeHtml(nome) + (dup ? ' <b class="alerta">repetido</b>' : '') + '</td><td class="num">' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + '</td><td>' + quem + '</td><td>' + escapeHtml(m.obs || '') + '</td></tr>';
+      var ltm = [m.linha ? phLinhaNome(m.linha) : '', tu, m.maquina || ''].filter(Boolean).join(' · ') || '—';
+      var parCel = par ? '<span class="ph-par">' + escapeHtml(par) + '</span>' : '—';
+      if (!ed) return '<tr class="' + cls + '"><td>' + escapeHtml(m.hora) + '</td><td>' + escapeHtml(ltm) + '</td><td>' + escapeHtml(nome) + (dup ? ' <b class="alerta">repetido</b>' : '') + '</td><td>' + escapeHtml(phMaqsTexto(m) || '—') + '</td><td class="num">' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + '</td><td>' + parCel + '</td><td>' + quem + '</td><td>' + escapeHtml(m.obs || '') + '</td></tr>';
+      var mqs = maqsL.map(function(mq) { return mq.nome; });
+      Object.keys(m.maquinas || {}).forEach(function(k) { if (mqs.indexOf(k) < 0) mqs.push(k); });
+      var maqCel = mqs.length ? mqs.map(function(k) { var v = (m.maquinas || {})[k]; return '<label class="pr-mq"><small>' + escapeHtml(k) + '</small><input class="pr-c pr-q" data-campo="maq" data-maq="' + escapeHtml(k) + '" type="number" min="0" step="1" inputmode="numeric" value="' + escapeHtml(v == null ? '' : v) + '" aria-label="Contador da ' + escapeHtml(k) + '"></label>'; }).join('') : '—';
+      var qCel = prodM && (m.maquinas || {})[prodM.nome] != null
+        ? '<b>' + escapeHtml(fmtInt(m.quantidade)) + '</b><small>' + escapeHtml((m.unidade || '') + ' · ' + prodM.nome) + '</small>'
+        : '<input class="pr-c pr-q" data-campo="quantidade" type="number" min="0" step="1" inputmode="numeric" value="' + escapeHtml(m.quantidade) + '" aria-label="Quantidade"><small>' + escapeHtml(m.unidade || '') + '</small>';
       return '<tr class="' + cls + '" data-id="' + id + '">' +
         '<td><select class="pr-c" data-campo="hora" aria-label="Hora">' + Array.apply(null, Array(24)).map(function(x, h) { var hv = pad2(h) + ':00'; return '<option value="' + hv + '"' + (hv === m.hora ? ' selected' : '') + '>' + hv + '</option>'; }).join('') + '</select></td>' +
-        '<td class="pr-ltm"><select class="pr-c" data-campo="linha" aria-label="Linha">' + phOpcoes(PH_LINHAS, m.linha || '', '— linha —') + '</select>' +
-          '<select class="pr-c" data-campo="turno" aria-label="Turno">' + phOpcoes(PH_TURNOS, m.turno || '', '— turno —') + '</select>' +
-          (phMaquinas(m.linha).length || m.maquina ? '<select class="pr-c" data-campo="maquina" aria-label="Máquina">' + phOpcoes(phMaquinas(m.linha), m.maquina || '', '— máquina —') + '</select>' : '') + '</td>' +
-        '<td><select class="pr-c" data-campo="produtoId" aria-label="Produto">' + prOpcoesProduto(m.produtoId, m.produtoNome) + '</select>' + (dup ? '<small class="alerta">mesma hora e produto lançados mais de uma vez</small>' : '') + '</td>' +
-        '<td class="num"><input class="pr-c pr-q" data-campo="quantidade" type="number" min="1" step="1" inputmode="numeric" value="' + escapeHtml(m.quantidade) + '" aria-label="Quantidade"><small>' + escapeHtml(m.unidade || '') + '</small></td>' +
+        '<td class="pr-ltm"><select class="pr-c" data-campo="linha" aria-label="Linha">' + phOpcoes(phLinhas(), phLinhaId(m.linha), '— linha —') + '</select>' +
+          '<select class="pr-c" data-campo="turno" aria-label="Turno">' + phOpcoes(phTurnos(m.linha), tu, '— turno —') + '</select>' + (m.maquina ? '<small>' + escapeHtml(m.maquina) + '</small>' : '') + '</td>' +
+        '<td><select class="pr-c" data-campo="produtoId" aria-label="Produto">' + prOpcoesProduto(m.produtoId, m.produtoNome) + '</select>' + (dup ? '<small class="alerta">mesma hora e linha lançadas mais de uma vez</small>' : '') + '</td>' +
+        '<td class="pr-mqs">' + maqCel + '</td>' +
+        '<td class="num">' + qCel + '</td>' +
+        '<td>' + parCel + '</td>' +
         '<td>' + quem + '</td>' +
-        '<td><input class="pr-c" data-campo="obs" type="text" maxlength="200" value="' + escapeHtml(m.obs || '') + '" aria-label="Observação"></td>' +
-        '<td><button type="button" class="btn-text danger" data-pr-a="apagar" data-id="' + id + '">Apagar</button></td></tr>';
+        '<td><input class="pr-c" data-campo="obs" type="text" maxlength="200" value="' + escapeHtml(m.obs || '') + '" aria-label="Descrição do horário"></td>' +
+        '<td class="pr-acoes"><button type="button" class="btn-text" data-pr-a="editar" data-id="' + id + '">Editar</button><button type="button" class="btn-text danger" data-pr-a="apagar" data-id="' + id + '">Apagar</button></td></tr>';
     }).join('');
-    box.innerHTML = '<p class="tagline">Os lançamentos hora a hora dos líderes, como numa planilha.' + (ed ? ' Corrija a hora, o produto, a quantidade ou a observação: grava na hora e o estoque acompanha.' : '') + '</p>' +
+    box.innerHTML = '<p class="tagline">Os lançamentos hora a hora dos líderes, como numa planilha.' + (ed ? ' Corrija direto na célula (hora, linha, turno, produto, contadores, descrição) ou toque em “Editar” para o lançamento inteiro (paradas também): grava na hora e o estoque acompanha.' : '') + '</p>' +
       '<div class="pr-barra"><button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-ant" aria-label="Dia anterior">‹</button>' +
         '<input type="date" id="pr-dia" value="' + escapeHtml(dia) + '" max="' + escapeHtml(hoje) + '" aria-label="Dia" />' +
         '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-prox" aria-label="Dia seguinte"' + (dia >= hoje ? ' disabled' : '') + '>›</button>' +
         (dia !== hoje ? '<button type="button" class="btn-text" data-pr-a="dia-hoje">Hoje</button>' : '') +
         (ed ? '<button type="button" class="btn btn-primary btn-sm" data-pr-a="lancar">+ Lançar uma hora</button>' : '') + '</div>' +
       (l.length ? '<p class="field-hint">' + l.length + (l.length === 1 ? ' lançamento' : ' lançamentos') + ' em ' + escapeHtml(formatDateBR(dia)) + (pal ? ' · ' + fmtPal(pal) + ' paletes' : '') + '</p>' +
-        '<div class="pr-tab-wrap"><table class="pr-tab"><thead><tr><th>Hora</th><th>Linha · turno · máquina</th><th>Marca · produto</th><th>Quantidade</th><th>Líder</th><th>Observação</th>' + (ed ? '<th aria-label="Ações"></th>' : '') + '</tr></thead><tbody>' + linhas + '</tbody></table></div>' +
+        '<div class="pr-tab-wrap"><table class="pr-tab"><thead><tr><th>Hora</th><th>Linha · turno</th><th>Marca · produto</th><th>Contadores</th><th>Produção</th><th>Paradas</th><th>Líder</th><th>Descrição</th>' + (ed ? '<th aria-label="Ações"></th>' : '') + '</tr></thead><tbody>' + linhas + '</tbody></table></div>' +
         '<p class="field-hint"><b>Total do dia:</b> ' + ordem.map(function(k) { return escapeHtml(k) + ' ' + escapeHtml(qtdUnidade(porProd[k].q, porProd[k].u)); }).join(' · ') + '</p>'
         : '<p class="empty-state">Nenhum lançamento hora a hora em ' + escapeHtml(formatDateBR(dia)) + '.</p>');
   }
@@ -20971,10 +21170,18 @@
       patch = { produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), marca: phMarcaDoProduto(p) }; de = m.produtoNome; para = p.nome;
     } else if (campo === 'quantidade') {
       var q = numCampo(v);
-      if (q === null || q <= 0) { showToast('A quantidade precisa ser maior que zero. Para tirar o lançamento, use “Apagar”.'); renderPrLanc(); return; }
+      if (q === null || q < 0 || (q === 0 && !(m.paradas || []).length)) { showToast('A quantidade precisa ser maior que zero (zero só com parada: use “Editar”). Para tirar o lançamento, use “Apagar”.'); renderPrLanc(); return; }
       patch = { quantidade: Math.round(q) }; para = patch.quantidade;
+    } else if (campo === 'maq') {
+      var nomeM = el.dataset.maq, nq = numCampo(v), pm = phMaquinaProducao(m.linha);
+      if (nq === null || nq < 0) { showToast('Contador: só números (0 se a máquina ficou parada).'); renderPrLanc(); return; }
+      if (pm && pm.nome === nomeM && Math.round(nq) === 0 && !(m.paradas || []).length) { showToast('Produção zero: informe a parada em “Editar”.'); renderPrLanc(); return; }
+      patch = { maquinas: Object.assign({}, m.maquinas || {}) }; patch.maquinas[nomeM] = Math.round(nq);
+      if (pm && pm.nome === nomeM) patch.quantidade = Math.round(nq);
+      campo = 'contador ' + nomeM; de = (m.maquinas || {})[nomeM]; para = patch.maquinas[nomeM];
     } else if (campo === 'obs') { patch = { obs: String(v).trim().slice(0, 200) }; para = patch.obs; }
-    else if (campo === 'linha' || campo === 'turno' || campo === 'maquina') { patch[campo] = String(v || ''); para = patch[campo]; if (campo === 'linha' && m.maquina && phMaquinas(v).indexOf(m.maquina) < 0) patch.maquina = ''; }
+    else if (campo === 'linha') { patch.linha = String(v || ''); para = patch.linha; if (phTurnos(patch.linha).indexOf(phTurnoDe(m.linha, m.turno)) < 0) patch.turno = ''; else patch.turno = phTurnoDe(m.linha, m.turno); }
+    else if (campo === 'turno') { patch.turno = String(v || ''); para = patch.turno; de = phTurnoDe(m.linha, m.turno); }
     else return;
     if (String(de == null ? '' : de) === String(para)) return;
     var agora = new Date().toISOString();
@@ -20988,7 +21195,7 @@
   function prMesAnterior(ym) { var a = Number(ym.slice(0, 4)), mm = Number(ym.slice(5, 7)) - 1; if (mm < 1) { mm = 12; a--; } return a + '-' + pad2(mm); }
   function prMesSeguinte(ym) { var a = Number(ym.slice(0, 4)), mm = Number(ym.slice(5, 7)) + 1; if (mm > 12) { mm = 1; a++; } return a + '-' + pad2(mm); }
   function prDadosMes(ym) {
-    var r = { ents: [], pal: 0, semPalete: 0, dias: {}, prod: {}, marca: {}, hora: {}, lider: {}, fonte: { hora: 0, op: 0, outros: 0 }, horas: {}, linha: {}, turno: {}, maq: {} };
+    var r = { ents: [], pal: 0, semPalete: 0, dias: {}, prod: {}, marca: {}, hora: {}, lider: {}, fonte: { hora: 0, op: 0, outros: 0 }, horas: {}, linha: {}, turno: {}, maqC: {}, parada: {}, minParados: 0, nLanc: 0 };
     estoqueMovs.forEach(function(m) {
       if (m.tipo !== 'entrada' || !m.produtoId) return;
       var d = String(m.data || isoLocal(m.em) || '');
@@ -21003,9 +21210,20 @@
         r.fonte.hora += pv; r.horas[d + '|' + m.hora] = true;
         var h = String(m.hora || '').slice(0, 2); r.hora[h] = (r.hora[h] || 0) + pv;
         var ln = (m.lider && m.lider.nome) || '—'; r.lider[ln] = r.lider[ln] || { n: 0, pal: 0 }; r.lider[ln].n++; r.lider[ln].pal += pv;
-        var li = m.linha || '—'; r.linha[li] = r.linha[li] || { pal: 0, horas: {} }; r.linha[li].pal += pv; r.linha[li].horas[d + '|' + m.hora] = true;
-        var tu = m.turno || '—'; r.turno[tu] = (r.turno[tu] || 0) + pv;
-        if (m.maquina) { var mq = li + '|' + m.maquina; r.maq[mq] = r.maq[mq] || { pal: 0, horas: {} }; r.maq[mq].pal += pv; r.maq[mq].horas[d + '|' + m.hora] = true; }
+        var li = phLinhaId(m.linha) || '—'; r.linha[li] = r.linha[li] || { pal: 0, horas: {} }; r.linha[li].pal += pv; r.linha[li].horas[d + '|' + m.hora] = true;
+        var tk = li + '|' + (phTurnoDe(m.linha, m.turno) || '—'), mp0 = Number(m.minutosParados) || 0;
+        r.turno[tk] = r.turno[tk] || { pal: 0, horas: {}, min: 0 }; r.turno[tk].pal += pv; r.turno[tk].horas[d + '|' + m.hora] = true; r.turno[tk].min += mp0;
+        r.nLanc++; r.minParados += mp0;
+        Object.keys(m.maquinas || {}).forEach(function(nm) {
+          // média só das horas em que a máquina rodou (as horas paradas aparecem em "Paradas")
+          var val = Number(m.maquinas[nm]) || 0, x = r.maqC[li + '|' + nm] = r.maqC[li + '|' + nm] || { soma: 0, horas: 0, max: 0, paradas: 0 };
+          if (val > 0) { x.soma += val; x.horas++; if (val > x.max) x.max = val; } else x.paradas++;
+        });
+        (m.paradas || []).forEach(function(pa) {
+          var x = r.parada[pa.motivo] = r.parada[pa.motivo] || { min: 0, n: 0, outros: {} };
+          x.min += Number(pa.minutos) || 0; x.n++;
+          if (pa.motivo === 'Outro' && pa.texto) x.outros[pa.texto] = (x.outros[pa.texto] || 0) + 1;
+        });
       } else if (m.opId) r.fonte.op += pv; else r.fonte.outros += pv;
     });
     return r;
@@ -21033,7 +21251,7 @@
     var h = '<div class="pr-barra"><button type="button" class="btn btn-secondary btn-sm" data-pr-a="mes-ant" aria-label="Mês anterior">‹</button>' +
       '<input type="month" id="pr-mes" value="' + escapeHtml(mes) + '" max="' + escapeHtml(mesHoje) + '" aria-label="Mês" />' +
       '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="mes-prox" aria-label="Mês seguinte"' + (mes >= mesHoje ? ' disabled' : '') + '>›</button>' +
-      '<b class="pr-mes-nome">' + escapeHtml(nomeMes(mes)) + '</b>' + (ehMestre() && !session.soInclui ? '<button type="button" class="btn-text" data-pr-a="maquinas">Máquinas das linhas</button>' : '') + '</div>';
+      '<b class="pr-mes-nome">' + escapeHtml(nomeMes(mes)) + '</b>' + (ehMestre() && !session.soInclui ? '<button type="button" class="btn-text" data-pr-a="maquinas">Linhas e máquinas</button>' : '') + '</div>';
     h += '<div class="est-cards pr-cards">' +
       card('Produção do mês', r.pal ? fmtPal(r.pal) + ' pal' : '—', (varia === null ? (ant.pal ? '' : 'sem produção no mês anterior') : (varia >= 0 ? '▲ ' : '▼ ') + Math.abs(varia) + '% sobre ' + escapeHtml(nomeMes(prMesAnterior(mes)).split(' ')[0].toLowerCase())) + (r.semPalete ? ' · ' + r.semPalete + ' lançamento(s) sem palete cadastrado' : ''), 'c-entrada') +
       card('Média por dia produtivo', nDias ? fmtPal(r.pal / nDias) + ' pal' : '—', nDias + (nDias === 1 ? ' dia com produção' : ' dias com produção')) +
@@ -21057,9 +21275,32 @@
     var linhasM = Object.keys(r.linha).sort(function(a, b) { return r.linha[b].pal - r.linha[a].pal; });
     if (linhasM.length) h += sec('Produção por linha (lançamentos dos líderes)', prBarras(linhasM.map(function(k) { var x = r.linha[k], hs = horasDe(x); return { nome: k === '—' ? 'Sem linha informada' : phLinhaNome(k), sub: hs + (hs === 1 ? ' hora lançada' : ' horas lançadas') + (hs ? ' · ' + fmtPal(x.pal / hs) + ' pal/hora' : ''), v: x.pal, txt: fmtPal(x.pal) + ' pal · ' + Math.round(x.pal / (r.fonte.hora || 1) * 100) + '%' }; })));
     var turnosM = Object.keys(r.turno).sort();
-    if (turnosM.length) h += sec('Produção por turno', prBarras(turnosM.map(function(k) { return { nome: k === '—' ? 'Sem turno informado' : k, v: r.turno[k], txt: fmtPal(r.turno[k]) + ' pal · ' + Math.round(r.turno[k] / (r.fonte.hora || 1) * 100) + '%' }; })));
-    var maqsM = Object.keys(r.maq).sort(function(a, b) { return (r.maq[b].pal / (horasDe(r.maq[b]) || 1)) - (r.maq[a].pal / (horasDe(r.maq[a]) || 1)); });
-    if (maqsM.length) h += sec('Produtividade por máquina', prBarras(maqsM.map(function(k) { var x = r.maq[k], hs = horasDe(x), pp = k.split('|'); return { nome: pp.slice(1).join('|'), sub: (pp[0] === '—' ? '' : phLinhaNome(pp[0]) + ' · ') + fmtPal(x.pal) + ' pal em ' + hs + (hs === 1 ? ' hora' : ' horas'), v: hs ? x.pal / hs : 0, txt: (hs ? fmtPal(x.pal / hs) : '0') + ' pal/hora' }; })));
+    if (turnosM.length) h += sec('Produção por turno', prBarras(turnosM.map(function(k) {
+      var x = r.turno[k], hs = horasDe(x), pp = k.split('|');
+      return { nome: (pp[0] === '—' ? '' : phLinhaNome(pp[0]) + ' · ') + (pp[1] === '—' ? 'sem turno' : pp[1]), sub: hs + (hs === 1 ? ' hora' : ' horas') + (hs ? ' · ' + fmtPal(x.pal / hs) + ' pal/hora' : '') + (x.min ? ' · parado ' + fmtDuracao(x.min) + ' (' + Math.round(x.min / (hs * 60 || 1) * 100) + '%)' : ''), v: x.pal, txt: fmtPal(x.pal) + ' pal · ' + Math.round(x.pal / (r.fonte.hora || 1) * 100) + '%' };
+    })));
+    var maqsM = Object.keys(r.maqC);
+    if (maqsM.length) {
+      var maxUn = {};
+      var lm = maqsM.map(function(k) {
+        var pp = k.split('|'), nm = pp.slice(1).join('|'), cfg = phMaquinas(pp[0]).find(function(q) { return q.nome === nm; }) || {}, x = r.maqC[k], med = x.horas ? x.soma / x.horas : 0;
+        var un = cfg.unidade || '', cap = Number(cfg.porHora) || 0;
+        if (!cap) maxUn[pp[0] + '|' + un] = Math.max(maxUn[pp[0] + '|' + un] || 0, med);
+        return { linha: pp[0], nome: nm, un: un, cap: cap, med: med, x: x, ordem: phMaquinas(pp[0]).findIndex(function(q) { return q.nome === nm; }) };
+      }).sort(function(a, b) { return String(phLinhaNome(a.linha)).localeCompare(phLinhaNome(b.linha)) || ((a.ordem < 0 ? 99 : a.ordem) - (b.ordem < 0 ? 99 : b.ordem)); });
+      h += sec('Produtividade por máquina', prBarras(lm.map(function(z) {
+        return { nome: z.nome, sub: phLinhaNome(z.linha) + ' · média ' + fmtInt(Math.round(z.med)) + ' ' + z.un + '/hora em ' + z.x.horas + (z.x.horas === 1 ? ' hora' : ' horas') + ' · melhor hora ' + fmtInt(z.x.max) + (z.x.paradas ? ' · ' + z.x.paradas + (z.x.paradas === 1 ? ' hora parada' : ' horas paradas') : ''),
+          v: z.cap ? Math.min(1, z.med / z.cap) : z.med / (maxUn[z.linha + '|' + z.un] || 1), txt: z.cap ? Math.round(z.med / z.cap * 100) + '% da capacidade' : fmtInt(Math.round(z.med)) + '/hora' };
+      })) + '<p class="field-hint">Pelos contadores lançados de hora em hora. Com a capacidade por hora cadastrada (Linhas e máquinas), mostra a eficiência.</p>');
+    }
+    if (r.nLanc) {
+      var motivos = Object.keys(r.parada).sort(function(a, b) { return r.parada[b].min - r.parada[a].min; });
+      h += sec('Paradas', '<p class="field-hint"><b>' + fmtDuracao(r.minParados) + '</b> parados no mês · ' + Math.round(r.minParados / (r.nLanc * 60) * 100) + '% das ' + r.nLanc + ' horas lançadas.</p>' +
+        (motivos.length ? prBarras(motivos.map(function(k) {
+          var x = r.parada[k], outros = Object.keys(x.outros).sort(function(a, b) { return x.outros[b] - x.outros[a]; }).slice(0, 3);
+          return { nome: k, sub: x.n + (x.n === 1 ? ' vez' : ' vezes') + (outros.length ? ' · ' + outros.join(', ') : ''), v: x.min, txt: fmtDuracao(x.min) + ' · ' + Math.round(x.min / (r.minParados || 1) * 100) + '%' };
+        })) : '<p class="empty-state">Nenhuma parada lançada.</p>'));
+    }
     var meses = [], ym = mes;
     for (var mi = 0; mi < 6; mi++) { meses.unshift(ym); ym = prMesAnterior(ym); }
     var dm = meses.map(function(x) { return { ym: x, d: x === mes ? r : prDadosMes(x) }; });
@@ -21095,7 +21336,8 @@
         if (!podeCorrigirLancProducao()) return;
         deleteEstoqueMov(b.dataset.id).then(function() { showToast('Lançamento apagado (saiu do estoque).'); }, function(x) { console.error('apagar lançamento', x); showToast('Não foi possível apagar agora.'); renderPrLanc(); });
       }
-      else if (a === 'maquinas') abrirMaquinasLinhas();
+      else if (a === 'maquinas') abrirLinhasProducao();
+      else if (a === 'editar') { var me = estoqueMovs.find(function(x) { return x.id === b.dataset.id; }); if (me && podeCorrigirLancProducao()) abrirProducaoHora({ editar: me }); }
       else if (a === 'mes-ant') { prUi.mes = prMesAnterior(prUi.mes || hoje.slice(0, 7)); renderPrInd(); }
       else if (a === 'mes-prox') { var mx = prMesSeguinte(prUi.mes || hoje.slice(0, 7)); prUi.mes = mx > hoje.slice(0, 7) ? hoje.slice(0, 7) : mx; renderPrInd(); }
     });
@@ -21116,33 +21358,126 @@
   // - Máquinas de cada linha: a senha mestre cadastra em Produção › Indicadores (config "linhas-producao").
   // - Força de vendas: o representante cadastra cliente novo (CNPJ e dados); fica em análise do Leonardo (marca
   //   "Aprova cliente novo da força de vendas") e do financeiro; aprovado pelos dois, o cliente fica liberado.
-  var PH_LINHAS = [{ id: 'ret1', nome: 'Retornável 1' }, { id: 'ret2', nome: 'Retornável 2' }, { id: 'desc1', nome: 'DESC 1' }, { id: 'desc2', nome: 'DESC 2' }, { id: 'desc3', nome: 'DESC 3' }];
-  var PH_TURNOS = ['Dia', 'Noite'];
-  function phLinhaNome(id) { var l = PH_LINHAS.find(function(x) { return x.id === id; }); return l ? l.nome : String(id || ''); }
+  // Linhas de produção (22/10/2026), como no formulário "Controle de Produtividade - Linha 2" que os líderes usavam:
+  // cada linha tem os turnos (DESC 1, DESC 2, DESC 3…), os produtos que roda e as máquinas com contador. A máquina
+  // marcada "entra no estoque" (a Empacotadora, em fardos) é a produção da hora. A senha mestre muda tudo em
+  // Produção › Indicadores › "Linhas e máquinas" (config "linhas-producao"). Antes (21/10) DESC 1, DESC 2, DESC 3,
+  // Retornável 1 e Retornável 2 eram "linhas": os lançamentos e cadastros antigos são lidos como linha + turno.
+  var PH_LINHAS_PADRAO = [
+    { id: 'linha2', nome: 'Linha 2', turnos: ['DESC 1', 'DESC 2', 'DESC 3'], produtos: ['510ml natural', '510ml com gás'], maquinas: [
+      { nome: 'Sopradora 2A', unidade: 'garrafas', obrigatoria: true }, { nome: 'Sopradora 2B', unidade: 'garrafas' },
+      { nome: 'Enchedora', unidade: 'garrafas', obrigatoria: true }, { nome: 'Rotuladora 2', unidade: 'garrafas', obrigatoria: true },
+      { nome: 'Rotuladora 3', unidade: 'garrafas', obrigatoria: true }, { nome: 'Empacotadora', unidade: 'fardos', obrigatoria: true, producao: true }] },
+    { id: 'retornavel', nome: 'Retornável', turnos: ['Retornável 1 (dia)', 'Retornável 2 (noite)'], produtos: [], maquinas: [] }
+  ];
+  var PH_MOTIVOS = ['Refeição', 'Setup', 'Manutenção', 'Qualidade', 'Operacional', 'Outro'];
+  var PH_UNIDADES = ['garrafas', 'fardos', 'unidades', 'galões', 'caixas', 'pré-formas', 'rótulos'];
+  var PH_LEGADO = { desc1: ['linha2', 'DESC 1'], desc2: ['linha2', 'DESC 2'], desc3: ['linha2', 'DESC 3'], ret1: ['retornavel', 'Retornável 1 (dia)'], ret2: ['retornavel', 'Retornável 2 (noite)'] };
   function phCfgLinhas() { return (mp.config || []).find(function(x) { return x.id === 'linhas-producao'; }) || {}; }
-  function phMaquinas(linha) { var m = (phCfgLinhas().maquinas || {})[linha]; return Array.isArray(m) ? m : []; }
-  function phTurnoAgora() { var h = new Date().getHours(); return h >= 6 && h < 18 ? 'Dia' : 'Noite'; }
+  function phLinhas() { var l = phCfgLinhas().linhas; return Array.isArray(l) && l.length ? l : PH_LINHAS_PADRAO; }
+  function phLinhaId(id) { return PH_LEGADO[id] ? PH_LEGADO[id][0] : String(id || ''); }
+  function phLinha(id) { var li = phLinhaId(id); return phLinhas().find(function(x) { return x.id === li; }) || null; }
+  function phLinhaNome(id) { var l = phLinha(id); return l ? l.nome : String(id || ''); }
+  function phTurnoDe(linha, turno) { return PH_LEGADO[linha] && (!turno || turno === 'Dia' || turno === 'Noite') ? PH_LEGADO[linha][1] : String(turno || ''); }
+  function phTurnos(id) { var l = phLinha(id); return (l && l.turnos) || []; }
+  function phMaquinas(id) { var l = phLinha(id); return ((l && l.maquinas) || []).filter(function(m) { return m && m.nome; }); }
+  function phMaquinaProducao(id) { return phMaquinas(id).find(function(m) { return m.producao; }) || null; }
+  function phProdutosDaLinha(id, marca) {
+    var l = phLinha(id), base = ((l && l.produtos) || []).map(normNome);
+    return phProdutosDaMarca(marca).filter(function(p) { return !base.length || base.indexOf(normNome(phNomeSemMarca(p))) >= 0; });
+  }
   function phOpcoes(lista, sel, vazio) {
     return (vazio !== undefined ? '<option value="">' + escapeHtml(vazio) + '</option>' : '') + lista.map(function(o) { var v = typeof o === 'object' ? o.id : o, t = typeof o === 'object' ? o.nome : o; return '<option value="' + escapeHtml(v) + '"' + (v === sel ? ' selected' : '') + '>' + escapeHtml(t) + '</option>'; }).join('') +
       (sel && !lista.some(function(o) { return (typeof o === 'object' ? o.id : o) === sel; }) ? '<option value="' + escapeHtml(sel) + '" selected>' + escapeHtml(sel) + '</option>' : '');
   }
-  function phMaqOpcoes() {
-    var l = document.getElementById('ph-linha'), s = document.getElementById('ph-maq'), lab = document.getElementById('ph-maq-l');
-    if (!l || !s) return;
-    var ms = phMaquinas(l.value), at = s.value;
-    s.innerHTML = phOpcoes(ms, ms.indexOf(at) >= 0 ? at : '', '— sem máquina —');
-    if (lab) lab.classList.toggle('hidden', !ms.length);
+  function phMeuPadrao() { var m = meuMembro() || {}; return { linha: phLinhaId(m.linhaProducao), turno: phTurnoDe(m.linhaProducao, m.turnoProducao) }; }
+  function phLideres(linha) {
+    return equipe.filter(function(m) { return m.linhaProducao && (!linha || phLinhaId(m.linhaProducao) === linha); })
+      .sort(function(a, b) { return phTurnoDe(a.linhaProducao, a.turnoProducao).localeCompare(phTurnoDe(b.linhaProducao, b.turnoProducao)) || String(a.nome).localeCompare(String(b.nome), 'pt-BR'); });
   }
-  function abrirMaquinasLinhas() {
-    var mq = phCfgLinhas().maquinas || {};
+  // Cadastros › Equipe: linha e turno do líder
+  function phEquipeSelects(linha, turno) {
+    var sl = document.getElementById('f-equipe-linha-prod'), st = document.getElementById('f-equipe-turno-prod');
+    if (!sl || !st) return;
+    sl.innerHTML = phOpcoes(phLinhas(), phLinhaId(linha), '—');
+    st.innerHTML = phOpcoes(phTurnos(sl.value), phTurnoDe(linha, turno), '—');
+  }
+  document.getElementById('f-equipe-linha-prod').addEventListener('change', function() {
+    var st = document.getElementById('f-equipe-turno-prod'), ts = phTurnos(this.value);
+    st.innerHTML = phOpcoes(ts, ts.indexOf(st.value) >= 0 ? st.value : '', '—');
+  });
+  // senha mestre: linhas, turnos, produtos e máquinas (com a unidade do contador, obrigatória, capacidade por hora e
+  // qual entra no estoque)
+  function abrirLinhasProducao() {
+    var st = JSON.parse(JSON.stringify(phLinhas())).map(function(l) { l.maquinas = (l.maquinas || []).slice(); l.turnos = l.turnos || []; l.produtos = l.produtos || []; return l; });
+    var usadas = {};
+    estoqueMovs.forEach(function(m) { if (m.porHora && m.linha) usadas[phLinhaId(m.linha)] = true; });
+    function v(id) { var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
+    function ls(id) { return v(id).split('\n').map(function(x) { return x.trim().slice(0, 60); }).filter(Boolean).slice(0, 20); }
+    function ler() {
+      st.forEach(function(l, i) {
+        if (!document.getElementById('pl-nome-' + i)) return;
+        l.nome = v('pl-nome-' + i).slice(0, 40); l.turnos = ls('pl-turnos-' + i); l.produtos = ls('pl-prod-' + i);
+        var pr = document.querySelector('input[name="pl-mp-' + i + '"]:checked');
+        l.maquinas.forEach(function(m, j) {
+          var k = i + '-' + j, c = numCampo(v('pl-mc-' + k));
+          m.nome = v('pl-m-' + k).slice(0, 40); m.unidade = v('pl-mu-' + k) || 'unidades';
+          m.obrigatoria = !!(document.getElementById('pl-mo-' + k) || {}).checked;
+          m.producao = !!pr && Number(pr.value) === j;
+          m.porHora = c && c > 0 ? Math.round(c) : 0;
+        });
+      });
+    }
+    function html() {
+      return '<p class="hint">O que o líder vê no lançamento da hora: os turnos de cada linha, os produtos que ela roda e o contador de cada máquina. A máquina marcada <b>entra no estoque</b> é a produção da hora (ex.: Empacotadora, em fardos). A capacidade por hora (opcional) mostra a eficiência nos indicadores.</p>' +
+        st.map(function(l, i) {
+          var semProd = !l.maquinas.some(function(m) { return m.producao; });
+          return '<fieldset class="pl-linha"><legend>' + escapeHtml(l.nome || 'Linha nova') + '</legend>' +
+            '<label>Nome da linha <span class="req">*</span><input type="text" id="pl-nome-' + i + '" maxlength="40" value="' + escapeHtml(l.nome || '') + '" autocomplete="off" /></label>' +
+            '<div class="row-2"><label>Turnos <span class="opt">(um por linha)</span><textarea id="pl-turnos-' + i + '" rows="3" maxlength="400" placeholder="Ex.: DESC 1">' + escapeHtml(l.turnos.join('\n')) + '</textarea></label>' +
+            '<label>Produtos que roda <span class="opt">(vazio = todos)</span><textarea id="pl-prod-' + i + '" rows="3" maxlength="400" placeholder="Ex.: 510ml natural">' + escapeHtml(l.produtos.join('\n')) + '</textarea></label></div>' +
+            '<p class="field-hint">Máquinas com contador:</p>' +
+            l.maquinas.map(function(m, j) {
+              var k = i + '-' + j;
+              return '<div class="pl-maq"><input type="text" id="pl-m-' + k + '" maxlength="40" value="' + escapeHtml(m.nome || '') + '" placeholder="Nome da máquina" aria-label="Nome da máquina" autocomplete="off" />' +
+                '<select id="pl-mu-' + k + '" aria-label="Unidade do contador">' + phOpcoes(PH_UNIDADES, m.unidade || 'garrafas') + '</select>' +
+                '<input type="number" id="pl-mc-' + k + '" min="0" step="1" inputmode="numeric" value="' + (m.porHora || '') + '" placeholder="capacidade/hora" aria-label="Capacidade por hora (opcional)" />' +
+                '<label class="check-row"><input type="checkbox" id="pl-mo-' + k + '"' + (m.obrigatoria ? ' checked' : '') + ' /> obrigatória</label>' +
+                '<label class="check-row"><input type="radio" name="pl-mp-' + i + '" value="' + j + '"' + (m.producao ? ' checked' : '') + ' /> entra no estoque</label>' +
+                '<button type="button" class="btn-text danger" data-ger="pl-maq-x" data-i="' + i + '" data-j="' + j + '" aria-label="Tirar a máquina">✕</button></div>';
+            }).join('') +
+            '<label class="check-row"><input type="radio" name="pl-mp-' + i + '" value="-1"' + (semProd ? ' checked' : '') + ' /> nenhuma máquina entra no estoque (o líder escreve a quantidade produzida)</label>' +
+            '<div class="frete-acoes"><button type="button" class="btn-text" data-ger="pl-maq" data-i="' + i + '">+ máquina</button>' +
+            (!usadas[l.id] && st.length > 1 ? '<button type="button" class="btn-text danger" data-ger="pl-linha-x" data-i="' + i + '">Tirar a linha</button>' : '') + '</div></fieldset>';
+        }).join('') + '<button type="button" class="btn-text" data-ger="pl-linha">+ linha</button>';
+    }
     gerAbrir({
-      titulo: 'Máquinas das linhas', botao: 'Salvar máquinas',
-      html: '<p class="hint">Uma máquina por linha do texto. Elas aparecem no lançamento hora a hora dos líderes e nos indicadores por máquina.</p>' +
-        PH_LINHAS.map(function(l) { return '<label>' + escapeHtml(l.nome) + '<textarea id="ph-mq-' + l.id + '" rows="3" maxlength="600" placeholder="Ex.: Enchedora\nRotuladora">' + escapeHtml((mq[l.id] || []).join('\n')) + '</textarea></label>'; }).join(''),
+      titulo: 'Linhas e máquinas', botao: 'Salvar',
+      html: html(),
+      acao: function(a, b) {
+        ler();
+        var i = Number(b.dataset.i);
+        if (a === 'pl-linha') st.push({ id: '', nome: '', turnos: [], produtos: [], maquinas: [] });
+        else if (a === 'pl-linha-x') st.splice(i, 1);
+        else if (a === 'pl-maq') st[i].maquinas.push({ nome: '', unidade: 'garrafas', obrigatoria: true });
+        else if (a === 'pl-maq-x') st[i].maquinas.splice(Number(b.dataset.j), 1);
+        else return;
+        document.getElementById('ger-form-body').innerHTML = html();
+      },
       salvar: function() {
-        var out = {};
-        PH_LINHAS.forEach(function(l) { out[l.id] = gerVal('ph-mq-' + l.id).split('\n').map(function(x) { return x.trim().slice(0, 60); }).filter(Boolean).slice(0, 20); });
-        return mpGravar([{ op: 'set', col: MP_COL.config, id: 'linhas-producao', data: { maquinas: out, atualizadoEm: new Date().toISOString() } }]).then(function() { showToast('Máquinas das linhas salvas.'); });
+        ler();
+        var ids = {};
+        for (var i = 0; i < st.length; i++) {
+          var l = st[i];
+          if (!l.nome) return gerErro('Dê um nome para cada linha.');
+          l.maquinas = l.maquinas.filter(function(m) { return m.nome; });
+          var nomes = {};
+          for (var j = 0; j < l.maquinas.length; j++) { var nm = normNome(l.maquinas[j].nome); if (nomes[nm]) return gerErro(l.nome + ': a máquina ' + l.maquinas[j].nome + ' está duas vezes.'); nomes[nm] = true; }
+          if (!l.id) { var base = normNome(l.nome).replace(/[^a-z0-9]+/g, '') || 'linha', id = base, n = 2; while (ids[id] || st.some(function(x, k) { return k !== i && x.id === id; })) id = base + (n++); l.id = id; }
+          ids[l.id] = true;
+        }
+        return mpGravar([{ op: 'set', col: MP_COL.config, id: 'linhas-producao', data: { linhas: st, atualizadoEm: new Date().toISOString(), atualizadoPor: quemSessao() } }])
+          .then(function() { showToast('Linhas e máquinas salvas.'); });
       }
     });
   }
@@ -21312,8 +21647,7 @@
     else if (a === 'reprovar') cnReprovar(id);
     else if (a === 'novo') abrirClienteNovo();
   });
-  function phPadraoLinha(ult) { return (ult && ult.linha) || ((meuMembro() || {}).linhaProducao) || ''; }
-  document.getElementById('tab-producao').addEventListener('click', function(e) { if (e.target.closest('[data-ph="lancar"]')) abrirProducaoHora(); });
+  document.getElementById('tab-producao').addEventListener('click', phCliqueLancar);
 
   // ---------- init ----------
   function preenchido(v) { return !!v && String(v).indexOf('COLE' + '_AQUI') === -1; } // (o marcador é montado em partes de propósito)
