@@ -4481,7 +4481,7 @@ function impRender() {
     return '<div class="form"><p class="ink2">Escolha a planilha (.xlsx, .xls ou .csv). A primeira linha com títulos é usada como cabeçalho, e o app reconhece as colunas pelo nome.</p>'
       + '<div class="banner">' + ico('info') + '<div class="grow"><b>Colunas:</b> ' + D.campos.map(c => esc(c.l) + (c.req ? ' <b>(obrigatória)</b>' : '')).join(', ') + '.'
       + (st.tipo === 'preventivas' || st.tipo === 'lubrificacao' ? ' Frequência aceita "mensal", "trimestral", "30 dias", "500 h" e parecidos.' : '') + '</div></div>'
-      + '<input class="inp" type="file" accept=".xlsx,.xls,.csv,.txt" data-ch="imp-arq" aria-label="Planilha">'
+      + '<input class="inp" type="file" accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain" data-ch="imp-arq" aria-label="Planilha">'
       + '<div><button type="button" class="btn sm ghost" data-act="imp-modelo" data-tipo="' + st.tipo + '">' + ico('download', 'sm') + ' Baixar planilha modelo</button></div>'
       + (st.erro ? '<div class="banner crit">' + ico('alert') + '<div class="grow">' + esc(st.erro) + '</div></div>' : '') + (st.lendo ? carregando('Lendo a planilha…') : '') + '</div>';
   }
@@ -5247,7 +5247,7 @@ function fiImpRender() {
       + '<li>nos meses: <b>NA</b> onde o item não se aplica, vazio onde está programado, e <b>O</b> (normal) ou <b>X</b> (anormal) se já foi feito;</li>'
       + '<li>a aba <b>Lista</b> com Item, Descrição, Fornecedor e Quantidade.</li></ul>'
       + '<p class="small ink2">Se o equipamento já tem tarefas com o mesmo nome no plano de Preventiva, elas são atualizadas (sem duplicar e sem perder o histórico).</p>'
-      + '<input class="inp" type="file" accept=".xlsx,.xls,.xlsm" data-ch="fi-arq" aria-label="Planilha da ficha">'
+      + '<input class="inp" type="file" accept=".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.ms-excel.sheet.macroEnabled.12" data-ch="fi-arq" aria-label="Planilha da ficha">'
       + (ref ? '<div><button type="button" class="btn sm ghost" data-act="fi-modelo">' + ico('download', 'sm') + ' Baixar ficha modelo em branco</button></div>' : '')
       + (st.erro ? '<div class="banner crit">' + ico('alert') + '<div class="grow">' + esc(st.erro) + '</div></div>' : '') + (st.lendo ? carregando('Lendo a planilha…') : '') + '</div>';
   }

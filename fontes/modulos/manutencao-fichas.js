@@ -565,7 +565,7 @@ function fiImpRender() {
       + '<li>nos meses: <b>NA</b> onde o item não se aplica, vazio onde está programado, e <b>O</b> (normal) ou <b>X</b> (anormal) se já foi feito;</li>'
       + '<li>a aba <b>Lista</b> com Item, Descrição, Fornecedor e Quantidade.</li></ul>'
       + '<p class="small ink2">Se o equipamento já tem tarefas com o mesmo nome no plano de Preventiva, elas são atualizadas (sem duplicar e sem perder o histórico).</p>'
-      + '<input class="inp" type="file" accept=".xlsx,.xls,.xlsm" data-ch="fi-arq" aria-label="Planilha da ficha">'
+      + '<input class="inp" type="file" accept=".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.ms-excel.sheet.macroEnabled.12" data-ch="fi-arq" aria-label="Planilha da ficha">'
       + (ref ? '<div><button type="button" class="btn sm ghost" data-act="fi-modelo">' + ico('download', 'sm') + ' Baixar ficha modelo em branco</button></div>' : '')
       + (st.erro ? '<div class="banner crit">' + ico('alert') + '<div class="grow">' + esc(st.erro) + '</div></div>' : '') + (st.lendo ? carregando('Lendo a planilha…') : '') + '</div>';
   }

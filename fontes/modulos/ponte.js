@@ -70,7 +70,8 @@
   var SESSAO_USO = 'levissima-ultimo-uso', SESSAO_ABERTO = 'levissima-aberto', SESSAO_MOTIVO = 'levissima-saida-motivo';
   var usoGravadoEm = 0, saindo = false, canalSessao = null;
   function ultimoUso() { try { return Number(localStorage.getItem(SESSAO_USO)) || 0; } catch (e) { return 0; } }
-  function sessaoParada() { var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
+  // no app (Android/iOS) minimizar não pede a senha (23/10/2026): os 30 min sem uso valem só no navegador
+  function sessaoParada() { if (appNativo()) return false; var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
   function gravarUso(forcar) {
     var agora = Date.now();
     if (!forcar && agora - usoGravadoEm < 2000) return; // no máximo uma gravação a cada 2 s

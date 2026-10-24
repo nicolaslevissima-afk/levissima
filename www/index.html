@@ -741,6 +741,64 @@
   .pr-mq small { margin: 0 !important; white-space: nowrap; }
   .pr-tab .pr-mq .pr-q { width: 92px; }
   .pr-acoes { white-space: nowrap; }
+  .pr-sheet-wrap { max-height: 70vh; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+  .pr-sheet { min-width: 900px; border-collapse: collapse; font-size: 0.8125rem; }
+  .pr-sheet th, .pr-sheet td { border: 1px solid var(--line); padding: 0 4px; white-space: nowrap; height: 34px; }
+  .pr-sheet th { position: sticky; top: 0; z-index: 2; background: var(--bg, #f6f6f8); text-transform: none; letter-spacing: 0; font-size: 0.75rem; color: var(--ink); padding: 4px 6px; }
+  .pr-sheet td:first-child, .pr-sheet th:first-child { position: sticky; left: 0; z-index: 1; background: var(--card); }
+  .pr-sheet th:first-child { z-index: 3; background: var(--bg, #f6f6f8); }
+  .pr-sheet .num { text-align: right; }
+  .pr-sheet input, .pr-sheet select { border: 0; border-radius: 0; background: transparent; min-height: 32px; height: 32px; padding: 0 4px; margin: 0; width: 100%; font-size: 0.8125rem; box-shadow: none; }
+  .pr-sheet input:focus, .pr-sheet select:focus { outline: 2px solid var(--teal); outline-offset: -2px; background: var(--card); }
+  .pr-sheet .pr-q { width: 84px; }
+  .pr-sheet .pr-data { width: 128px; }
+  .pr-sheet .pr-prod { min-width: 170px; }
+  .pr-sheet .pr-obs { min-width: 180px; }
+  .pr-sheet td.pr-na { background: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(127,127,127,0.12) 4px, rgba(127,127,127,0.12) 8px); }
+  .pr-sheet td small { display: inline; margin: 0 0 0 4px; }
+  .pr-sheet .pr-quem small { display: block; }
+  .pr-sheet tr.pr-dup td { background: rgba(var(--danger-rgb), 0.06); }
+  .pr-sheet tfoot td { position: sticky; bottom: 0; background: var(--bg, #f6f6f8); font-weight: 600; }
+  .pr-sheet tbody tr:hover td { background: rgba(var(--teal-rgb), 0.04); }
+  .pr-ord { border: 0; background: none; padding: 0; font: inherit; font-weight: 700; color: inherit; cursor: pointer; }
+  .pr-ord.on { color: var(--teal); }
+  .pr-filtros select, .pr-filtros input[type="search"] { width: auto; flex: 1 1 150px; margin: 0; min-height: 38px; }
+  .pr-per { display: inline-flex; }
+  .sol-anexar, .sol-anexos-pend, .sol-gravando { flex-basis: 100%; }
+  .sol-anexar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+  .sol-anexar .btn { margin: 0; }
+  .sol-anexos-pend { display: flex; flex-direction: column; gap: 6px; margin: 0; }
+  .sol-pend { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; background: var(--card); }
+  .sol-pend img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; background: rgba(127,127,127,0.15); }
+  .sol-pend audio { height: 32px; max-width: 160px; }
+  .sol-pend-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .sol-pend-txt b { font-size: 0.8125rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sol-pend-txt small, .sol-anx-arq small { color: var(--muted); font-size: 0.6875rem; }
+  .sol-anx-ico { font-size: 1.4rem; }
+  .sol-gravando { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--danger); font-weight: 600; flex-wrap: wrap; }
+  .sol-rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--danger); animation: solPisca 1s infinite; }
+  @keyframes solPisca { 50% { opacity: 0.25; } }
+  .sol-anexos { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+  .sol-anx-img { border: 0; padding: 0; background: none; cursor: pointer; max-width: 240px; }
+  .sol-anx-img img { display: block; max-width: 100%; max-height: 220px; border-radius: 8px; background: rgba(127,127,127,0.15); min-width: 80px; min-height: 60px; object-fit: cover; }
+  .sol-anx-audio { display: flex; flex-direction: column; gap: 2px; }
+  .sol-anx-audio audio { width: 240px; max-width: 100%; height: 36px; }
+  .sol-anx-video { max-width: 240px; max-height: 220px; border-radius: 8px; }
+  .sol-anx-arq { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; background: var(--card); color: inherit; font: inherit; cursor: pointer; max-width: 260px; }
+  .sol-anx-arq span:first-child { font-size: 1.3rem; }
+  .sol-anx-arq b { display: block; font-size: 0.8125rem; overflow-wrap: anywhere; }
+  .cg-voz { margin: 0 0 12px; }
+  .cg-voz-btn { width: 100%; }
+  .cg-voz-painel { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-top: 8px; }
+  .cg-voz-painel textarea { margin: 6px 0; }
+  #btn-cg-voz-ouvir.ouvindo { border-color: var(--danger); color: var(--danger); }
+  .op-prog { margin: 6px 0 2px; font-size: 0.8125rem; }
+  .op-barra { height: 8px; border-radius: 4px; background: rgba(127,127,127,0.18); overflow: hidden; margin-bottom: 4px; }
+  .op-barra i { display: block; height: 100%; background: var(--teal); }
+  .op-perto .op-barra i { background: var(--laranja); }
+  .op-fim .op-barra i { background: var(--verde); }
+  .op-perto span { color: var(--laranja-texto); font-weight: 600; }
+  .op-fim span { color: var(--verde-texto); font-weight: 600; }
   .pr-barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
   .pr-barra input[type=date], .pr-barra input[type=month] { width: auto; min-width: 150px; }
   .pr-mes-nome { font-size: 1rem; }
@@ -1562,6 +1620,7 @@
 
   <div class="tab-panel hidden" id="tab-inicio">
     <div class="ini-topo"><div><h2 class="ini-saud" id="ini-saud"></h2><p class="ini-data" id="ini-data"></p></div></div>
+    <div id="ini-retomar"></div>
     <div id="ini-novidades" aria-live="polite"></div>
     <div id="ini-alerta-estoque"></div>
     <div id="ini-festa" class="ini-festa hidden" aria-live="polite"></div>
@@ -1712,7 +1771,7 @@
     <nav class="segmented mp-areas" id="pr-sub-tabs" aria-label="Partes da produção">
       <button type="button" class="seg-btn" data-pr="lancar">Lançar produção</button>
       <button type="button" class="seg-btn" data-pr="ordens">Ordens de produção</button>
-      <button type="button" class="seg-btn" data-pr="lancamentos">Lançamentos dos líderes</button>
+      <button type="button" class="seg-btn" data-pr="lancamentos">Planilha de lançamentos</button>
       <button type="button" class="seg-btn" data-pr="indicadores">Indicadores do mês</button>
       <button type="button" class="seg-btn" data-pr="metas">Metas do mês</button>
     </nav>
@@ -1720,6 +1779,7 @@
     <p class="tagline">Lance a <b>ordem de produção</b> com a quantidade de cada produto: o app mostra a matéria-prima que vai ser usada e confere o estoque. Ao concluir, a produção entra no estoque de produtos e a matéria-prima sai do estoque.</p>
     <div class="est-cards" id="op-cards"></div>
     <div class="est-alertas hidden" id="op-alertas" role="status"></div>
+    <div id="op-seq"></div>
     <section class="drivers-admin" aria-label="Ordens abertas">
       <div class="section-head"><h2 class="section-title">Ordens abertas</h2><span class="count-chip" id="op-abertas-n"></span></div>
       <p class="hint">A fila segue a <b>urgência</b>, depois a <b>data limite</b>, o dia de produção e o número da OP. A matéria-prima é reservada nessa ordem.</p>
@@ -2284,7 +2344,10 @@
           <input type="number" id="f-fl-v18" min="0" step="0.01" inputmode="decimal" />
         </label>
       </div>
-      <p class="hint">Deixe o valor de 18 paletes em branco (ou 0) quando não houver: o app sugere o proporcional e pede confirmação.</p>
+      <label>Valor para carreta (R$)
+        <input type="number" id="f-fl-vcarreta" min="0" step="0.01" inputmode="decimal" />
+      </label>
+      <p class="hint">Deixe o valor de 18 paletes em branco (ou 0) quando não houver: o app sugere o proporcional e pede confirmação. Com o valor de carreta, a carga de carreta para esse destino já sai com o frete da tabela (sem perguntar o combinado). Destino só de carreta: deixe o de 16 paletes em branco.</p>
       <p class="form-error hidden" id="fl-form-error"></p>
       <div class="sheet-actions">
         <button type="button" class="btn btn-secondary" id="btn-fl-cancel">Cancelar</button>
@@ -2349,7 +2412,7 @@
       </label>
       <div class="row-2">
         <label>Veículo
-          <select id="f-driver-veiculo"><option value="">Não informado</option><option value="toco">Toco</option><option value="truck">Truck</option><option value="bitruck">Bitruck</option><option value="carreta">Carreta</option><option value="vuc">VUC / 3/4</option><option value="outro">Outro</option></select>
+          <select id="f-driver-veiculo"><option value="">Não informado</option><option value="van">Van</option><option value="toco">Toco</option><option value="truck">Truck</option><option value="bitruck">Bitruck</option><option value="carreta">Carreta</option><option value="vuc">VUC / 3/4</option><option value="outro">Outro</option></select>
         </label>
         <label>Capacidade <span class="opt">(paletes)</span>
           <input type="number" id="f-driver-cap" min="1" max="40" step="1" inputmode="numeric" />
@@ -2588,6 +2651,15 @@
       <button class="icon-btn" id="btn-close-carga-sheet" aria-label="Fechar">✕</button>
     </div>
     <form id="carga-form" novalidate>
+      <div class="cg-voz">
+        <button type="button" class="btn btn-secondary cg-voz-btn" id="btn-cg-voz">🎤 Lançar a carga falando</button>
+        <div class="cg-voz-painel hidden" id="cg-voz-painel">
+          <p class="hint">Fale (ou escreva) a carga: cliente, produtos e quantidades, motorista, dia e hora. Ex.: “Mercado Bom Preço, 300 fardos de 510 natural e 100 de 1,5 com gás, motorista Ryan, amanhã às 8”.</p>
+          <textarea id="cg-voz-texto" rows="3" placeholder="O que você falar aparece aqui…"></textarea>
+          <div class="frete-acoes"><button type="button" class="btn btn-secondary btn-sm" id="btn-cg-voz-ouvir">🎤 Falar</button><button type="button" class="btn btn-primary btn-sm" id="btn-cg-voz-montar">Montar a carga</button></div>
+          <p class="field-hint" id="cg-voz-status"></p>
+        </div>
+      </div>
       <div class="row-2">
         <label>Data <span class="req">*</span>
           <input type="date" id="cg-data" required />
@@ -2645,7 +2717,7 @@
       <div class="pedido-resumo hidden" id="cgc-devolucao"></div>
 
       <div class="group hidden" id="cgc-frete-sec">
-        <label>Valor do frete combinado <span class="req">*</span>
+        <label><span id="cgc-frete-rotulo">Valor do frete combinado <span class="req">*</span></span>
           <input type="text" id="cgc-frete-valor" inputmode="decimal" maxlength="14" placeholder="R$ 0,00" autocomplete="off" />
           <span class="field-hint" id="cgc-frete-hint">Carreta (ou carga com mais de 18 paletes): a tabela de fretes só tem 16 e 18 paletes. Pergunte o preço ao motorista ou à transportadora e informe antes de concluir.</span>
         </label>
@@ -3391,7 +3463,7 @@
   function subscribeEstoque() {
     db.collection('estoque').onSnapshot(function(snap) {
       estoqueMovs = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-      if (session) render();
+      if (session) { render(); opAvisosAndamento(); }
     }, function(err) { console.error('estoque error', err); });
   }
   // Vários lançamentos de uma vez (ex.: a contagem de todos os produtos), no Firestore em um lote só.
@@ -8062,11 +8134,13 @@
     cgEditor.setState(st.clientes.length ? st.clientes : [newCgCliente()], st.extras);
     document.getElementById('carga-form-error').classList.add('hidden');
     setNfStatus('');
+    document.getElementById('cg-voz-painel').classList.add('hidden'); document.getElementById('cg-voz-texto').value = ''; document.getElementById('cg-voz-status').textContent = '';
     document.getElementById('carga-sheet-overlay').classList.remove('hidden');
   }
   function closeCargaForm() {
     document.getElementById('carga-sheet-overlay').classList.add('hidden');
     editingCargaId = null;
+    if (typeof retomadaLimpar === 'function') retomadaLimpar();
   }
   document.getElementById('btn-new-carga').addEventListener('click', function() { openCargaForm(null); });
   document.getElementById('btn-close-carga-sheet').addEventListener('click', closeCargaForm);
@@ -8130,6 +8204,241 @@
     }).catch(function(e) { console.error('save carga error', e); if (rep) showToast('Não foi possível enviar o pedido agora. Tente de novo.'); });
   });
 
+  // ---------- lançar a carga falando (pedido de 23/10/2026) ----------
+  // "🎤 Lançar a carga falando": a pessoa fala (reconhecimento de voz do celular/navegador; onde não houver, o microfone
+  // do teclado) e o app monta a carga no formulário — cliente, produtos e quantidades, motorista, dia e hora — para
+  // conferir antes de salvar. Quem entende o texto é a IA (função "ler-carga"); sem a IA ligada, uma leitura simples no
+  // próprio celular.
+  var vozRec = null, vozOuvindo = false;
+  var VOZ_NUM = { zero: 0, um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9, dez: 10, onze: 11, doze: 12, treze: 13,
+    catorze: 14, quatorze: 14, quinze: 15, dezesseis: 16, dezessete: 17, dezoito: 18, dezenove: 19, vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60,
+    setenta: 70, oitenta: 80, noventa: 90, cem: 100, cento: 100, duzentos: 200, duzentas: 200, trezentos: 300, trezentas: 300, quatrocentos: 400, quatrocentas: 400,
+    quinhentos: 500, quinhentas: 500, seiscentos: 600, seiscentas: 600, setecentos: 700, setecentas: 700, oitocentos: 800, oitocentas: 800, novecentos: 900, novecentas: 900 };
+  function vozNorm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  // "trezentos e cinquenta" -> 350; "mil e quinhentos" -> 1500; "1.500" -> 1500; "1,5" fica como tamanho
+  function vozTokens(texto) {
+    var t = vozNorm(texto).replace(/(\d)\.(\d{3})\b/g, '$1$2').replace(/(\d),(\d)/g, '$1#$2').replace(/(\d)\s*(ml|l|lt|h)\b/g, '$1 $2')
+      .replace(/[^a-z0-9#:\s]/g, ' ').replace(/#/g, ',');
+    var bruto = t.split(/\s+/).filter(Boolean), out = [];
+    for (var i = 0; i < bruto.length; i++) {
+      var w = bruto[i];
+      if (VOZ_NUM[w] != null || w === 'mil') {
+        var total = 0, atual = 0, j = i, achou = false;
+        while (j < bruto.length) {
+          var x = bruto[j];
+          if (VOZ_NUM[x] != null) { atual += VOZ_NUM[x]; achou = true; j++; }
+          else if (x === 'mil') { total += (atual || 1) * 1000; atual = 0; achou = true; j++; }
+          else if (x === 'e' && j + 1 < bruto.length && (VOZ_NUM[bruto[j + 1]] != null || bruto[j + 1] === 'mil') && achou) j++;
+          else break;
+        }
+        // "um" sozinho antes de palavra comum ("um palete") ainda é número
+        out.push(String(total + atual)); i = j - 1; continue;
+      }
+      out.push(w);
+    }
+    return out;
+  }
+  // clientes conhecidos: os das entregas e os das cargas já lançadas
+  function vozNomesClientes() {
+    var set = {}, out = [];
+    try { uniqueClientNames().forEach(function(n) { set[vozNorm(n)] = n; }); } catch (e) {}
+    try { cargas.forEach(function(c) { (c.clientes || []).forEach(function(cl) { var n = String(cl.cliente || '').trim(); if (n && !set[vozNorm(n)]) set[vozNorm(n)] = n; }); }); } catch (e) {}
+    Object.keys(set).forEach(function(k) { out.push(set[k]); });
+    return out.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); });
+  }
+  // acha a sequência de palavras de um nome conhecido dentro dos tokens (o mais longo primeiro)
+  function vozAcharNomes(tok, nomes) {
+    var achados = [];
+    nomes.map(function(n) { return { nome: n, t: vozTokens(n) }; }).filter(function(x) { return x.t.length; })
+      .sort(function(a, b) { return b.t.length - a.t.length; })
+      .forEach(function(x) {
+        for (var i = 0; i + x.t.length <= tok.length; i++) {
+          var ok = true;
+          for (var k = 0; k < x.t.length; k++) if (tok[i + k] !== x.t[k]) { ok = false; break; }
+          if (ok && !achados.some(function(a) { return i < a.i + a.n && a.i < i + x.t.length; })) achados.push({ i: i, n: x.t.length, nome: x.nome });
+        }
+      });
+    return achados.sort(function(a, b) { return a.i - b.i; });
+  }
+  var VOZ_MARCAS = [['casa de mae', 'Casa de Mãe'], ['colina azul', 'Colina Azul'], ['bom coracao', 'Bom Coração'], ['new mania', 'New Mania'], ['betel', 'Betel'], ['bulnez', 'Bulnez']];
+  function vozProduto(desc) {
+    var d = ' ' + desc.join(' ') + ' ';
+    var marca = PH_MARCA_PADRAO;
+    VOZ_MARCAS.forEach(function(m) { if (d.indexOf(' ' + m[0] + ' ') >= 0) marca = m[1]; });
+    var gas = /\b(com gas|gas|gaseificad[ao]|com gas carbonico)\b/.test(d) && !/\bsem gas\b/.test(d);
+    var tam = '';
+    if (/\b(510|500 e 10|500 10|meio litro)\b/.test(d)) tam = '510ml';
+    else if (/\b(1,5|1 e meio|litro e meio|1 litro e meio|um e meio|1500)\b/.test(d)) tam = '1,5L';
+    else if (/\b350\b/.test(d)) tam = '350ml';
+    else if (/\bcopo/.test(d) && /\b300\b/.test(d)) tam = 'copo 300';
+    else if (/\bcopo/.test(d)) tam = 'copo 200';
+    else if (/\b6 (l|litros|lt)\b|\bgalao de 6\b|\b6l\b/.test(d)) tam = '6L';
+    else if (/\b10 (l|litros|lt)\b|\bgalao de 10\b|\b10l\b/.test(d)) tam = '10L';
+    if (!tam) return null;
+    var cands = produtosOrdenados().filter(function(p) { return p.ativo !== false && phMarcaDoProduto(p) === marca; });
+    var n = function(p) { return normNome(phNomeSemMarca(p)); };
+    var alvo = { '510ml': '510ml', '1,5L': '1,5l', '350ml': '350ml', '6L': '6l', '10L': '10l', 'copo 200': 'copo200ml', 'copo 300': 'copo300ml' }[tam];
+    var lista = cands.filter(function(p) { return n(p).indexOf(alvo) === 0; });
+    if (!lista.length) return null;
+    var tipo = lista.filter(function(p) { return gas ? /gas/.test(n(p)) : !/gas/.test(n(p)); });
+    return (tipo.length ? tipo : lista)[0];
+  }
+  // leitura simples, no próprio celular (sem IA)
+  function vozLerLocal(texto) {
+    var tok = vozTokens(texto), r = { clientes: [], motorista: '', data: '', hora: '', obs: '', duvidas: [] }, tira = {};
+    var hoje = todayIso(), i;
+    // dia
+    for (i = 0; i < tok.length; i++) {
+      if (tok[i] === 'depois' && tok[i + 1] === 'de' && tok[i + 2] === 'amanha') { r.data = addDiasIso(hoje, 2); tira[i] = tira[i + 1] = tira[i + 2] = 1; }
+      else if (tok[i] === 'amanha' && !r.data) { r.data = addDiasIso(hoje, 1); tira[i] = 1; }
+      else if (tok[i] === 'hoje' && !r.data) { r.data = hoje; tira[i] = 1; }
+      else if (tok[i] === 'dia' && /^\d{1,2}$/.test(tok[i + 1] || '')) {
+        var dd = Number(tok[i + 1]), mm = Number(hoje.slice(5, 7)), aa = Number(hoje.slice(0, 4));
+        if (/^\d{1,2}$/.test(tok[i + 2] || '') && Number(tok[i + 2]) <= 12) { mm = Number(tok[i + 2]); tira[i + 2] = 1; }
+        else if (dd < Number(hoje.slice(8, 10))) { mm++; if (mm > 12) { mm = 1; aa++; } }
+        if (dd >= 1 && dd <= 31) { r.data = aa + '-' + pad2(mm) + '-' + pad2(dd); tira[i] = tira[i + 1] = 1; }
+      }
+    }
+    // hora: "as 8", "8 h", "8 horas", "8:30", "8 e meia"
+    for (i = 0; i < tok.length; i++) {
+      var hm = /^(\d{1,2}):(\d{2})$/.exec(tok[i]);
+      if (hm) { r.hora = pad2(Number(hm[1])) + ':' + hm[2]; tira[i] = 1; if (tok[i - 1] === 'as') tira[i - 1] = 1; break; }
+      if (/^\d{1,2}$/.test(tok[i]) && Number(tok[i]) < 24 && (tok[i - 1] === 'as' || tok[i + 1] === 'h' || tok[i + 1] === 'horas' || tok[i + 1] === 'hora')) {
+        var min = '00';
+        if (tok[i + 1] === 'e' && tok[i + 2] === 'meia') { min = '30'; tira[i + 1] = tira[i + 2] = 1; }
+        r.hora = pad2(Number(tok[i])) + ':' + min; tira[i] = 1; if (tok[i - 1] === 'as') tira[i - 1] = 1; if (/^(h|horas|hora)$/.test(tok[i + 1] || '')) tira[i + 1] = 1;
+        break;
+      }
+    }
+    // motorista
+    var mots = vozAcharNomes(tok, motoristas.map(function(m) { return m.nome; }).concat(motoristas.map(function(m) { return String(m.nome).split(' ')[0]; })));
+    var mt = mots.find(function(x) { return tok[x.i - 1] === 'motorista'; }) || mots[0];
+    if (mt) { var mm2 = motoristas.find(function(m) { return m.nome === mt.nome; }) || motoristas.find(function(m) { return String(m.nome).split(' ')[0] === mt.nome; }); r.motorista = mm2 ? mm2.nome : ''; for (i = mt.i; i < mt.i + mt.n; i++) tira[i] = 1; if (tok[mt.i - 1] === 'motorista') tira[mt.i - 1] = 1; }
+    var resto = tok.map(function(w, k) { return tira[k] ? '|' : w; });
+    // clientes conhecidos dividem o texto
+    var cls = vozAcharNomes(resto, vozNomesClientes()), blocos = [];
+    if (cls.length) cls.forEach(function(c, k) { blocos.push({ cliente: c.nome, tok: resto.slice(c.i + c.n, k + 1 < cls.length ? cls[k + 1].i : resto.length) }); });
+    else {
+      // sem cliente conhecido: o nome é o que vem antes do primeiro número
+      var p0 = resto.findIndex(function(w) { return /^\d+(,\d+)?$/.test(w); });
+      var antes = (p0 < 0 ? resto : resto.slice(0, p0)).filter(function(w) { return w !== '|' && ['carga', 'para', 'pra', 'pro', 'cliente', 'o', 'a', 'do', 'da', 'de', 'lancar', 'nova', 'mandar', 'manda', 'vai'].indexOf(w) < 0; });
+      blocos.push({ cliente: antes.map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' '), tok: p0 < 0 ? [] : resto.slice(p0) });
+    }
+    var UNID = { fardos: 1, fardo: 1, caixas: 1, caixa: 1, galoes: 1, galao: 1, unidades: 1, paletes: 1, palete: 1, pallets: 1, pallet: 1 };
+    blocos.forEach(function(b) {
+      var itens = [], atual = null;
+      b.tok.forEach(function(w, k) {
+        var ant = b.tok[k - 1] || '', prox = b.tok[k + 1] || '';
+        var ehQtd = /^\d+$/.test(w) && ['de', 'do', 'da', 'copo', 'copos', 'galao'].indexOf(ant) < 0 && ['ml', 'l', 'lt', 'litro', 'litros'].indexOf(prox) < 0 && !(atual && ant === 'e' && /^(meio|10)$/.test(prox));
+        if (ehQtd) { atual = { q: Number(w), un: '', desc: [] }; itens.push(atual); return; }
+        if (!atual || w === '|') return;
+        if (!atual.un && !atual.desc.length && UNID[w]) { atual.un = w; return; }
+        atual.desc.push(w);
+      });
+      var out = [];
+      itens.forEach(function(it) {
+        var p = vozProduto(it.desc);
+        if (!p) { r.duvidas.push('não entendi o produto de "' + it.q + ' ' + (it.un ? it.un + ' ' : '') + it.desc.join(' ') + '"'); return; }
+        var q = /^palete|^pallet/.test(it.un) && Number(p.unidadesPorPalete) ? it.q * Number(p.unidadesPorPalete) : it.q;
+        var ja = out.find(function(x) { return x.produtoId === p.id; });
+        if (ja) ja.quantidade += q; else out.push({ produtoId: p.id, quantidade: q });
+      });
+      if (b.cliente || out.length) r.clientes.push({ cliente: b.cliente, destino: '', itens: out });
+    });
+    return r;
+  }
+  function vozAplicar(r) {
+    if (r.data) document.getElementById('cg-data').value = r.data;
+    if (r.hora) document.getElementById('cg-hora').value = r.hora;
+    if (r.motorista && motoristas.some(function(m) { return m.nome === r.motorista; })) { renderCgMotoristaSelect(r.motorista); renderCgMotoristaInfo(r.motorista, editingCargaId ? findCarga(editingCargaId) : null); }
+    if (r.obs) { var ob = document.getElementById('cg-obs'); ob.value = ob.value ? ob.value + '\n' + r.obs : r.obs; }
+    var nomes = vozNomesClientes();
+    var cls = (r.clientes || []).filter(function(c) { return c.cliente || (c.itens || []).length; }).map(function(c) {
+      var cl = newCgCliente(), conhecido = nomes.find(function(n) { return vozNorm(n) === vozNorm(c.cliente); });
+      cl.cliente = conhecido || c.cliente || '';
+      var doc = cl.cliente ? lastDocumentFor(cl.cliente) : '';
+      if (doc) cl.numeroDocumento = docMask(doc);
+      cl.destino = c.destino || (cl.cliente ? ultimoDestinoDe(cl.cliente) : '') || '';
+      (c.itens || []).forEach(function(it) {
+        var p = findProduto(it.produtoId); if (!p) return;
+        var q = it.emPaletes && Number(p.unidadesPorPalete) ? it.quantidade * Number(p.unidadesPorPalete) : it.quantidade;
+        cl.qtd[p.id] = String((Number(cl.qtd[p.id]) || 0) + q);
+      });
+      return cl;
+    });
+    if (!cls.length) return 0;
+    // junta com o que já estava preenchido: cliente vazio é trocado
+    var st = cgEditor.getState().filter(function(x) { return String(x.cliente || '').trim() || Object.keys(x.qtd).some(function(k) { return Number(x.qtd[k]) > 0; }); });
+    cgEditor.setState(st.concat(cls));
+    return cls.length;
+  }
+  function vozStatus(t, warn) { var el = document.getElementById('cg-voz-status'); if (el) { el.textContent = t; el.classList.toggle('warn', !!warn); } }
+  function vozMontar() {
+    var texto = document.getElementById('cg-voz-texto').value.trim();
+    if (!texto) { vozStatus('Fale ou escreva a carga primeiro.', true); return; }
+    var btn = document.getElementById('btn-cg-voz-montar');
+    btn.disabled = true; vozStatus('Montando a carga…');
+    var fim = function(r, origem) {
+      btn.disabled = false;
+      var n = vozAplicar(r), itens = (r.clientes || []).reduce(function(a, c) { return a + (c.itens || []).length; }, 0);
+      if (!n) { vozStatus('Não consegui montar a carga com esse texto. Fale o cliente, a quantidade e o produto (ex.: “Mercado X, 300 fardos de 510 natural”).', true); return; }
+      vozStatus('Pronto: ' + n + (n === 1 ? ' cliente' : ' clientes') + ' e ' + itens + (itens === 1 ? ' produto' : ' produtos') + ' no formulário' + (origem === 'local' ? ' (leitura simples)' : '') + '. Confira antes de salvar.' + ((r.duvidas || []).length ? ' Atenção: ' + r.duvidas.join('; ') + '.' : ''), (r.duvidas || []).length > 0);
+      document.getElementById('cg-voz-texto').value = '';
+      var lista = document.getElementById('cg-clientes-list'); if (lista && lista.lastElementChild) lista.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    var local = function() { fim(vozLerLocal(texto), 'local'); };
+    if (mode !== 'db' || !sbCliente || !sbCliente.functions) { local(); return; }
+    var corpo = { texto: texto, hoje: todayIso(), produtos: produtosOrdenados().filter(function(p) { return p.ativo !== false; }).map(function(p) { return { id: p.id, nome: p.nome, unidade: unidadeDe(p) }; }),
+      clientes: vozNomesClientes().slice(0, 500), motoristas: motoristas.map(function(m) { return m.nome; }) };
+    var acabou = false, t = setTimeout(function() { if (!acabou) { acabou = true; local(); } }, 15000);
+    sbCliente.functions.invoke('ler-carga', { body: corpo }).then(function(res) {
+      if (acabou) return; acabou = true; clearTimeout(t);
+      if (res && !res.error && res.data && Array.isArray(res.data.clientes) && res.data.clientes.length) fim(res.data, 'ia'); else local();
+    }, function() { if (acabou) return; acabou = true; clearTimeout(t); local(); });
+  }
+  function vozReconhecedor() {
+    // no app instalado: o reconhecimento nativo (se o plugin estiver no app) ou o microfone do teclado — o do navegador
+    // dentro do app pediria permissões que o app não declara
+    if (appNativo()) { var nat = window.Capacitor.Plugins ? window.Capacitor.Plugins.SpeechRecognition : null; return nat ? { tipo: 'nativo', p: nat } : null; }
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    return SR ? { tipo: 'web', SR: SR } : null;
+  }
+  function vozOuvir() {
+    var ta = document.getElementById('cg-voz-texto'), btn = document.getElementById('btn-cg-voz-ouvir'), rc = vozReconhecedor();
+    if (vozOuvindo) { try { if (vozRec) vozRec.stop(); } catch (e) {} return; }
+    if (!rc) { ta.focus(); vozStatus('Toque no microfone 🎤 do teclado do celular e fale a carga. Depois toque em “Montar a carga”.'); return; }
+    var base = ta.value ? ta.value.trim() + ' ' : '';
+    var acabar = function() { vozOuvindo = false; btn.textContent = '🎤 Falar'; btn.classList.remove('ouvindo'); };
+    if (rc.tipo === 'nativo') {
+      vozOuvindo = true; btn.textContent = '⏹ Parar'; btn.classList.add('ouvindo'); vozStatus('Ouvindo… fale a carga.');
+      var go = function() { return rc.p.start({ language: 'pt-BR', maxResults: 1, partialResults: false, popup: true }); };
+      Promise.resolve(rc.p.requestPermissions ? rc.p.requestPermissions() : null).then(go).then(function(res) {
+        acabar(); var t = res && res.matches && res.matches[0]; if (t) { ta.value = base + t; vozStatus('Confira o texto e toque em “Montar a carga”.'); }
+      }, function() { acabar(); ta.focus(); vozStatus('Não deu para usar o microfone. Use o microfone 🎤 do teclado.', true); });
+      vozRec = { stop: function() { try { rc.p.stop(); } catch (e) {} } };
+      return;
+    }
+    var rec = new rc.SR();
+    rec.lang = 'pt-BR'; rec.interimResults = true; rec.continuous = true;
+    var final = '';
+    rec.onresult = function(ev) {
+      var parcial = '';
+      for (var k = ev.resultIndex; k < ev.results.length; k++) { if (ev.results[k].isFinal) final += ev.results[k][0].transcript + ' '; else parcial += ev.results[k][0].transcript; }
+      ta.value = base + final + parcial;
+    };
+    rec.onerror = function(ev) { vozStatus(ev && ev.error === 'not-allowed' ? 'O microfone não foi liberado. Libere nas permissões ou use o microfone 🎤 do teclado.' : 'Não deu para ouvir agora. Tente de novo ou use o microfone 🎤 do teclado.', true); };
+    rec.onend = function() { acabar(); vozRec = null; if (ta.value.trim()) vozStatus('Confira o texto e toque em “Montar a carga”.'); };
+    try { rec.start(); vozRec = rec; vozOuvindo = true; btn.textContent = '⏹ Parar'; btn.classList.add('ouvindo'); vozStatus('Ouvindo… fale a carga e toque em Parar.'); }
+    catch (e) { acabar(); ta.focus(); vozStatus('Use o microfone 🎤 do teclado e fale a carga.'); }
+  }
+  document.getElementById('btn-cg-voz').addEventListener('click', function() {
+    var pn = document.getElementById('cg-voz-painel'), abrir = pn.classList.contains('hidden');
+    pn.classList.toggle('hidden', !abrir);
+    if (abrir) { vozStatus(''); vozOuvir(); }
+  });
+  document.getElementById('btn-cg-voz-ouvir').addEventListener('click', vozOuvir);
+  document.getElementById('btn-cg-voz-montar').addEventListener('click', function() { if (vozOuvindo && vozRec) { try { vozRec.stop(); } catch (e) {} } vozMontar(); });
+
   // ---------- concluir carregamento (expedição) ----------
   var cargaConcludeId = null;
   // Frete de carreta (pedido de 20/10/2026): a tabela tem só 16 e 18 paletes; com motorista de carreta (ou mais de
@@ -8140,11 +8449,31 @@
     var m = motoristaDaCarga(c);
     return !!(m && (m.veiculoTipo === 'carreta' || Number(m.capacidadePaletes) > 18)) || Number(paletes != null ? paletes : c && c.totalPaletes) > 18;
   }
+  // valor de carreta da tabela para os destinos da carga (todos precisam ter): o maior, mais o adicional por destino
+  function freteCarretaTabela(clientesArr) {
+    var vistos = {}, dests = [];
+    (clientesArr || []).forEach(function(cl) { var d = String(cl.destino || '').trim(), k = normDestino(d); if (d && !vistos[k]) { vistos[k] = 1; dests.push(d); } });
+    if (!dests.length) return null;
+    if (!fretesTabela) {
+      // a equipe não lê os valores (só a senha mestre): basta saber que a tabela tem o valor de carreta desses destinos
+      var nomesC = fretesDestinosCarreta.map(function(x) { return normDestino(baseDestino(x)); });
+      var todos = dests.every(function(d) { return nomesC.indexOf(normDestino(baseDestino(d))) >= 0; });
+      return todos ? { valor: null, destino: dests.join(', '), n: dests.length } : null;
+    }
+    var vals = dests.map(function(d) { var lf = linhaFrete(d, false); return lf && Number(lf.linha.vCarreta) > 0 ? { d: lf.linha.destino, v: Number(lf.linha.vCarreta) } : null; });
+    if (vals.some(function(x) { return !x; })) return null;
+    var maior = vals.reduce(function(a, x) { return !a || x.v > a.v ? x : a; }, null);
+    return { valor: arred2(maior.v + (vals.length > 1 ? adicionalFrete() : 0)), destino: maior.d, n: vals.length };
+  }
   function atualizarFreteCombinado() {
     var sec = document.getElementById('cgc-frete-sec');
     if (!sec || !cargaConcludeId) return;
-    var c = findCarga(cargaConcludeId), tot = computeCargaTotals(cgcEditor.toOut());
+    var c = findCarga(cargaConcludeId), out = cgcEditor.toOut(), tot = computeCargaTotals(out), tab = freteCarretaTabela(out);
     sec.classList.toggle('hidden', !cargaDeCarreta(c, tot.paletes));
+    document.getElementById('cgc-frete-rotulo').innerHTML = tab ? 'Frete combinado <span class="opt">(opcional)</span>' : 'Valor do frete combinado <span class="req">*</span>';
+    document.getElementById('cgc-frete-hint').textContent = tab
+      ? (tab.valor != null ? 'Carreta: pela tabela, ' + fmtBRL(tab.valor) + ' (' + tab.destino + (tab.n > 1 ? ' + adicional por destino' : '') + ').' : 'Carreta: a tabela de fretes já tem o valor de carreta para ' + tab.destino + '.') + ' Só preencha se combinou outro valor.'
+      : 'Carreta (ou carga com mais de 18 paletes): a tabela não tem o valor de carreta deste destino. Pergunte o preço ao motorista ou à transportadora e informe antes de concluir.';
   }
   function openCargaConclude(carga) {
     if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
@@ -8302,10 +8631,11 @@
     if (erroFotos) { errEl.textContent = erroFotos; errEl.classList.remove('hidden'); return; }
     var totals = computeCargaTotals(clientesOut), freteComb = null;
     if (cargaDeCarreta(findCarga(cargaConcludeId), totals.paletes)) {
-      var vfc = ocValor(document.getElementById('cgc-frete-valor').value);
-      if (vfc === null || vfc <= 0) { errEl.textContent = 'Carreta: informe o valor do frete combinado (pergunte ao motorista ou à transportadora) antes de concluir.'; errEl.classList.remove('hidden'); document.getElementById('cgc-frete-valor').focus(); return; }
-      if (vfc > 100000) { errEl.textContent = 'Confira o valor do frete.'; errEl.classList.remove('hidden'); return; }
-      freteComb = { valor: Math.round(vfc * 100) / 100, por: quemSessao(), em: new Date().toISOString() };
+      var vfc = ocValor(document.getElementById('cgc-frete-valor').value), tabC = freteCarretaTabela(clientesOut);
+      if ((vfc === null || vfc <= 0) && tabC) vfc = null;
+      else if (vfc === null || vfc <= 0) { errEl.textContent = 'Carreta: informe o valor do frete combinado (pergunte ao motorista ou à transportadora) antes de concluir.'; errEl.classList.remove('hidden'); document.getElementById('cgc-frete-valor').focus(); return; }
+      if (vfc !== null && vfc > 100000) { errEl.textContent = 'Confira o valor do frete.'; errEl.classList.remove('hidden'); return; }
+      if (vfc !== null) freteComb = { valor: Math.round(vfc * 100) / 100, por: quemSessao(), em: new Date().toISOString() };
     }
     errEl.classList.add('hidden');
 
@@ -9568,6 +9898,7 @@
     btn.disabled = true;
     sha256Hex(p1).then(function(hash) { return saveAdminConfig({ senhaHash: hash }); }).then(function() {
       btn.disabled = false;
+      comecarComSenha = true;
       comecarSessao({ role: 'admin' }, p1);
     }).catch(function(e) {
       console.error('setup error', e);
@@ -9616,6 +9947,7 @@
     }
     sha256Hex(pass).then(function(hash) {
       btn.disabled = false;
+      comecarComSenha = true;
       if (adminConfig && hash === adminConfig.senhaHash) { comecarSessao({ role: 'admin' }, pass); return; }
       if (adminConfig && adminConfig.equipeHash && hash === adminConfig.equipeHash) { comecarSessao({ role: 'equipe' }, null); return; }
       var match = motoristas.find(function(m) { return m.senhaHash === hash; });
@@ -9655,6 +9987,7 @@
       var ident = identidadeDoUsuario(u);
       if (!ident) { var e2 = new Error('papel'); e2.codigo = 'interno'; throw e2; }
       if (ident.biometria && u) { try { sessionStorage.setItem(ROSTO_OK, u.id); } catch (e3) {} }
+      comecarComSenha = true;
       comecarSessao(ident, senhaDigitada || null, x.data && x.data.session && x.data.session.access_token);
     });
   }
@@ -9813,6 +10146,8 @@
   var fretesTabela = null;     // { versao, paletesBase, adicionalDestino, linhas: [{ destino, v16, v18 }], alteradaEm }
   var fretesCarregado = false; // a tabela já foi lida (mesmo que não exista)
   var fretesDestinos = [];     // nomes dos destinos, sem valores
+  var fretesDestinosCarreta = []; // destinos que têm valor de carreta na tabela (só os nomes: quem conclui a carga sabe que não precisa perguntar)
+  function nomesDestinosCarreta(tab) { return ((tab && tab.linhas) || []).filter(function(l) { return Number(l.vCarreta) > 0; }).map(function(l) { return l.destino; }); }
   var fretesCargas = {};       // id da carga -> { destinos, valor, confirmado, confirmadoEm, pagoEm, obs, ... }
   var motoristaDocs = [];      // documentos (arquivos no Storage): { id, motoristaId, grupo, tipo, descricao, validade, caminho, ... }
   var motoristaDados = {};     // id do motorista -> { cpf, cnh, cnhCategoria, cnhValidade, placa, placaCarreta, veiculo, rntrc, obs }
@@ -9928,13 +10263,16 @@
   }
   function paletesBaseFrete() { return Number(fretesTabela && fretesTabela.paletesBase) || 16; }
   function adicionalFrete() { var a = fretesTabela && fretesTabela.adicionalDestino; return (a == null || a === '' || isNaN(Number(a))) ? 300 : Number(a); }
-  function valorDoDestino(destino, paletes, com175) {
+  function valorDoDestino(destino, paletes, com175, carreta) {
     var base = paletesBaseFrete();
     var r = { destino: destino, linha: '', valor: 0, cheio: 0, regra: '', confirmar: false, proporcional: false, semTabela: false, aviso: '' };
     var lf = linhaFrete(destino, com175);
     if (!lf) { r.semTabela = true; r.confirmar = true; r.regra = 'sem valor na tabela'; return r; }
-    var v16 = Number(lf.linha.v16) || 0, v18 = Number(lf.linha.v18) || 0;
+    var v16 = Number(lf.linha.v16) || 0, v18 = Number(lf.linha.v18) || 0, vc = Number(lf.linha.vCarreta) || 0;
     r.linha = lf.linha.destino; r.cheio = v16;
+    // carreta (23/10/2026): com o valor de carreta na tabela, vale ele
+    if (carreta && vc > 0) { r.valor = vc; r.cheio = vc; r.regra = 'carreta'; r.carreta = true; return r; }
+    if (!v16) { r.semTabela = true; r.confirmar = true; r.regra = vc ? 'a tabela só tem o valor de carreta' : 'sem valor na tabela'; return r; }
     if (lf.so175) { r.confirmar = true; r.aviso = 'a tabela só tem o valor com 175'; }
     if (!paletes) { r.valor = v16; r.confirmar = true; r.regra = 'carga sem paletes'; return r; }
     if (paletes === base) { r.valor = v16; r.regra = base + ' paletes'; }
@@ -9956,8 +10294,8 @@
   function freteDaCarga(c, destinosTeste) {
     var reg = fretesCargas[c.id] || null;
     var destinos = destinosTeste || ((reg && Array.isArray(reg.destinos) && reg.destinos.length) ? reg.destinos.slice() : destinosDaCarga(c));
-    var paletes = Number(c.totalPaletes) || 0, com175 = cargaCom175(c);
-    var partes = destinos.map(function(d) { return valorDoDestino(d, paletes, com175); });
+    var paletes = Number(c.totalPaletes) || 0, com175 = cargaCom175(c), carreta = cargaDeCarreta(c);
+    var partes = destinos.map(function(d) { return valorDoDestino(d, paletes, com175, carreta); });
     var maior = null, cheioMax = 0;
     partes.forEach(function(p) { if (!maior || p.valor > maior.valor) maior = p; cheioMax = Math.max(cheioMax, p.cheio); });
     var adicional = partes.length > 1 ? adicionalFrete() : 0;
@@ -10015,7 +10353,7 @@
   function loadLocalFretes() {
     var l = {};
     try { l = JSON.parse(localStorage.getItem(LOCAL_FRETES_KEY) || '{}') || {}; } catch (e) { l = {}; }
-    fretesTabela = l.tabela || null; fretesDestinos = l.destinos || nomesDestinos(fretesTabela);
+    fretesTabela = l.tabela || null; fretesDestinos = l.destinos || nomesDestinos(fretesTabela); fretesDestinosCarreta = nomesDestinosCarreta(fretesTabela);
     fretesCargas = l.cargas || {}; motoristaDados = l.dados || {}; motoristaDocs = [];
     fretesCarregado = true;
   }
@@ -10023,6 +10361,7 @@
     if (!session || session.role === 'motorista') return;
     db.doc('config/fretes-destinos').onSnapshot(function(s) {
       fretesDestinos = (s.exists && Array.isArray(s.data().nomes)) ? s.data().nomes.slice().sort(function(a, b) { return String(a).localeCompare(String(b), 'pt-BR'); }) : [];
+      fretesDestinosCarreta = (s.exists && Array.isArray(s.data().carreta)) ? s.data().carreta.slice() : [];
       renderFretesDatalist();
     }, function(err) { console.error('destinos de frete', err); });
     if (session.role !== 'admin') return;
@@ -10087,10 +10426,10 @@
     if (mode === 'db' && db) {
       var b = db.batch();
       b.set(db.doc('fretes-tabela/atual'), tab);
-      b.set(db.doc('config/fretes-destinos'), { nomes: nomes, versao: tab.versao || '' });
+      b.set(db.doc('config/fretes-destinos'), { nomes: nomes, carreta: nomesDestinosCarreta(tab), versao: tab.versao || '' });
       return b.commit();
     }
-    fretesTabela = tab; fretesDestinos = nomes; salvarLocalFretes(); renderFretesTudo();
+    fretesTabela = tab; fretesDestinos = nomes; fretesDestinosCarreta = nomesDestinosCarreta(tab); salvarLocalFretes(); renderFretesTudo();
     return Promise.resolve();
   }
   function salvarDadosMotorista(m, dados) {
@@ -10234,7 +10573,7 @@
           '<button class="btn-text" data-action="fl-remover-cancelar">Cancelar</button></div>';
       }
       return '<div class="fl-row"><span class="fl-nome">' + escapeHtml(x.l.destino) + '</span>' +
-        '<span class="fl-vals">16: ' + fmtBRL(x.l.v16) + ' · 18: ' + (Number(x.l.v18) > 0 ? fmtBRL(x.l.v18) : 'proporcional') + '</span>' +
+        '<span class="fl-vals">' + (Number(x.l.v16) > 0 ? '16: ' + fmtBRL(x.l.v16) + ' · 18: ' + (Number(x.l.v18) > 0 ? fmtBRL(x.l.v18) : 'proporcional') : 'só carreta') + (Number(x.l.vCarreta) > 0 ? ' · carreta: ' + fmtBRL(x.l.vCarreta) : '') + '</span>' +
         '<button class="btn-text" data-action="fl-editar" data-i="' + x.i + '">Editar</button>' +
         '<button class="btn-text danger" data-action="fl-remover" data-i="' + x.i + '">Remover</button></div>';
     }).join('') + (busca ? '' : '<p class="field-hint">' + (fretesTabela.linhas || []).length + ' destinos na tabela.</p>')
@@ -10242,11 +10581,13 @@
   }
   function abrirLinhaFrete(i) {
     flEditIndex = i;
-    var l = (i != null && fretesTabela && fretesTabela.linhas[i]) || { destino: '', v16: '', v18: '' };
+    var l = (i != null && fretesTabela && fretesTabela.linhas[i]) || { destino: '', v16: '', v18: '', vCarreta: '' };
     document.getElementById('fl-sheet-title').textContent = i == null ? 'Adicionar destino' : 'Editar — ' + l.destino;
     setVal('f-fl-destino', l.destino || '');
     setVal('f-fl-v16', l.v16 !== '' && l.v16 != null ? String(l.v16) : '');
     setVal('f-fl-v18', Number(l.v18) > 0 ? String(l.v18) : '');
+    setVal('f-fl-vcarreta', Number(l.vCarreta) > 0 ? String(l.vCarreta) : '');
+    if (!(Number(l.v16) > 0)) setVal('f-fl-v16', '');
     document.getElementById('fl-form-error').classList.add('hidden');
     document.getElementById('fl-sheet-overlay').classList.remove('hidden');
   }
@@ -10263,14 +10604,17 @@
     function erro(msg) { err.textContent = msg; err.classList.remove('hidden'); }
     var destino = document.getElementById('f-fl-destino').value.replace(/\s+/g, ' ').trim().toUpperCase();
     var v16 = numBR(document.getElementById('f-fl-v16').value), v18raw = document.getElementById('f-fl-v18').value;
-    var v18 = v18raw === '' ? 0 : numBR(v18raw);
+    var v18 = v18raw === '' ? 0 : numBR(v18raw), vcRaw = document.getElementById('f-fl-vcarreta').value, vc = vcRaw === '' ? 0 : numBR(vcRaw);
+    if (document.getElementById('f-fl-v16').value === '') v16 = 0;
     if (!destino) return erro('Informe o destino.');
-    if (isNaN(v16) || v16 <= 0) return erro('Informe o valor para 16 paletes.');
+    if (isNaN(vc) || vc < 0) return erro('O valor para carreta está inválido.');
+    if (isNaN(v16) || v16 < 0 || (v16 === 0 && !(vc > 0))) return erro('Informe o valor para 16 paletes (ou só o da carreta).');
     if (isNaN(v18) || v18 < 0) return erro('O valor para 18 paletes está inválido.');
     var t = tabelaParaEditar();
     var dup = t.linhas.some(function(l, i) { return i !== flEditIndex && normDestino(l.destino) === normDestino(destino); });
     if (dup) return erro('Esse destino já está na tabela.');
     var linha = { destino: destino, v16: arred2(v16), v18: arred2(v18) };
+    if (vc > 0) linha.vCarreta = arred2(vc);
     if (flEditIndex == null) t.linhas.push(linha); else t.linhas[flEditIndex] = linha;
     err.classList.add('hidden');
     salvarTabelaFretes(t).then(function() { fecharLinhaFrete(); showToast('Tabela de fretes salva.'); })
@@ -12542,7 +12886,7 @@
     Object.keys(MP_COL).forEach(function(k) {
       db.collection(MP_COL[k]).onSnapshot(function(snap) {
         mp[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-        if (session) { renderProducao(); renderMateria(); atualizarMpSheet(); }
+        if (session) { renderProducao(); renderMateria(); atualizarMpSheet(); if (k === 'ordens') opAvisosAndamento(); }
       }, function(err) { console.error(MP_COL[k], err); });
     });
   }
@@ -12676,12 +13020,145 @@
     return (itens || []).reduce(function(a, it) { var p = findProduto(it.produtoId), v = p ? emPaletes(p, Number(it.quantidade) || 0) : null; return a + (v || 0); }, 0);
   }
 
+  // ----- andamento das ordens pelos lançamentos hora a hora (23/10/2026) -----
+  // Cada lançamento de produção conta para a primeira OP aberta da fila que tem aquele produto (lançado depois de a OP
+  // ser criada e depois da última OP concluída com o produto); o que passa do planejado fica na última OP do produto.
+  // Mostra quanto falta e quanto tempo leva no ritmo das últimas horas; avisa quando está perto do fim (90% ou menos de
+  // 1 hora) e quando atingiu a quantidade.
+  function opRitmo(pid) {
+    var l = estoqueMovs.filter(function(m) { return m.porHora && m.produtoId === pid && Number(m.quantidade) > 0 && String(m.data || '') >= addDiasIso(todayIso(), -1); })
+      .sort(function(a, b) { return String(b.data + b.hora).localeCompare(String(a.data + a.hora)); }).slice(0, 3);
+    return l.length ? l.reduce(function(a, m) { return a + Number(m.quantidade); }, 0) / l.length : 0;
+  }
+  function opAndamento() {
+    var abertas = ordensAbertas(), res = {}, ultConc = {};
+    abertas.forEach(function(o) {
+      res[o.id] = { o: o, itens: (o.itens || []).filter(function(it) { return Number(it.quantidade) > 0; }).map(function(it) {
+        return { produtoId: it.produtoId, nome: it.produtoNome || ((findProduto(it.produtoId) || {}).nome) || '', unidade: it.unidade || unidadeDe(findProduto(it.produtoId)), plan: Number(it.quantidade) || 0, feito: 0 };
+      }) };
+    });
+    mp.ordens.forEach(function(o) {
+      if (o.status !== 'concluida') return;
+      (o.produzido || o.itens || []).forEach(function(it) { var c = String(o.concluidoEm || ''); if (!ultConc[it.produtoId] || c > ultConc[it.produtoId]) ultConc[it.produtoId] = c; });
+    });
+    estoqueMovs.filter(function(m) { return m.tipo === 'entrada' && m.porHora && Number(m.quantidade) > 0; })
+      .sort(function(a, b) { return String(a.criadoEm || a.em || '').localeCompare(String(b.criadoEm || b.em || '')); })
+      .forEach(function(m) {
+        var em = String(m.criadoEm || m.em || ''), resto = Number(m.quantidade) || 0, ultimo = null;
+        if (ultConc[m.produtoId] && em <= ultConc[m.produtoId]) return;
+        for (var i = 0; i < abertas.length && resto > 0; i++) {
+          var o = abertas[i];
+          if (em < String(o.criadoEm || '')) continue;
+          var it = res[o.id].itens.find(function(x) { return x.produtoId === m.produtoId; });
+          if (!it) continue;
+          ultimo = it;
+          var usa = Math.min(Math.max(0, it.plan - it.feito), resto);
+          it.feito += usa; resto -= usa;
+        }
+        if (resto > 0 && ultimo) ultimo.feito += resto;
+      });
+    Object.keys(res).forEach(function(k) {
+      var r = res[k], plan = 0, feito = 0, minutos = 0, semRitmo = false, algum = false;
+      r.itens.forEach(function(it) {
+        plan += it.plan; feito += Math.min(it.feito, it.plan); if (it.feito > 0) algum = true;
+        it.falta = Math.max(0, it.plan - it.feito); it.ritmo = opRitmo(it.produtoId);
+        if (it.falta > 0) { if (it.ritmo > 0) minutos += it.falta / it.ritmo * 60; else semRitmo = true; }
+      });
+      r.plan = plan; r.feito = feito; r.pct = plan ? feito / plan : 0; r.lancado = algum;
+      r.minutos = semRitmo ? null : Math.round(minutos);
+      r.estado = !algum ? '' : r.pct >= 1 ? 'fim' : (r.pct >= 0.9 || (r.minutos !== null && r.minutos <= 60)) ? 'perto' : 'andamento';
+    });
+    return res;
+  }
+  function opAndamentoTexto(r) {
+    if (!r || !r.lancado) return '';
+    var falta = r.itens.filter(function(it) { return it.falta > 0; }).map(function(it) { return qtdUnidade(Math.round(it.falta), it.unidade) + (r.itens.length > 1 ? ' de ' + it.nome : ''); }).join(', ');
+    return r.estado === 'fim' ? 'Quantidade atingida pelos lançamentos: conclua a OP'
+      : (r.estado === 'perto' ? 'Perto do fim: ' : 'Em produção: ') + 'faltam ' + falta + (r.minutos !== null ? ' (~' + fmtDuracao(r.minutos) + ' no ritmo das últimas horas)' : '');
+  }
+  function opAndamentoHtml(r) {
+    if (!r || !r.lancado) return '';
+    var pc = Math.min(100, Math.round(r.pct * 100));
+    return '<div class="op-prog op-' + r.estado + '"><div class="op-barra" role="progressbar" aria-label="Andamento da OP" aria-valuenow="' + pc + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pc + '%"></i></div>' +
+      '<span>' + (r.estado === 'fim' ? '✅ ' : r.estado === 'perto' ? '🟡 ' : '') + escapeHtml(fmtInt(Math.round(r.feito)) + ' de ' + fmtInt(Math.round(r.plan)) + ' (' + pc + '%) · ' + opAndamentoTexto(r)) + '</span></div>';
+  }
+  // aviso na hora quando uma OP fica perto do fim ou atinge a quantidade (uma vez por OP e estado, neste aparelho)
+  var opAvisados = null;
+  function opAvisosAndamento() {
+    if (!session || session.role === 'motorista' || session.role === 'representante' || abasPermitidas().indexOf('producao') < 0) return;
+    var and = opAndamento(), agora = {};
+    Object.keys(and).forEach(function(k) { if (and[k].estado === 'perto' || and[k].estado === 'fim') agora[k] = and[k].estado; });
+    var antes = opAvisados;
+    opAvisados = agora;
+    if (!antes) return; // ao abrir o app, aparece no Início (sem aviso que pula)
+    Object.keys(agora).forEach(function(k) {
+      if (antes[k] === agora[k] || (antes[k] === 'fim' && agora[k] === 'perto')) return;
+      var r = and[k];
+      showToast((agora[k] === 'fim' ? '✅ OP nº ' + r.o.numero + ': ' : '🟡 OP nº ' + r.o.numero + ' perto do fim: ') + opAndamentoTexto(r).replace(/^Perto do fim: /, '') + '.');
+    });
+  }
+  function diasDesde(iso) { var t = Date.parse(iso || ''); return isNaN(t) ? 9999 : (Date.now() - t) / 86400000; }
+  // várias OPs abertas em sequência (23/10/2026): até onde o estoque de cada insumo dá, descontando o que já foi
+  // produzido nas OPs em andamento (o insumo só sai do saldo na conclusão) e avisando a contagem antiga
+  function opSequenciaInsumos() {
+    var abertas = ordensAbertas();
+    if (abertas.length < 2) return null;
+    var and = opAndamento(), emAndamento = {}, res = {}, semFicha = [];
+    abertas.forEach(function(o) {
+      var r = and[o.id];
+      if (!r) return;
+      materiaisDe(r.itens.filter(function(it) { return it.feito > 0; }).map(function(it) { return { produtoId: it.produtoId, quantidade: Math.min(it.feito, it.plan) }; }), false).lista
+        .forEach(function(m) { emAndamento[m.insumoId] = (emAndamento[m.insumoId] || 0) + m.qtd; });
+    });
+    abertas.forEach(function(o) {
+      var r = and[o.id], restantes = r ? r.itens.map(function(it) { return { produtoId: it.produtoId, produtoNome: it.nome, quantidade: it.falta }; }) : (o.itens || []);
+      var mt = materiaisDe(restantes, false);
+      mt.semFicha.forEach(function(n) { if (semFicha.indexOf(n) < 0) semFicha.push(n); });
+      mt.lista.forEach(function(m) {
+        var x = res[m.insumoId];
+        if (!x) {
+          var s = saldoInsumo(m.insumoId), c = ultimaContagemMp(m.insumoId);
+          x = res[m.insumoId] = { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, saldo: s, agora: s === null ? null : arred3(s - (emAndamento[m.insumoId] || 0)), precisa: 0, acabaNa: null, contagemEm: c ? c.em : '' };
+        }
+        x.precisa = arred3(x.precisa + m.qtd);
+        if (x.agora !== null && !x.acabaNa && x.precisa > x.agora) x.acabaNa = o;
+      });
+    });
+    var lista = Object.keys(res).map(function(k) { return res[k]; }).sort(compararInsumos);
+    return { n: abertas.length, lista: lista, semFicha: semFicha, faltam: lista.filter(function(x) { return x.acabaNa; }),
+      semContagem: lista.filter(function(x) { return x.agora === null; }), velhas: lista.filter(function(x) { return x.agora !== null && !x.acabaNa && diasDesde(x.contagemEm) > 2; }) };
+  }
+  function opSequenciaHtml(sq) {
+    if (!sq) return '';
+    var it = [];
+    sq.faltam.forEach(function(x) { it.push('<li class="neg"><b>' + escapeHtml(x.nome) + '</b>: acaba na OP nº ' + escapeHtml(String(x.acabaNa.numero)) + ' — precisa ' + escapeHtml(fmtMp(x.precisa, x.unidade)) + ' para as ' + sq.n + ' OPs e há ~' + escapeHtml(fmtMp(Math.max(0, x.agora), x.unidade)) + ' agora</li>'); });
+    sq.velhas.slice(0, 6).forEach(function(x) { it.push('<li><b>' + escapeHtml(x.nome) + '</b>: última contagem ' + (x.contagemEm ? 'há ' + Math.floor(diasDesde(x.contagemEm)) + ' dias' : 'nunca') + ' — conte de novo para ter o número certo (dá para as ' + sq.n + ' OPs pelas contas: ~' + escapeHtml(fmtMp(x.agora, x.unidade)) + ', precisa ' + escapeHtml(fmtMp(x.precisa, x.unidade)) + ')</li>'); });
+    if (sq.semContagem.length) it.push('<li>Sem contagem: ' + escapeHtml(sq.semContagem.map(function(x) { return x.nome; }).join(', ')) + ' — faça a contagem para conferir</li>');
+    if (sq.semFicha.length) it.push('<li>Sem ficha técnica (o app não sabe os insumos): ' + escapeHtml(sq.semFicha.join(', ')) + ' — cadastre a ficha na Matéria-prima para entrar na conta</li>');
+    return '<div class="est-alertas" role="status"><p class="est-alertas-t">🔁 ' + sq.n + ' ordens em sequência: controle dos insumos</p>' +
+      (it.length ? '<ul>' + it.join('') + '</ul>' : '<p style="margin:0">✓ Os insumos dão para as ' + sq.n + ' OPs em sequência, já descontando o que foi produzido nas que estão em andamento.</p>') +
+      '<p class="field-hint" style="margin:6px 0 0">Conta com o estoque de matéria-prima (última contagem + recebimentos − perdas − OPs concluídas) menos o que já foi produzido nas OPs abertas.</p>' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-mp="ir-materia">Ver o estoque de matéria-prima</button></div>';
+  }
+  function opNovidades() {
+    var l = [], and = opAndamento();
+    ordensAbertas().forEach(function(o) {
+      var r = and[o.id];
+      if (r && (r.estado === 'perto' || r.estado === 'fim')) l.push({ ico: r.estado === 'fim' ? '✅' : '🟡', txt: 'OP nº ' + o.numero + ': ' + opAndamentoTexto(r), ir: 'producao' });
+    });
+    var sq = opSequenciaInsumos();
+    if (sq && sq.faltam.length) l.push({ ico: '🔁', txt: sq.n + ' OPs em sequência: ' + sq.faltam.slice(0, 2).map(function(x) { return x.nome + ' acaba na OP nº ' + x.acabaNa.numero; }).join('; ') + ' — confira o estoque', ir: 'producao' });
+    else if (sq && sq.velhas.length) l.push({ ico: '🔁', txt: sq.n + ' OPs em sequência: conte de novo ' + sq.velhas.slice(0, 3).map(function(x) { return x.nome; }).join(', ') + ' (contagem com mais de 2 dias)', ir: 'producao' });
+    return l;
+  }
+
   // ----- aba Produção -----
   var opUi = { aberta: null, confirmarExcluir: null, confirmarDesfazer: null, todas: false };
   function analisarOrdens() {
+    var and = opAndamento();
     return ordensAbertas().map(function(o) {
       var mat = materiaisDaOrdem(o), conf = conferirMateriais(mat.lista, o);
-      return { o: o, mat: mat, conf: conf, faltas: conf.filter(function(c) { return c.falta > 0; }), semSaldo: conf.filter(function(c) { return c.saldo === null; }) };
+      return { o: o, mat: mat, conf: conf, and: and[o.id], faltas: conf.filter(function(c) { return c.falta > 0; }), semSaldo: conf.filter(function(c) { return c.saldo === null; }) };
     });
   }
   function situacaoOp(a) {
@@ -12702,7 +13179,7 @@
       '<div class="frete-top"><span><b>OP nº ' + escapeHtml(String(o.numero || '—')) + '</b> · produzir ' + escapeHtml(rotuloDia(o.data, hoje).replace('Hoje', 'hoje').replace('Amanhã', 'amanhã')) +
         (o.data < hoje ? ' <span class="alerta">(atrasada)</span>' : '') + '</span><span class="frete-valor">' + escapeHtml(fmtPal(paletesOp(o.itens))) + ' pal</span></div>' +
       '<div style="margin-top:4px">' + opChipsUrgPrazo(o) + '<span class="chip-est ' + sit.cls + '" style="margin-left:0">' + escapeHtml(sit.txt) + '</span></div>' +
-      '<div class="frete-sub">' + escapeHtml(resumoItensOp(o.itens)) + '</div>' +
+      '<div class="frete-sub">' + escapeHtml(resumoItensOp(o.itens)) + '</div>' + opAndamentoHtml(a.and) +
       (o.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(o.obs) + '</div>' : '') +
       (aberto ? '<div class="op-mat">' + materiaisHtml(a.conf, a.mat.semFicha) + '</div>' : '') +
       '<div class="frete-acoes">' + acoes + '</div></div>';
@@ -12740,6 +13217,8 @@
       }).join('') + '</ul>';
       al.classList.remove('hidden');
     }
+    var seqEl = document.getElementById('op-seq');
+    if (seqEl) seqEl.innerHTML = opSequenciaHtml(opSequenciaInsumos());
     document.getElementById('op-abertas-n').textContent = analise.length ? String(analise.length) : '';
     lista.innerHTML = analise.length ? analise.map(function(a) { return opCardHtml(a, hoje); }).join('')
       : '<p class="empty-state">Nenhuma ordem aberta. Toque em “+ Nova ordem de produção”.</p>';
@@ -13049,13 +13528,17 @@
     });
   }
   function abrirOpConcluir(o) {
+    var and = opAndamento()[o.id], porHora = {};
+    if (and) and.itens.forEach(function(it) { porHora[it.produtoId] = it.feito; });
+    var temHora = Object.keys(porHora).some(function(k) { return porHora[k] > 0; });
     var rows = (o.itens || []).map(function(it) {
-      var p = findProduto(it.produtoId) || { id: it.produtoId, nome: it.produtoNome, unidade: it.unidade, unidadesPorPalete: 0 };
-      return linhaProdutoHtml(p, Number(it.quantidade) || 0, ' · na ordem: ' + qtdUnidade(it.quantidade, it.unidade || unidadeDe(p)));
+      var p = findProduto(it.produtoId) || { id: it.produtoId, nome: it.produtoNome, unidade: it.unidade, unidadesPorPalete: 0 }, ph = Math.round(porHora[it.produtoId] || 0);
+      return linhaProdutoHtml(p, ph || Number(it.quantidade) || 0, ' · na ordem: ' + qtdUnidade(it.quantidade, it.unidade || unidadeDe(p)) + (ph ? ' · lançado hora a hora: ' + qtdUnidade(ph, it.unidade || unidadeDe(p)) : ''));
     }).join('');
     abrirMpSheet({
       modo: 'op-concluir', id: o.id, ordem: o, titulo: 'Concluir OP nº ' + o.numero, botao: 'Concluir e dar entrada',
       html: '<p class="hint">Confira o que foi produzido (se saiu diferente da ordem, corrija). Ao concluir, a produção <b>entra no estoque de produtos</b> e a matéria-prima <b>sai do estoque de matéria-prima</b>.</p>' +
+        (temHora ? '<p class="field-hint">Os lançamentos hora a hora dos líderes já colocaram parte desta produção no estoque: ao concluir, entra só a diferença (não entra duas vezes).</p>' : '') +
         '<label>Data da produção<input type="date" id="mp-op-dataprod" value="' + escapeHtml(todayIso()) + '" /></label>' +
         '<div class="est-form-head"><span>Produto</span><span>Paletes</span><span>Produzido</span></div><div class="est-rows">' + rows + '</div>' +
         '<div class="section-head"><h2 class="section-title">Matéria-prima consumida</h2></div><div id="mp-vivo"></div>'
@@ -13271,12 +13754,18 @@
       var prod = itensDoFormProdutos(), dp = document.getElementById('mp-op-dataprod').value || todayIso();
       if (!prod.length) return erroMpSheet('Informe o que foi produzido.');
       var cons = materiaisDe(prod, false).lista.map(function(m) { return { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, qtd: m.qtd }; });
-      ops.push({ op: 'update', col: MP_COL.ordens, id: s.id, data: { status: 'concluida', concluidoEm: agora, dataProducao: dp, produzido: prod, consumo: cons } });
+      // o que os líderes já lançaram hora a hora para esta OP já está no estoque: entra só a diferença (23/10/2026)
+      var andC = opAndamento()[s.id], jaHora = {};
+      if (andC) andC.itens.forEach(function(it) { jaHora[it.produtoId] = Math.round(it.feito); });
+      var lancHora = Object.keys(jaHora).filter(function(k) { return jaHora[k] > 0; }).map(function(k) { return { produtoId: k, quantidade: jaHora[k] }; });
+      ops.push({ op: 'update', col: MP_COL.ordens, id: s.id, data: { status: 'concluida', concluidoEm: agora, dataProducao: dp, produzido: prod, consumo: cons, lancadoHora: lancHora } });
       prod.forEach(function(it) {
-        ops.push({ op: 'set', col: 'estoque', id: null, data: { tipo: 'entrada', produtoId: it.produtoId, produtoNome: it.produtoNome, unidade: it.unidade, quantidade: it.quantidade,
-          data: dp, em: agora, obs: 'OP nº ' + s.ordem.numero, opId: s.id, criadoEm: agora } });
+        var dif = it.quantidade - (jaHora[it.produtoId] || 0);
+        if (dif <= 0) return;
+        ops.push({ op: 'set', col: 'estoque', id: null, data: { tipo: 'entrada', produtoId: it.produtoId, produtoNome: it.produtoNome, unidade: it.unidade, quantidade: dif,
+          data: dp, em: agora, obs: 'OP nº ' + s.ordem.numero + (jaHora[it.produtoId] ? ' (diferença além dos lançamentos hora a hora)' : ''), opId: s.id, criadoEm: agora } });
       });
-      msg = 'OP nº ' + s.ordem.numero + ' concluída: a produção entrou no estoque.';
+      msg = 'OP nº ' + s.ordem.numero + ' concluída: ' + (lancHora.length ? 'a diferença além dos lançamentos hora a hora entrou no estoque.' : 'a produção entrou no estoque.');
     } else if (s.modo === 'mov') {
       var dataMov = document.getElementById('mp-mov-data').value || todayIso(), obsEl = document.getElementById('mp-mov-obs');
       var nfEl = document.getElementById('mp-mov-nf'), fornEl = document.getElementById('mp-mov-forn'), invalido = false;
@@ -14923,7 +15412,7 @@
     document.querySelector('#ger-sheet-overlay .sheet').scrollTop = 0;
     if (cfg.depois) cfg.depois();
   }
-  function gerFechar() { document.getElementById('ger-sheet-overlay').classList.add('hidden'); ger = null; }
+  function gerFechar() { var eraPh = !!(ger && ger.ph); document.getElementById('ger-sheet-overlay').classList.add('hidden'); ger = null; if (eraPh) retomadaLimpar(); }
   function gerErro(msg) { var e = document.getElementById('ger-form-error'); e.textContent = msg; e.classList.remove('hidden'); return false; }
   function gerVal(id) { var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
   document.getElementById('ger-form').addEventListener('submit', function(e) {
@@ -19544,7 +20033,7 @@
       }
       return sep + '<div class="chat-bolha ' + (minha ? 'eu' : 'outro') + (aberta ? ' aberta' : '') + (editando ? ' editando' : '') + '" data-msg-id="' + m.id + '"' + (temAcoes ? ' data-chat-msg="' + m.id + '"' : '') + '>' +
         citacaoHtml(m) +
-        '<div class="chat-txt">' + (tipo === 'sol' && m.numero ? '<span class="sol-num">' + escapeHtml(String(m.numero)) + '.</span>' : '') + escapeHtml(m.texto).replace(/\n/g, '<br>') + '</div>' +
+        '<div class="chat-txt">' + (tipo === 'sol' && m.numero ? '<span class="sol-num">' + escapeHtml(String(m.numero)) + '.</span>' : '') + (solTextoSoAnexos(m) ? '' : escapeHtml(m.texto).replace(/\n/g, '<br>')) + '</div>' + anexosHtml(m) +
         '<span class="chat-hora">' + (editando ? '✏️ editando · ' : '') + escapeHtml(horaMsg(m.criado_em)) + (m.editada_em ? ' · editada' : '') + (minha && tipo === 'chat' ? (m.lida ? ' · lida' : '') : '') +
         (temAcoes ? ' <button type="button" class="chat-mais" data-chat-msg="' + m.id + '" aria-expanded="' + aberta + '" aria-label="Responder, reagir, editar ou apagar">⋯</button>' : '') + '</span>' +
         reacoesHtml(m, eu, podeReagir) + res + acoes + '</div>';
@@ -19575,6 +20064,141 @@
         : '<span class="chat-reacao' + (minha ? ' minha' : '') + '" title="' + escapeHtml(r[0] + ' de ' + nomes) + '">' + txt + '</span>';
     }).join('') + '</div>';
   }
+  // ---------- anexos nas Solicitações (pedido de 24/10/2026): arquivo, foto e áudio ----------
+  // Os arquivos vão para o balde privado "comunicacao", na pasta da conversa (0032): quem pede só lê a pasta dele; o
+  // Nicolas lê todas. Foto é reduzida antes de enviar; áudio é gravado no próprio app (ou escolhido do celular).
+  var SOL_BALDE = 'comunicacao', SOL_MAX_ANEXOS = 6, SOL_MAX_MB = 25;
+  var SOL_TIPOS_OK = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'audio/webm', 'audio/ogg', 'audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/aac', 'audio/x-m4a', 'audio/m4a',
+    'audio/wav', 'audio/x-wav', 'audio/3gpp', 'audio/amr', 'audio/opus', 'video/mp4', 'video/webm', 'video/quicktime', 'video/3gpp', 'application/pdf', 'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'text/plain', 'text/csv', 'application/zip', 'application/x-zip-compressed'];
+  var SOL_EXT = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', webp: 'image/webp', gif: 'image/gif', heic: 'image/heic', heif: 'image/heif', mp3: 'audio/mpeg', m4a: 'audio/mp4', aac: 'audio/aac',
+    ogg: 'audio/ogg', oga: 'audio/ogg', opus: 'audio/ogg', wav: 'audio/wav', amr: 'audio/amr', weba: 'audio/webm', mp4: 'video/mp4', mov: 'video/quicktime', webm: 'video/webm', '3gp': 'video/3gpp',
+    pdf: 'application/pdf', doc: 'application/msword', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', ppt: 'application/vnd.ms-powerpoint', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    txt: 'text/plain', csv: 'text/csv', zip: 'application/zip' };
+  chat.anexosPend = chat.anexosPend || {};
+  var solRec = null;
+  function solPasta(conversa) { return 'sol/' + String(conversa || '').replace(/[^A-Za-z0-9_-]/g, '_'); }
+  function solConversaAtual() { var eu = minhaRef(); return eu === 'mestre' ? chat.solAberta : eu; }
+  function solPend() { var k = 'sol|' + (solConversaAtual() || ''); return chat.anexosPend[k] = chat.anexosPend[k] || []; }
+  function fmtTam(n) { n = Number(n) || 0; return n >= 1048576 ? (n / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+  function fmtSeg(s) { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + pad2(s % 60); }
+  function solTipoIcone(t) { t = String(t || ''); return /^image\//.test(t) ? '🖼️' : /^audio\//.test(t) ? '🎤' : /^video\//.test(t) ? '🎬' : /pdf/.test(t) ? '📄' : /sheet|excel|csv/.test(t) ? '📊' : /word|text/.test(t) ? '📝' : '📎'; }
+  function solAdicionar(lista) {
+    var pend = solPend(), recusados = [];
+    Array.prototype.forEach.call(lista || [], function(f) {
+      if (pend.length >= SOL_MAX_ANEXOS) { recusados.push(f.name + ' (máximo ' + SOL_MAX_ANEXOS + ' por mensagem)'); return; }
+      if (f.size > SOL_MAX_MB * 1048576 && !/^image\//.test(f.type || '')) { recusados.push(f.name + ' (passa de ' + SOL_MAX_MB + ' MB)'); return; }
+      var ext = (String(f.name || '').match(/\.([A-Za-z0-9]{1,5})$/) || [])[1], tipo = String(f.type || SOL_EXT[String(ext || '').toLowerCase()] || '').split(';')[0];
+      pend.push({ blob: f, nome: f.name || 'arquivo', tipo: tipo, tam: f.size || 0, seg: f.seg || 0, url: /^(image|audio|video)\//.test(tipo) ? URL.createObjectURL(f) : '' });
+    });
+    if (recusados.length) showToast('Não entrou: ' + recusados.join('; ') + '.');
+    solRenderPend();
+  }
+  function solRenderPend() {
+    var el = document.getElementById('sol-anexos-pend');
+    if (!el) return;
+    var pend = solPend();
+    el.innerHTML = pend.map(function(a, i) {
+      var prev = /^image\//.test(a.tipo) && a.url ? '<img src="' + escapeHtml(a.url) + '" alt="" />' : /^audio\//.test(a.tipo) && a.url ? '<audio controls preload="metadata" src="' + escapeHtml(a.url) + '"></audio>' : '<span class="sol-anx-ico" aria-hidden="true">' + solTipoIcone(a.tipo) + '</span>';
+      return '<div class="sol-pend">' + prev + '<span class="sol-pend-txt"><b>' + escapeHtml(a.nome) + '</b><small>' + escapeHtml(fmtTam(a.tam) + (a.seg ? ' · ' + fmtSeg(a.seg) : '')) + '</small></span>' +
+        '<button type="button" class="btn-text danger" data-chat="anexo-tirar" data-i="' + i + '" aria-label="Tirar ' + escapeHtml(a.nome) + '">✕</button></div>';
+    }).join('');
+    el.classList.toggle('hidden', !pend.length);
+  }
+  function solTipoEnvio(t) { t = String(t || '').split(';')[0].toLowerCase(); return SOL_TIPOS_OK.indexOf(t) >= 0 ? t : 'application/octet-stream'; }
+  function solNomeSeguro(n) { return String(n || 'arquivo').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(-80) || 'arquivo'; }
+  // envia os anexos pendentes: devolve a lista para a mensagem [{ caminho, nome, tipo, tam, seg }]
+  function solEnviarAnexos(conversa) {
+    var pend = solPend().slice(), pasta = solPasta(conversa);
+    return pend.reduce(function(p, a) {
+      return p.then(function(out) {
+        var prep = /^image\/(jpeg|png|webp|heic|heif)$/.test(a.tipo) ? prepararFotoLeve(a.blob).then(function(x) { return { blob: x.blob, tipo: x.mime, nome: a.nome.replace(/\.[^.]+$/, '') + '.' + x.ext }; })
+          : Promise.resolve({ blob: a.blob, tipo: solTipoEnvio(a.tipo), nome: a.nome });
+        return prep.then(function(x) {
+          if (x.blob.size > SOL_MAX_MB * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; e.nome = a.nome; throw e; }
+          var caminho = pasta + '/' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 6) + '-' + solNomeSeguro(x.nome);
+          return withTimeout(sbCliente.storage.from(SOL_BALDE).upload(caminho, x.blob, { contentType: x.tipo, upsert: false }), 180000).then(function(r) {
+            if (r && r.error) throw r.error;
+            out.push({ caminho: caminho, nome: x.nome, tipo: x.tipo, tam: x.blob.size, seg: a.seg || 0 });
+            return out;
+          });
+        });
+      });
+    }, Promise.resolve([]));
+  }
+  function solLimparPend() { solPend().forEach(function(a) { if (a.url) try { URL.revokeObjectURL(a.url); } catch (e) {} }); chat.anexosPend['sol|' + (solConversaAtual() || '')] = []; solRenderPend(); }
+  // na bolha: foto, áudio, vídeo ou arquivo
+  function anexosHtml(m) {
+    var l = Array.isArray(m.anexos) ? m.anexos : [];
+    if (!l.length) return '';
+    return '<div class="sol-anexos">' + l.map(function(a) {
+      var c = escapeHtml(a.caminho), n = escapeHtml(a.nome || 'arquivo');
+      if (/^image\//.test(a.tipo)) return '<button type="button" class="sol-anx-img" data-anx-abrir="' + c + '" data-nome="' + n + '" aria-label="Abrir a foto ' + n + '"><img data-anx-src="' + c + '" alt="' + n + '" /></button>';
+      if (/^audio\//.test(a.tipo)) return '<div class="sol-anx-audio"><audio controls preload="none" data-anx-src="' + c + '"></audio><small>🎤 ' + escapeHtml(a.seg ? fmtSeg(a.seg) : a.nome || 'áudio') + '</small></div>';
+      if (/^video\//.test(a.tipo)) return '<video class="sol-anx-video" controls preload="none" data-anx-src="' + c + '"></video>';
+      return '<button type="button" class="sol-anx-arq" data-anx-abrir="' + c + '" data-nome="' + n + '"><span aria-hidden="true">' + solTipoIcone(a.tipo) + '</span><span><b>' + n + '</b><small>' + escapeHtml(fmtTam(a.tam)) + ' · tocar para abrir</small></span></button>';
+    }).join('') + '</div>';
+  }
+  function solTextoSoAnexos(m) { var l = Array.isArray(m.anexos) ? m.anexos : []; return l.length && m.texto === ('📎 ' + l.map(function(a) { return a.nome; }).join(', ')).slice(0, 2000); }
+  // depois de desenhar as bolhas: endereços assinados (1 hora) para as fotos, áudios e vídeos
+  function solPreencherAnexos(box) {
+    if (!box || mode !== 'db' || !sbCliente) return;
+    Array.prototype.forEach.call(box.querySelectorAll('[data-anx-src]'), function(el) {
+      if (el.dataset.ok) return;
+      el.dataset.ok = '1';
+      urlFotoCanhoto(el.dataset.anxSrc, SOL_BALDE).then(function(u) { el.src = u; }).catch(function() { el.dataset.ok = ''; });
+    });
+  }
+  function solAbrirAnexo(caminho, nome) {
+    if (mode !== 'db' || !sbCliente) return;
+    showToast('Abrindo ' + nome + '…');
+    if (!appNativo()) { urlFotoCanhoto(caminho, SOL_BALDE).then(function(u) { window.open(u, '_blank', 'noopener'); }).catch(function() { showToast('Não foi possível abrir agora.'); }); return; }
+    sbCliente.storage.from(SOL_BALDE).download(caminho).then(function(r) { if (r.error || !r.data) throw r.error || new Error('sem arquivo'); triggerDownload(r.data, nome); })
+      .catch(function() { showToast('Não foi possível abrir agora.'); });
+  }
+  // gravar áudio no app (MediaRecorder); sem microfone liberado, abre o gravador do celular
+  function solGravarAudio() {
+    var fallback = function() { var inp = document.getElementById('sol-audio-arq'); if (inp) inp.click(); };
+    if (solRec) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) { fallback(); return; }
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+      var tipos = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/ogg'];
+      var tipo = tipos.find(function(t) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t); }) || '';
+      var rec = tipo ? new MediaRecorder(stream, { mimeType: tipo }) : new MediaRecorder(stream), chunks = [], inicio = Date.now();
+      solRec = { rec: rec, stream: stream, inicio: inicio, cancelado: false, timer: null };
+      rec.ondataavailable = function(e) { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop = function() {
+        stream.getTracks().forEach(function(t) { t.stop(); });
+        var st = solRec; solRec = null; clearInterval(st && st.timer); solMostrarGravando(false);
+        if (!st || st.cancelado || !chunks.length) return;
+        var mime = String(rec.mimeType || tipo || 'audio/webm').split(';')[0], ext = /mp4/.test(mime) ? 'm4a' : /ogg/.test(mime) ? 'ogg' : 'webm';
+        var agora = new Date(), nome = 'audio-' + pad2(agora.getHours()) + 'h' + pad2(agora.getMinutes()) + '.' + ext, arq;
+        try { arq = new File(chunks, nome, { type: mime }); } catch (e) { arq = new Blob(chunks, { type: mime }); try { Object.defineProperty(arq, 'name', { value: nome }); } catch (x) {} }
+        arq.seg = Math.round((Date.now() - inicio) / 1000);
+        solAdicionar([arq]);
+      };
+      rec.start(1000);
+      solMostrarGravando(true);
+      solRec.timer = setInterval(function() {
+        var s = (Date.now() - inicio) / 1000, el = document.getElementById('sol-rec-tempo');
+        if (el) el.textContent = fmtSeg(s);
+        if (s >= 300) solPararAudio(false); // até 5 minutos por áudio
+      }, 500);
+    }).catch(function(err) {
+      console.warn('microfone', err);
+      showToast('O microfone não foi liberado: escolha um áudio gravado no celular.');
+      fallback();
+    });
+  }
+  function solPararAudio(cancelar) { if (!solRec) return; solRec.cancelado = !!cancelar; try { solRec.rec.stop(); } catch (e) { solRec = null; solMostrarGravando(false); } }
+  function solMostrarGravando(on) {
+    var g = document.getElementById('sol-gravando'), b = document.getElementById('sol-anexar');
+    if (g) g.classList.toggle('hidden', !on);
+    if (b) b.classList.toggle('hidden', !!on);
+    var t = document.getElementById('sol-rec-tempo'); if (t && on) t.textContent = '0:00';
+  }
   // tela de uma conversa: monta uma vez (cabeçalho e caixa de texto) e depois só troca as mensagens
   function montarConversa(box, tipo, outro, titulo, sub, comVoltar) {
     var chave = tipo + '|' + outro;
@@ -19589,12 +20213,20 @@
         '<div class="chat-msgs" aria-live="polite"></div>' +
         '<form class="chat-escrever" data-chat-form="' + tipo + '"><div class="chat-editando hidden" id="chat-editando"><span>✏️ Editando a mensagem</span><button type="button" class="btn-text" data-chat="cancelar-edicao">Cancelar</button></div>' +
         '<div class="chat-respondendo hidden" id="chat-respondendo"><span></span><button type="button" class="btn-text" data-chat="cancelar-resposta">Cancelar</button></div>' +
+        (tipo === 'sol' ? '<div class="sol-anexos-pend hidden" id="sol-anexos-pend"></div>' +
+          '<div class="sol-anexar" id="sol-anexar"><label class="btn btn-secondary btn-sm">📎 Arquivo<input type="file" id="sol-arq" multiple class="hidden" /></label>' +
+          '<label class="btn btn-secondary btn-sm">📷 Foto<input type="file" id="sol-foto" accept="image/*" multiple class="hidden" /></label>' +
+          '<button type="button" class="btn btn-secondary btn-sm" data-chat="gravar-audio">🎤 Áudio</button>' +
+          '<input type="file" id="sol-audio-arq" accept="audio/*" capture class="hidden" /></div>' +
+          '<div class="sol-gravando hidden" id="sol-gravando" role="status"><span class="sol-rec-dot" aria-hidden="true"></span> Gravando <b id="sol-rec-tempo">0:00</b>' +
+          '<button type="button" class="btn btn-primary btn-sm" data-chat="parar-audio">⏹ Parar e anexar</button><button type="button" class="btn-text" data-chat="cancelar-audio">Cancelar</button></div>' : '') +
         '<textarea id="chat-texto" rows="2" maxlength="2000" placeholder="' + (tipo === 'sol' ? (minhaRef() === 'mestre' ? 'Responder…' : 'Escreva a sua solicitação ou sugestão…') : 'Escreva uma mensagem…') + '" aria-label="Mensagem"></textarea>' +
         '<button type="submit" class="btn btn-primary">Enviar</button></form></div>';
       var ta = box.querySelector('#chat-texto');
       ta.value = chat.rascunho[chave] || chat.rascunho[outro] || '';
       delete chat.rascunho[outro];
       if (ta.value) setTimeout(function() { try { ta.focus(); } catch (e) {} }, 30);
+      if (tipo === 'sol') solRenderPend();
     }
     // a mensagem em edição foi apagada (ou sumiu): volta ao normal
     if (chat.editando && !lista.some(function(m) { return m.id === chat.editando.id && !m.apagada; })) cancelarEdicao(false);
@@ -19606,9 +20238,17 @@
       barraR.classList.toggle('hidden', !resp);
       if (resp) barraR.querySelector('span').innerHTML = '↩️ Respondendo a <b>' + escapeHtml(resp.de === minhaRef() ? 'você' : pessoaNome(resp.de)) + '</b>: ' + escapeHtml((resp.tipo === 'sol' && resp.numero ? resp.numero + '. ' : '') + String(resp.texto).slice(0, 90));
     }
-    if (btnEnv) btnEnv.textContent = chat.editando ? 'Salvar' : 'Enviar';
+    if (btnEnv && !chat.enviando) btnEnv.textContent = chat.editando ? 'Salvar' : 'Enviar';
     var cx = box.querySelector('.chat-msgs'), noFim = cx.scrollHeight - cx.scrollTop - cx.clientHeight < 80 || !cx.dataset.n;
-    cx.innerHTML = bolhasHtml(lista, tipo);
+    var html = bolhasHtml(lista, tipo);
+    // áudio ou vídeo tocando: não redesenha agora (pararia o som); redesenha quando parar
+    var tocando = Array.prototype.some.call(cx.querySelectorAll('audio,video'), function(a) { return !a.paused && !a.ended; });
+    if (!cx._ouveMidia) { cx._ouveMidia = true; var depois = function() { if (cx._adiado) { cx._adiado = false; setTimeout(chatAtualizarTela, 0); } }; cx.addEventListener('pause', depois, true); cx.addEventListener('ended', depois, true); }
+    if (html !== cx._html) {
+      if (tocando) cx._adiado = true;
+      else { cx.innerHTML = html; cx._html = html; }
+    }
+    solPreencherAnexos(cx);
     if (noFim || String(lista.length) !== cx.dataset.n) cx.scrollTop = cx.scrollHeight;
     cx.dataset.n = String(lista.length);
     if (chatVendo(tipo, outro)) chatMarcarLidas(tipo, outro);
@@ -19699,25 +20339,31 @@
   }
   function enviarMensagem(form) {
     var tipo = form.dataset.chatForm, ta = form.querySelector('#chat-texto'), txt = String(ta.value || '').trim();
-    if (!txt || chat.enviando) return;
+    var comAnexos = tipo === 'sol' && !chat.editando && solPend().length > 0;
+    if ((!txt && !comAnexos) || chat.enviando) return;
+    if (solRec) { showToast('Termine a gravação do áudio (Parar e anexar) antes de enviar.'); return; }
     if (chat.editando) { salvarEdicao(form, ta, txt); return; }
     var eu = minhaRef(), outro = tipo === 'chat' ? chat.aberta : (eu === 'mestre' ? chat.solAberta : 'mestre');
     if (!outro) return;
     var resp = chat.respondendo || null;
-    var p = tipo === 'chat' ? db.rpc('chat_enviar2', { p_para: outro, p_texto: txt, p_responde: resp }) : db.rpc('sol_enviar2', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp });
     var btn = form.querySelector('button[type=submit]');
     chat.enviando = true; btn.disabled = true;
+    if (comAnexos) btn.textContent = 'Enviando…';
+    var p = tipo === 'chat' ? db.rpc('chat_enviar2', { p_para: outro, p_texto: txt, p_responde: resp })
+      : comAnexos ? solEnviarAnexos(eu === 'mestre' ? outro : eu).then(function(anx) { return db.rpc('sol_enviar3', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp, p_anexos: anx }); })
+      : db.rpc('sol_enviar2', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp });
     p.then(function(row) {
-      chat.enviando = false; btn.disabled = false;
+      chat.enviando = false; btn.disabled = false; btn.textContent = 'Enviar';
+      if (comAnexos) solLimparPend();
       ta.value = ''; delete chat.rascunho[tipo + '|' + outro];
       if (chat.respondendo === resp) chat.respondendo = null;
       if (row && row.id != null) chatAplicar(row, false); else chatAtualizarTela();
       if (tipo === 'sol' && eu !== 'mestre') showToast('Enviado para o Nicolas.');
       try { ta.focus(); } catch (e) {}
     }).catch(function(e) {
-      chat.enviando = false; btn.disabled = false;
+      chat.enviando = false; btn.disabled = false; btn.textContent = 'Enviar';
       console.error('enviar', e);
-      showToast(/muitas/.test(String(e && e.message)) ? 'Muitas mensagens seguidas: espere um minuto.' : /destino/.test(String(e && e.message)) ? 'Essa pessoa não tem mais acesso ao app.' : 'Não foi possível enviar agora. Verifique a internet.');
+      showToast(e && e.codigo === 'grande' ? (e.nome || 'O arquivo') + ' passa de ' + SOL_MAX_MB + ' MB: mande um menor.' : /muitas/.test(String(e && e.message)) ? 'Muitas mensagens seguidas: espere um minuto.' : /destino/.test(String(e && e.message)) ? 'Essa pessoa não tem mais acesso ao app.' : 'Não foi possível enviar agora. Verifique a internet.');
     });
   }
   function reagirMensagem(id, emoji) {
@@ -19732,6 +20378,9 @@
       .catch(function(err) { console.warn('reagir', err); m.reacoes = antes; chatAtualizarTela(); showToast('Não foi possível reagir agora. Verifique a internet.'); });
   }
   function cliqueChat(e) {
+    if (e.target.closest('audio,video,.sol-pend')) { var tir = e.target.closest('[data-chat="anexo-tirar"]'); if (!tir) return; }
+    var anx = e.target.closest('[data-anx-abrir]');
+    if (anx) { solAbrirAnexo(anx.dataset.anxAbrir, anx.dataset.nome || 'arquivo'); return; }
     var b = e.target.closest('[data-chat],[data-sol-res],[data-chat-apagar],[data-chat-reagir],[data-chat-editar],[data-chat-responder],[data-chat-ir],[data-chat-msg]');
     if (!b) return;
     if (b.dataset.chatResponder) {
@@ -19778,6 +20427,10 @@
     else if (a === 'sol-abrir') { chat.solAberta = b.dataset.ref; renderSolicitacoes(); }
     else if (a === 'cancelar-edicao') { cancelarEdicao(); try { caixaTexto().focus(); } catch (e2) {} }
     else if (a === 'cancelar-resposta') { chat.respondendo = null; chatAtualizarTela(); }
+    else if (a === 'gravar-audio') solGravarAudio();
+    else if (a === 'parar-audio') solPararAudio(false);
+    else if (a === 'cancelar-audio') solPararAudio(true);
+    else if (a === 'anexo-tirar') { var pd = solPend(), it = pd[Number(b.dataset.i)]; if (it && it.url) try { URL.revokeObjectURL(it.url); } catch (x) {} pd.splice(Number(b.dataset.i), 1); solRenderPend(); }
     else if (a === 'voltar') { if (chat.editando) cancelarEdicao(false); guardarRascunho(); if (ui.tab === 'chat') { chat.aberta = null; renderChat(); } else { chat.solAberta = null; renderSolicitacoes(); } }
   }
   function guardarRascunho() { var ta = caixaTexto(); if (ta && chat.montada) chat.rascunho[chat.montada] = chat.editando ? chat.antesDaEdicao : ta.value; }
@@ -19793,6 +20446,12 @@
     });
     el.addEventListener('input', function(e) {
       if (e.target.id === 'chat-busca') { var q = normNome(e.target.value); Array.prototype.forEach.call(el.querySelectorAll('[data-busca]'), function(x) { x.classList.toggle('hidden', !!q && x.dataset.busca.indexOf(q) < 0); }); }
+    });
+    el.addEventListener('change', function(e) {
+      var t = e.target;
+      if (t.id !== 'sol-arq' && t.id !== 'sol-foto' && t.id !== 'sol-audio-arq') return;
+      if (t.files && t.files.length) solAdicionar(t.files);
+      t.value = '';
     });
   });
   document.addEventListener('visibilitychange', function() {
@@ -19812,7 +20471,7 @@
   // transportadora: total a pagar, relatório em PDF da transportadora (com o motorista de cada viagem) e planilha.
   // Coleção "transportadoras" (só a senha mestre, 0024); no motorista: transportadoraId, veiculoTipo, capacidadePaletes.
   var transportadoras = [], TRANSP_LOCAL_KEY = 'levissima-transportadoras-v1';
-  var VEICULOS = [['toco', 'Toco', 12], ['truck', 'Truck', 16], ['bitruck', 'Bitruck', 18], ['carreta', 'Carreta', 30], ['vuc', 'VUC / 3/4', 8], ['outro', 'Outro', 0]];
+  var VEICULOS = [['van', 'Van', 3], ['vuc', 'VUC / 3/4', 8], ['toco', 'Toco', 12], ['truck', 'Truck', 16], ['bitruck', 'Bitruck', 18], ['carreta', 'Carreta', 30], ['outro', 'Outro', 0]];
   function veiculoDe(k) { return VEICULOS.find(function(v) { return v[0] === k; }) || null; }
   function veiculoTexto(m) {
     var v = veiculoDe(m && m.veiculoTipo), cap = Number(m && m.capacidadePaletes) || (v ? v[2] : 0);
@@ -20560,6 +21219,7 @@
       if (nb) l.push({ ico: '🎁', txt: nb + (nb === 1 ? ' brinde ou presente esperando a sua aprovação' : ' brindes ou presentes esperando a sua aprovação'), ir: 'brindes', filtro: 'aprovacao' });
     }
     if (tem('cargas') && ehEscritorio()) l = l.concat(aceiteNovidades());
+    if (tem('producao') && ehEscritorio()) l = l.concat(opNovidades());
     l = l.concat(cnNovidades());
     return l;
   }
@@ -20854,7 +21514,10 @@
     var h = '<p class="hint">Marque só números: o que cada máquina fez <b>nesta hora</b>.' + (prodM ? ' O contador da ' + escapeHtml(prodM.nome) + ' (' + escapeHtml(prodM.unidade) + ') entra no estoque.' : ' A quantidade produzida entra no estoque.') + '</p>';
     h += '<div class="row-2"><label>Dia<input type="date" id="ph-data" value="' + escapeHtml(s.dia) + '" max="' + escapeHtml(hoje) + '" /></label>' +
       '<label>Horário <span class="req">*</span><select id="ph-hora">' + Array.apply(null, Array(24)).map(function(x, hh) { return '<option value="' + hh + '"' + (hh === s.hora ? ' selected' : '') + '>' + phHoraTxt(hh) + (feitas[hh] ? ' ✓ lançada' : '') + '</option>'; }).join('') + '</select></label></div>';
-    h += '<label>Linha <span class="req">*</span><select id="ph-linha">' + phOpcoes(phLinhas(), s.linha, '— escolha —') + '</select></label>';
+    // linha e turno como botões de escolha (23/10/2026): um toque, sem abrir lista
+    h += '<fieldset class="ph-grupo"><legend>Linha <span class="req">*</span></legend><div class="ph-chips">' + phLinhas().map(function(li) {
+      return '<label class="ph-chip"><input type="radio" name="ph-linha" value="' + escapeHtml(li.id) + '"' + (li.id === s.linha ? ' checked' : '') + ' /> ' + escapeHtml(li.nome) + '</label>';
+    }).join('') + '</div></fieldset>';
     if (turnos.length) h += '<fieldset class="ph-grupo"><legend>Turno <span class="req">*</span></legend><div class="ph-chips">' + turnos.map(function(t) {
       return '<label class="ph-chip"><input type="radio" name="ph-turno" value="' + escapeHtml(t) + '"' + (t === s.turno ? ' checked' : '') + ' /> ' + escapeHtml(t) + '</label>';
     }).join('') + '</div></fieldset>';
@@ -20894,8 +21557,9 @@
     if (g('ph-hora') !== null) s.hora = Number(g('ph-hora'));
     var t = body.querySelector('input[name="ph-turno"]:checked');
     if (t) s.turno = t.value;
-    if (g('ph-linha') !== null && g('ph-linha') !== s.linha) {
-      s.linha = g('ph-linha');
+    var lr = body.querySelector('input[name="ph-linha"]:checked');
+    if (lr && lr.value !== s.linha) {
+      s.linha = lr.value;
       var ts = phTurnos(s.linha);
       if (ts.indexOf(s.turno) < 0) s.turno = ts.length === 1 ? ts[0] : '';
     }
@@ -20920,13 +21584,13 @@
   }
   function abrirProducaoHora(opts) {
     opts = opts || {};
-    var s = phEstadoInicial(opts);
+    var s = opts.estado ? Object.assign({ maquinas: {}, paradas: [] }, opts.estado) : phEstadoInicial(opts);
     gerAbrir({
       titulo: s.id ? 'Corrigir o lançamento das ' + pad2(s.hora) + ':00' : 'Lançar a produção da hora', botao: s.id ? 'Salvar correção' : 'Salvar produção', ph: s, confirmado: '',
       html: phFormHtml(s),
       change: function(t) {
         phDesconfirmar();
-        if (t.id === 'ph-linha' || t.id === 'ph-marca' || t.id === 'ph-data' || t.name === 'ph-turno' || t.classList.contains('ph-pm')) {
+        if (t.name === 'ph-linha' || t.id === 'ph-marca' || t.id === 'ph-data' || t.name === 'ph-turno' || t.classList.contains('ph-pm')) {
           if (t.id === 'ph-marca') { phLer(ger.ph); ger.ph.produtoId = ''; }
           phRedesenhar();
         }
@@ -21081,7 +21745,7 @@
       (p ? '<span class="chip-est ' + p.cls + '" style="' + st + '">' + escapeHtml(p.txt) + '</span>' : '');
   }
 
-  var prUi = { sub: '', dia: '', mes: '', apagar: null, pendente: false };
+  var prUi = { sub: '', dia: '', mes: '', apagar: null, pendente: false, periodo: 'dia', fLinha: '', fTurno: '', busca: '', ordem: 'data' };
   function podeVerLancProducao() { if (!session) return false; if (session.ref === 'mestre') return true; var m = meuMembro(); return !!(m && m.veLancProducao); }
   function podeCorrigirLancProducao() { return podeVerLancProducao() && !session.soInclui && !session.soVer; }
   // quem veio para a Produção só pela marca dos lançamentos (sem a aba Produção) não vê as ordens
@@ -21108,63 +21772,131 @@
     }).join('');
     return (achou ? '' : '<option value="' + escapeHtml(sel || '') + '" selected>' + escapeHtml(nomeAtual || '—') + '</option>') + h;
   }
-  function renderPrLanc() {
+  // Planilha de lançamentos (23/10/2026), como uma planilha do Google Sheets: período (dia, semana ou mês), filtros
+  // de linha, turno e busca, uma coluna por máquina, células que se corrigem direto (grava na hora e o estoque
+  // acompanha), linha de totais e "Baixar planilha" (abre no Excel ou no Google Sheets).
+  function prPeriodo() {
+    var hoje = todayIso(), dia = prUi.dia || hoje, per = prUi.periodo || 'dia';
+    if (per === 'mes') { var ym = dia.slice(0, 7); return { per: per, ini: ym + '-01', fim: ym + '-31', nome: nomeMes(ym), atual: ym === hoje.slice(0, 7) }; }
+    if (per === 'semana') {
+      var dow = (new Date(dia + 'T12:00:00').getDay() + 6) % 7, ini = addDiasIso(dia, -dow), fim = addDiasIso(ini, 6);
+      return { per: per, ini: ini, fim: fim, nome: 'Semana de ' + formatDateBR(ini).slice(0, 5) + ' a ' + formatDateBR(fim).slice(0, 5), atual: fim >= hoje };
+    }
+    return { per: 'dia', ini: dia, fim: dia, nome: formatDateBR(dia), atual: dia >= hoje };
+  }
+  function prAndarPeriodo(n) {
+    var hoje = todayIso(), dia = prUi.dia || hoje, per = prUi.periodo || 'dia';
+    if (per === 'mes') { var ym = n < 0 ? prMesAnterior(dia.slice(0, 7)) : prMesSeguinte(dia.slice(0, 7)); dia = ym + '-01'; }
+    else dia = addDiasIso(dia, per === 'semana' ? 7 * n : n);
+    prUi.dia = dia > hoje ? hoje : dia;
+  }
+  function prLancsPlanilha(p) {
+    var busca = normNome(prUi.busca || ''), fl = prUi.fLinha || '', ft = prUi.fTurno || '';
+    var l = estoqueMovs.filter(function(m) {
+      if (m.tipo !== 'entrada' || !m.porHora || !m.data || m.data < p.ini || m.data > p.fim) return false;
+      if (fl && phLinhaId(m.linha) !== fl) return false;
+      if (ft && phTurnoDe(m.linha, m.turno) !== ft) return false;
+      if (busca && normNome([m.produtoNome, m.marca, m.lider && m.lider.nome, m.obs, phParadasTexto(m.paradas)].join(' ')).indexOf(busca) < 0) return false;
+      return true;
+    });
+    var ord = prUi.ordem || 'data', dir = ord.charAt(0) === '-' ? -1 : 1, k = ord.replace(/^-/, '');
+    var val = function(m) { return k === 'producao' ? Number(m.quantidade) || 0 : k === 'parada' ? Number(m.minutosParados) || 0 : k === 'linha' ? phLinhaNome(m.linha) + '|' + phTurnoDe(m.linha, m.turno) + '|' + m.data + m.hora : String(m.data) + ' ' + String(m.hora) + ' ' + String(m.em || ''); };
+    return l.sort(function(a, b) { var x = val(a), y = val(b); return (x < y ? -1 : x > y ? 1 : 0) * dir; });
+  }
+  function prColunasMaq(l) {
+    var cols = [];
+    var linhasV = {};
+    l.forEach(function(m) { linhasV[phLinhaId(m.linha)] = true; });
+    phLinhas().forEach(function(li) { if (linhasV[li.id]) phMaquinas(li.id).forEach(function(mq) { if (cols.indexOf(mq.nome) < 0) cols.push(mq.nome); }); });
+    l.forEach(function(m) { Object.keys(m.maquinas || {}).forEach(function(k) { if (cols.indexOf(k) < 0) cols.push(k); }); });
+    return cols;
+  }
+  function renderPrLanc(buscando) {
     var box = document.getElementById('pr-lancamentos');
     if (!box || !session) return;
     var ae = document.activeElement;
-    if (ae && box.contains(ae) && /^(INPUT|SELECT)$/.test(ae.tagName) && ae.classList.contains('pr-c')) { prUi.pendente = true; return; } // não atrapalha quem está digitando
+    if (!buscando && ae && box.contains(ae) && /^(INPUT|SELECT)$/.test(ae.tagName) && (ae.classList.contains('pr-c') || ae.id === 'pr-f-busca')) { prUi.pendente = true; return; } // não atrapalha quem está digitando
     prUi.pendente = false;
-    var hoje = todayIso(), dia = prUi.dia || hoje, ed = podeCorrigirLancProducao(), l = phLancamentosDoDia(dia), cont = {}, porProd = {}, ordem = [], pal = 0;
-    var chaveL = function(m) { return m.hora + '|' + phLinhaId(m.linha) + '|' + phTurnoDe(m.linha, m.turno) + (m.linha ? '' : '|' + m.produtoId); };
+    var hoje = todayIso(), p = prPeriodo(), ed = podeCorrigirLancProducao(), l = prLancsPlanilha(p), cols = prColunasMaq(l), cont = {}, tot = {}, totMaq = {}, totMin = 0;
+    var varios = p.per !== 'dia';
+    var chaveL = function(m) { return m.data + '|' + m.hora + '|' + phLinhaId(m.linha) + '|' + phTurnoDe(m.linha, m.turno) + (m.linha ? '' : '|' + m.produtoId); };
     l.forEach(function(m) { var k = chaveL(m); cont[k] = (cont[k] || 0) + 1; });
+    var nCols = 9 + cols.length + (ed ? 1 : 0);
     var linhas = l.map(function(m) {
-      var p = findProduto(m.produtoId), id = escapeHtml(m.id), dup = cont[chaveL(m)] > 1, nome = (m.marca || PH_MARCA_PADRAO) + ' · ' + (p ? phNomeSemMarca(p) : m.produtoNome);
-      var v = p ? emPaletes(p, Number(m.quantidade) || 0) : null;
-      if (v) pal += v;
-      if (!porProd[nome]) { porProd[nome] = { q: 0, u: m.unidade }; ordem.push(nome); }
-      porProd[nome].q += Number(m.quantidade) || 0;
-      var maqsL = phMaquinas(m.linha), prodM = phMaquinaProducao(m.linha), par = phParadasTexto(m.paradas), tu = phTurnoDe(m.linha, m.turno);
-      if (prUi.apagar === m.id) return '<tr class="pr-conf"><td colspan="' + (ed ? 9 : 8) + '">Apagar o lançamento das ' + escapeHtml(m.hora) + ' (' + escapeHtml(nome) + ', ' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + ')? Sai do estoque também.' +
+      var pr = findProduto(m.produtoId), id = escapeHtml(m.id), dup = cont[chaveL(m)] > 1, nome = (m.marca || PH_MARCA_PADRAO) + ' · ' + (pr ? phNomeSemMarca(pr) : m.produtoNome);
+      var maqsL = phMaquinas(m.linha).map(function(q) { return q.nome; }), prodM = phMaquinaProducao(m.linha), par = phParadasTexto(m.paradas), tu = phTurnoDe(m.linha, m.turno);
+      mdSoma(tot, m.unidade, Number(m.quantidade) || 0); totMin += Number(m.minutosParados) || 0;
+      Object.keys(m.maquinas || {}).forEach(function(k) { totMaq[k] = (totMaq[k] || 0) + (Number(m.maquinas[k]) || 0); });
+      if (prUi.apagar === m.id) return '<tr class="pr-conf"><td colspan="' + nCols + '">Apagar o lançamento de ' + escapeHtml(formatDateBR(m.data).slice(0, 5) + ' ' + m.hora) + ' (' + escapeHtml(nome) + ', ' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + ')? Sai do estoque também.' +
         ' <button type="button" class="btn-text danger" data-pr-a="apagar-ok" data-id="' + id + '">Apagar</button><button type="button" class="btn-text" data-pr-a="apagar-nao">Manter</button></td></tr>';
-      var quem = '<span class="pr-quem">' + escapeHtml((m.lider && m.lider.nome) || '—') + (m.lancadoPor ? '<small>lançado por ' + escapeHtml(m.lancadoPor.nome || '—') + '</small>' : '') + (m.editadoPor ? '<small>corrigido por ' + escapeHtml(m.editadoPor.nome || '—') + ' às ' + escapeHtml(horaMsg(m.editadoEm)) + '</small>' : '') + '</span>';
+      var quem = escapeHtml((m.lider && m.lider.nome) || '—') + (m.lancadoPor ? '<small>lançado por ' + escapeHtml(m.lancadoPor.nome || '—') + '</small>' : '') + (m.editadoPor ? '<small>corrigido por ' + escapeHtml(m.editadoPor.nome || '—') + ' ' + escapeHtml(formatDateTimeBR(m.editadoEm)) + '</small>' : '');
       var cls = (dup ? ' pr-dup' : '') + (m.editadoEm ? ' pr-editado' : '');
-      var ltm = [m.linha ? phLinhaNome(m.linha) : '', tu, m.maquina || ''].filter(Boolean).join(' · ') || '—';
-      var parCel = par ? '<span class="ph-par">' + escapeHtml(par) + '</span>' : '—';
-      if (!ed) return '<tr class="' + cls + '"><td>' + escapeHtml(m.hora) + '</td><td>' + escapeHtml(ltm) + '</td><td>' + escapeHtml(nome) + (dup ? ' <b class="alerta">repetido</b>' : '') + '</td><td>' + escapeHtml(phMaqsTexto(m) || '—') + '</td><td class="num">' + escapeHtml(qtdUnidade(m.quantidade, m.unidade)) + '</td><td>' + parCel + '</td><td>' + quem + '</td><td>' + escapeHtml(m.obs || '') + '</td></tr>';
-      var mqs = maqsL.map(function(mq) { return mq.nome; });
-      Object.keys(m.maquinas || {}).forEach(function(k) { if (mqs.indexOf(k) < 0) mqs.push(k); });
-      var maqCel = mqs.length ? mqs.map(function(k) { var v = (m.maquinas || {})[k]; return '<label class="pr-mq"><small>' + escapeHtml(k) + '</small><input class="pr-c pr-q" data-campo="maq" data-maq="' + escapeHtml(k) + '" type="number" min="0" step="1" inputmode="numeric" value="' + escapeHtml(v == null ? '' : v) + '" aria-label="Contador da ' + escapeHtml(k) + '"></label>'; }).join('') : '—';
+      var parTxt = par ? '<span class="ph-par">' + escapeHtml(par) + '</span>' : '';
+      var minCel = '<td class="num">' + (Number(m.minutosParados) ? fmtInt(m.minutosParados) : '') + '</td>';
+      var maqCels = cols.map(function(k) {
+        var tem = maqsL.indexOf(k) >= 0 || (m.maquinas && m.maquinas[k] != null), v = (m.maquinas || {})[k];
+        if (!tem) return '<td class="pr-na" aria-label="não se aplica"></td>';
+        return ed ? '<td class="num"><input class="pr-c pr-q" data-campo="maq" data-maq="' + escapeHtml(k) + '" type="number" min="0" step="1" inputmode="numeric" value="' + escapeHtml(v == null ? '' : v) + '" aria-label="' + escapeHtml(k) + '"></td>'
+          : '<td class="num">' + (v == null ? '' : escapeHtml(fmtInt(v))) + '</td>';
+      }).join('');
+      if (!ed) return '<tr class="' + cls + '"><td>' + escapeHtml(formatDateBR(m.data).slice(0, 5)) + '</td><td>' + escapeHtml(m.hora) + '</td><td>' + escapeHtml(m.linha ? phLinhaNome(m.linha) : '—') + '</td><td>' + escapeHtml(tu || '—') + '</td><td>' + escapeHtml(nome) + (dup ? ' <b class="alerta">repetido</b>' : '') + '</td>' +
+        maqCels + '<td class="num"><b>' + escapeHtml(fmtInt(m.quantidade)) + '</b> <small>' + escapeHtml(m.unidade || '') + '</small></td>' + minCel + '<td>' + parTxt + '</td><td class="pr-quem">' + quem + '</td><td>' + escapeHtml(m.obs || '') + '</td></tr>';
       var qCel = prodM && (m.maquinas || {})[prodM.nome] != null
-        ? '<b>' + escapeHtml(fmtInt(m.quantidade)) + '</b><small>' + escapeHtml((m.unidade || '') + ' · ' + prodM.nome) + '</small>'
-        : '<input class="pr-c pr-q" data-campo="quantidade" type="number" min="0" step="1" inputmode="numeric" value="' + escapeHtml(m.quantidade) + '" aria-label="Quantidade"><small>' + escapeHtml(m.unidade || '') + '</small>';
+        ? '<td class="num" title="Vem do contador da ' + escapeHtml(prodM.nome) + '"><b>' + escapeHtml(fmtInt(m.quantidade)) + '</b> <small>' + escapeHtml(m.unidade || '') + '</small></td>'
+        : '<td class="num"><input class="pr-c pr-q" data-campo="quantidade" type="number" min="0" step="1" inputmode="numeric" value="' + escapeHtml(m.quantidade) + '" aria-label="Produção"> <small>' + escapeHtml(m.unidade || '') + '</small></td>';
       return '<tr class="' + cls + '" data-id="' + id + '">' +
+        '<td><input class="pr-c pr-data" data-campo="data" type="date" value="' + escapeHtml(m.data) + '" max="' + escapeHtml(hoje) + '" aria-label="Dia"></td>' +
         '<td><select class="pr-c" data-campo="hora" aria-label="Hora">' + Array.apply(null, Array(24)).map(function(x, h) { var hv = pad2(h) + ':00'; return '<option value="' + hv + '"' + (hv === m.hora ? ' selected' : '') + '>' + hv + '</option>'; }).join('') + '</select></td>' +
-        '<td class="pr-ltm"><select class="pr-c" data-campo="linha" aria-label="Linha">' + phOpcoes(phLinhas(), phLinhaId(m.linha), '— linha —') + '</select>' +
-          '<select class="pr-c" data-campo="turno" aria-label="Turno">' + phOpcoes(phTurnos(m.linha), tu, '— turno —') + '</select>' + (m.maquina ? '<small>' + escapeHtml(m.maquina) + '</small>' : '') + '</td>' +
-        '<td><select class="pr-c" data-campo="produtoId" aria-label="Produto">' + prOpcoesProduto(m.produtoId, m.produtoNome) + '</select>' + (dup ? '<small class="alerta">mesma hora e linha lançadas mais de uma vez</small>' : '') + '</td>' +
-        '<td class="pr-mqs">' + maqCel + '</td>' +
-        '<td class="num">' + qCel + '</td>' +
-        '<td>' + parCel + '</td>' +
-        '<td>' + quem + '</td>' +
-        '<td><input class="pr-c" data-campo="obs" type="text" maxlength="200" value="' + escapeHtml(m.obs || '') + '" aria-label="Descrição do horário"></td>' +
-        '<td class="pr-acoes"><button type="button" class="btn-text" data-pr-a="editar" data-id="' + id + '">Editar</button><button type="button" class="btn-text danger" data-pr-a="apagar" data-id="' + id + '">Apagar</button></td></tr>';
+        '<td><select class="pr-c" data-campo="linha" aria-label="Linha">' + phOpcoes(phLinhas(), phLinhaId(m.linha), '—') + '</select></td>' +
+        '<td><select class="pr-c" data-campo="turno" aria-label="Turno">' + phOpcoes(phTurnos(m.linha), tu, '—') + '</select></td>' +
+        '<td><select class="pr-c pr-prod" data-campo="produtoId" aria-label="Marca e produto">' + prOpcoesProduto(m.produtoId, m.produtoNome) + '</select>' + (dup ? '<small class="alerta">hora repetida</small>' : '') + '</td>' +
+        maqCels + qCel + minCel + '<td>' + parTxt + '</td>' +
+        '<td class="pr-quem">' + quem + '</td>' +
+        '<td><input class="pr-c pr-obs" data-campo="obs" type="text" maxlength="200" value="' + escapeHtml(m.obs || '') + '" aria-label="Descrição do horário"></td>' +
+        '<td class="pr-acoes"><button type="button" class="btn-text" data-pr-a="editar" data-id="' + id + '" title="Abrir o lançamento inteiro (paradas também)">Editar</button><button type="button" class="btn-text danger" data-pr-a="apagar" data-id="' + id + '">Apagar</button></td></tr>';
     }).join('');
-    box.innerHTML = '<p class="tagline">Os lançamentos hora a hora dos líderes, como numa planilha.' + (ed ? ' Corrija direto na célula (hora, linha, turno, produto, contadores, descrição) ou toque em “Editar” para o lançamento inteiro (paradas também): grava na hora e o estoque acompanha.' : '') + '</p>' +
-      '<div class="pr-barra"><button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-ant" aria-label="Dia anterior">‹</button>' +
-        '<input type="date" id="pr-dia" value="' + escapeHtml(dia) + '" max="' + escapeHtml(hoje) + '" aria-label="Dia" />' +
-        '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-prox" aria-label="Dia seguinte"' + (dia >= hoje ? ' disabled' : '') + '>›</button>' +
-        (dia !== hoje ? '<button type="button" class="btn-text" data-pr-a="dia-hoje">Hoje</button>' : '') +
-        (ed ? '<button type="button" class="btn btn-primary btn-sm" data-pr-a="lancar">+ Lançar uma hora</button>' : '') + '</div>' +
-      (l.length ? '<p class="field-hint">' + l.length + (l.length === 1 ? ' lançamento' : ' lançamentos') + ' em ' + escapeHtml(formatDateBR(dia)) + (pal ? ' · ' + fmtPal(pal) + ' paletes' : '') + '</p>' +
-        '<div class="pr-tab-wrap"><table class="pr-tab"><thead><tr><th>Hora</th><th>Linha · turno</th><th>Marca · produto</th><th>Contadores</th><th>Produção</th><th>Paradas</th><th>Líder</th><th>Descrição</th>' + (ed ? '<th aria-label="Ações"></th>' : '') + '</tr></thead><tbody>' + linhas + '</tbody></table></div>' +
-        '<p class="field-hint"><b>Total do dia:</b> ' + ordem.map(function(k) { return escapeHtml(k) + ' ' + escapeHtml(qtdUnidade(porProd[k].q, porProd[k].u)); }).join(' · ') + '</p>'
-        : '<p class="empty-state">Nenhum lançamento hora a hora em ' + escapeHtml(formatDateBR(dia)) + '.</p>');
+    var ordBtn = function(k, t) { var o = prUi.ordem || 'data', on = o.replace(/^-/, '') === k; return '<button type="button" class="pr-ord' + (on ? ' on' : '') + '" data-pr-a="ord" data-k="' + k + '">' + escapeHtml(t) + (on ? (o.charAt(0) === '-' ? ' ▼' : ' ▲') : '') + '</button>'; };
+    var thead = '<tr><th>' + ordBtn('data', 'Dia') + '</th><th>Hora</th><th>' + ordBtn('linha', 'Linha') + '</th><th>Turno</th><th>Marca · produto</th>' +
+      cols.map(function(k) { return '<th class="num">' + escapeHtml(k) + '</th>'; }).join('') +
+      '<th class="num">' + ordBtn('producao', 'Produção') + '</th><th class="num">' + ordBtn('parada', 'Parado (min)') + '</th><th>Paradas</th><th>Responsável</th><th>Descrição</th>' + (ed ? '<th aria-label="Ações"></th>' : '') + '</tr>';
+    var tfoot = l.length ? '<tr class="pr-tot"><td colspan="5"><b>Total</b> · ' + l.length + (l.length === 1 ? ' hora' : ' horas') + '</td>' +
+      cols.map(function(k) { return '<td class="num">' + (totMaq[k] ? escapeHtml(fmtInt(totMaq[k])) : '') + '</td>'; }).join('') +
+      '<td class="num"><b>' + escapeHtml(mdTxt(tot)) + '</b></td><td class="num">' + (totMin ? fmtInt(totMin) : '') + '</td><td colspan="' + (3 + (ed ? 1 : 0)) + '">' + (totMin ? escapeHtml(fmtDuracao(totMin)) + ' parados' : '') + '</td></tr>' : '';
+    var linhasOp = phLinhas(), turnosOp = [];
+    (prUi.fLinha ? [phLinha(prUi.fLinha)].filter(Boolean) : linhasOp).forEach(function(li) { (li.turnos || []).forEach(function(t) { if (turnosOp.indexOf(t) < 0) turnosOp.push(t); }); });
+    box.innerHTML = '<p class="tagline">Todos os lançamentos hora a hora, como numa planilha.' + (ed ? ' Toque numa célula para corrigir: grava na hora e o estoque acompanha. “Editar” abre o lançamento inteiro (paradas também).' : '') + '</p>' +
+      '<div class="pr-barra"><span class="seg pr-per" role="group" aria-label="Período">' + [['dia', 'Dia'], ['semana', 'Semana'], ['mes', 'Mês']].map(function(x) { return '<button type="button" class="seg-btn' + (p.per === x[0] ? ' active' : '') + '" data-pr-a="periodo" data-per="' + x[0] + '" aria-pressed="' + (p.per === x[0]) + '">' + x[1] + '</button>'; }).join('') + '</span>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-ant" aria-label="Anterior">‹</button>' +
+        (p.per === 'mes' ? '<input type="month" id="pr-dia-mes" value="' + escapeHtml((prUi.dia || hoje).slice(0, 7)) + '" max="' + escapeHtml(hoje.slice(0, 7)) + '" aria-label="Mês" />'
+          : '<input type="date" id="pr-dia" value="' + escapeHtml(prUi.dia || hoje) + '" max="' + escapeHtml(hoje) + '" aria-label="Dia" />') +
+        '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="dia-prox" aria-label="Seguinte"' + (p.atual ? ' disabled' : '') + '>›</button>' +
+        (!p.atual ? '<button type="button" class="btn-text" data-pr-a="dia-hoje">Hoje</button>' : '') + '<b class="pr-mes-nome">' + escapeHtml(p.nome) + '</b></div>' +
+      '<div class="pr-barra pr-filtros"><select id="pr-f-linha" aria-label="Linha">' + phOpcoes(linhasOp, prUi.fLinha || '', 'Todas as linhas') + '</select>' +
+        '<select id="pr-f-turno" aria-label="Turno">' + phOpcoes(turnosOp, prUi.fTurno || '', 'Todos os turnos') + '</select>' +
+        '<input type="search" id="pr-f-busca" value="' + escapeHtml(prUi.busca || '') + '" placeholder="Buscar produto, líder, parada…" aria-label="Buscar" autocomplete="off" />' +
+        (ed ? '<button type="button" class="btn btn-primary btn-sm" data-pr-a="lancar">+ Lançar uma hora</button>' : '') +
+        (l.length ? '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="baixar">Baixar planilha</button>' : '') + '</div>' +
+      (l.length ? '<div class="pr-tab-wrap pr-sheet-wrap"><table class="pr-tab pr-sheet"><thead>' + thead + '</thead><tbody>' + linhas + '</tbody><tfoot>' + tfoot + '</tfoot></table></div>'
+        : '<p class="empty-state">Nenhum lançamento hora a hora ' + (varios ? 'neste período' : 'em ' + escapeHtml(p.nome)) + (prUi.fLinha || prUi.fTurno || prUi.busca ? ' com estes filtros' : '') + '.</p>');
+  }
+  function prBaixarPlanilha() {
+    var p = prPeriodo(), l = prLancsPlanilha(p), cols = prColunasMaq(l);
+    var esc = function(v) { var s = String(v == null ? '' : v); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    var linhas = [['Dia', 'Hora', 'Linha', 'Turno', 'Marca', 'Produto'].concat(cols).concat(['Produção', 'Unidade', 'Parado (min)', 'Paradas', 'Responsável', 'Lançado por', 'Descrição', 'Corrigido por']).map(esc).join(';')];
+    l.forEach(function(m) {
+      var pr = findProduto(m.produtoId);
+      linhas.push([formatDateBR(m.data), m.hora, m.linha ? phLinhaNome(m.linha) : '', phTurnoDe(m.linha, m.turno), m.marca || PH_MARCA_PADRAO, pr ? phNomeSemMarca(pr) : m.produtoNome]
+        .concat(cols.map(function(k) { var v = (m.maquinas || {})[k]; return v == null ? '' : v; }))
+        .concat([m.quantidade, m.unidade || '', Number(m.minutosParados) || '', phParadasTexto(m.paradas), (m.lider && m.lider.nome) || '', (m.lancadoPor && m.lancadoPor.nome) || '', m.obs || '', (m.editadoPor && m.editadoPor.nome) || '']).map(esc).join(';'));
+    });
+    triggerDownload(new Blob(['﻿' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-producao-' + p.ini + (p.fim !== p.ini ? '-a-' + p.fim : '') + '.csv');
   }
   function prCorrigir(el) {
     var tr = el.closest('tr[data-id]'), id = tr && tr.dataset.id, m = estoqueMovs.find(function(x) { return x.id === id; });
     if (!m || !podeCorrigirLancProducao()) return;
     var campo = el.dataset.campo, v = el.value, patch = {}, de = m[campo], para = v;
     if (campo === 'hora') { var h = Number(String(v).slice(0, 2)); patch = { hora: pad2(h) + ':00', horaFim: pad2((h + 1) % 24) + ':00' }; para = patch.hora; }
+    else if (campo === 'data') { if (!/^\d{4}-\d{2}-\d{2}$/.test(v) || v > todayIso()) { showToast('Dia inválido (não pode ser no futuro).'); renderPrLanc(); return; } patch = { data: v }; para = v; }
     else if (campo === 'produtoId') {
       var p = findProduto(v); if (!p) return;
       patch = { produtoId: p.id, produtoNome: p.nome, unidade: unidadeDe(p), marca: phMarcaDoProduto(p) }; de = m.produtoNome; para = p.nome;
@@ -21194,25 +21926,35 @@
   // ----- Indicadores do mês -----
   function prMesAnterior(ym) { var a = Number(ym.slice(0, 4)), mm = Number(ym.slice(5, 7)) - 1; if (mm < 1) { mm = 12; a--; } return a + '-' + pad2(mm); }
   function prMesSeguinte(ym) { var a = Number(ym.slice(0, 4)), mm = Number(ym.slice(5, 7)) + 1; if (mm > 12) { mm = 1; a++; } return a + '-' + pad2(mm); }
+  // Medida da produção nos indicadores (23/10/2026): em fardos — o que é caixa (copo) ou galão aparece à parte, na
+  // unidade dele. md = { fardos: n, galões: n, … }
+  function mdSoma(o, u, q) { u = u || 'unidades'; o[u] = (o[u] || 0) + (Number(q) || 0); return o; }
+  function mdTotal(o) { return Object.keys(o || {}).reduce(function(a, k) { return a + (Number(o[k]) || 0); }, 0); }
+  function mdTxt(o, div) {
+    div = div || 1;
+    var ks = Object.keys(o || {}).filter(function(k) { return o[k]; }).sort(function(a, b) { return a === 'fardos' ? -1 : b === 'fardos' ? 1 : o[b] - o[a]; });
+    return ks.length ? ks.map(function(k) { return qtdUnidade(Math.round(o[k] / div), k); }).join(' + ') : '—';
+  }
+  function mdFardos(o) { return Number((o || {}).fardos) || 0; }
   function prDadosMes(ym) {
-    var r = { ents: [], pal: 0, semPalete: 0, dias: {}, prod: {}, marca: {}, hora: {}, lider: {}, fonte: { hora: 0, op: 0, outros: 0 }, horas: {}, linha: {}, turno: {}, maqC: {}, parada: {}, minParados: 0, nLanc: 0 };
+    var r = { ents: [], total: {}, dias: {}, prod: {}, marca: {}, hora: {}, lider: {}, fonte: { hora: {}, op: {}, outros: {} }, horas: {}, linha: {}, turno: {}, maqC: {}, parada: {}, minParados: 0, nLanc: 0 };
     estoqueMovs.forEach(function(m) {
       if (m.tipo !== 'entrada' || !m.produtoId) return;
       var d = String(m.data || isoLocal(m.em) || '');
       if (d.slice(0, 7) !== ym) return;
-      var p = findProduto(m.produtoId), q = Number(m.quantidade) || 0, v = p ? emPaletes(p, q) : null, pv = v || 0;
-      r.ents.push(m); r.pal += pv; if (v === null) r.semPalete++;
-      r.dias[d] = (r.dias[d] || 0) + pv;
+      var p = findProduto(m.produtoId), q = Number(m.quantidade) || 0, u = m.unidade || (p && unidadeDe(p)) || 'unidades';
+      r.ents.push(m); mdSoma(r.total, u, q);
+      mdSoma(r.dias[d] = r.dias[d] || {}, u, q);
       var nome = (p && p.nome) || m.produtoNome || '—';
-      r.prod[nome] = r.prod[nome] || { q: 0, u: m.unidade || (p && unidadeDe(p)) || '', pal: 0 }; r.prod[nome].q += q; r.prod[nome].pal += pv;
-      var mk = m.marca || (p ? phMarcaDoProduto(p) : PH_MARCA_PADRAO); r.marca[mk] = (r.marca[mk] || 0) + pv;
+      r.prod[nome] = r.prod[nome] || { q: 0, u: u }; r.prod[nome].q += q;
+      var mk = m.marca || (p ? phMarcaDoProduto(p) : PH_MARCA_PADRAO); mdSoma(r.marca[mk] = r.marca[mk] || {}, u, q);
       if (m.porHora) {
-        r.fonte.hora += pv; r.horas[d + '|' + m.hora] = true;
-        var h = String(m.hora || '').slice(0, 2); r.hora[h] = (r.hora[h] || 0) + pv;
-        var ln = (m.lider && m.lider.nome) || '—'; r.lider[ln] = r.lider[ln] || { n: 0, pal: 0 }; r.lider[ln].n++; r.lider[ln].pal += pv;
-        var li = phLinhaId(m.linha) || '—'; r.linha[li] = r.linha[li] || { pal: 0, horas: {} }; r.linha[li].pal += pv; r.linha[li].horas[d + '|' + m.hora] = true;
+        mdSoma(r.fonte.hora, u, q); r.horas[d + '|' + m.hora] = true;
+        var h = String(m.hora || '').slice(0, 2); mdSoma(r.hora[h] = r.hora[h] || {}, u, q);
+        var ln = (m.lider && m.lider.nome) || '—'; r.lider[ln] = r.lider[ln] || { n: 0, md: {} }; r.lider[ln].n++; mdSoma(r.lider[ln].md, u, q);
+        var li = phLinhaId(m.linha) || '—'; r.linha[li] = r.linha[li] || { md: {}, horas: {} }; mdSoma(r.linha[li].md, u, q); r.linha[li].horas[d + '|' + m.hora] = true;
         var tk = li + '|' + (phTurnoDe(m.linha, m.turno) || '—'), mp0 = Number(m.minutosParados) || 0;
-        r.turno[tk] = r.turno[tk] || { pal: 0, horas: {}, min: 0 }; r.turno[tk].pal += pv; r.turno[tk].horas[d + '|' + m.hora] = true; r.turno[tk].min += mp0;
+        r.turno[tk] = r.turno[tk] || { md: {}, horas: {}, min: 0 }; mdSoma(r.turno[tk].md, u, q); r.turno[tk].horas[d + '|' + m.hora] = true; r.turno[tk].min += mp0;
         r.nLanc++; r.minParados += mp0;
         Object.keys(m.maquinas || {}).forEach(function(nm) {
           // média só das horas em que a máquina rodou (as horas paradas aparecem em "Paradas")
@@ -21224,7 +21966,7 @@
           x.min += Number(pa.minutos) || 0; x.n++;
           if (pa.motivo === 'Outro' && pa.texto) x.outros[pa.texto] = (x.outros[pa.texto] || 0) + 1;
         });
-      } else if (m.opId) r.fonte.op += pv; else r.fonte.outros += pv;
+      } else if (m.opId) mdSoma(r.fonte.op, u, q); else mdSoma(r.fonte.outros, u, q);
     });
     return r;
   }
@@ -21239,45 +21981,47 @@
     var box = document.getElementById('pr-indicadores');
     if (!box || !session) return;
     var hoje = todayIso(), mesHoje = hoje.slice(0, 7), mes = prUi.mes || mesHoje, r = prDadosMes(mes), ant = prDadosMes(prMesAnterior(mes));
-    var nDias = Object.keys(r.dias).length, nHoras = Object.keys(r.horas).length;
+    var nDias = Object.keys(r.dias).length, nHoras = Object.keys(r.horas).length, tot = mdTotal(r.total), totHora = mdTotal(r.fonte.hora);
     var ops = mp.ordens || [];
     var lancOps = ops.filter(function(o) { return String(isoLocal(o.criadoEm) || '').slice(0, 7) === mes; });
     var conc = ops.filter(function(o) { return o.status === 'concluida' && String(o.dataProducao || isoLocal(o.concluidoEm) || '').slice(0, 7) === mes; });
     var comPrazo = conc.filter(function(o) { return o.dataLimite; }), noPrazo = comPrazo.filter(opNoPrazo);
     var abertas = ops.filter(function(o) { return o.status === 'aberta'; });
     var vencidas = abertas.filter(function(o) { return o.dataLimite && o.dataLimite < hoje; }), urgentes = abertas.filter(function(o) { return urgenciaOp(o).v === 1; });
-    var varia = ant.pal ? Math.round((r.pal - ant.pal) / ant.pal * 100) : null;
+    var fa = mdFardos(r.total), fAnt = mdFardos(ant.total);
+    var varia = fAnt ? Math.round((fa - fAnt) / fAnt * 100) : null;
+    var pct = function(v, t) { return Math.round(v / (t || 1) * 100) + '%'; };
     var card = function(k, v, s, cls) { return '<div class="est-card ' + (cls || 'c-saldo') + '"><span class="est-card-k">' + escapeHtml(k) + '</span><span class="est-card-v">' + v + '</span><span class="est-card-s">' + s + '</span></div>'; };
     var h = '<div class="pr-barra"><button type="button" class="btn btn-secondary btn-sm" data-pr-a="mes-ant" aria-label="Mês anterior">‹</button>' +
       '<input type="month" id="pr-mes" value="' + escapeHtml(mes) + '" max="' + escapeHtml(mesHoje) + '" aria-label="Mês" />' +
       '<button type="button" class="btn btn-secondary btn-sm" data-pr-a="mes-prox" aria-label="Mês seguinte"' + (mes >= mesHoje ? ' disabled' : '') + '>›</button>' +
       '<b class="pr-mes-nome">' + escapeHtml(nomeMes(mes)) + '</b>' + (ehMestre() && !session.soInclui ? '<button type="button" class="btn-text" data-pr-a="maquinas">Linhas e máquinas</button>' : '') + '</div>';
     h += '<div class="est-cards pr-cards">' +
-      card('Produção do mês', r.pal ? fmtPal(r.pal) + ' pal' : '—', (varia === null ? (ant.pal ? '' : 'sem produção no mês anterior') : (varia >= 0 ? '▲ ' : '▼ ') + Math.abs(varia) + '% sobre ' + escapeHtml(nomeMes(prMesAnterior(mes)).split(' ')[0].toLowerCase())) + (r.semPalete ? ' · ' + r.semPalete + ' lançamento(s) sem palete cadastrado' : ''), 'c-entrada') +
-      card('Média por dia produtivo', nDias ? fmtPal(r.pal / nDias) + ' pal' : '—', nDias + (nDias === 1 ? ' dia com produção' : ' dias com produção')) +
-      card('Média por hora (líderes)', nHoras ? fmtPal(r.fonte.hora / nHoras) + ' pal' : '—', nHoras + (nHoras === 1 ? ' hora lançada' : ' horas lançadas')) +
+      card('Produção do mês', escapeHtml(tot ? mdTxt(r.total) : '—'), (varia === null ? (fAnt ? '' : 'sem produção em fardos no mês anterior') : (varia >= 0 ? '▲ ' : '▼ ') + Math.abs(varia) + '% de fardos sobre ' + escapeHtml(nomeMes(prMesAnterior(mes)).split(' ')[0].toLowerCase())), 'c-entrada') +
+      card('Média por dia produtivo', escapeHtml(nDias ? mdTxt(r.total, nDias) : '—'), nDias + (nDias === 1 ? ' dia com produção' : ' dias com produção')) +
+      card('Média por hora (líderes)', escapeHtml(nHoras ? mdTxt(r.fonte.hora, nHoras) : '—'), nHoras + (nHoras === 1 ? ' hora lançada' : ' horas lançadas')) +
       card('Ordens de produção', conc.length + (conc.length === 1 ? ' concluída' : ' concluídas'), lancOps.length + ' lançada(s) no mês' + (comPrazo.length ? ' · ' + Math.round(noPrazo.length / comPrazo.length * 100) + '% no prazo (' + noPrazo.length + ' de ' + comPrazo.length + ')' : ''), 'c-futuro' + (vencidas.length ? ' alerta' : '')) +
       '</div>';
     if (vencidas.length || urgentes.length) h += '<div class="est-alertas" role="status"><p class="est-alertas-t">Agora</p><ul>' +
       (urgentes.length ? '<li>' + urgentes.length + (urgentes.length === 1 ? ' OP urgente aberta' : ' OPs urgentes abertas') + ': nº ' + urgentes.map(function(o) { return o.numero; }).join(', ') + '</li>' : '') +
       (vencidas.length ? '<li class="neg">' + vencidas.length + (vencidas.length === 1 ? ' OP aberta com o prazo vencido' : ' OPs abertas com o prazo vencido') + ': nº ' + vencidas.map(function(o) { return o.numero; }).join(', ') + '</li>' : '') + '</ul></div>';
     if (!r.ents.length) return void (box.innerHTML = h + '<p class="empty-state">Nenhuma produção lançada em ' + escapeHtml(nomeMes(mes).toLowerCase()) + '.</p>');
-    var diasMes = new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0).getDate(), maxD = 0, colunas = '';
-    Object.keys(r.dias).forEach(function(d) { maxD = Math.max(maxD, r.dias[d]); });
+    var diasMes = new Date(Number(mes.slice(0, 4)), Number(mes.slice(5, 7)), 0).getDate(), maxD = 0, colunas = '', diaMax = '';
+    Object.keys(r.dias).forEach(function(d) { var v = mdTotal(r.dias[d]); if (v > maxD) { maxD = v; diaMax = d; } });
     for (var i = 1; i <= diasMes; i++) {
-      var di = mes + '-' + pad2(i), vd = r.dias[di] || 0;
-      colunas += '<span class="pr-col' + (di === hoje ? ' hoje' : '') + '" title="' + escapeHtml(formatDateBR(di) + ': ' + fmtPal(vd) + ' pal') + '"><i style="height:' + (vd ? Math.max(4, Math.round(vd / (maxD || 1) * 100)) : 0) + '%"></i><small>' + (i === 1 || i % 5 === 0 ? i : '') + '</small></span>';
+      var di = mes + '-' + pad2(i), vd = mdTotal(r.dias[di] || {});
+      colunas += '<span class="pr-col' + (di === hoje ? ' hoje' : '') + '" title="' + escapeHtml(formatDateBR(di) + ': ' + mdTxt(r.dias[di] || {})) + '"><i style="height:' + (vd ? Math.max(4, Math.round(vd / (maxD || 1) * 100)) : 0) + '%"></i><small>' + (i === 1 || i % 5 === 0 ? i : '') + '</small></span>';
     }
     var sec = function(t, c) { return '<section class="drivers-admin pr-sec"><div class="section-head"><h2 class="section-title">' + escapeHtml(t) + '</h2></div>' + c + '</section>'; };
-    var fontes = [['Hora a hora (líderes)', r.fonte.hora], ['Conclusão de OP', r.fonte.op], ['Entrada em paletes', r.fonte.outros]].filter(function(x) { return x[1] > 0; });
-    h += sec('Produção por dia (paletes)', '<div class="pr-dias" role="img" aria-label="' + escapeHtml('Produção por dia em ' + nomeMes(mes) + ', maior dia ' + fmtPal(maxD) + ' paletes') + '">' + colunas + '</div><p class="field-hint">Maior dia: ' + fmtPal(maxD) + ' pal.</p>');
+    var fontes = [['Hora a hora (líderes)', r.fonte.hora], ['Conclusão de OP', r.fonte.op], ['Entrada em paletes', r.fonte.outros]].filter(function(x) { return mdTotal(x[1]) > 0; });
+    h += sec('Produção por dia (fardos)', '<div class="pr-dias" role="img" aria-label="' + escapeHtml('Produção por dia em ' + nomeMes(mes) + ', maior dia ' + mdTxt(r.dias[diaMax] || {})) + '">' + colunas + '</div><p class="field-hint">Maior dia: ' + escapeHtml(mdTxt(r.dias[diaMax] || {})) + ' (' + escapeHtml(formatDateBR(diaMax).slice(0, 5)) + ').</p>');
     var horasDe = function(o) { return Object.keys(o.horas).length; };
-    var linhasM = Object.keys(r.linha).sort(function(a, b) { return r.linha[b].pal - r.linha[a].pal; });
-    if (linhasM.length) h += sec('Produção por linha (lançamentos dos líderes)', prBarras(linhasM.map(function(k) { var x = r.linha[k], hs = horasDe(x); return { nome: k === '—' ? 'Sem linha informada' : phLinhaNome(k), sub: hs + (hs === 1 ? ' hora lançada' : ' horas lançadas') + (hs ? ' · ' + fmtPal(x.pal / hs) + ' pal/hora' : ''), v: x.pal, txt: fmtPal(x.pal) + ' pal · ' + Math.round(x.pal / (r.fonte.hora || 1) * 100) + '%' }; })));
+    var linhasM = Object.keys(r.linha).sort(function(a, b) { return mdTotal(r.linha[b].md) - mdTotal(r.linha[a].md); });
+    if (linhasM.length) h += sec('Produção por linha (lançamentos dos líderes)', prBarras(linhasM.map(function(k) { var x = r.linha[k], hs = horasDe(x); return { nome: k === '—' ? 'Sem linha informada' : phLinhaNome(k), sub: hs + (hs === 1 ? ' hora lançada' : ' horas lançadas') + (hs ? ' · ' + mdTxt(x.md, hs) + '/hora' : ''), v: mdTotal(x.md), txt: mdTxt(x.md) + ' · ' + pct(mdTotal(x.md), totHora) }; })));
     var turnosM = Object.keys(r.turno).sort();
     if (turnosM.length) h += sec('Produção por turno', prBarras(turnosM.map(function(k) {
       var x = r.turno[k], hs = horasDe(x), pp = k.split('|');
-      return { nome: (pp[0] === '—' ? '' : phLinhaNome(pp[0]) + ' · ') + (pp[1] === '—' ? 'sem turno' : pp[1]), sub: hs + (hs === 1 ? ' hora' : ' horas') + (hs ? ' · ' + fmtPal(x.pal / hs) + ' pal/hora' : '') + (x.min ? ' · parado ' + fmtDuracao(x.min) + ' (' + Math.round(x.min / (hs * 60 || 1) * 100) + '%)' : ''), v: x.pal, txt: fmtPal(x.pal) + ' pal · ' + Math.round(x.pal / (r.fonte.hora || 1) * 100) + '%' };
+      return { nome: (pp[0] === '—' ? '' : phLinhaNome(pp[0]) + ' · ') + (pp[1] === '—' ? 'sem turno' : pp[1]), sub: hs + (hs === 1 ? ' hora' : ' horas') + (hs ? ' · ' + mdTxt(x.md, hs) + '/hora' : '') + (x.min ? ' · parado ' + fmtDuracao(x.min) + ' (' + Math.round(x.min / (hs * 60 || 1) * 100) + '%)' : ''), v: mdTotal(x.md), txt: mdTxt(x.md) + ' · ' + pct(mdTotal(x.md), totHora) };
     })));
     var maqsM = Object.keys(r.maqC);
     if (maqsM.length) {
@@ -21290,8 +22034,8 @@
       }).sort(function(a, b) { return String(phLinhaNome(a.linha)).localeCompare(phLinhaNome(b.linha)) || ((a.ordem < 0 ? 99 : a.ordem) - (b.ordem < 0 ? 99 : b.ordem)); });
       h += sec('Produtividade por máquina', prBarras(lm.map(function(z) {
         return { nome: z.nome, sub: phLinhaNome(z.linha) + ' · média ' + fmtInt(Math.round(z.med)) + ' ' + z.un + '/hora em ' + z.x.horas + (z.x.horas === 1 ? ' hora' : ' horas') + ' · melhor hora ' + fmtInt(z.x.max) + (z.x.paradas ? ' · ' + z.x.paradas + (z.x.paradas === 1 ? ' hora parada' : ' horas paradas') : ''),
-          v: z.cap ? Math.min(1, z.med / z.cap) : z.med / (maxUn[z.linha + '|' + z.un] || 1), txt: z.cap ? Math.round(z.med / z.cap * 100) + '% da capacidade' : fmtInt(Math.round(z.med)) + '/hora' };
-      })) + '<p class="field-hint">Pelos contadores lançados de hora em hora. Com a capacidade por hora cadastrada (Linhas e máquinas), mostra a eficiência.</p>');
+          v: z.cap ? Math.min(1, z.med / z.cap) : z.med / (maxUn[z.linha + '|' + z.un] || 1), txt: z.cap ? Math.round(z.med / z.cap * 100) + '% da capacidade' : fmtInt(Math.round(z.med)) + ' ' + z.un + '/hora' };
+      })) + '<p class="field-hint">Pelos contadores lançados de hora em hora (a Empacotadora conta fardos). Com a capacidade por hora cadastrada (Linhas e máquinas), mostra a eficiência.</p>');
     }
     if (r.nLanc) {
       var motivos = Object.keys(r.parada).sort(function(a, b) { return r.parada[b].min - r.parada[a].min; });
@@ -21305,15 +22049,15 @@
     for (var mi = 0; mi < 6; mi++) { meses.unshift(ym); ym = prMesAnterior(ym); }
     var dm = meses.map(function(x) { return { ym: x, d: x === mes ? r : prDadosMes(x) }; });
     h += sec('Comparação dos meses', prBarras(dm.map(function(x) {
-      var ls = Object.keys(x.d.linha).filter(function(k) { return k !== '—'; }).map(function(k) { return phLinhaNome(k) + ' ' + fmtPal(x.d.linha[k].pal); });
-      return { nome: nomeMes(x.ym), sub: ls.join(' · '), v: x.d.pal, txt: x.d.pal ? fmtPal(x.d.pal) + ' pal' : '—' };
-    })) + '<p class="field-hint">Total do mês em paletes; embaixo de cada mês, a produção por linha lançada pelos líderes.</p>');
-    h += sec('Por produto', prBarras(Object.keys(r.prod).map(function(k) { var x = r.prod[k]; return { nome: k, sub: qtdUnidade(x.q, x.u), v: x.pal, txt: x.pal ? fmtPal(x.pal) + ' pal · ' + Math.round(x.pal / (r.pal || 1) * 100) + '%' : '—' }; }).sort(function(a, b) { return b.v - a.v; })));
-    h += sec('Por marca (rótulo)', prBarras(Object.keys(r.marca).map(function(k) { return { nome: k, v: r.marca[k], txt: fmtPal(r.marca[k]) + ' pal · ' + Math.round(r.marca[k] / (r.pal || 1) * 100) + '%' }; }).sort(function(a, b) { return b.v - a.v; })));
-    if (Object.keys(r.hora).length) h += sec('Por hora do dia (lançamentos dos líderes)', prBarras(Object.keys(r.hora).sort().map(function(k) { return { nome: k + 'h', v: r.hora[k], txt: fmtPal(r.hora[k]) + ' pal' }; })));
-    if (Object.keys(r.lider).length) h += sec('Por líder', prBarras(Object.keys(r.lider).map(function(k) { var x = r.lider[k]; return { nome: k, sub: x.n + (x.n === 1 ? ' hora lançada' : ' horas lançadas'), v: x.pal, txt: fmtPal(x.pal) + ' pal' }; }).sort(function(a, b) { return b.v - a.v; })));
-    if (fontes.length > 1) h += sec('De onde veio o lançamento', prBarras(fontes.map(function(x) { return { nome: x[0], v: x[1], txt: fmtPal(x[1]) + ' pal' }; })) +
-      '<p class="field-hint">Se a mesma produção foi lançada hora a hora e também na conclusão da OP, ela entrou duas vezes no estoque.</p>');
+      var ls = Object.keys(x.d.linha).filter(function(k) { return k !== '—'; }).map(function(k) { return phLinhaNome(k) + ' ' + mdTxt(x.d.linha[k].md); });
+      return { nome: nomeMes(x.ym), sub: ls.join(' · '), v: mdTotal(x.d.total), txt: mdTotal(x.d.total) ? mdTxt(x.d.total) : '—' };
+    })) + '<p class="field-hint">Total do mês em fardos; embaixo de cada mês, a produção por linha lançada pelos líderes.</p>');
+    h += sec('Por produto', prBarras(Object.keys(r.prod).map(function(k) { var x = r.prod[k]; return { nome: k, v: x.q, txt: qtdUnidade(Math.round(x.q), x.u) + (x.u === 'fardos' && fa ? ' · ' + pct(x.q, fa) : '') }; }).sort(function(a, b) { return b.v - a.v; })));
+    h += sec('Por marca (rótulo)', prBarras(Object.keys(r.marca).map(function(k) { return { nome: k, v: mdTotal(r.marca[k]), txt: mdTxt(r.marca[k]) + (fa ? ' · ' + pct(mdFardos(r.marca[k]), fa) : '') }; }).sort(function(a, b) { return b.v - a.v; })));
+    if (Object.keys(r.hora).length) h += sec('Por hora do dia (lançamentos dos líderes)', prBarras(Object.keys(r.hora).sort().map(function(k) { return { nome: k + 'h', v: mdTotal(r.hora[k]), txt: mdTxt(r.hora[k]) }; })));
+    if (Object.keys(r.lider).length) h += sec('Por líder', prBarras(Object.keys(r.lider).map(function(k) { var x = r.lider[k]; return { nome: k, sub: x.n + (x.n === 1 ? ' hora lançada' : ' horas lançadas'), v: mdTotal(x.md), txt: mdTxt(x.md) }; }).sort(function(a, b) { return b.v - a.v; })));
+    if (fontes.length > 1) h += sec('De onde veio o lançamento', prBarras(fontes.map(function(x) { return { nome: x[0], v: mdTotal(x[1]), txt: mdTxt(x[1]) }; })) +
+      '<p class="field-hint">Desde 23/10, a conclusão da OP só lança no estoque o que passou dos lançamentos hora a hora (não entra duas vezes).</p>');
     box.innerHTML = h;
   }
 
@@ -21325,9 +22069,12 @@
       var b = e.target.closest('[data-pr-a]');
       if (!b) return;
       var a = b.dataset.prA, hoje = todayIso();
-      if (a === 'dia-ant') { prUi.dia = addDiasIso(prUi.dia || hoje, -1); renderPrLanc(); }
-      else if (a === 'dia-prox') { prUi.dia = addDiasIso(prUi.dia || hoje, 1); if (prUi.dia > hoje) prUi.dia = hoje; renderPrLanc(); }
+      if (a === 'dia-ant') { prAndarPeriodo(-1); renderPrLanc(); }
+      else if (a === 'dia-prox') { prAndarPeriodo(1); renderPrLanc(); }
       else if (a === 'dia-hoje') { prUi.dia = hoje; renderPrLanc(); }
+      else if (a === 'periodo') { prUi.periodo = b.dataset.per; renderPrLanc(); }
+      else if (a === 'ord') { var k = b.dataset.k, o = prUi.ordem || 'data'; prUi.ordem = o === k ? '-' + k : o === '-' + k ? k : (k === 'data' || k === 'linha' ? k : '-' + k); renderPrLanc(); }
+      else if (a === 'baixar') prBaixarPlanilha();
       else if (a === 'lancar') abrirProducaoHora();
       else if (a === 'apagar') { prUi.apagar = b.dataset.id; renderPrLanc(); }
       else if (a === 'apagar-nao') { prUi.apagar = null; renderPrLanc(); }
@@ -21344,11 +22091,25 @@
     tab.addEventListener('change', function(e) {
       var t = e.target;
       if (t.id === 'pr-dia') { prUi.dia = t.value && t.value <= todayIso() ? t.value : todayIso(); renderPrLanc(); }
+      else if (t.id === 'pr-dia-mes') { prUi.dia = /^\d{4}-\d{2}$/.test(t.value) ? (t.value + '-01' > todayIso() ? todayIso() : t.value + '-01') : todayIso(); renderPrLanc(); }
+      else if (t.id === 'pr-f-linha') { prUi.fLinha = t.value; if (prUi.fTurno && phTurnos(t.value).indexOf(prUi.fTurno) < 0 && t.value) prUi.fTurno = ''; renderPrLanc(); }
+      else if (t.id === 'pr-f-turno') { prUi.fTurno = t.value; renderPrLanc(); }
       else if (t.id === 'pr-mes') { prUi.mes = /^\d{4}-\d{2}$/.test(t.value) ? t.value : ''; renderPrInd(); }
       else if (t.classList && t.classList.contains('pr-c')) prCorrigir(t);
     });
     // terminou de editar uma célula: se chegou novidade enquanto digitava, mostra agora
     tab.addEventListener('focusout', function() { setTimeout(function() { if (prUi.pendente) renderPrLanc(); }, 0); });
+    var buscaTimer = null;
+    tab.addEventListener('input', function(e) {
+      if (e.target.id !== 'pr-f-busca') return;
+      prUi.busca = e.target.value;
+      clearTimeout(buscaTimer);
+      buscaTimer = setTimeout(function() {
+        renderPrLanc(true);
+        var el = document.getElementById('pr-f-busca');
+        if (el) { el.focus(); try { el.setSelectionRange(el.value.length, el.value.length); } catch (x) {} }
+      }, 300);
+    });
   })();
 
   // =====================================================================================================
@@ -21940,7 +22701,8 @@
   var SESSAO_USO = 'levissima-ultimo-uso', SESSAO_ABERTO = 'levissima-aberto', SESSAO_MOTIVO = 'levissima-saida-motivo';
   var usoGravadoEm = 0, canalSessao = null;
   function ultimoUso() { try { return Number(localStorage.getItem(SESSAO_USO)) || 0; } catch (e) { return 0; } }
-  function sessaoParada() { var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
+  // no app (Android/iOS) minimizar não pede a senha (pedido de 23/10/2026): os 30 min sem uso valem só no navegador
+  function sessaoParada() { if (appNativo()) return false; var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
   function gravarUso(forcar) {
     var agora = Date.now();
     if (!forcar && agora - usoGravadoEm < 2000) return; // no máximo uma gravação a cada 2 s (rolar a tela dispara muito)
@@ -22017,6 +22779,99 @@
   document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible' && session && sessaoParada()) sairPorTempo(); });
   window.addEventListener('focus', function() { if (session && sessaoParada()) sairPorTempo(); });
 
+  // ---------- voltar na mesma tela (pedido de 23/10/2026) ----------
+  // Minimizar o app e voltar: tudo continua como estava, sem senha. Fechar o app pede a senha de novo. Se o celular
+  // fechar sozinho o app minimizado (falta de memória, câmera…), a tela e o formulário que estava aberto (carga ou
+  // produção da hora) ficam guardados no aparelho: se o app só recarregou, volta direto para lá; se pediu a senha, o
+  // Início oferece "Continuar de onde parou".
+  var RETOMAR = 'levissima-retomar', retomarTimer = null, retomarPendente = null;
+  function retomadaForm() {
+    if (!session || session.role === 'motorista') return null;
+    var ov = document.getElementById('carga-sheet-overlay');
+    if (ov && !ov.classList.contains('hidden')) {
+      return { tipo: 'carga', editingId: editingCargaId || null, data: document.getElementById('cg-data').value, hora: document.getElementById('cg-hora').value,
+        motorista: document.getElementById('cg-motorista').value, obs: document.getElementById('cg-obs').value, clientes: JSON.parse(JSON.stringify(cgEditor.getState())) };
+    }
+    var g = document.getElementById('ger-sheet-overlay');
+    if (g && !g.classList.contains('hidden') && ger && ger.ph) { phLer(ger.ph); return { tipo: 'producao', ph: JSON.parse(JSON.stringify(ger.ph)) }; }
+    return null;
+  }
+  function retomadaGuardar() {
+    if (!session) return;
+    try { localStorage.setItem(RETOMAR, JSON.stringify({ ref: minhaRef(), em: Date.now(), tab: ui.tab, prSub: prUi.sub || '', form: retomadaForm() })); } catch (e) {}
+  }
+  function retomadaLer() {
+    try { var r = JSON.parse(localStorage.getItem(RETOMAR) || 'null'); return r && session && r.ref === minhaRef() && Date.now() - r.em < 24 * 3600000 ? r : null; } catch (e) { return null; }
+  }
+  function retomadaLimpar() { clearTimeout(retomarTimer); try { localStorage.removeItem(RETOMAR); } catch (e) {} }
+  function retomadaFormTexto(f) {
+    if (!f) return '';
+    if (f.tipo === 'carga') { var cls = (f.clientes || []).map(function(c) { return c.cliente; }).filter(Boolean); return (f.editingId ? 'editando uma carga' : 'lançando uma carga') + (cls.length ? ' (' + cls.join(', ') + ')' : ''); }
+    if (f.tipo === 'producao') return 'lançando a produção das ' + pad2(Number(f.ph && f.ph.hora) || 0) + ':00';
+    return '';
+  }
+  // abre o formulário como estava (espera os dados carregarem)
+  function retomadaAbrirForm(f, tentativa) {
+    tentativa = tentativa || 0;
+    if (!f || !session) return;
+    var pronto = produtos.length > 0 && (f.tipo !== 'carga' || !f.editingId || findCarga(f.editingId) || tentativa > 20);
+    if (!pronto && tentativa < 40) { setTimeout(function() { retomadaAbrirForm(f, tentativa + 1); }, 250); return; }
+    if (f.tipo === 'carga') {
+      var c = f.editingId ? findCarga(f.editingId) : null;
+      if (f.editingId && (!c || c.status === 'concluida')) { showToast('A carga que estava sendo editada mudou (ou já foi carregada): abra de novo.'); return; }
+      openCargaForm(c);
+      document.getElementById('cg-data').value = f.data || todayIso();
+      document.getElementById('cg-hora').value = f.hora || '';
+      renderCgMotoristaSelect(f.motorista || '');
+      renderCgMotoristaInfo(f.motorista || '', c);
+      document.getElementById('cg-obs').value = f.obs || '';
+      if (Array.isArray(f.clientes) && f.clientes.length) cgEditor.setState(f.clientes, editorStateFromCarga(c).extras);
+    } else if (f.tipo === 'producao' && f.ph) {
+      abrirProducaoHora({ estado: f.ph });
+    }
+    showToast('Voltamos para onde você parou: ' + retomadaFormTexto(f) + '.');
+  }
+  // logo depois de entrar: semSenha = o app só recarregou (continua direto); com senha = oferece no Início
+  function retomadaAoEntrar(semSenha) {
+    var r = retomadaLer();
+    if (!r) return;
+    if (semSenha) {
+      retomadaLimpar();
+      if (r.prSub) prUi.sub = r.prSub;
+      if (r.tab && abasPermitidas().indexOf(r.tab) >= 0) setTab(r.tab);
+      if (r.form) retomadaAbrirForm(r.form);
+      return;
+    }
+    if (!r.form) { retomadaLimpar(); return; }
+    retomarPendente = r;
+    renderRetomarAviso();
+  }
+  function renderRetomarAviso() {
+    var el = document.getElementById('ini-retomar');
+    if (!el) return;
+    var r = retomarPendente;
+    el.innerHTML = r ? '<div class="est-alertas" role="status"><p class="est-alertas-t">Continuar de onde parou?</p><p style="margin:0 0 8px">O app foi fechado enquanto você estava ' + escapeHtml(retomadaFormTexto(r.form)) + ' (' + escapeHtml(horaMsg(new Date(r.em).toISOString())) + '). O que estava preenchido ficou guardado.</p>' +
+      '<div class="frete-acoes"><button type="button" class="btn btn-primary btn-sm" data-retomar="sim">Continuar</button><button type="button" class="btn btn-secondary btn-sm" data-retomar="nao">Descartar</button></div></div>' : '';
+  }
+  document.addEventListener('click', function(e) {
+    var b = e.target.closest('[data-retomar]');
+    if (!b) return;
+    var r = retomarPendente;
+    retomarPendente = null; retomadaLimpar(); renderRetomarAviso();
+    if (b.dataset.retomar === 'sim' && r) { if (r.prSub) prUi.sub = r.prSub; if (r.tab && abasPermitidas().indexOf(r.tab) >= 0) setTab(r.tab); retomadaAbrirForm(r.form); }
+  });
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') retomadaGuardar();
+    else if (session) retomadaLimpar(); // voltou com o app vivo: nada a retomar
+  });
+  window.addEventListener('pagehide', retomadaGuardar);
+  // enquanto um formulário está aberto, guarda o que foi digitado (o celular pode fechar o app sem avisar)
+  document.addEventListener('input', function() {
+    if (!session) return;
+    clearTimeout(retomarTimer);
+    retomarTimer = setTimeout(function() { if (retomadaForm()) retomadaGuardar(); }, 1500);
+  }, true);
+
   function comecarSessao(s, senhaDigitada, token) {
     marcarAberto();
     session = s;
@@ -22030,9 +22885,11 @@
       if (s.role === 'representante') { ligarDadosRep(); showRepView(); return; } // Força de vendas: só os pedidos dele
       ligarDados();
     }
-    if (s.role === 'motorista') showDriverView(); else { ui.tab = 'inicio'; showAdminView(); }
+    if (s.role === 'motorista') showDriverView(); else { ui.tab = 'inicio'; showAdminView(); retomadaAoEntrar(!senhaDigitada && !comecarComSenha); }
+    comecarComSenha = false;
     if (s.role === 'admin' && senhaDigitada) abrirPesquisasCom(senhaDigitada);
   }
+  var comecarComSenha = false; // login digitado agora (senha, PIN ou rosto) — não é só o app recarregando
   // Chama a função de acesso do Supabase; em erro, devolve { codigo } (senha, tentativas, permissao, senha_em_uso...).
   function chamarAcesso(corpo) {
     function falha(codigo) { var e = new Error(codigo); e.codigo = codigo; return e; }

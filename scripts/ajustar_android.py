@@ -1,4 +1,4 @@
-"""Ajustes do projeto Android gerado pelo Capacitor: permissões de localização, aviso da viagem e número da versão."""
+"""Ajustes do projeto Android gerado pelo Capacitor: permissões (localização, câmera, microfone), aviso da viagem e número da versão."""
 import os
 import re
 
@@ -13,6 +13,10 @@ extras = [
     # câmera: leitura do código de barras na dupla conferência do carregamento
     '<uses-permission android:name="android.permission.CAMERA" />',
     '<uses-feature android:name="android.hardware.camera" android:required="false" />',
+    # microfone: gravar áudio nas Solicitações (24/10/2026)
+    '<uses-permission android:name="android.permission.RECORD_AUDIO" />',
+    '<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />',
+    '<uses-feature android:name="android.hardware.microphone" android:required="false" />',
 ]
 for linha in extras:
     nome = re.search(r'android:name="([^"]+)"', linha).group(1)

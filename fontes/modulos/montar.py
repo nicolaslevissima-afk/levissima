@@ -135,6 +135,10 @@ TROCAS_MANUTENCAO_FICHAS = [
 # - estoque de peças por máquina (aba, cadastro da peça e planilha) e fotos da peça;
 # - selecionar vários itens e excluir de uma vez.
 TROCAS_MANUTENCAO_2110 = [
+    # no app do Android, o seletor de arquivos só mostra o que bate com o tipo (MIME): ".xlsx" sozinho deixava as
+    # planilhas apagadas (23/10/2026)
+    ('''accept=".xlsx,.xls,.csv,.txt" data-ch="imp-arq"''',
+     '''accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain" data-ch="imp-arq"'''),
     ("function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão'; }",
      "function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão' || levSouNicolas(); }"),
     ("  if (fechado(c) && man) out.push(b('os-reabrir', '', 'refresh', 'Reabrir'));\n  return out.join('');",
