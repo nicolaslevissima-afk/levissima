@@ -281,6 +281,8 @@
   .st-done { --st-bg: var(--st-done-bg); --st-fg: var(--st-done-fg); }
   .st-delivered { --st-bg: var(--st-delivered-bg); --st-fg: var(--st-delivered-fg); }
 
+  .carga-driver-name.a-definir { color: var(--muted); font-style: italic; }
+  .cg-retira-chk { margin: 4px 0 8px; }
   .carga-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 18px; }
   .carga-busca { display: flex; align-items: center; gap: 8px; margin: -6px 0 14px; }
   .carga-busca input { flex: 1; min-width: 0; }
@@ -767,6 +769,30 @@
   .pr-filtros select, .pr-filtros input[type="search"] { width: auto; flex: 1 1 150px; margin: 0; min-height: 38px; }
   .pr-per { display: inline-flex; }
   .sol-anexar, .sol-anexos-pend, .sol-gravando { flex-basis: 100%; }
+  .qd-subs { margin: 0 0 10px; }
+  .qd-item .driver-name b.mono { margin-right: 4px; }
+  .qd-chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 46%; }
+  .qd-mestra tbody tr { cursor: pointer; }
+  .qd-mestra td small { display: block; color: var(--muted); font-size: 0.6875rem; }
+  .qd-mestra .q-chip { margin: 0 2px 2px 0; }
+  .qd-cab { margin: 0 0 4px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .qd-versao { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 10px 0; background: var(--card); }
+  .qd-versao.obsoleta { background: repeating-linear-gradient(-45deg, rgba(192, 57, 43, 0.05) 0 12px, transparent 12px 24px); }
+  .qd-versao .sol-anx-arq { margin: 6px 0; }
+  .qd-rasc { border-left: 3px solid var(--laranja); padding-left: 8px; margin: 10px 0; }
+  .qd-sec h4 { margin: 10px 0 2px; font-size: 0.875rem; color: var(--roxo, #702082); }
+  .qd-sec p { margin: 0; white-space: normal; font-size: 0.875rem; line-height: 1.45; }
+  .qd-cont summary, .qd-hist summary, .qd-leit summary, .qd-cont-form summary { cursor: pointer; font-weight: 600; margin: 6px 0; }
+  .qd-lista { margin: 4px 0 6px; padding-left: 18px; font-size: 0.8125rem; }
+  .qd-lista li.alerta { color: var(--danger); }
+  .qd-leit, .qd-copias { margin: 10px 0; }
+  .qd-acoes { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+  .qd-venc { border-left: 3px solid transparent; padding-left: 6px; }
+  .qd-venc.vencido { border-left-color: var(--danger); }
+  .qd-venc.perto { border-left-color: var(--laranja); }
+  .qd-venc-info { display: flex; justify-content: space-between; gap: 8px; font-size: 0.8125rem; color: var(--muted); margin: -4px 0 8px; flex-wrap: wrap; }
+  .qd-arq { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 6px 0; }
+  .qd-arq .btn { margin: 0; }
   .sol-anexar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
   .sol-anexar .btn { margin: 0; }
   .sol-anexos-pend { display: flex; flex-direction: column; gap: 6px; margin: 0; }
@@ -1865,6 +1891,7 @@
       <button type="button" class="seg-btn" data-qarea="ana">Análises</button>
       <button type="button" class="seg-btn" data-qarea="nc">NCs</button>
       <button type="button" class="seg-btn" data-qarea="plano">Plano</button>
+      <button type="button" class="seg-btn" data-qarea="doc">Documentos</button>
     </nav>
     <div id="q-conteudo"></div>
   </div>
@@ -2673,9 +2700,14 @@
           <input type="time" id="cg-hora" />
         </label>
       </div>
-      <label>Motorista <span class="req">*</span>
-        <select id="cg-motorista" required></select>
-        <span class="field-hint hidden" id="cg-sem-motorista-hint">Cadastre um motorista em "Motoristas cadastrados" antes de montar uma carga.</span>
+      <label class="check-row cg-retira-chk"><input type="checkbox" id="cg-retira" /> <span>🚚 <b>Caminhão próprio do cliente</b> (o cliente vem retirar)</span></label>
+      <div class="row-2 hidden" id="cg-retira-box">
+        <label>Quem vai retirar <span class="opt">(opcional)</span><input type="text" id="cg-retira-nome" maxlength="80" autocomplete="off" placeholder="Nome do motorista do cliente" /></label>
+        <label>Placa <span class="opt">(opcional)</span><input type="text" id="cg-retira-placa" maxlength="10" autocomplete="off" autocapitalize="characters" placeholder="ABC1D23" /></label>
+      </div>
+      <label id="cg-motorista-label">Motorista <span class="opt">(pode definir depois)</span>
+        <select id="cg-motorista"></select>
+        <span class="field-hint hidden" id="cg-sem-motorista-hint">Nenhum motorista cadastrado ainda: a carga fica com o motorista a definir.</span>
       </label>
       <div id="cg-motorista-info" class="pedido-resumo hidden"></div>
       <label>Observações <span class="opt">(opcional)</span>
@@ -2747,7 +2779,7 @@
         <p class="sig-section-title">Confirmação</p>
         <div class="sig-block">
           <div class="sig-label">
-            <span>Assinatura do motorista <span class="req">*</span></span>
+            <span><span id="cgc-sig-motorista-rotulo">Assinatura do motorista</span> <span class="req">*</span></span>
             <button type="button" class="btn-text" id="btn-cgc-sig-motorista-clear">Limpar</button>
           </div>
           <canvas id="cgc-sig-motorista-canvas" class="sig-canvas" width="600" height="150" aria-label="Área para assinatura do motorista"></canvas>
@@ -2832,6 +2864,7 @@
       </div>
       <label class="check"><input type="checkbox" id="f-equipe-org" /> Vê a aba <b>Organograma</b> <span class="opt">(onde está na empresa: quem está acima e abaixo)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-aprova-cli" /> <b>Aprova cliente novo</b> da força de vendas <span class="opt">(análise junto com o financeiro)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-gestor-docs" /> <b>Gerente da qualidade (documentos)</b>: elabora, revisa e aprova os documentos da Qualidade <span class="opt">(POPs, Manual de BPF, licenças)</span></label>
       <div class="row-2"><label>Líder de produção da linha <span class="opt">(opcional)</span><select id="f-equipe-linha-prod"><option value="">—</option></select></label>
         <label>Turno <span class="opt">(opcional)</span><select id="f-equipe-turno-prod"><option value="">—</option></select></label></div>
       <label class="check"><input type="checkbox" id="f-equipe-lanc-prod" /> Vê e corrige os <b>lançamentos da produção</b> <span class="opt">(Produção › Lançamentos dos líderes, hora a hora)</span></label>
@@ -5454,6 +5487,10 @@
     return msg;
   }
   // Quadrado da carga: só o essencial e um botão com o próximo passo. O resto abre ao tocar no quadrado.
+  // quem leva a carga: motorista, "cliente retira" (caminhão próprio) ou "motorista a definir" (26/10/2026)
+  function retiraTexto(c) { return 'Cliente retira' + (c.retiraNome ? ' · ' + c.retiraNome : '') + (c.retiraPlaca ? ' (' + c.retiraPlaca + ')' : ''); }
+  function quemLevaTexto(c) { return c.retira ? retiraTexto(c) : (c.motorista || 'Motorista a definir'); }
+  function semMotorista(c) { return !!c && !c.retira && !String(c.motorista || '').trim(); }
   function cargaCardHtml(c) {
     var key = cargaStatusKey(c), st = CARGA_STATUS[key], id = escapeHtml(c.id);
     var done = key === 'concluida';
@@ -5490,6 +5527,8 @@
       ? (fase !== 'carregada' && temViagem
           ? '<button type="button" class="btn btn-secondary btn-sm" data-action="mapa-carga" data-id="' + id + '">' + (fase === 'viagem' ? 'Ver no mapa' : 'Ver a viagem') + '</button>'
           : '<button type="button" class="btn btn-secondary btn-sm" data-action="ordem-carga" data-id="' + id + '">Ordem de carregamento</button>')
+      : semMotorista(c)
+        ? '<button type="button" class="btn btn-primary btn-sm" data-action="edit-carga" data-id="' + id + '">Definir motorista</button>'
       : c.numeroPager
         ? '<button type="button" class="btn btn-primary btn-sm" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>'
         : key === 'futura'
@@ -5502,7 +5541,7 @@
     var detalhesLink = (!done && !c.numeroPager && key === 'futura') ? '' : '<button type="button" class="btn-text" data-action="detalhes" data-id="' + id + '">Detalhes</button>';
     return '<article class="carga-card ' + st.cls + '" data-id="' + id + '">' + head +
       '<div class="carga-card-body">' +
-        '<div class="carga-top"><span class="carga-driver-name">' + escapeHtml(c.motorista || '—') + '</span>' + pager + '</div>' +
+        '<div class="carga-top"><span class="carga-driver-name' + (semMotorista(c) ? ' a-definir' : '') + '">' + (c.retira ? '🚚 ' : '') + escapeHtml(quemLevaTexto(c)) + '</span>' + pager + '</div>' +
         (done ? '' : aceiteChipHtml(c)) +
         '<div class="carga-clientes-line">' + escapeHtml(cargaClientesResumo(c) || '—') + '</div>' +
         cargaProdutosHtml(c) +
@@ -5605,15 +5644,16 @@
           (done ? '' : '<button type="button" class="btn-text" data-action="edit-carga" data-id="' + id + '">Editar carga</button>') +
           '<button type="button" class="btn-text danger" data-action="delete-carga" data-id="' + id + '">Excluir</button>' +
         '</div>';
-    var wa = waNumero(telefoneDoMotorista(c.motorista));
-    var chamar = done ? '' : wa
+    var wa = c.motorista ? waNumero(telefoneDoMotorista(c.motorista)) : '';
+    var chamar = done || !c.motorista ? '' : wa
       ? '<a class="btn btn-secondary" href="' + escapeHtml(waLink(wa, 'Olá, ' + (c.motorista || '') + '! Sua carga está pronta para carregar. Pode encostar.' + (pagerDaCarga(c) ? ' (pager ' + pagerDaCarga(c) + ')' : ''))) + '" target="_blank" rel="noopener">Chamar no WhatsApp</a>'
       : '<p class="hint" style="margin:0">Para chamar pelo WhatsApp, cadastre o celular de ' + escapeHtml(c.motorista || 'motorista') + ' em Cadastros › Motoristas.</p>';
     var verMapa = (done && ((c.viagem && c.viagem.saidaEm) || ultimaPosicao(c)))
       ? '<button type="button" class="btn btn-secondary" data-action="mapa-carga" data-id="' + id + '">Ver a viagem no mapa</button>'
       : '';
     html += '<div class="detail-actions">' +
-      (done ? '' : liberadaCarga(c) ? '<button type="button" class="btn btn-primary" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>'
+      (done ? '' : semMotorista(c) ? '<button type="button" class="btn btn-primary" data-action="edit-carga" data-id="' + id + '">Definir motorista</button>'
+        : liberadaCarga(c) ? '<button type="button" class="btn btn-primary" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>'
         : '<p class="hint" style="margin:0">' + escapeHtml(faltaOkTexto(c)) + ': pedido da força de vendas só carrega depois dos dois oks.</p>') +
       liberacaoBotaoHtml(c, id) + verMapa + chamar + links + '</div>';
     return html;
@@ -5958,7 +5998,7 @@
     var patch = { numeroPager: numero };
     if (!c.pagerEm) patch.pagerEm = new Date().toISOString(); // hora em que o motorista recebeu o pager (chegada)
     return setCargaFields(c.id, patch).then(function() {
-      showToast('Pager ' + numero + ' entregue a ' + (c.motorista || 'o motorista') + '.');
+      showToast('Pager ' + numero + ' entregue a ' + (c.retira ? (c.retiraNome || 'quem vai retirar') + ' (cliente retira)' : (c.motorista || 'o motorista')) + '.');
     }).catch(function(err) { console.error('pager error', err); showToast('Não foi possível gravar o pager. Tente de novo.'); });
   }
   // Um toque no quadrado: entrega o próximo pager livre.
@@ -6001,7 +6041,7 @@
     el.innerHTML = (noPatio.length
         ? '<div class="patio-titulo">No pátio agora</div><div class="patio-lista">' + noPatio.map(function(x) {
             return '<button type="button" class="patio-item' + (x.min >= ESPERA_LONGA_MIN ? ' longa' : '') + '" data-action="detalhes" data-id="' + escapeHtml(x.c.id) + '">' +
-              '<span class="mono">Pager ' + escapeHtml(pagerDaCarga(x.c)) + '</span>' + escapeHtml((x.c.motorista || '—') + ' · há ' + fmtDuracao(x.min)) + '</button>';
+              '<span class="mono">Pager ' + escapeHtml(pagerDaCarga(x.c)) + '</span>' + escapeHtml(quemLevaTexto(x.c) + ' · há ' + fmtDuracao(x.min)) + '</button>';
           }).join('') + '</div>'
         : '') +
       (media != null ? '<div class="patio-media">Hoje: ' + feitasHoje.length + (feitasHoje.length === 1 ? ' carga carregada' : ' cargas carregadas') + ' · espera média no pátio ' + fmtDuracao(media) + '</div>' : '');
@@ -6151,7 +6191,7 @@
     if (!ui.detailId) return;
     var c = findCarga(ui.detailId);
     if (!c) { closeCargaDetail(); return; }
-    document.getElementById('carga-detail-title').textContent = 'Carga de ' + (c.motorista || '—');
+    document.getElementById('carga-detail-title').textContent = c.retira ? 'Carga: ' + retiraTexto(c) : semMotorista(c) ? 'Carga (motorista a definir)' : 'Carga de ' + c.motorista;
     var body = document.getElementById('carga-detail-body');
     var saved = captureInputs(body);
     body.innerHTML = cargaDetailHtml(c);
@@ -6198,6 +6238,10 @@
     if (action === 'desfazer-liberacao') { desfazerLiberacaoCarga(id); return; }
     if (action === 'mapa-carga') { openMapaCarga(id); return; }
     if (action === 'detalhes') { openCargaDetail(id); return; }
+    if ((action === 'pager-entregar' || action === 'concluir-carga') && semMotorista(c)) {
+      showToast('Defina o motorista (ou marque “Caminhão próprio do cliente”) antes de ' + (action === 'pager-entregar' ? 'entregar o pager.' : 'concluir o carregamento.'));
+      closeCargaDetail(); openCargaForm(c); return;
+    }
     if (action === 'pager-entregar') { entregarPagerAuto(id); return; }
     if (action === 'concluir-carga') { closeCargaDetail(); openCargaConclude(c); return; }
     if (action === 'edit-carga') { closeCargaDetail(); openCargaForm(c); return; }
@@ -7049,6 +7093,8 @@
     });
     var esperando = abertas.filter(function(c) { return aceiteEstado(c) === 'aguardando' && (c.data || '') <= amanha; });
     if (esperando.length) l.push({ ico: '⏳', txt: esperando.length + (esperando.length === 1 ? ' carga de hoje ou amanhã ainda sem o aceite do motorista' : ' cargas de hoje e amanhã ainda sem o aceite do motorista') + ' (' + esperando.slice(0, 3).map(function(c) { return c.motorista; }).join(', ') + (esperando.length > 3 ? '…' : '') + ')', ir: 'cargas' });
+    var semMot = cargas.filter(function(c) { return c.status !== 'concluida' && semMotorista(c) && liberadaCarga(c) && (c.data || '') <= amanha; });
+    if (semMot.length) l.push({ ico: '🚚', txt: semMot.length + (semMot.length === 1 ? ' carga de hoje ou amanhã ainda sem motorista' : ' cargas de hoje e amanhã ainda sem motorista') + ' (' + semMot.slice(0, 3).map(function(c) { return cargaClientesResumo(c) || cargaQuandoTexto(c); }).join('; ') + ')', ir: 'cargas' });
     return l;
   }
 
@@ -8067,7 +8113,7 @@
   function renderCgMotoristaSelect(current) {
     var sel = document.getElementById('cg-motorista');
     var sorted = motoristas.slice().sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
-    sel.innerHTML = '<option value="">Selecione…</option>' + sorted.map(function(m) {
+    sel.innerHTML = '<option value="">A definir depois</option>' + sorted.map(function(m) {
       var vt = veiculoTexto(m);
       return '<option value="' + escapeHtml(m.nome) + '">' + escapeHtml(m.nome + (vt ? ' · ' + vt : '')) + '</option>';
     }).join('');
@@ -8145,11 +8191,20 @@
   document.getElementById('cg-motorista').addEventListener('change', function(e) {
     renderCgMotoristaInfo(e.target.value, editingCargaId ? findCarga(editingCargaId) : null);
   });
+  // Caminhão próprio do cliente (pedido de 26/10/2026): sem motorista da Levíssima, sem frete e sem viagem no app;
+  // ao concluir o carregamento, quem retirou assina e a entrega já fica concluída.
+  function cgRetiraAplicar(on, rep) {
+    document.getElementById('cg-retira').checked = !!on;
+    document.getElementById('cg-retira-box').classList.toggle('hidden', !on);
+    document.getElementById('cg-motorista-label').classList.toggle('hidden', !!on || !!rep);
+    if (on) { document.getElementById('cg-motorista').value = ''; renderCgMotoristaInfo('', null); }
+  }
+  document.getElementById('cg-retira').addEventListener('change', function(e) { cgRetiraAplicar(e.target.checked, !!session && session.role === 'representante'); });
   function openCargaForm(prefillCarga) {
     editingCargaId = prefillCarga ? prefillCarga.id : null;
     var rep = !!session && session.role === 'representante';
     document.getElementById('carga-sheet-title').textContent = rep ? (editingCargaId ? 'Editar pedido' : 'Novo pedido') : (editingCargaId ? 'Editar carga' : 'Nova carga');
-    document.getElementById('cg-motorista').closest('label').classList.toggle('hidden', rep);
+    document.getElementById('cg-motorista-label').classList.toggle('hidden', rep);
     document.getElementById('btn-cg-import-nf').classList.toggle('hidden', rep);
     document.getElementById('btn-carga-submit').textContent = rep ? 'Enviar pedido' : 'Salvar carga';
     document.getElementById('cg-data').value = (prefillCarga && prefillCarga.data) || todayIso();
@@ -8157,6 +8212,9 @@
     renderCgMotoristaSelect((prefillCarga && prefillCarga.motorista) || '');
     renderCgMotoristaInfo((prefillCarga && prefillCarga.motorista) || '', prefillCarga);
     document.getElementById('cg-obs').value = (prefillCarga && prefillCarga.obs) || '';
+    document.getElementById('cg-retira-nome').value = (prefillCarga && prefillCarga.retiraNome) || '';
+    document.getElementById('cg-retira-placa').value = (prefillCarga && prefillCarga.retiraPlaca) || '';
+    cgRetiraAplicar(!!(prefillCarga && prefillCarga.retira), rep);
     document.getElementById('cg-sem-produtos-hint').classList.toggle('hidden', produtos.length > 0);
     document.getElementById('cg-sem-motorista-hint').classList.toggle('hidden', rep || motoristas.length > 0);
     if (rep) document.getElementById('cg-motorista-info').classList.add('hidden');
@@ -8184,7 +8242,8 @@
     e.preventDefault();
     var data = document.getElementById('cg-data').value;
     var hora = document.getElementById('cg-hora').value;
-    var motorista = document.getElementById('cg-motorista').value;
+    var retira = document.getElementById('cg-retira').checked;
+    var motorista = retira ? '' : document.getElementById('cg-motorista').value;
     var obs = document.getElementById('cg-obs').value.trim();
     var devEl = document.getElementById('cg-devolucao-anterior');
     var devObsEl = document.getElementById('cg-devolucao-anterior-obs');
@@ -8195,7 +8254,6 @@
     var err = null;
     var rep = !!session && session.role === 'representante';
     if (!data) err = 'Informe a data da carga.';
-    else if (!motorista && !rep) err = 'Selecione o motorista.';
     else if (!clientesOut.length) err = 'Adicione ao menos um cliente à carga.';
     else {
       for (var i = 0; i < clientesOut.length; i++) {
@@ -8211,6 +8269,7 @@
     delete base.id;
     var rec = Object.assign({}, base, {
       data: data, hora: hora, numeroPager: base.numeroPager || '', motorista: motorista, obs: obs, clientes: clientesOut,
+      retira: retira, retiraNome: retira ? document.getElementById('cg-retira-nome').value.trim().replace(/\s+/g, ' ') : '', retiraPlaca: retira ? document.getElementById('cg-retira-placa').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '') : '',
       entregaAnterior: cgEntregaAnterior,
       devolucaoAnteriorConfirmada: cgEntregaAnterior ? devolucaoAnteriorConfirmada : '',
       devolucaoAnteriorObs: cgEntregaAnterior ? devolucaoAnteriorObs : '',
@@ -8518,7 +8577,7 @@
     function row(k, v) { return '<div class="resumo-row"><span class="resumo-k">' + k + '</span><span class="resumo-v">' + escapeHtml(v) + '</span></div>'; }
     document.getElementById('cgc-resumo').innerHTML =
       row('Programada para', formatDateBR(carga.data) + (carga.hora ? ' às ' + carga.hora : '')) +
-      row('Motorista', carga.motorista || '—') +
+      row(carga.retira ? 'Retirada' : 'Motorista', carga.retira ? retiraTexto(carga) + ' · caminhão próprio' : (carga.motorista || '—')) +
       (carga.numeroPager ? row('Pager', String(carga.numeroPager)) : '') +
       row('Faturamento', carga.faturamentoOk ? 'ok de ' + (nomePessoa(carga.faturamentoPor) || '—') : 'aguardando ok') +
       (liberacaoDe(carga) && !duplaOk(carga) ? row('Liberação', liberacaoTexto(carga)) :
@@ -8542,6 +8601,7 @@
     document.getElementById('btn-carga-conclude-submit').disabled = false;
     sigCgcMotorista.showCanvasMode();
     sigCgcConferente.showCanvasMode();
+    document.getElementById('cgc-sig-motorista-rotulo').textContent = carga.retira ? 'Assinatura de quem retirou' + (carga.retiraNome ? ' (' + carga.retiraNome + ')' : '') : 'Assinatura do motorista';
     prepararFotosConferencia();
     document.getElementById('cgc-frete-valor').value = carga.freteCombinado && Number(carga.freteCombinado.valor) > 0 ? ocValorTexto(carga.freteCombinado.valor) : '';
     atualizarFreteCombinado();
@@ -8573,12 +8633,17 @@
       out.push({ docId: docId, data: {
         data: hoje, cliente: nome, numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '',
         motorista: carga.motorista || '', paletes: t.p, chapatex: t.c,
-        tipo: 'entrega', status: 'aguardando', criadoEm: (existing && existing.criadoEm) || agora, cargaId: cargaId,
+        tipo: 'entrega', status: carga.retira ? 'concluido' : 'aguardando', criadoEm: (existing && existing.criadoEm) || agora, cargaId: cargaId,
         ordemEntrega: i + 1, nfNumero: (cl.nf && cl.nf.numero) || '',
         itens: (cl.itens || []).map(function(it) {
           return { produtoId: it.produtoId || '', produtoNome: it.produtoNome || '', unidade: it.unidade || '', quantidade: Number(it.quantidade) || 0, paletes: Number(it.paletes) || 0, chapatex: Number(it.chapatex) || 0 };
         })
       } });
+      if (carga.retira) {
+        // cliente retira com caminhão próprio: a entrega acontece no carregamento (quem retirou assina pelo cliente)
+        Object.assign(out[out.length - 1].data, { retira: true, recebidoPor: carga.retiraNome || '', placa: carga.retiraPlaca || '', concluidoEm: carga.concluidoEm || agora, entregueEm: carga.concluidoEm || agora,
+          paletesDevolvidos: 0, chapatexDevolvidos: 0, assinaturaCliente: carga.assinaturaMotorista || null, assinaturaMotorista: carga.assinaturaConferente || null });
+      }
     });
     return out;
   }
@@ -8655,7 +8720,7 @@
       errEl.textContent = 'Os paletes não batem com a dupla conferência por código de barras. Corrija as quantidades ou refaça a conferência.';
       errEl.classList.remove('hidden'); return;
     }
-    if (!sigCgcMotorista.isSatisfied()) { errEl.textContent = 'Colete a assinatura do motorista antes de concluir.'; errEl.classList.remove('hidden'); return; }
+    if (!sigCgcMotorista.isSatisfied()) { errEl.textContent = (findCarga(cargaConcludeId) || {}).retira ? 'Colete a assinatura de quem retirou antes de concluir.' : 'Colete a assinatura do motorista antes de concluir.'; errEl.classList.remove('hidden'); return; }
     if (!sigCgcConferente.isSatisfied()) { errEl.textContent = 'Colete a assinatura do conferente antes de concluir.'; errEl.classList.remove('hidden'); return; }
     var erroFotos = validarFotosConferencia();
     if (erroFotos) { errEl.textContent = erroFotos; errEl.classList.remove('hidden'); return; }
@@ -9560,7 +9625,7 @@
     txt(ctx, 'Motorista', colX[0], y, rFont(500, 26, R_DISP), RC.muted, 'left');
     txt(ctx, 'Data', colX[1], y, rFont(500, 26, R_DISP), RC.muted, 'left');
     txt(ctx, 'Status', colX[2], y, rFont(500, 26, R_DISP), RC.muted, 'left');
-    drawValueBlock(ctx, c.motorista || '—', colX[0], y + 46, colW[0], RC.ink);
+    drawValueBlock(ctx, c.retira ? retiraTexto(c) : (c.motorista || 'A definir'), colX[0], y + 46, colW[0], RC.ink);
     txtFit(ctx, formatDateBR(c.data) + (c.hora ? ' ' + c.hora : ''), colX[1], y + 46, 600, R_MONO, 36, 22, colW[1], RC.ink, 'left');
     txtFit(ctx, c.status === 'concluida' ? 'Concluída' : 'Aguardando carregamento', colX[2], y + 46, 600, R_DISP, 30, 18, colW[2], c.status === 'concluida' ? RC.teal : RC.wood, 'left');
     y += 46 + 50;
@@ -9669,7 +9734,7 @@
     var L = RM, CW = RW - 2 * RM;
     var gap = 60, boxW = (CW - gap) / 2, boxH = 150;
     var items = [
-      { x: L, label: 'Assinatura do motorista', name: c.motorista, sig: sigs[0], has: !!c.assinaturaMotorista },
+      { x: L, label: c.retira ? 'Assinatura de quem retirou' : 'Assinatura do motorista', name: c.retira ? (c.retiraNome || 'Cliente') : c.motorista, sig: sigs[0], has: !!c.assinaturaMotorista },
       { x: L + boxW + gap, label: 'Assinatura do conferente', name: nomePessoa(c.conferente), sig: sigs[1], has: !!c.assinaturaConferente }
     ];
     items.forEach(function(it) {
@@ -9786,7 +9851,7 @@
   function resumoOrdemTexto(c) {
     var L = [];
     L.push('*Ordem de carregamento* · carga ' + cargaCode(c));
-    L.push('Motorista: ' + (c.motorista || '—'));
+    L.push(c.retira ? 'Retirada: ' + retiraTexto(c) + ' (caminhão próprio)' : 'Motorista: ' + (c.motorista || 'a definir'));
     L.push(c.concluidoEm ? 'Carregada em ' + formatDateTimeBR(c.concluidoEm) : 'Para ' + formatDateBR(c.data) + (c.hora ? ' às ' + c.hora : ''));
     (c.clientes || []).forEach(function(cl, i) {
       L.push('');
@@ -11207,8 +11272,8 @@
   }
   function darOkLogistica(id) {
     var c = findCarga(id);
-    if (c && !String(c.motorista || '').trim()) {
-      showToast('Escolha o motorista e a data em "Editar carga" antes do ok da logística.');
+    if (semMotorista(c)) {
+      showToast('Escolha o motorista (ou marque “Caminhão próprio do cliente”) e a data em "Editar carga" antes do ok da logística.');
       openCargaDetail(id);
       return;
     }
@@ -14535,8 +14600,8 @@
   // (doc "plano": itens desativados, itens a mais, limites, frequência das análises). Nada é apagado: a NC é encerrada.
   // Quem assina: com pessoas marcadas como "Qualidade" em Cadastros › Equipe, a senha de 4 números de uma delas;
   // sem ninguém cadastrado (ou com a senha mestre), o nome do responsável.
-  var Q_COL = { rec: 'qualidade-recebimentos', chk: 'qualidade-checklists', ana: 'qualidade-analises', nc: 'qualidade-ncs', cfg: 'qualidade-config' };
-  var qual = { rec: [], chk: [], ana: [], nc: [], cfg: [] };
+  var Q_COL = { rec: 'qualidade-recebimentos', chk: 'qualidade-checklists', ana: 'qualidade-analises', nc: 'qualidade-ncs', cfg: 'qualidade-config', doc: 'qualidade-documentos', lei: 'qualidade-doc-leituras' };
+  var qual = { rec: [], chk: [], ana: [], nc: [], cfg: [], doc: [], lei: [] };
   var qUi = { area: 'hoje', sheet: null, todos: false };
   var Q_LINHAS = [
     { id: 'pet', nome: 'Linha PET (350 ml, 510 ml e 1,5 L)' },
@@ -14769,7 +14834,7 @@
   function renderTabQualidadeBadge() {
     var b = document.querySelector('#admin-tabs .seg-btn[data-tab="qualidade"]');
     if (!b) return;
-    var n = session ? qPendencias().total : 0;
+    var n = session ? qPendencias().total + qdSeloQtd() : 0;
     seloAba(b, n, 'Pendências da qualidade');
   }
 
@@ -14778,7 +14843,7 @@
     var el = document.getElementById('q-conteudo');
     if (!el || !session || !ehEscritorio()) return;
     document.querySelectorAll('#q-areas .seg-btn').forEach(function(b) { var on = b.dataset.qarea === qUi.area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
-    var f = { hoje: qHtmlHoje, rec: qHtmlRec, linha: qHtmlLinha, ana: qHtmlAna, nc: qHtmlNc, plano: qHtmlPlano }[qUi.area] || qHtmlHoje;
+    var f = { hoje: qHtmlHoje, rec: qHtmlRec, linha: qHtmlLinha, ana: qHtmlAna, nc: qHtmlNc, plano: qHtmlPlano, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
     el.innerHTML = f();
   }
   function qCard(cor, titulo, num, sub, botao) {
@@ -14886,6 +14951,640 @@
       }).join('') + '</div></section>';
     return html;
   }
+
+  // ---------- Qualidade › Documentos: gestão de documentos (pedido de 26/10/2026) ----------
+  // Referências: ISO 9001:2015 7.5 (informação documentada: identificação, análise crítica e aprovação, controle de
+  // versões, distribuição, retenção e disposição), RDC 275/2002 (POP aprovado, datado e assinado; frequência,
+  // responsáveis, materiais, EPI, monitoramento e ação corretiva), RDC 173/2006 4.12 (Manual de Boas Práticas e POPs
+  // acessíveis; registros por 1 ano) e RE 193/2024 ANM (registros por 2 anos).
+  // Coleções: qualidade-documentos (um por documento, com a versão vigente, a revisão em andamento, o histórico de
+  // versões e as cópias controladas) e qualidade-doc-leituras (quem leu cada versão). Arquivos no balde privado
+  // qualidade-docs. Só quem tem a aba Qualidade lê (0033). Quem elabora, revisa e aprova: a gerente da qualidade
+  // (marca "Gerente da qualidade (documentos)" em Cadastros › Equipe) ou a senha mestre. Nada é apagado: a versão
+  // antiga vira histórico (só consulta) e o documento cancelado fica obsoleto.
+  var QD_BALDE = 'qualidade-docs', QD_MAX_MB = 30;
+  var QD_TIPOS = [
+    ['pop', 'POP (Procedimento Operacional Padronizado)', 'POP', 'interno'], ['manual', 'Manual de Boas Práticas de Fabricação', 'MBP', 'interno'],
+    ['procedimento', 'Procedimento ou instrução de trabalho', 'IT', 'interno'], ['politica', 'Política, plano ou programa', 'PL', 'interno'],
+    ['registro', 'Registro ou formulário (modelo)', 'REG', 'interno'], ['licenca', 'Licença, alvará ou certificado', 'LIC', 'licenca'],
+    ['legislacao', 'Legislação ou norma', 'LEG', 'externo'], ['ft', 'Ficha técnica', 'FT', 'externo'], ['fds', 'Ficha de dados de segurança (FDS/FISPQ)', 'FDS', 'externo'],
+    ['bula', 'Bula de meio de cultura', 'BUL', 'externo'], ['laudo', 'Laudo de análise externa', 'LAU', 'externo'], ['outro', 'Outro documento externo', 'EXT', 'externo']
+  ];
+  var QD_AREAS = ['Geral', 'Produção', 'Qualidade', 'Manutenção', 'Expedição', 'Almoxarifado', 'Garrafões', 'Administrativo'];
+  var QD_SECOES = [
+    ['objetivo', 'Objetivo', true], ['aplicacao', 'Onde se aplica (abrangência)'], ['responsaveis', 'Responsáveis pela execução (nome, cargo ou função)', true],
+    ['frequencia', 'Frequência das operações', true], ['materiais', 'Materiais necessários'], ['epis', 'Equipamentos de proteção individual (EPI)'],
+    ['procedimento', 'Descrição das atividades (passo a passo)', true], ['monitoramento', 'Monitoramento (como, quem e quando)', true],
+    ['acoes', 'Ações corretivas em caso de desvio (destino do produto, restauração das condições, reavaliação do POP)', true],
+    ['verificacao', 'Verificação da efetividade'], ['registros', 'Registros e formulários relacionados'], ['referencias', 'Referências']
+  ];
+  var QD_SUBS = [['painel', 'Painel'], ['mestra', 'Lista mestra'], ['licencas', 'Licenças e vencimentos'], ['externos', 'Externos'], ['obsoletos', 'Histórico e obsoletos']];
+  var qdUi = { sub: 'painel', busca: '', fTipo: '', fArea: '' };
+  function qdTipo(k) { return QD_TIPOS.find(function(t) { return t[0] === k; }) || QD_TIPOS[QD_TIPOS.length - 1]; }
+  function qdCategoria(d) { return qdTipo(d.tipo)[3]; }
+  function qdInterno(d) { return qdCategoria(d) === 'interno'; }
+  function qdTemConteudo(tipo) { return tipo === 'pop' || tipo === 'procedimento' || tipo === 'manual' || tipo === 'politica'; }
+  function qdDocs() { return qual.doc || []; }
+  function qdPorId(id) { return qdDocs().find(function(d) { return d.id === id; }) || null; }
+  function addMesesIso(iso, n) {
+    var p = String(iso || todayIso()).slice(0, 10).split('-').map(Number), d = new Date(p[0], p[1] - 1 + n, p[2]);
+    if (d.getDate() !== p[2]) d = new Date(p[0], p[1] + n, 0); // fim do mês
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+  }
+  // situação: elaboracao | aprovacao | vigente | obsoleto (com revisão em andamento quando há rascunho e vigente)
+  function qdSituacao(d) { if (d.obsoleto) return 'obsoleto'; if (d.vigente) return 'vigente'; return (d.rascunho && d.rascunho.etapa) || 'elaboracao'; }
+  var QD_SIT = { elaboracao: ['aviso', 'Em elaboração'], aprovacao: ['aprovar', 'Aguardando aprovação'], vigente: ['ok', 'Vigente'], obsoleto: ['', 'Obsoleto'] };
+  function qdRevisaoVencida(d) { return qdSituacao(d) === 'vigente' && qdInterno(d) && d.revisarEm && d.revisarEm < todayIso(); }
+  function qdValidade(d) { var v = d.vigente && d.vigente.validade; return qdSituacao(d) === 'vigente' && v ? v : ''; }
+  function qdVencido(d) { var v = qdValidade(d); return !!v && v < todayIso(); }
+  function qdVencendo(d, dias) { var v = qdValidade(d); return !!v && v >= todayIso() && v <= addDiasIso(todayIso(), dias || 60); }
+  function qdDiasAte(iso) { return Math.round((Date.parse(iso + 'T12:00:00') - Date.parse(todayIso() + 'T12:00:00')) / 86400000); }
+  // quem pode elaborar, revisar e aprovar: a gerente da qualidade ou a senha mestre
+  function qdGerentes() { return equipe.filter(function(m) { return !!m.gestorDocumentos; }); }
+  function qdPodeGerir() {
+    if (!session) return false;
+    if (session.role === 'admin') return true;
+    if (nivelDaAba('qualidade') === 'ver') return false;
+    var e = ocEu();
+    if (e) return !!e.m.gestorDocumentos;
+    return qdGerentes().length > 0; // senha da equipe: assina com a senha de 4 números da gerente
+  }
+  function qdAssinar(titulo, feito) {
+    var e = ocEu();
+    if (session && session.role === 'admin' && !e) { feito({ nome: quemSessao(), id: '', ref: minhaRef(), em: new Date().toISOString() }); return; }
+    if (e && (e.m.gestorDocumentos || session.role === 'admin')) { feito({ nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef(), em: new Date().toISOString() }); return; }
+    openPinDialog({
+      funcao: 'gestorDocumentos', funcaoTexto: 'é a gerente da qualidade (documentos)', titulo: titulo,
+      hint: 'Assine com a senha de 4 números da gerente da qualidade.', semCadastro: 'Ninguém marcado como “Gerente da qualidade (documentos)” em Cadastros › Equipe.',
+      onOk: function(m) { feito({ nome: m.nomeCompleto || m.nome, id: m.id, ref: minhaRef(), em: new Date().toISOString() }); }
+    });
+  }
+  // leitura: quem leu, pelo próprio acesso (um toque) ou pela senha de 4 números de quem leu
+  function qdAssinarLeitura(feito) {
+    var e = ocEu();
+    if (e) { feito({ nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef() }); return; }
+    if (session && session.role === 'admin') { feito({ nome: quemSessao(), id: '', ref: minhaRef() }); return; }
+    openPinDialog({ permite: function() { return true; }, funcaoTexto: 'está na equipe', titulo: 'Li e entendi', hint: 'Quem leu: digite a sua senha de 4 números.',
+      semCadastro: 'Ninguém com senha de 4 números em Cadastros › Equipe.', onOk: function(m) { feito({ nome: m.nomeCompleto || m.nome, id: m.id, ref: minhaRef() }); } });
+  }
+  function qdChaveLeitor(p) { return p.id ? 'eq-' + p.id : 'r-' + String(p.ref || p.nome || '').replace(/[^A-Za-z0-9_-]/g, '_'); }
+  function qdLeituras(d, versao) { return (qual.lei || []).filter(function(l) { return l.docId === d.id && Number(l.versao) === Number(versao); }); }
+  function qdLiEu(d) {
+    if (!d.vigente) return true;
+    var e = ocEu();
+    if (!e) return false;
+    return qdLeituras(d, d.vigente.versao).some(function(l) { return l.pessoaId === e.m.id || l.ref === minhaRef(); });
+  }
+  function qdParaLer() { return ocEu() ? qdDocs().filter(function(d) { return qdSituacao(d) === 'vigente' && d.leituraObrigatoria && !qdLiEu(d); }) : []; }
+  function qdPendencias() {
+    var l = qdDocs();
+    return {
+      aprovar: l.filter(function(d) { return d.rascunho && d.rascunho.etapa === 'aprovacao' && !d.obsoleto; }),
+      elaboracao: l.filter(function(d) { return d.rascunho && d.rascunho.etapa === 'elaboracao' && !d.obsoleto; }),
+      revisao: l.filter(qdRevisaoVencida),
+      vencidos: l.filter(qdVencido),
+      vencendo: l.filter(function(d) { return qdVencendo(d, 60); }),
+      recolher: l.filter(function(d) { return (d.copias || []).some(function(c) { return !c.recolhidaEm && d.vigente && Number(c.versao) !== Number(d.vigente.versao); }); })
+    };
+  }
+  function qdNovidades() {
+    var l = [], p = qdPendencias(), ger = qdPodeGerir() && (!!ocEu() || (session && session.role === 'admin'));
+    if (ger) {
+      if (p.aprovar.length) l.push({ ico: '📝', txt: p.aprovar.length + (p.aprovar.length === 1 ? ' documento da qualidade aguardando aprovação' : ' documentos da qualidade aguardando aprovação') + ' (' + p.aprovar.slice(0, 3).map(function(d) { return d.codigo; }).join(', ') + ')', ir: 'qualidade', qarea: 'doc' });
+      if (p.revisao.length) l.push({ ico: '🔁', txt: p.revisao.length + (p.revisao.length === 1 ? ' documento com a revisão vencida' : ' documentos com a revisão vencida') + ' (' + p.revisao.slice(0, 3).map(function(d) { return d.codigo; }).join(', ') + ')', ir: 'qualidade', qarea: 'doc', qdsub: 'mestra' });
+      if (p.vencidos.length || p.vencendo.length) l.push({ ico: '📅', txt: (p.vencidos.length ? p.vencidos.length + ' vencido' + (p.vencidos.length > 1 ? 's' : '') : '') + (p.vencidos.length && p.vencendo.length ? ' e ' : '') + (p.vencendo.length ? p.vencendo.length + ' vencendo em até 60 dias' : '') + ' (licenças e documentos com validade)', ir: 'qualidade', qarea: 'doc', qdsub: 'licencas' });
+    }
+    var ler = qdParaLer();
+    if (ler.length) l.push({ ico: '📖', txt: ler.length + (ler.length === 1 ? ' documento da qualidade para você ler e confirmar' : ' documentos da qualidade para você ler e confirmar') + ' (' + ler.slice(0, 3).map(function(d) { return d.codigo; }).join(', ') + ')', ir: 'qualidade', qarea: 'doc' });
+    return l;
+  }
+  function qdSeloQtd() { var p = qdPendencias(); return (qdPodeGerir() ? p.aprovar.length + p.revisao.length + p.vencidos.length : 0) + qdParaLer().length; }
+  function qdProximoCodigo(tipo) {
+    var pre = qdTipo(tipo)[2], n = 0;
+    qdDocs().forEach(function(d) { var m = new RegExp('^' + pre + '-(\\d+)$').exec(String(d.codigo || '')); if (m) n = Math.max(n, Number(m[1])); });
+    return pre + '-' + String(n + 1).padStart(3, '0');
+  }
+  function qdChip(d) {
+    var s = QD_SIT[qdSituacao(d)], extra = '';
+    if (qdVencido(d)) extra = '<span class="q-chip falta">Vencido</span>';
+    else if (qdVencendo(d, 30)) extra = '<span class="q-chip aviso">Vence em ' + qdDiasAte(qdValidade(d)) + ' dias</span>';
+    if (qdRevisaoVencida(d)) extra += '<span class="q-chip falta">Revisão vencida</span>';
+    if (d.vigente && d.rascunho && !d.obsoleto) extra += '<span class="q-chip aviso">Revisão ' + escapeHtml(String(d.rascunho.versao)) + ' em ' + (d.rascunho.etapa === 'aprovacao' ? 'aprovação' : 'elaboração') + '</span>';
+    return '<span class="q-chip ' + s[0] + '">' + s[1] + '</span>' + extra;
+  }
+  function qdVersaoTxt(v) { return v ? 'versão ' + v.versao : ''; }
+  function qdQuem(a) { return a ? a.nome + ' em ' + formatDateTimeBR(a.em) : ''; }
+
+  // ----- telas -----
+  function qHtmlDoc() {
+    var subs = '<nav class="segmented q-areas qd-subs" aria-label="Documentos">' + QD_SUBS.map(function(s) { return '<button type="button" class="seg-btn' + (qdUi.sub === s[0] ? ' active' : '') + '" data-qd="sub" data-sub="' + s[0] + '" aria-pressed="' + (qdUi.sub === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</nav>';
+    var novo = qdPodeGerir() ? '<button type="button" class="btn btn-primary" data-qd="novo">+ Novo documento</button>' : '';
+    var f = { painel: qdHtmlPainel, mestra: qdHtmlMestra, licencas: qdHtmlLicencas, externos: qdHtmlExternos, obsoletos: qdHtmlObsoletos }[qdUi.sub] || qdHtmlPainel;
+    return subs + '<div class="q-topo">' + novo + (qdUi.sub === 'mestra' ? '<button type="button" class="btn btn-secondary btn-sm" data-qd="csv">Baixar a lista mestra (CSV)</button>' : '') + '</div>' + f();
+  }
+  function qdLinha(d) {
+    var v = d.vigente, r = d.rascunho, sub = [qdTipo(d.tipo)[2], d.area, v ? qdVersaoTxt(v) + (v.aprovado ? ' · aprovada em ' + formatDateBR(String(v.aprovado.em).slice(0, 10)) : v.registrado ? ' · de ' + formatDateBR(String(v.registrado.em).slice(0, 10)) : '') : r ? 'versão ' + r.versao + ' em ' + (r.etapa === 'aprovacao' ? 'aprovação' : 'elaboração') : '',
+      qdValidade(d) ? 'validade ' + formatDateBR(qdValidade(d)) : '', qdInterno(d) && d.revisarEm && v ? 'revisar até ' + formatDateBR(d.revisarEm) : ''].filter(Boolean).join(' · ');
+    return '<button type="button" class="driver-row q-item qd-item" data-qd="abrir" data-id="' + escapeHtml(d.id) + '"><span class="driver-name"><b class="mono">' + escapeHtml(d.codigo || '') + '</b> ' + escapeHtml(d.titulo || '—') +
+      '<span class="driver-sub">' + escapeHtml(sub) + '</span></span><span class="qd-chips">' + qdChip(d) + '</span></button>';
+  }
+  function qdHtmlPainel() {
+    var l = qdDocs(), p = qdPendencias(), vig = l.filter(function(d) { return qdSituacao(d) === 'vigente'; }), ler = qdParaLer(), ger = qdPodeGerir();
+    var html = '<div class="est-cards">' +
+      qCard('verde', 'Documentos vigentes', fmtInt(vig.length), vig.filter(qdInterno).length + ' internos · ' + vig.filter(function(d) { return !qdInterno(d); }).length + ' externos e licenças') +
+      qCard(p.aprovar.length ? 'laranja' : 'roxo', 'Pendentes', fmtInt(p.aprovar.length + p.elaboracao.length), p.aprovar.length + ' aguardando aprovação · ' + p.elaboracao.length + ' em elaboração') +
+      qCard(p.revisao.length ? 'laranja' : 'azul', 'Revisão vencida', fmtInt(p.revisao.length), 'documentos internos com a revisão periódica vencida') +
+      qCard(p.vencidos.length ? 'laranja' : p.vencendo.length ? 'azul' : 'verde', 'Vencimentos', p.vencidos.length ? p.vencidos.length + ' vencido' + (p.vencidos.length > 1 ? 's' : '') : 'nenhum vencido', p.vencendo.length + ' vencendo em até 60 dias') +
+      '</div>';
+    var al = [];
+    if (ger) p.aprovar.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': versão ' + d.rascunho.versao + ' aguardando a sua aprovação'); });
+    p.revisao.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': revisão vencida desde ' + escapeHtml(formatDateBR(d.revisarEm))); });
+    p.vencidos.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': venceu em ' + escapeHtml(formatDateBR(qdValidade(d)))); });
+    p.recolher.forEach(function(d) { var n = (d.copias || []).filter(function(c) { return !c.recolhidaEm && Number(c.versao) !== Number(d.vigente.versao); }).length; al.push('<b>' + escapeHtml(d.codigo) + '</b>: ' + n + (n === 1 ? ' cópia impressa' : ' cópias impressas') + ' da versão anterior para recolher'); });
+    html += al.length ? '<div class="est-alertas"><p class="est-alertas-t">⚠ Atenção nos documentos</p><ul>' + al.map(function(a) { return '<li>' + a + '</li>'; }).join('') + '</ul>' +
+      '</div>' : '<div class="est-alertas ok">✓ Documentos em dia: nada vencido nem aguardando aprovação.</div>';
+    if (ler.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Para você ler e confirmar</h2></div>' + ler.map(qdLinha).join('') + '</section>';
+    var pend = p.aprovar.concat(p.elaboracao.filter(function(d) { return p.aprovar.indexOf(d) < 0; }));
+    if (pend.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Em elaboração e aprovação</h2></div>' + pend.map(qdLinha).join('') + '</section>';
+    var prox = l.filter(function(d) { return qdVencendo(d, 60) || qdVencido(d) || qdRevisaoVencida(d) || (qdSituacao(d) === 'vigente' && qdInterno(d) && d.revisarEm && d.revisarEm <= addDiasIso(todayIso(), 30)); })
+      .sort(function(a, b) { return String(qdValidade(a) || a.revisarEm || '').localeCompare(String(qdValidade(b) || b.revisarEm || '')); });
+    if (prox.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Vencimentos e revisões próximos</h2></div>' + prox.map(qdLinha).join('') + '</section>';
+    if (!l.length) html += '<p class="empty-state">Nenhum documento ainda.' + (ger ? ' Toque em “+ Novo documento” para cadastrar o primeiro (POP, Manual de BPF, licença, ficha técnica…).' : '') + '</p>';
+    html += '<p class="hint">Cada documento interno passa por <b>elaboração → aprovação → vigente</b> (quem elabora, revisa e aprova é a gerente da qualidade). Ao aprovar uma nova versão, ela substitui a anterior na lista mestra; a antiga fica no histórico só para consulta, guardada pelo tempo de retenção (2 anos, RE 193/2024).</p>';
+    return html;
+  }
+  function qdFiltrados(cat) {
+    var q = normNome(qdUi.busca || '');
+    return qdDocs().filter(function(d) {
+      if (d.obsoleto) return false;
+      if (cat === 'interno' ? !qdInterno(d) : qdCategoria(d) !== cat) return false;
+      if (qdUi.fTipo && d.tipo !== qdUi.fTipo) return false;
+      if (qdUi.fArea && d.area !== qdUi.fArea) return false;
+      if (q && normNome([d.codigo, d.titulo, d.area, d.descricao, d.orgao, d.numeroDoc].join(' ')).indexOf(q) < 0) return false;
+      return true;
+    }).sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); });
+  }
+  function qdFiltrosHtml(cat) {
+    var tipos = QD_TIPOS.filter(function(t) { return cat === 'interno' ? t[3] === 'interno' : t[3] === cat; });
+    return '<div class="pr-barra pr-filtros"><input type="search" id="qd-busca" value="' + escapeHtml(qdUi.busca) + '" placeholder="Buscar código, título, área…" aria-label="Buscar documento" autocomplete="off" />' +
+      (tipos.length > 1 ? '<select id="qd-f-tipo" aria-label="Tipo"><option value="">Todos os tipos</option>' + tipos.map(function(t) { return '<option value="' + t[0] + '"' + (qdUi.fTipo === t[0] ? ' selected' : '') + '>' + escapeHtml(t[1]) + '</option>'; }).join('') + '</select>' : '') +
+      '<select id="qd-f-area" aria-label="Área"><option value="">Todas as áreas</option>' + QD_AREAS.map(function(a) { return '<option' + (qdUi.fArea === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select></div>';
+  }
+  function qdHtmlMestra() {
+    var l = qdFiltrados('interno');
+    return '<p class="hint">Lista mestra dos documentos internos (POPs, Manual de Boas Práticas, procedimentos, políticas e modelos de registro), sempre com a versão vigente e aprovada.</p>' + qdFiltrosHtml('interno') +
+      (l.length ? '<div class="pr-tab-wrap"><table class="pr-tab qd-mestra"><thead><tr><th>Código</th><th>Título</th><th>Área</th><th>Versão</th><th>Aprovado</th><th>Revisar até</th><th>Situação</th></tr></thead><tbody>' + l.map(function(d) {
+        var v = d.vigente;
+        return '<tr data-qd="abrir" data-id="' + escapeHtml(d.id) + '" tabindex="0"><td class="mono">' + escapeHtml(d.codigo) + '</td><td>' + escapeHtml(d.titulo) + '</td><td>' + escapeHtml(d.area || '') + '</td><td class="num">' + (v ? v.versao : '—') + '</td>' +
+          '<td>' + (v && v.aprovado ? escapeHtml(formatDateBR(String(v.aprovado.em).slice(0, 10))) + '<small>' + escapeHtml(v.aprovado.nome) + '</small>' : '—') + '</td><td>' + (v && d.revisarEm ? escapeHtml(formatDateBR(d.revisarEm)) : '—') + '</td><td>' + qdChip(d) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' : '<p class="empty-state">Nenhum documento interno' + (qdUi.busca || qdUi.fTipo || qdUi.fArea ? ' com estes filtros' : '') + '.</p>');
+  }
+  function qdHtmlLicencas() {
+    var l = qdDocs().filter(function(d) { return !d.obsoleto && qdValidade(d); }).sort(function(a, b) { return qdValidade(a).localeCompare(qdValidade(b)); });
+    var semVal = qdFiltrados('licenca').filter(function(d) { return !qdValidade(d); });
+    var meses = {};
+    l.forEach(function(d) { var k = qdValidade(d).slice(0, 7); (meses[k] = meses[k] || []).push(d); });
+    var html = '<p class="hint">Calendário de vencimentos: licenças, alvarás, certificados e documentos externos com validade (laudos, fichas). Os vencidos e os que vencem em até 60 dias aparecem no Início da gerente da qualidade.</p>';
+    html += Object.keys(meses).sort().map(function(k) {
+      return '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">' + escapeHtml(nomeMes(k)) + '</h2></div>' + meses[k].map(function(d) {
+        var dias = qdDiasAte(qdValidade(d)), wa = qdWhatsHtml(d);
+        return '<div class="qd-venc' + (dias < 0 ? ' vencido' : dias <= 60 ? ' perto' : '') + '">' + qdLinha(d) + '<div class="qd-venc-info"><span>' + (dias < 0 ? 'Venceu há ' + (-dias) + (dias === -1 ? ' dia' : ' dias') : dias === 0 ? 'Vence hoje' : 'Vence em ' + dias + (dias === 1 ? ' dia' : ' dias')) + ' (' + escapeHtml(formatDateBR(qdValidade(d))) + ')</span>' + wa + '</div></div>';
+      }).join('') + '</section>';
+    }).join('');
+    if (!l.length) html += '<p class="empty-state">Nenhum documento com validade cadastrada.</p>';
+    if (semVal.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Licenças sem validade informada</h2></div>' + semVal.map(qdLinha).join('') + '</section>';
+    return html;
+  }
+  function qdHtmlExternos() {
+    var l = qdFiltrados('externo');
+    return '<p class="hint">Documentos de origem externa que a fábrica usa: legislações e normas, fichas técnicas e de segurança (FDS/FISPQ) dos produtos de limpeza e manutenção, bulas dos meios de cultura e laudos de análises externas.</p>' + qdFiltrosHtml('externo') +
+      (l.length ? l.map(qdLinha).join('') : '<p class="empty-state">Nenhum documento externo' + (qdUi.busca || qdUi.fTipo || qdUi.fArea ? ' com estes filtros' : '') + '.</p>');
+  }
+  function qdHtmlObsoletos() {
+    var obs = qdDocs().filter(function(d) { return d.obsoleto; });
+    var hist = [];
+    qdDocs().forEach(function(d) { (d.historico || []).forEach(function(v) { hist.push({ d: d, v: v }); }); });
+    hist.sort(function(a, b) { return String(b.v.substituidaEm || '').localeCompare(String(a.v.substituidaEm || '')); });
+    var html = '<p class="hint">Versões substituídas e documentos cancelados: ficam só para consulta (com a marca OBSOLETO), guardados até o fim do tempo de retenção. Não use para trabalhar: vale sempre a versão vigente.</p>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Versões anteriores</h2></div>' + (hist.length ? hist.map(function(x) {
+      var ate = x.v.substituidaEm ? addMesesIso(String(x.v.substituidaEm).slice(0, 10), 12 * (Number(x.d.retencaoAnos) || 2)) : '';
+      return '<button type="button" class="driver-row q-item" data-qd="abrir-versao" data-id="' + escapeHtml(x.d.id) + '" data-v="' + x.v.versao + '"><span class="driver-name"><b class="mono">' + escapeHtml(x.d.codigo) + '</b> ' + escapeHtml(x.d.titulo) + ' · versão ' + x.v.versao +
+        '<span class="driver-sub">' + escapeHtml(['substituída em ' + (x.v.substituidaEm ? formatDateBR(String(x.v.substituidaEm).slice(0, 10)) : '—'), ate ? 'guardar até ' + formatDateBR(ate) : ''].filter(Boolean).join(' · ')) + '</span></span><span class="q-chip">Obsoleta</span></button>';
+    }).join('') : '<p class="empty-state">Nenhuma versão substituída ainda.</p>') + '</section>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Documentos cancelados</h2></div>' + (obs.length ? obs.map(qdLinha).join('') : '<p class="empty-state">Nenhum documento cancelado.</p>') + '</section>';
+    return html;
+  }
+  function qdTelGerente() { var g = qdGerentes()[0]; return g && g.telefone ? waNumero(g.telefone) : ''; }
+  function qdWhatsHtml(d) {
+    var txt = 'Qualidade · ' + d.codigo + ' ' + d.titulo + (qdValidade(d) ? ': vence em ' + formatDateBR(qdValidade(d)) : '') + '. Providenciar a renovação/revisão no app LEVÍSSIMA (Qualidade › Documentos).';
+    return '<a class="btn-text" href="' + escapeHtml(waLink(qdTelGerente(), txt)) + '" target="_blank" rel="noopener">Avisar no WhatsApp</a>';
+  }
+
+  // ----- folha do documento -----
+  function qdConteudoHtml(c) {
+    return QD_SECOES.filter(function(s) { return c && String(c[s[0]] || '').trim(); }).map(function(s) {
+      return '<div class="qd-sec"><h4>' + escapeHtml(s[1].replace(/ \(.*\)$/, '')) + '</h4><p>' + escapeHtml(c[s[0]]).replace(/\n/g, '<br>') + '</p></div>';
+    }).join('');
+  }
+  function qdVersaoHtml(d, v, rotulo, obsoleta) {
+    if (!v) return '';
+    var ass = [v.elaborado ? 'Elaborado por ' + qdQuem(v.elaborado) : '', v.revisado ? 'Revisado por ' + qdQuem(v.revisado) : '', v.aprovado ? 'Aprovado por ' + qdQuem(v.aprovado) : '', v.registrado ? 'Registrado por ' + qdQuem(v.registrado) : '',
+      v.substituidaEm ? 'Substituída em ' + formatDateTimeBR(v.substituidaEm) : ''].filter(Boolean);
+    return '<div class="qd-versao' + (obsoleta ? ' obsoleta' : '') + '"><p class="acesso-titulo">' + escapeHtml(rotulo) + ' · versão ' + v.versao + (obsoleta ? ' <span class="q-chip">OBSOLETA — só consulta</span>' : '') + '</p>' +
+      (v.motivo ? '<p class="hint">O que mudou: ' + escapeHtml(v.motivo) + '</p>' : '') +
+      (v.validade ? '<p class="hint">Validade: <b>' + escapeHtml(formatDateBR(v.validade)) + '</b>' + (v.emissao ? ' · emitido em ' + escapeHtml(formatDateBR(v.emissao)) : '') + '</p>' : v.emissao ? '<p class="hint">Data do documento: ' + escapeHtml(formatDateBR(v.emissao)) + '</p>' : '') +
+      (v.arquivo ? '<button type="button" class="sol-anx-arq" data-qd="arquivo" data-caminho="' + escapeHtml(v.arquivo.caminho) + '" data-nome="' + escapeHtml(v.arquivo.nome) + '"><span aria-hidden="true">' + solTipoIcone(v.arquivo.tipo) + '</span><span><b>' + escapeHtml(v.arquivo.nome) + '</b><small>' + escapeHtml(fmtTam(v.arquivo.tam)) + ' · tocar para abrir</small></span></button>' : '') +
+      (v.conteudo && qdConteudoHtml(v.conteudo) ? '<details class="qd-cont"' + (obsoleta ? '' : ' open') + '><summary>Conteúdo do documento</summary>' + qdConteudoHtml(v.conteudo) + '</details><button type="button" class="btn btn-secondary btn-sm" data-qd="pdf" data-id="' + escapeHtml(d.id) + '" data-v="' + v.versao + '">Baixar em PDF</button>' : '') +
+      (ass.length ? '<p class="field-hint">' + escapeHtml(ass.join(' · ')) + '</p>' : '') + '</div>';
+  }
+  function qdAbrirDoc(id) {
+    var d = qdPorId(id);
+    if (!d) return;
+    var ger = qdPodeGerir(), sit = qdSituacao(d), v = d.vigente, r = d.rascunho, interno = qdInterno(d);
+    var info = [qdTipo(d.tipo)[1], d.area ? 'área ' + d.area : '', interno ? 'revisão a cada ' + (d.revisaoMeses || 12) + ' meses' : '', 'retenção ' + (d.retencaoAnos || 2) + ' anos', d.orgao ? 'emissor ' + d.orgao : '', d.numeroDoc ? 'nº ' + d.numeroDoc : ''].filter(Boolean).join(' · ');
+    var html = '<p class="qd-cab"><b class="mono">' + escapeHtml(d.codigo) + '</b> ' + qdChip(d) + '</p><p class="hint">' + escapeHtml(info) + '</p>' + (d.descricao ? '<p>' + escapeHtml(d.descricao) + '</p>' : '');
+    if (d.obsoleto) html += '<div class="est-alertas"><p class="est-alertas-t">Documento cancelado (obsoleto)</p><p style="margin:0">' + escapeHtml(qdQuem(d.obsoleto) + (d.obsoleto.motivo ? ' · motivo: ' + d.obsoleto.motivo : '') + (d.obsoleto.destinacao ? ' · destinação: ' + d.obsoleto.destinacao : '')) + '</p></div>';
+    if (v) html += qdVersaoHtml(d, v, d.obsoleto ? 'Última versão' : 'Versão vigente', !!d.obsoleto);
+    if (v && interno && d.revisarEm && !d.obsoleto) html += '<p class="hint">Próxima revisão periódica até <b>' + escapeHtml(formatDateBR(d.revisarEm)) + '</b>.</p>';
+    // leitura
+    if (v && !d.obsoleto && d.leituraObrigatoria) {
+      var lei = qdLeituras(d, v.versao);
+      html += '<div class="qd-leit"><p class="acesso-titulo">Leitura obrigatória · ' + lei.length + (lei.length === 1 ? ' pessoa confirmou' : ' pessoas confirmaram') + ' a versão ' + v.versao + '</p>' +
+        (qdLiEu(d) && ocEu() ? '<p class="hint">✓ Você já confirmou a leitura desta versão.</p>' : '<button type="button" class="btn btn-primary btn-sm" data-qd="li" data-id="' + escapeHtml(d.id) + '">Li e entendi</button>') +
+        (lei.length ? '<details><summary>Quem leu</summary><ul class="qd-lista">' + lei.sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }).map(function(l) { return '<li>' + escapeHtml(l.nome) + ' · ' + escapeHtml(formatDateTimeBR(l.em)) + '</li>'; }).join('') + '</ul></details>' : '') + '</div>';
+    }
+    // revisão em andamento
+    if (r && !d.obsoleto) {
+      html += '<div class="qd-rasc">' + qdVersaoHtml(d, r, r.etapa === 'aprovacao' ? 'Aguardando aprovação' : 'Em elaboração', false) +
+        ((r.devolucoes || []).length ? '<p class="hint">Devolvido para ajuste: ' + escapeHtml(r.devolucoes.map(function(x) { return x.nome + ' (' + formatDateBR(String(x.em).slice(0, 10)) + '): ' + x.motivo; }).join(' · ')) + '</p>' : '') +
+        (ger ? '<div class="frete-acoes">' + (r.etapa === 'elaboracao'
+          ? '<button type="button" class="btn btn-secondary btn-sm" data-qd="editar" data-id="' + escapeHtml(d.id) + '">Editar</button><button type="button" class="btn btn-primary btn-sm" data-qd="enviar" data-id="' + escapeHtml(d.id) + '">Revisar e enviar para aprovação</button>'
+          : '<button type="button" class="btn btn-primary btn-sm" data-qd="aprovar" data-id="' + escapeHtml(d.id) + '">Aprovar e publicar a versão ' + r.versao + '</button><button type="button" class="btn btn-secondary btn-sm" data-qd="devolver" data-id="' + escapeHtml(d.id) + '">Devolver para ajuste</button>') +
+          '<button type="button" class="btn-text danger" data-qd="descartar" data-id="' + escapeHtml(d.id) + '">Descartar ' + (v ? 'a revisão' : 'o rascunho') + '</button></div>' : '') + '</div>';
+    }
+    // cópias controladas
+    if (v && !d.obsoleto) {
+      var cps = d.copias || [];
+      html += '<div class="qd-copias"><p class="acesso-titulo">Cópias impressas controladas</p>' + (cps.length ? '<ul class="qd-lista">' + cps.map(function(c) {
+        var velha = !c.recolhidaEm && Number(c.versao) !== Number(v.versao);
+        return '<li class="' + (velha ? 'alerta' : '') + '">' + escapeHtml(c.qtd + (c.qtd === 1 ? ' cópia' : ' cópias') + ' da versão ' + c.versao + ' em ' + c.local + ' (' + formatDateBR(String(c.entregueEm).slice(0, 10)) + ', ' + c.entreguePor + ')') +
+          (c.recolhidaEm ? ' · recolhida em ' + escapeHtml(formatDateBR(String(c.recolhidaEm).slice(0, 10))) + (c.destinacao ? ' (' + escapeHtml(c.destinacao) + ')' : '') : velha ? ' · <b>versão antiga: recolher</b>' : '') +
+          (!c.recolhidaEm && ger ? ' <button type="button" class="btn-text" data-qd="recolher" data-id="' + escapeHtml(d.id) + '" data-c="' + escapeHtml(c.id) + '">Recolher</button>' : '') + '</li>';
+      }).join('') + '</ul>' : '<p class="hint">Nenhuma cópia impressa registrada. O documento vale no app; se imprimir para o local de uso, registre aqui para recolher quando sair uma nova versão.</p>') +
+        (ger ? '<button type="button" class="btn-text" data-qd="copia" data-id="' + escapeHtml(d.id) + '">+ Registrar cópia entregue</button>' : '') + '</div>';
+    }
+    // histórico
+    if ((d.historico || []).length) html += '<details class="qd-hist"><summary>Histórico de versões (' + d.historico.length + ')</summary>' + d.historico.slice().reverse().map(function(h) { return qdVersaoHtml(d, h, 'Versão anterior', true); }).join('') + '</details>';
+    // ações
+    if (ger && !d.obsoleto) {
+      var ac = [];
+      if (v && !r) ac.push(interno ? '<button type="button" class="btn btn-secondary btn-sm" data-qd="revisar" data-id="' + escapeHtml(d.id) + '">Nova revisão</button>' : '<button type="button" class="btn btn-secondary btn-sm" data-qd="substituir" data-id="' + escapeHtml(d.id) + '">' + (qdCategoria(d) === 'licenca' ? 'Renovar (nova via)' : 'Substituir por versão nova') + '</button>');
+      if (v && interno && !r) ac.push('<button type="button" class="btn-text" data-qd="revisado-ok" data-id="' + escapeHtml(d.id) + '">Revisado sem alteração</button>');
+      ac.push('<button type="button" class="btn-text" data-qd="dados" data-id="' + escapeHtml(d.id) + '">Dados do documento</button>');
+      if (v) ac.push('<button type="button" class="btn-text danger" data-qd="obsoleto" data-id="' + escapeHtml(d.id) + '">Cancelar (tornar obsoleto)</button>');
+      html += '<div class="frete-acoes qd-acoes">' + ac.join('') + '</div>';
+    }
+    qUi.sheet = { modo: 'doc-ver', id: id };
+    qAbrir(d.titulo || 'Documento', html, false);
+  }
+  function qdAbrirVersao(id, versao) {
+    var d = qdPorId(id); if (!d) return;
+    var h = (d.historico || []).find(function(x) { return Number(x.versao) === Number(versao); });
+    qUi.sheet = { modo: 'doc-ver', id: id };
+    qAbrir(d.codigo + ' · versão ' + versao + ' (obsoleta)', '<p class="hint"><b>OBSOLETA — só para consulta.</b> Vale a versão vigente.</p>' + qdVersaoHtml(d, h, 'Versão anterior', true), false);
+  }
+
+  // ----- formulário: novo documento, rascunho, revisão, substituição -----
+  function qdFormHtml(d, modo, base) {
+    var tipo = d ? d.tipo : (qdUi.novoTipo || 'pop'), cat = qdTipo(tipo)[3], v = base || {};
+    var html = '';
+    if (!d) html += '<label>Tipo de documento <span class="req">*</span><select id="qd-tipo">' + ['interno', 'licenca', 'externo'].map(function(c) {
+      return '<optgroup label="' + (c === 'interno' ? 'Documentos internos' : c === 'licenca' ? 'Licenças e alvarás' : 'Documentos externos') + '">' + QD_TIPOS.filter(function(t) { return t[3] === c; }).map(function(t) { return '<option value="' + t[0] + '"' + (t[0] === tipo ? ' selected' : '') + '>' + escapeHtml(t[1]) + '</option>'; }).join('') + '</optgroup>';
+    }).join('') + '</select></label>';
+    if (modo !== 'rascunho-edit' || !d) {
+      if (!d || modo === 'dados') {
+        html += '<div class="row-2"><label>Código <span class="req">*</span><input type="text" id="qd-codigo" maxlength="20" autocomplete="off" value="' + escapeHtml(d ? d.codigo : qdProximoCodigo(tipo)) + '" /></label>' +
+          '<label>Área <span class="req">*</span><select id="qd-area">' + QD_AREAS.map(function(a) { return '<option' + ((d ? d.area : 'Produção') === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select></label></div>' +
+          '<label>Título <span class="req">*</span><input type="text" id="qd-titulo" maxlength="140" autocomplete="off" value="' + escapeHtml(d ? d.titulo : '') + '" placeholder="' + (cat === 'interno' ? 'Ex.: Higienização dos reservatórios' : cat === 'licenca' ? 'Ex.: Alvará sanitário' : 'Ex.: FDS do detergente alcalino') + '" /></label>' +
+          '<label>Descrição <span class="opt">(opcional)</span><input type="text" id="qd-desc" maxlength="240" autocomplete="off" value="' + escapeHtml(d ? d.descricao || '' : '') + '" /></label>' +
+          (cat === 'interno' ? '<div class="row-2"><label>Revisar a cada (meses)<input type="number" id="qd-rev" min="1" max="60" step="1" value="' + (d ? d.revisaoMeses || 12 : 12) + '" /></label><label>Guardar por (anos)<input type="number" id="qd-ret" min="1" max="20" step="1" value="' + (d ? d.retencaoAnos || 2 : 2) + '" /></label></div>' +
+            '<label class="check-row"><input type="checkbox" id="qd-leitura"' + (!d || d.leituraObrigatoria ? ' checked' : '') + ' /> Leitura obrigatória: quem tem a aba Qualidade confirma que leu cada versão</label>'
+          : '<div class="row-2"><label>' + (cat === 'licenca' ? 'Órgão emissor' : 'Origem / fornecedor') + ' <span class="opt">(opcional)</span><input type="text" id="qd-orgao" maxlength="80" autocomplete="off" value="' + escapeHtml(d ? d.orgao || '' : '') + '" /></label>' +
+            '<label>' + (cat === 'licenca' ? 'Número' : 'Referência') + ' <span class="opt">(opcional)</span><input type="text" id="qd-num" maxlength="40" autocomplete="off" value="' + escapeHtml(d ? d.numeroDoc || '' : '') + '" /></label></div>' +
+            '<label>Guardar por (anos)<input type="number" id="qd-ret" min="1" max="20" step="1" value="' + (d ? d.retencaoAnos || 2 : 2) + '" /></label>');
+      }
+    }
+    if (modo === 'dados') return html;
+    // a versão
+    html += '<p class="acesso-titulo">' + (cat === 'interno' ? 'Versão ' + (v.versao || 1) + (modo === 'novo' ? '' : ' (nova)') : 'Arquivo') + '</p>';
+    if (cat !== 'interno') html += '<div class="row-2"><label>' + (cat === 'licenca' ? 'Emitido em' : 'Data do documento') + ' <span class="opt">(opcional)</span><input type="date" id="qd-emissao" value="' + escapeHtml(v.emissao || '') + '" /></label>' +
+      '<label>Validade ' + (cat === 'licenca' ? '<span class="req">*</span>' : '<span class="opt">(se tiver)</span>') + '<input type="date" id="qd-validade" value="' + escapeHtml(v.validade || '') + '" /></label></div>';
+    if ((v.versao || 1) > 1 || modo === 'substituir') html += '<label>O que mudou nesta versão <span class="req">*</span><input type="text" id="qd-motivo" maxlength="240" autocomplete="off" value="' + escapeHtml(v.motivo || '') + '" placeholder="Ex.: inclusão da etapa de enxágue final" /></label>';
+    html += '<div class="qd-arq"><label class="btn btn-secondary btn-sm">📎 ' + (v.arquivo ? 'Trocar o arquivo' : 'Anexar o arquivo') + '<input type="file" id="qd-arq" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.xlsm,.ppt,.pptx,.txt,.csv,image/*,application/pdf" /></label>' +
+      '<span id="qd-arq-nome" class="field-hint">' + (v.arquivo ? escapeHtml(v.arquivo.nome + ' · ' + fmtTam(v.arquivo.tam)) : 'PDF, Word, Excel ou foto (até ' + QD_MAX_MB + ' MB)') + '</span></div>';
+    if (qdTemConteudo(tipo)) {
+      var c = v.conteudo || {};
+      html += '<details class="qd-cont-form"' + (tipo === 'pop' || qdTemTexto(c) ? ' open' : '') + '><summary>' + (tipo === 'pop' ? 'Conteúdo do POP no modelo padrão (RDC 275/2002)' : 'Escrever o conteúdo no app (opcional)') + '</summary>' +
+        '<p class="field-hint">' + (tipo === 'pop' ? 'Preencha no app ou anexe o arquivo. Os itens com * são obrigatórios no POP quando o conteúdo é escrito aqui.' : 'Use se não for anexar o arquivo.') + '</p>' +
+        QD_SECOES.map(function(s) { return '<label>' + escapeHtml(s[1]) + (s[2] && tipo === 'pop' ? ' <span class="req">*</span>' : '') + '<textarea id="qd-c-' + s[0] + '" rows="' + (s[0] === 'procedimento' ? 6 : 2) + '" maxlength="6000">' + escapeHtml(c[s[0]] || '') + '</textarea></label>'; }).join('') + '</details>';
+    }
+    html += '<p class="hint">' + (cat === 'interno' ? 'Ao salvar, a versão fica <b>em elaboração</b>. Depois: “Revisar e enviar para aprovação” e “Aprovar e publicar”, assinados pela gerente da qualidade.' : 'Ao salvar, o documento fica vigente (assinado pela gerente da qualidade). A versão anterior vai para o histórico.') + '</p>';
+    return html;
+  }
+  function qdLimparVersao(v) { ['elaborado', 'revisado', 'aprovado', 'registrado', 'publicadoEm', 'substituidaEm', 'devolucoes', 'etapa'].forEach(function(k) { delete v[k]; }); return v; }
+  function qdTemTexto(c) { return !!c && QD_SECOES.some(function(s) { return String(c[s[0]] || '').trim(); }); }
+  function qdLerConteudo() {
+    var c = {}, tem = false;
+    QD_SECOES.forEach(function(s) { var el = document.getElementById('qd-c-' + s[0]); if (el) { var t = el.value.trim(); if (t) { c[s[0]] = t; tem = true; } } });
+    return tem ? c : null;
+  }
+  function qdEnviarArquivo(docId, versao, file) {
+    if (!file) return Promise.resolve(null);
+    if (file.size > QD_MAX_MB * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; return Promise.reject(e); }
+    var ext = (String(file.name || '').match(/\.([A-Za-z0-9]{1,5})$/) || [])[1], tipo = solTipoEnvio(file.type || SOL_EXT[String(ext || '').toLowerCase()] || '');
+    if (mode !== 'db' || !sbCliente) return Promise.resolve({ caminho: 'local/' + uid(), nome: file.name || 'arquivo', tipo: tipo, tam: file.size || 0 });
+    var caminho = 'doc/' + String(docId).replace(/[^A-Za-z0-9_-]/g, '_') + '/v' + versao + '-' + Date.now().toString(36) + '-' + solNomeSeguro(file.name);
+    return withTimeout(sbCliente.storage.from(QD_BALDE).upload(caminho, file, { contentType: tipo, upsert: false }), 180000).then(function(r) {
+      if (r && r.error) throw r.error;
+      return { caminho: caminho, nome: file.name || 'arquivo', tipo: tipo, tam: file.size || 0 };
+    });
+  }
+  function qdGravar(id, dados) {
+    if (mode === 'db' && db) return db.collection(Q_COL.doc).doc(id).set(dados);
+    return qGravar([{ k: 'doc', id: id, data: dados }]);
+  }
+  function qdFalha(btn) { return function(err) { if (btn) btn.disabled = false; console.error('documentos', err); qErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo ' + QD_MAX_MB + ' MB).' : err && err.codigo === 'so_inclui' ? 'Seu acesso não altera documentos.' : 'Não foi possível salvar agora. Verifique a internet e tente de novo.'); }; }
+  function qdAbrirForm(id, modo) {
+    var d = id ? qdPorId(id) : null;
+    var base = modo === 'novo' ? { versao: 1 } : modo === 'rascunho-edit' ? d.rascunho : modo === 'revisar' ? qdLimparVersao(Object.assign({}, d.vigente, { versao: Number(d.vigente.versao) + 1, motivo: '' }))
+      : modo === 'substituir' ? { versao: Number(d.vigente.versao) + 1, emissao: '', validade: '', motivo: '' } : null;
+    qUi.sheet = { modo: 'doc', id: id, tipo: modo, arq: null, salvar: function() { return qdSalvarForm(d, modo, base); } };
+    var titulo = modo === 'novo' ? 'Novo documento' : modo === 'dados' ? 'Dados do documento' : modo === 'revisar' ? 'Nova revisão · ' + d.codigo : modo === 'substituir' ? (qdCategoria(d) === 'licenca' ? 'Renovar · ' : 'Nova versão · ') + d.codigo : 'Editar · ' + d.codigo + ' (versão ' + base.versao + ')';
+    qAbrir(titulo, qdFormHtml(d, modo, base), modo === 'dados' ? 'Salvar' : (d ? qdInterno(d) : qdTipo(qdUi.novoTipo || 'pop')[3] === 'interno') ? 'Salvar em elaboração' : 'Salvar e deixar vigente');
+  }
+  function qdSalvarForm(d, modo, base) {
+    var tipo = d ? d.tipo : document.getElementById('qd-tipo').value, cat = qdTipo(tipo)[3], agora = new Date().toISOString();
+    var g = function(i) { var el = document.getElementById(i); return el ? el.value.trim() : ''; };
+    var dados = {};
+    if (!d || modo === 'dados') {
+      var codigo = g('qd-codigo').toUpperCase(), titulo = g('qd-titulo');
+      if (!codigo) { qErro('Informe o código do documento.'); return null; }
+      if (!titulo) { qErro('Informe o título.'); return null; }
+      if (qdDocs().some(function(x) { return x.id !== (d && d.id) && String(x.codigo).toUpperCase() === codigo; })) { qErro('Já existe um documento com o código ' + codigo + '.'); return null; }
+      dados = { codigo: codigo, titulo: titulo, area: g('qd-area'), descricao: g('qd-desc'), retencaoAnos: Math.max(1, Math.round(Number(g('qd-ret')) || 2)) };
+      if (cat === 'interno') { dados.revisaoMeses = Math.max(1, Math.round(Number(g('qd-rev')) || 12)); dados.leituraObrigatoria = document.getElementById('qd-leitura').checked; }
+      else { dados.orgao = g('qd-orgao'); dados.numeroDoc = g('qd-num'); }
+    }
+    if (modo === 'dados') {
+      return new Promise(function(res) { qdAssinar('Dados · ' + d.codigo, function() { var nd = Object.assign({}, d, dados, { atualizadoEm: agora }); delete nd.id; qdGravar(d.id, nd).then(function() { showToast('Dados do documento salvos.'); res(); qdAbrirDoc(d.id); }).catch(qdFalha()); }); });
+    }
+    var versao = Object.assign({}, base || {}, { versao: (base && base.versao) || 1 });
+    var file = qUi.sheet.arq;
+    var conteudo = qdTemConteudo(tipo) ? qdLerConteudo() : null;
+    if (cat !== 'interno') {
+      versao.emissao = g('qd-emissao'); versao.validade = g('qd-validade');
+      if (cat === 'licenca' && !versao.validade) { qErro('Informe a validade da licença.'); return null; }
+    }
+    if (document.getElementById('qd-motivo')) { versao.motivo = g('qd-motivo'); if (versao.motivo.length < 3) { qErro('Escreva o que mudou nesta versão.'); return null; } }
+    if (conteudo) versao.conteudo = conteudo; else if (qdTemConteudo(tipo)) delete versao.conteudo;
+    if (!file && !versao.arquivo && !conteudo) { qErro(qdTemConteudo(tipo) ? 'Anexe o arquivo ou escreva o conteúdo do documento.' : 'Anexe o arquivo do documento.'); return null; }
+    if (tipo === 'pop' && conteudo && !versao.arquivo && !file) {
+      var falta = QD_SECOES.filter(function(s) { return s[2] && !conteudo[s[0]]; }).map(function(s) { return s[1].replace(/ \(.*\)$/, ''); });
+      if (falta.length) { qErro('No POP, preencha: ' + falta.join(', ') + ' (RDC 275/2002) — ou anexe o arquivo.'); return null; }
+    }
+    var docId = d ? d.id : 'doc-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    var btn = document.getElementById('btn-q-submit');
+    return new Promise(function(res) {
+      qdAssinar((cat === 'interno' ? 'Elaborar · ' : 'Registrar · ') + (dados.codigo || d.codigo), function(ass) {
+        btn.disabled = true; btn.textContent = file ? 'Enviando o arquivo…' : 'Salvando…';
+        qdEnviarArquivo(docId, versao.versao, file).then(function(arq) {
+          if (arq) versao.arquivo = arq;
+          var novo = Object.assign({}, d || { tipo: tipo, criadoEm: agora, criadoPor: ass, historico: [], copias: [] }, dados, { atualizadoEm: agora });
+          delete novo.id;
+          if (cat === 'interno') {
+            versao.etapa = 'elaboracao'; versao.elaborado = ass;
+            novo.rascunho = versao;
+          } else {
+            versao.registrado = ass;
+            if (novo.vigente) novo.historico = (novo.historico || []).concat([Object.assign({}, novo.vigente, { substituidaEm: agora })]);
+            novo.vigente = versao; novo.rascunho = null; novo.versaoAtual = versao.versao;
+          }
+          return qdGravar(docId, novo);
+        }).then(function() {
+          btn.disabled = false; res();
+          showToast(cat === 'interno' ? 'Versão ' + versao.versao + ' salva em elaboração.' : 'Documento vigente salvo.');
+          setTimeout(function() { qdAbrirDoc(docId); }, 0);
+        }).catch(function(err) { btn.textContent = 'Salvar'; qdFalha(btn)(err); });
+      });
+    });
+  }
+  // etapas: enviar, aprovar, devolver, descartar, revisado sem alteração, obsoleto, cópias
+  function qdEtapa(id, acao) {
+    var d = qdPorId(id); if (!d) return;
+    var agora = new Date().toISOString(), novo = Object.assign({}, d); delete novo.id;
+    if (acao === 'enviar') {
+      qdAssinar('Revisar e enviar · ' + d.codigo, function(ass) {
+        novo.rascunho = Object.assign({}, d.rascunho, { etapa: 'aprovacao', revisado: ass }); novo.atualizadoEm = agora;
+        qdGravar(id, novo).then(function() { showToast('Versão ' + d.rascunho.versao + ' enviada para aprovação.'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
+      });
+    } else if (acao === 'aprovar') {
+      qdAssinar('Aprovar e publicar · ' + d.codigo, function(ass) {
+        var v = Object.assign({}, d.rascunho, { aprovado: ass, publicadoEm: agora }); delete v.etapa;
+        if (d.vigente) novo.historico = (d.historico || []).concat([Object.assign({}, d.vigente, { substituidaEm: agora })]);
+        novo.vigente = v; novo.rascunho = null; novo.versaoAtual = v.versao; novo.revisarEm = addMesesIso(todayIso(), Number(d.revisaoMeses) || 12); novo.atualizadoEm = agora;
+        qdGravar(id, novo).then(function() {
+          var antigas = (d.copias || []).filter(function(c) { return !c.recolhidaEm; }).length;
+          showToast(d.vigente ? 'Versão ' + v.versao + ' aprovada e publicada: substitui a versão ' + d.vigente.versao + ' na lista mestra.' + (antigas ? ' Recolha ' + (antigas === 1 ? 'a cópia impressa' : 'as ' + antigas + ' cópias impressas') + ' da versão anterior.' : '') : 'Versão ' + v.versao + ' aprovada e publicada na lista mestra.');
+          qdAbrirDoc(id);
+        }).catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
+      });
+    } else if (acao === 'revisado-ok') {
+      qdAssinar('Revisão periódica · ' + d.codigo, function(ass) {
+        novo.revisoes = (d.revisoes || []).concat([Object.assign({}, ass, { versao: d.vigente.versao, semAlteracao: true })]); novo.revisarEm = addMesesIso(todayIso(), Number(d.revisaoMeses) || 12); novo.atualizadoEm = agora;
+        qdGravar(id, novo).then(function() { showToast('Revisão periódica registrada sem alteração. Próxima até ' + formatDateBR(novo.revisarEm) + '.'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
+      });
+    }
+  }
+  function qdPergunta(id, titulo, campos, botao, feito) {
+    qUi.sheet = { modo: 'doc', id: id, salvar: function() { var r = feito(); return r; } };
+    qAbrir(titulo, campos, botao);
+  }
+  function qdAcaoComMotivo(id, acao) {
+    var d = qdPorId(id); if (!d) return;
+    var agora = new Date().toISOString(), novo = Object.assign({}, d); delete novo.id;
+    var g = function(i) { var el = document.getElementById(i); return el ? el.value.trim() : ''; };
+    var salvarCom = function(msg) { return function(ass) { qdGravar(id, Object.assign(novo, { atualizadoEm: agora })).then(function() { showToast(msg); qdAbrirDoc(id); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); }); }; };
+    if (acao === 'devolver') qdPergunta(id, 'Devolver para ajuste · ' + d.codigo, '<label>O que precisa ajustar <span class="req">*</span><textarea id="qd-mot" rows="3" maxlength="400"></textarea></label>', 'Devolver', function() {
+      var m = g('qd-mot'); if (m.length < 3) { qErro('Escreva o que precisa ajustar.'); return null; }
+      qdAssinar('Devolver · ' + d.codigo, function(ass) { novo.rascunho = Object.assign({}, d.rascunho, { etapa: 'elaboracao', devolucoes: (d.rascunho.devolucoes || []).concat([Object.assign({}, ass, { motivo: m })]) }); salvarCom('Devolvido para ajuste.')(ass); });
+      return null;
+    });
+    else if (acao === 'descartar') qdPergunta(id, 'Descartar · ' + d.codigo, '<p>Descartar ' + (d.vigente ? 'a revisão em andamento (versão ' + d.rascunho.versao + ')? A versão vigente continua valendo.' : 'o rascunho? O documento ainda não tem versão aprovada: fica cancelado.') + '</p><label>Motivo <span class="req">*</span><input type="text" id="qd-mot" maxlength="200" /></label>', 'Descartar', function() {
+      var m = g('qd-mot'); if (m.length < 3) { qErro('Escreva o motivo.'); return null; }
+      qdAssinar('Descartar · ' + d.codigo, function(ass) {
+        novo.descartes = (d.descartes || []).concat([Object.assign({}, ass, { versao: d.rascunho.versao, motivo: m })]); novo.rascunho = null;
+        if (!d.vigente) novo.obsoleto = Object.assign({}, ass, { motivo: 'rascunho descartado: ' + m });
+        salvarCom('Descartado.')(ass);
+      });
+      return null;
+    });
+    else if (acao === 'obsoleto') qdPergunta(id, 'Cancelar documento · ' + d.codigo, '<p class="hint">O documento sai da lista mestra e fica no histórico (só consulta) pelo tempo de retenção.</p><label>Motivo <span class="req">*</span><input type="text" id="qd-mot" maxlength="200" /></label><label>Destinação das cópias <span class="opt">(opcional)</span><input type="text" id="qd-dest" maxlength="200" placeholder="Ex.: cópias recolhidas e destruídas" /></label>', 'Cancelar documento', function() {
+      var m = g('qd-mot'); if (m.length < 3) { qErro('Escreva o motivo.'); return null; }
+      qdAssinar('Cancelar · ' + d.codigo, function(ass) { novo.obsoleto = Object.assign({}, ass, { motivo: m, destinacao: g('qd-dest') }); novo.rascunho = null; salvarCom('Documento cancelado (obsoleto).')(ass); });
+      return null;
+    });
+    else if (acao === 'copia') qdPergunta(id, 'Cópia controlada · ' + d.codigo, '<div class="row-2"><label>Onde fica <span class="req">*</span><input type="text" id="qd-cp-local" maxlength="80" placeholder="Ex.: sala de envase" /></label><label>Quantas<input type="number" id="qd-cp-qtd" min="1" step="1" value="1" /></label></div>', 'Registrar', function() {
+      var local = g('qd-cp-local'), q = Math.max(1, Math.round(Number(g('qd-cp-qtd')) || 1)); if (!local) { qErro('Informe onde a cópia fica.'); return null; }
+      qdAssinar('Cópia · ' + d.codigo, function(ass) { novo.copias = (d.copias || []).concat([{ id: uid(), versao: d.vigente.versao, local: local, qtd: q, entregueEm: agora, entreguePor: ass.nome }]); salvarCom('Cópia controlada registrada.')(ass); });
+      return null;
+    });
+  }
+  function qdRecolher(id, cid) {
+    var d = qdPorId(id); if (!d) return;
+    qdPergunta(id, 'Recolher cópia · ' + d.codigo, '<label>Destinação <span class="opt">(opcional)</span><input type="text" id="qd-dest" maxlength="120" placeholder="Ex.: destruída" /></label>', 'Recolher', function() {
+      var dest = (document.getElementById('qd-dest') || {}).value || '';
+      qdAssinar('Recolher cópia · ' + d.codigo, function(ass) {
+        var novo = Object.assign({}, d); delete novo.id;
+        novo.copias = (d.copias || []).map(function(c) { return c.id === cid ? Object.assign({}, c, { recolhidaEm: new Date().toISOString(), recolhidaPor: ass.nome, destinacao: dest.trim() }) : c; });
+        qdGravar(id, novo).then(function() { showToast('Cópia recolhida.'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); });
+      });
+      return null;
+    });
+  }
+  function qdConfirmarLeitura(id) {
+    var d = qdPorId(id); if (!d || !d.vigente) return;
+    qdAssinarLeitura(function(p) {
+      var chave = d.id + '_v' + d.vigente.versao + '_' + qdChaveLeitor(p);
+      var dados = { docId: d.id, codigo: d.codigo, versao: d.vigente.versao, nome: p.nome, pessoaId: p.id || '', ref: p.ref || '', em: new Date().toISOString() };
+      (mode === 'db' && db ? db.collection(Q_COL.lei).doc(chave).set(dados) : qGravar([{ k: 'lei', id: chave, data: dados }]))
+        .then(function() { showToast('Leitura confirmada: ' + p.nome + ' · ' + d.codigo + ' versão ' + d.vigente.versao + '.'); qdAbrirDoc(id); })
+        .catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
+    });
+  }
+  function qdAbrirArquivo(caminho, nome) { solAbrirAnexo(caminho, nome, QD_BALDE); }
+  function qdCsv() {
+    var cab = ['codigo', 'titulo', 'tipo', 'area', 'versao vigente', 'aprovado por', 'aprovado em', 'revisar ate', 'validade', 'situacao', 'leitura obrigatoria', 'leituras da versao'];
+    var linhas = qdDocs().filter(function(d) { return qdInterno(d) && !d.obsoleto; }).sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); }).map(function(d) {
+      var v = d.vigente;
+      return [d.codigo, d.titulo, qdTipo(d.tipo)[1], d.area, v ? v.versao : '', v && v.aprovado ? v.aprovado.nome : '', v && v.aprovado ? formatDateTimeBR(v.aprovado.em) : '', d.revisarEm ? formatDateBR(d.revisarEm) : '', qdValidade(d) ? formatDateBR(qdValidade(d)) : '', QD_SIT[qdSituacao(d)][1], d.leituraObrigatoria ? 'sim' : 'não', v ? qdLeituras(d, v.versao).length : ''];
+    });
+    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(csvEscape).join(';'); }).join('\n');
+    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'qualidade-lista-mestra-' + todayIso() + '.csv');
+  }
+  // PDF do conteúdo escrito no app: A4 com cabeçalho padrão (código, título, versão, aprovação) em todas as páginas
+  function qdPdf(id, versao) {
+    var d = qdPorId(id); if (!d) return;
+    var v = d.vigente && Number(d.vigente.versao) === Number(versao) ? d.vigente : (d.historico || []).find(function(x) { return Number(x.versao) === Number(versao); }) || d.rascunho;
+    if (!v || !v.conteudo) return;
+    var obsoleta = !(d.vigente && Number(d.vigente.versao) === Number(versao)) || !!d.obsoleto;
+    var W = 1240, H = 1754, M = 90, pages = [], cv, ctx, y;
+    var fonte = function(peso, tam) { return peso + ' ' + tam + 'px "Helvetica Neue", Arial, sans-serif'; };
+    function novaPagina() {
+      cv = document.createElement('canvas'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+      ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = '#702082'; ctx.lineWidth = 3; ctx.strokeRect(M, M - 30, W - 2 * M, 180);
+      ctx.fillStyle = '#702082'; ctx.font = fonte(800, 34); ctx.fillText('LEVÍSSIMA', M + 24, M + 22);
+      ctx.fillStyle = '#1D1D1F'; ctx.font = fonte(700, 30); ctx.fillText(String(d.codigo + ' · ' + d.titulo).slice(0, 70), M + 24, M + 64);
+      ctx.font = fonte(400, 22); ctx.fillStyle = '#555';
+      ctx.fillText('Versão ' + v.versao + (v.aprovado ? ' · aprovada por ' + v.aprovado.nome + ' em ' + formatDateBR(String(v.aprovado.em).slice(0, 10)) : ' · NÃO APROVADA'), M + 24, M + 100);
+      if (v.elaborado) ctx.fillText('Elaborada por ' + v.elaborado.nome + (d.area ? ' · área ' + d.area : ''), M + 24, M + 132);
+      pages.push(cv); y = M + 200;
+      if (obsoleta || !v.aprovado) { ctx.save(); ctx.globalAlpha = 0.12; ctx.fillStyle = '#C0392B'; ctx.font = fonte(900, 150); ctx.translate(W / 2, H / 2); ctx.rotate(-Math.PI / 5); ctx.textAlign = 'center'; ctx.fillText(obsoleta ? 'OBSOLETO' : 'RASCUNHO', 0, 0); ctx.restore(); }
+    }
+    function linhaTexto(t, peso, tam, cor, recuo) {
+      ctx.font = fonte(peso, tam); ctx.fillStyle = cor;
+      var palavras = String(t).split(/\s+/), lin = '', larg = W - 2 * M - (recuo || 0);
+      palavras.forEach(function(p) {
+        var teste = lin ? lin + ' ' + p : p;
+        if (ctx.measureText(teste).width > larg && lin) { if (y > H - M - 40) { novaPagina(); ctx.font = fonte(peso, tam); ctx.fillStyle = cor; } ctx.fillText(lin, M + (recuo || 0), y); y += tam * 1.45; lin = p; }
+        else lin = teste;
+      });
+      if (lin) { if (y > H - M - 40) { novaPagina(); ctx.font = fonte(peso, tam); ctx.fillStyle = cor; } ctx.fillText(lin, M + (recuo || 0), y); y += tam * 1.45; }
+    }
+    novaPagina();
+    QD_SECOES.forEach(function(s) {
+      var t = String(v.conteudo[s[0]] || '').trim(); if (!t) return;
+      if (y > H - M - 120) novaPagina();
+      y += 10; linhaTexto(s[1].replace(/ \(.*\)$/, ''), 700, 26, '#702082'); y += 4;
+      t.split(/\n/).forEach(function(par) { if (par.trim()) linhaTexto(par.trim(), 400, 23, '#1D1D1F', 10); else y += 12; });
+    });
+    pages.forEach(function(p, i) {
+      var c2 = p.getContext('2d'); c2.font = fonte(400, 18); c2.fillStyle = '#777'; c2.textAlign = 'left';
+      c2.fillText('Documento controlado no app LEVÍSSIMA (Qualidade › Documentos).', M, H - M + 14);
+      c2.fillText('Cópia impressa só vale se for a versão vigente.', M, H - M + 40);
+      c2.textAlign = 'right'; c2.fillText('Página ' + (i + 1) + ' de ' + pages.length, W - M, H - M + 40);
+    });
+    var bytes = buildPdfFromJpegs(pages.map(function(p) { return { jpeg: dataUrlToBytes(p.toDataURL('image/jpeg', 0.9)), w: W, h: H }; }));
+    triggerDownload(new Blob([bytes], { type: 'application/pdf' }), (d.codigo + '-v' + v.versao + (obsoleta ? '-obsoleta' : '')).toLowerCase().replace(/[^a-z0-9-]+/g, '-') + '.pdf');
+  }
+  // PDF com várias páginas (cada página uma imagem JPEG em A4)
+  function buildPdfFromJpegs(pgs) {
+    var enc = new TextEncoder(), chunks = [], offsets = [0], pos = 0;
+    function push(x) { var b = typeof x === 'string' ? enc.encode(x) : x; chunks.push(b); pos += b.length; }
+    function begin(n) { offsets[n] = pos; push(n + ' 0 obj\n'); }
+    var n = pgs.length, pw = 595.28;
+    push(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34, 0x0A, 0x25, 0xE2, 0xE3, 0xCF, 0xD3, 0x0A]));
+    begin(1); push('<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+    var kids = []; for (var i = 0; i < n; i++) kids.push((3 + i * 3) + ' 0 R');
+    begin(2); push('<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>\nendobj\n');
+    pgs.forEach(function(p, i) {
+      var o = 3 + i * 3, ph = Math.round(pw * p.h / p.w * 100) / 100;
+      begin(o); push('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im0 ' + (o + 1) + ' 0 R >> >> /Contents ' + (o + 2) + ' 0 R >>\nendobj\n');
+      begin(o + 1); push('<< /Type /XObject /Subtype /Image /Width ' + p.w + ' /Height ' + p.h + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + p.jpeg.length + ' >>\nstream\n'); push(p.jpeg); push('\nendstream\nendobj\n');
+      var content = 'q ' + pw + ' 0 0 ' + ph + ' 0 0 cm /Im0 Do Q';
+      begin(o + 2); push('<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream\nendobj\n');
+    });
+    var total = 3 + n * 3, xrefPos = pos, xref = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+    for (var k = 1; k < total; k++) xref += String(offsets[k]).padStart(10, '0') + ' 00000 n \n';
+    push(xref + 'trailer\n<< /Size ' + total + ' /Root 1 0 R >>\nstartxref\n' + xrefPos + '\n%%EOF\n');
+    var out = new Uint8Array(pos), q = 0;
+    chunks.forEach(function(c) { out.set(c, q); q += c.length; });
+    return out;
+  }
+  // eventos da área Documentos (na aba e na folha)
+  document.addEventListener('click', function(e) {
+    var b = e.target.closest('[data-qd]');
+    if (!b || !(b.closest('#tab-qualidade') || b.closest('#q-sheet-overlay'))) return;
+    var a = b.dataset.qd, id = b.dataset.id;
+    if (a === 'sub') { qdUi.sub = b.dataset.sub; qdUi.fTipo = ''; renderQualidade(); }
+    else if (a === 'novo') { qdUi.novoTipo = 'pop'; qdAbrirForm(null, 'novo'); }
+    else if (a === 'abrir') qdAbrirDoc(id);
+    else if (a === 'abrir-versao') qdAbrirVersao(id, b.dataset.v);
+    else if (a === 'csv') qdCsv();
+    else if (a === 'arquivo') qdAbrirArquivo(b.dataset.caminho, b.dataset.nome);
+    else if (a === 'pdf') qdPdf(id, b.dataset.v);
+    else if (a === 'li') qdConfirmarLeitura(id);
+    else if (!qdPodeGerir()) return;
+    else if (a === 'editar') qdAbrirForm(id, 'rascunho-edit');
+    else if (a === 'revisar') qdAbrirForm(id, 'revisar');
+    else if (a === 'substituir') qdAbrirForm(id, 'substituir');
+    else if (a === 'dados') qdAbrirForm(id, 'dados');
+    else if (a === 'enviar' || a === 'aprovar' || a === 'revisado-ok') qdEtapa(id, a);
+    else if (a === 'devolver' || a === 'descartar' || a === 'obsoleto' || a === 'copia') qdAcaoComMotivo(id, a);
+    else if (a === 'recolher') qdRecolher(id, b.dataset.c);
+  });
+  document.getElementById('tab-qualidade').addEventListener('keydown', function(e) { if (e.key === 'Enter' && e.target.matches('tr[data-qd="abrir"]')) qdAbrirDoc(e.target.dataset.id); });
+  var qdBuscaTimer = null;
+  document.getElementById('q-conteudo').addEventListener('input', function(e) {
+    if (e.target.id !== 'qd-busca') return;
+    var v = e.target.value; clearTimeout(qdBuscaTimer);
+    qdBuscaTimer = setTimeout(function() { qdUi.busca = v; renderQualidade(); var el = document.getElementById('qd-busca'); if (el) { el.focus(); try { el.setSelectionRange(v.length, v.length); } catch (x) {} } }, 250);
+  });
+  document.getElementById('q-conteudo').addEventListener('change', function(e) {
+    if (e.target.id === 'qd-f-tipo') { qdUi.fTipo = e.target.value; renderQualidade(); }
+    else if (e.target.id === 'qd-f-area') { qdUi.fArea = e.target.value; renderQualidade(); }
+  });
+  document.getElementById('q-form-body').addEventListener('change', function(e) {
+    if (!qUi.sheet || qUi.sheet.modo !== 'doc') return;
+    if (e.target.id === 'qd-arq') {
+      var f = e.target.files && e.target.files[0];
+      qUi.sheet.arq = f || null;
+      var n = document.getElementById('qd-arq-nome'); if (n && f) n.textContent = f.name + ' · ' + fmtTam(f.size) + (f.size > QD_MAX_MB * 1048576 ? ' — grande demais' : '');
+    } else if (e.target.id === 'qd-tipo') {
+      qdUi.novoTipo = e.target.value; var t = document.getElementById('qd-titulo'), tit = t ? t.value : '';
+      qdAbrirForm(null, 'novo'); var t2 = document.getElementById('qd-titulo'); if (t2) t2.value = tit;
+    }
+  });
 
   // ----- folha (formulários) -----
   function qAbrir(titulo, corpo, botao) {
@@ -15365,6 +16064,7 @@
     else if (s.modo === 'ana') salvarQAna();
     else if (s.modo === 'nc') salvarQNc();
     else if (s.modo === 'plano') { var pr = s.salvar(); if (pr && pr.then) pr.then(qFechar); }
+    else if (s.modo === 'doc') s.salvar(); // documentos: depois de salvar, volta para a folha do documento
   });
   document.getElementById('btn-close-q-sheet').addEventListener('click', qFechar);
   document.getElementById('btn-q-cancel').addEventListener('click', qFechar);
@@ -16856,10 +17556,12 @@
   // funcao: o nome do campo da equipe ('compras', 'nome') ou uma regra function(membro) (cargo)
   // quem entrou com o próprio acesso e tem a função assina com um toque; num aparelho de outra pessoa, senha de 4 números
   // (mestreAssina: a senha mestre assina como ela mesma, mesmo sem cadastro na equipe)
-  function ocAssinar(funcao, funcaoTexto, titulo, semCadastro, filtro, feito, mestreAssina) {
+  // direto: quem entrou com o próprio acesso pessoal e tem a função assina sem abrir a senha (pedido e cotação; 26/10/2026)
+  function ocAssinar(funcao, funcaoTexto, titulo, semCadastro, filtro, feito, mestreAssina, direto) {
     var e = ocEu(), eu = null;
     if (e && (typeof funcao === 'function' ? funcao(e.m) : !!e.m[funcao]) && !(filtro && filtro(e.m))) eu = e.m;
     else if (!e && mestreAssina && session && session.ref === 'mestre') eu = { nome: quemSessao(), id: '' };
+    if (direto && eu && e && e.ref.indexOf('escritorio:') === 0) { feito(eu); return; }
     openPinDialog({
       funcao: typeof funcao === 'function' ? '' : funcao, permite: typeof funcao === 'function' ? funcao : null, funcaoTexto: funcaoTexto, titulo: titulo, hint: eu ? 'Confirme quem assina.' : 'Assine com a sua senha de 4 números.', semCadastro: semCadastro, eu: eu,
       onOk: function(m) { var erro = filtro && m.id ? filtro(m) : null; if (erro) { showToast(erro); return; } feito(m); }
@@ -17077,7 +17779,7 @@
             .catch(function(err) { btn.disabled = false; if (err && err.codigo === 'grande') gerErro('Foto grande demais (máximo 8 MB).'); else if (err && !err.codigo && !/permission|42501|row-level/i.test(String(err.message || ''))) gerErro('Não foi possível enviar as fotos ou o pedido agora. Verifique a internet e tente de novo.'); else falhaOc(err); });
         }
         if (membro) ocAssinar('nome', 'está na equipe', 'Assinar o pedido', '', function(m) { return m.id === membro.id ? null : 'Essa senha não é de ' + membro.nome + '.'; },
-          function(m) { gravar({ nome: m.nome, id: m.id, em: new Date().toISOString() }); });
+          function(m) { gravar({ nome: m.nome, id: m.id, em: new Date().toISOString() }); }, false, true);
         else gravar({ nome: nome, id: '', em: new Date().toISOString(), semSenha: true });
         return false;
       }
@@ -17267,7 +17969,7 @@
           var agora = new Date().toISOString(), poucas = cots.length < 3;
           ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, ref: minhaRef(), em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs'), justificativa: poucas ? just : '' }, status: poucas ? 'justificativa' : 'aprovacao', atualizadoEm: agora })
             .then(function() { gerFechar(); showToast(poucas ? 'Cotação enviada: com menos de 3, espera o ok do Nicolas na justificativa.' : 'Cotação enviada para a aprovação da diretoria (Nicolas ou André).'); }).catch(falhaOc);
-        });
+        }, false, true);
         return false;
       }
     });
@@ -18531,6 +19233,7 @@
       if (m.veBrindes) chips += '<span class="func-chip">vê Brindes</span>';
       if (m.veLancProducao) chips += '<span class="func-chip">corrige lançamentos da produção</span>';
       if (m.aprovaCliente) chips += '<span class="func-chip">aprova cliente novo</span>';
+      if (m.gestorDocumentos) chips += '<span class="func-chip">aprova documentos da qualidade</span>';
       if (m.linhaProducao) chips += '<span class="func-chip">líder · ' + escapeHtml(phLinhaNome(m.linhaProducao) + (phTurnoDe(m.linhaProducao, m.turnoProducao) ? ' · ' + phTurnoDe(m.linhaProducao, m.turnoProducao) : '')) + '</span>';
       if (m.alertaEstoque) chips += '<span class="func-chip">alerta de estoque</span>';
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(m.nomeCompleto || m.nome) + '<span class="driver-sub">no app: ' + escapeHtml(m.nome) + '</span>' + chips + '</span>' +
@@ -18570,6 +19273,7 @@
     document.getElementById('f-equipe-brindes').checked = !!(m && m.veBrindes);
     document.getElementById('f-equipe-lanc-prod').checked = !!(m && m.veLancProducao);
     document.getElementById('f-equipe-aprova-cli').checked = !!(m && m.aprovaCliente);
+    document.getElementById('f-equipe-gestor-docs').checked = !!(m && m.gestorDocumentos);
     phEquipeSelects((m && m.linhaProducao) || '', (m && m.turnoProducao) || '');
     document.getElementById('f-equipe-alerta-est').checked = !!(m && m.alertaEstoque);
     document.getElementById('f-equipe-fat').checked = m ? !!m.faturamento : false;
@@ -18668,7 +19372,7 @@
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
         superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
         veBrindes: document.getElementById('f-equipe-brindes').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked,
-        aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
+        aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, gestorDocumentos: document.getElementById('f-equipe-gestor-docs').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
       if (hash) patch.pinHash = hash;
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
@@ -20181,11 +20885,12 @@
       urlFotoCanhoto(el.dataset.anxSrc, SOL_BALDE).then(function(u) { el.src = u; }).catch(function() { el.dataset.ok = ''; });
     });
   }
-  function solAbrirAnexo(caminho, nome) {
+  function solAbrirAnexo(caminho, nome, balde) {
+    balde = balde || SOL_BALDE;
     if (mode !== 'db' || !sbCliente) return;
     showToast('Abrindo ' + nome + '…');
-    if (!appNativo()) { urlFotoCanhoto(caminho, SOL_BALDE).then(function(u) { window.open(u, '_blank', 'noopener'); }).catch(function() { showToast('Não foi possível abrir agora.'); }); return; }
-    sbCliente.storage.from(SOL_BALDE).download(caminho).then(function(r) { if (r.error || !r.data) throw r.error || new Error('sem arquivo'); triggerDownload(r.data, nome); })
+    if (!appNativo()) { urlFotoCanhoto(caminho, balde).then(function(u) { window.open(u, '_blank', 'noopener'); }).catch(function() { showToast('Não foi possível abrir agora.'); }); return; }
+    sbCliente.storage.from(balde).download(caminho).then(function(r) { if (r.error || !r.data) throw r.error || new Error('sem arquivo'); triggerDownload(r.data, nome); })
       .catch(function() { showToast('Não foi possível abrir agora.'); });
   }
   // gravar áudio no app (MediaRecorder); sem microfone liberado, abre o gravador do celular
@@ -21250,6 +21955,7 @@
     }
     if (tem('cargas') && ehEscritorio()) l = l.concat(aceiteNovidades());
     if (tem('producao') && ehEscritorio()) l = l.concat(opNovidades());
+    if (tem('qualidade') && ehEscritorio()) l = l.concat(qdNovidades());
     l = l.concat(cnNovidades());
     return l;
   }
@@ -21272,6 +21978,7 @@
     if (x.ir === 'compras' && x.filtro) ocUi.filtro = x.filtro;
     if (x.ir === 'brindes' && x.filtro) brUi.filtro = x.filtro;
     if (x.ir === 'minhaagenda') ag2.filtro = 'proximos';
+    if (x.ir === 'qualidade' && x.qarea) { qUi.area = x.qarea; qdUi.sub = x.qdsub || 'painel'; }
     setTab(x.ir);
   });
 
@@ -22820,7 +23527,8 @@
     var ov = document.getElementById('carga-sheet-overlay');
     if (ov && !ov.classList.contains('hidden')) {
       return { tipo: 'carga', editingId: editingCargaId || null, data: document.getElementById('cg-data').value, hora: document.getElementById('cg-hora').value,
-        motorista: document.getElementById('cg-motorista').value, obs: document.getElementById('cg-obs').value, clientes: JSON.parse(JSON.stringify(cgEditor.getState())) };
+        motorista: document.getElementById('cg-motorista').value, obs: document.getElementById('cg-obs').value, clientes: JSON.parse(JSON.stringify(cgEditor.getState())),
+        retira: document.getElementById('cg-retira').checked, retiraNome: document.getElementById('cg-retira-nome').value, retiraPlaca: document.getElementById('cg-retira-placa').value };
     }
     var g = document.getElementById('ger-sheet-overlay');
     if (g && !g.classList.contains('hidden') && ger && ger.ph) { phLer(ger.ph); return { tipo: 'producao', ph: JSON.parse(JSON.stringify(ger.ph)) }; }
@@ -22855,6 +23563,8 @@
       renderCgMotoristaSelect(f.motorista || '');
       renderCgMotoristaInfo(f.motorista || '', c);
       document.getElementById('cg-obs').value = f.obs || '';
+      document.getElementById('cg-retira-nome').value = f.retiraNome || ''; document.getElementById('cg-retira-placa').value = f.retiraPlaca || '';
+      cgRetiraAplicar(!!f.retira, !!session && session.role === 'representante');
       if (Array.isArray(f.clientes) && f.clientes.length) cgEditor.setState(f.clientes, editorStateFromCarga(c).extras);
     } else if (f.tipo === 'producao' && f.ph) {
       abrirProducaoHora({ estado: f.ph });
