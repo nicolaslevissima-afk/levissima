@@ -282,6 +282,8 @@
   .st-delivered { --st-bg: var(--st-delivered-bg); --st-fg: var(--st-delivered-fg); }
 
   .carga-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 18px; }
+  .carga-busca { display: flex; align-items: center; gap: 8px; margin: -6px 0 14px; }
+  .carga-busca input { flex: 1; min-width: 0; }
   @media (min-width: 560px) { .carga-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .cg-filter { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; font-family: var(--font-display); color: var(--ink); }
   .cg-filter[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
@@ -1638,6 +1640,9 @@
     <div class="fv-banner hidden" id="fv-banner"></div>
     <section class="drivers-admin hidden" id="cn-painel" aria-label="Clientes novos da força de vendas"></section>
     <div class="carga-filters" id="carga-filters" role="group" aria-label="Filtrar cargas por situação"></div>
+    <div class="carga-busca"><input type="search" id="carga-busca" data-keep="carga-busca" placeholder="Buscar por cliente ou freteiro (motorista ou transportadora)" aria-label="Buscar cargas por cliente ou freteiro" autocomplete="off" />
+      <button type="button" class="btn-text hidden" id="carga-busca-limpar">Limpar</button></div>
+    <p class="filter-note hidden" id="carga-busca-nota" role="status"></p>
     <p class="filter-note hidden" id="carga-filter-note"></p>
 
     <div id="patio-strip" class="patio hidden" aria-live="polite"></div>
@@ -3054,6 +3059,7 @@
     tab: 'cargas',            // cargas | paletes | cadastros
     confirmDeleteCarga: null,
     cargaFilter: null,        // null | atrasada | hoje | futura | semFaturamento
+    cargaBusca: '',           // busca por cliente ou freteiro (26/10/2026)
     editingPager: null,       // id da carga com o pager em edição (nos detalhes)
     showAllDone: false,       // mostrar todas as cargas carregadas (por padrão, só as mais recentes)
     detailId: null,           // carga aberta nos detalhes (ao tocar no quadrado)
@@ -5657,13 +5663,27 @@
       }).join('') + '</tbody></table>';
   }
   var ultimaViagemLista = [];
+  // Busca nas cargas (pedido de 26/10/2026): pelo nome do cliente ou do freteiro (motorista e transportadora dele).
+  // Cada palavra digitada precisa aparecer (sem acento e sem diferença de maiúscula).
+  function buscaNorm(s) { return String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+  function cargaCombinaBusca(c, q) {
+    if (!q) return true;
+    var m = motoristaDaCarga(c), t = m ? transportadoraDe(m) : null;
+    var txt = buscaNorm([c.motorista, m && m.nome, t && t.nome].concat((c.clientes || []).map(function(cl) { return cl.cliente; })).join(' | '));
+    return q.split(' ').every(function(p) { return txt.indexOf(p) >= 0; });
+  }
   function renderCargasSection() {
     var panel = document.getElementById('tab-cargas');
     var saved = captureInputs(panel);
     entregasIdx = indexarEntregas();
     try {
       renderCargaFilters();
-      var visible = cargas.filter(function(c) { return cargaMatchesFilter(c, ui.cargaFilter); });
+      var qBusca = buscaNorm(ui.cargaBusca);
+      var visible = cargas.filter(function(c) { return cargaMatchesFilter(c, ui.cargaFilter) && cargaCombinaBusca(c, qBusca); });
+      var notaB = document.getElementById('carga-busca-nota'), limparB = document.getElementById('carga-busca-limpar');
+      if (limparB) limparB.classList.toggle('hidden', !qBusca);
+      if (notaB) { notaB.classList.toggle('hidden', !qBusca); notaB.textContent = qBusca ? (visible.length ? visible.length + (visible.length === 1 ? ' carga encontrada' : ' cargas encontradas') : 'Nenhuma carga encontrada') + ' com “' + String(ui.cargaBusca).trim() + '”' + (ui.cargaFilter ? ' neste filtro' : '') + '.' : ''; }
+      var filtrando = !!(ui.cargaFilter || qBusca);
       // Mais urgente primeiro: atrasadas, depois as de hoje (pela hora), depois as programadas.
       var pend = visible.filter(function(c) { return c.status !== 'concluida'; })
         .sort(function(a, b) { return (cargaWhenTs(a) - cargaWhenTs(b)) || (a.criadoEm || '').localeCompare(b.criadoEm || ''); });
@@ -5681,7 +5701,7 @@
 
       document.getElementById('cargas-pending-list').innerHTML = pend.length
         ? pend.map(cargaCardHtml).join('')
-        : '<p class="empty-state">' + (ui.cargaFilter ? 'Nenhuma carga aguardando carregamento neste filtro.' : 'Nenhuma carga aguardando carregamento. Toque em “+ Nova carga” para lançar a próxima.') + '</p>';
+        : '<p class="empty-state">' + (filtrando ? 'Nenhuma carga aguardando carregamento ' + (qBusca ? 'nesta busca' : 'neste filtro') + '.' : 'Nenhuma carga aguardando carregamento. Toque em “+ Nova carga” para lançar a próxima.') + '</p>';
 
       var onlyPendingFilter = ui.cargaFilter === 'atrasada' || ui.cargaFilter === 'hoje' || ui.cargaFilter === 'futura';
       ['cargas-trip-head', 'cargas-trip-list', 'cargas-done-head', 'cargas-done-list'].forEach(function(elId) {
@@ -5689,16 +5709,16 @@
       });
       document.getElementById('cargas-trip-list').innerHTML = trip.length
         ? trip.map(cargaCardHtml).join('')
-        : '<p class="empty-state">' + (ui.cargaFilter ? 'Nenhuma carga em viagem neste filtro.' : 'Nenhuma carga em viagem agora.') + '</p>';
+        : '<p class="empty-state">' + (filtrando ? 'Nenhuma carga em viagem ' + (qBusca ? 'nesta busca' : 'neste filtro') + '.' : 'Nenhuma carga em viagem agora.') + '</p>';
       ultimaViagemLista = onlyPendingFilter ? [] : trip;
       renderMapaViagens(ultimaViagemLista);
 
-      var shown = ui.showAllDone ? done : done.slice(0, DONE_PREVIEW);
+      var shown = ui.showAllDone || qBusca ? done : done.slice(0, DONE_PREVIEW); // na busca, mostra todas as entregues encontradas
       document.getElementById('cargas-done-list').innerHTML = shown.length
         ? shown.map(cargaCardHtml).join('')
-        : '<p class="empty-state">' + (ui.cargaFilter ? 'Nenhuma carga entregue neste filtro.' : 'Nenhuma carga entregue ainda.') + '</p>';
+        : '<p class="empty-state">' + (filtrando ? 'Nenhuma carga entregue ' + (qBusca ? 'nesta busca' : 'neste filtro') + '.' : 'Nenhuma carga entregue ainda.') + '</p>';
       var moreBtn = document.getElementById('btn-cargas-show-all');
-      if (!onlyPendingFilter && done.length > DONE_PREVIEW) {
+      if (!onlyPendingFilter && !qBusca && done.length > DONE_PREVIEW) {
         moreBtn.textContent = ui.showAllDone ? 'Mostrar só as ' + DONE_PREVIEW + ' mais recentes' : 'Mostrar todas as ' + done.length + ' entregues';
         moreBtn.classList.remove('hidden');
       } else {
@@ -6227,6 +6247,16 @@
   document.getElementById('btn-close-carga-detail').addEventListener('click', closeCargaDetail);
   document.getElementById('carga-detail-overlay').addEventListener('click', function(e) {
     if (e.target === document.getElementById('carga-detail-overlay')) closeCargaDetail();
+  });
+  var cargaBuscaTimer = null;
+  document.getElementById('carga-busca').addEventListener('input', function(e) {
+    var v = e.target.value;
+    clearTimeout(cargaBuscaTimer);
+    cargaBuscaTimer = setTimeout(function() { ui.cargaBusca = v; renderCargasSection(); }, 200);
+  });
+  document.getElementById('carga-busca-limpar').addEventListener('click', function() {
+    var inp = document.getElementById('carga-busca');
+    inp.value = ''; ui.cargaBusca = ''; renderCargasSection(); inp.focus();
   });
   document.getElementById('carga-filters').addEventListener('click', function(e) {
     var b = e.target.closest('[data-filter]');
@@ -18426,7 +18456,7 @@
       var espS = souM ? (function() { var ult = {}; chat.msgs.forEach(function(m) { if (m.tipo === 'sol') ult[m.conversa] = m; }); return Object.keys(ult).filter(function(k) { return ult[k].de !== 'mestre'; }).length; })() : 0;
       var tChat = { tab: 'chat', t: 'Chat', v: nCh, u: nCh === 1 ? 'mensagem nova' : 'mensagens novas', s: 'converse com quem tem acesso ao app', alerta: nCh > 0 };
       var tSol = { tab: 'solicitacoes', t: 'Solicitações', v: souM ? espS : nSo, u: souM ? (espS === 1 ? 'aguardando a sua resposta' : 'aguardando a sua resposta') : (nSo === 1 ? 'resposta nova' : 'respostas novas'),
-        s: souM ? 'melhorias e sugestões para o app' : 'peça melhorias e mande sugestões ao Nicolas', alerta: souM ? espS > 0 : nSo > 0 };
+        s: souM ? 'melhorias e sugestões para o app' : 'peça melhorias e mande sugestões ao sistema', alerta: souM ? espS > 0 : nSo > 0 };
       [tSol, tChat].forEach(function(t) { if (t.alerta) tiles.unshift(t); else tiles.push(t); });
     }
     el.innerHTML = tiles.filter(function(x) { return perm.indexOf(x.tab) >= 0; }).map(function(x) {
@@ -20282,7 +20312,7 @@
     if (!comunicacaoLigada()) { chat.montada = ''; box.innerHTML = '<p class="empty-state">As solicitações precisam do banco on-line e do acesso individual (senha própria de acesso ao app).</p>'; return; }
     var eu = minhaRef();
     if (eu !== 'mestre') {
-      montarConversa(box, 'sol', 'mestre', 'Solicitações ao Nicolas', 'Peça melhorias e mande sugestões para o app. Só o Nicolas lê e responde aqui. Cada solicitação ganha um número; toque numa mensagem para responder ou reagir com 👍 ou 👎.', false);
+      montarConversa(box, 'sol', 'mestre', 'Solicitações ao sistema', 'Peça melhorias e mande sugestões para o sistema. Só o Nicolas lê e responde aqui. Cada solicitação ganha um número; toque numa mensagem para responder ou reagir com 👍 ou 👎.', false);
       return;
     }
     if (chat.solAberta) { montarConversa(box, 'sol', chat.solAberta, pessoaNome(chat.solAberta), 'Solicitações e sugestões · toque numa mensagem para responder a ela ou reagir com 👍 ou 👎', true); return; }
