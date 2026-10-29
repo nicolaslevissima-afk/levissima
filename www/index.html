@@ -283,6 +283,20 @@
 
   .carga-driver-name.a-definir { color: var(--muted); font-style: italic; }
   .cg-retira-chk { margin: 4px 0 8px; }
+  /* estoque insuficiente para o pedido (28/10/2026) */
+  .carga-sub.estoque-falta { color: var(--danger); font-weight: 600; }
+  .estoque-falta-box { border: 1px solid rgba(var(--danger-rgb), 0.45); border-left: 4px solid var(--danger); background: rgba(var(--danger-rgb), 0.06); border-radius: 8px; padding: 10px 12px; margin: -6px 0 16px; color: var(--ink); font-size: 0.9rem; }
+  .estoque-falta-box > b { color: var(--danger); display: block; margin-bottom: 4px; }
+  .estoque-falta-l { margin-top: 2px; }
+  .estoque-falta-n { margin-top: 6px; font-size: 0.8rem; color: var(--muted); }
+  /* busca escrevendo no select (freteiro, 28/10/2026) */
+  .sel-busca { margin: 4px 0 6px; }
+  .sel-busca-lista { border: 1px solid var(--line); border-radius: 8px; background: var(--card); margin-top: 4px; max-height: 300px; overflow-y: auto; }
+  .sel-busca-op { display: block; width: 100%; min-height: 44px; text-align: left; padding: 9px 12px; border: 0; border-bottom: 1px solid var(--line); background: none; font: inherit; font-weight: 600; color: var(--ink); cursor: pointer; }
+  .sel-busca-op:last-child { border-bottom: 0; }
+  .sel-busca-op:hover, .sel-busca-op:focus-visible { background: rgba(var(--teal-rgb), 0.07); }
+  .sel-busca-x { display: block; font-size: 0.78rem; font-weight: 400; color: var(--muted); margin-top: 1px; }
+  .sel-busca-mais { padding: 8px 12px; font-size: 0.8125rem; color: var(--muted); margin: 0; }
   .carga-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 18px; }
   .carga-busca { display: flex; align-items: center; gap: 8px; margin: -6px 0 14px; }
   .carga-busca input { flex: 1; min-width: 0; }
@@ -2727,6 +2741,7 @@
       <p class="field-hint" id="cg-nf-status"></p>
 
       <div class="pedido-resumo" id="cg-totais"></div>
+      <div class="estoque-falta-box hidden" id="cg-totais-estoque" role="alert"></div>
 
       <p class="form-error hidden" id="carga-form-error"></p>
       <div class="sheet-actions">
@@ -4230,6 +4245,19 @@
     var reservado = reservadoDe(pid, ref || null);
     return { estoque: qtd, reservado: reservado, disponivel: qtd - reservado, contagem: contagem || null };
   }
+  // Aviso de estoque insuficiente (pedido de 28/10/2026): o pedido passa do disponível — o estoque menos o que as
+  // cargas anteriores na fila já reservaram. Produto sem controle de estoque (nunca contado) não avisa.
+  function faltaEstoqueProduto(p, pede, ref) {
+    if (!(pede > 0)) return null;
+    var e = estoqueDe(p.id, ref || null);
+    if (!e || pede <= e.disponivel) return null;
+    return { p: p, pede: pede, disponivel: Math.max(0, e.disponivel), falta: pede - Math.max(0, e.disponivel) };
+  }
+  function faltasEstoqueCarga(c) {
+    if (!c || c.status === 'concluida') return [];
+    return produtosOrdenados().map(function(p) { return faltaEstoqueProduto(p, quantidadeNaCarga(c, p.id), c); }).filter(Boolean);
+  }
+  function faltaEstoqueTexto(f) { return 'falta ' + qtdUnidade(f.falta, unidadeDe(f.p)) + ' de ' + f.p.nome; }
   function paletesEquivalentes(p, qtd) {
     var upp = Number(p && p.unidadesPorPalete) || 0;
     if (!upp || !qtd) return '';
@@ -4768,6 +4796,7 @@
     if (sorted.some(function(m) { return m.nome === current; })) sel.value = current;
     document.getElementById('sem-motorista-hint').classList.toggle('hidden', sorted.length > 0);
   }
+  var fBuscaMot = anexarBuscaSelect(document.getElementById('f-motorista-designado'), { id: 'f-motorista-busca', placeholder: '🔎 Buscar freteiro: digite o nome', rotulo: 'Buscar motorista (freteiro)', nada: 'motorista', extra: extraMotorista });
 
   var VINCULOS = { terceiro: 'Terceiro contratado a serviço da Levíssima', proprio: 'Motorista próprio da Levíssima' };
   function vinculoCurto(v) { return v === 'terceiro' ? 'terceiro contratado' : v === 'proprio' ? 'próprio' : ''; }
@@ -5545,6 +5574,7 @@
         (done ? '' : aceiteChipHtml(c)) +
         '<div class="carga-clientes-line">' + escapeHtml(cargaClientesResumo(c) || '—') + '</div>' +
         cargaProdutosHtml(c) +
+        (done ? '' : estoqueFaltaCardHtml(c)) +
         (esperaAtual(c) != null ? '<div class="carga-sub espera' + (esperaAtual(c) >= ESPERA_LONGA_MIN ? ' longa' : '') + '">No pátio há ' + fmtDuracao(esperaAtual(c)) + '</div>' : '') +
         viagemInfo +
         '<div class="carga-figs"><span class="figure-wood"><b>' + fmtInt(c.totalPaletes) + '</b>' + palavraPaletes(c.totalPaletes) + '</span>' +
@@ -5553,6 +5583,10 @@
         (ent ? '<div class="carga-sub">Entregas: ' + escapeHtml(ent.curto) + '</div>' : '') +
         '<div class="carga-actions">' + main + detalhesLink + '</div>' +
       '</div></article>';
+  }
+  function estoqueFaltaCardHtml(c) {
+    var f = faltasEstoqueCarga(c);
+    return f.length ? '<div class="carga-sub estoque-falta" role="note">⚠ Estoque insuficiente: ' + escapeHtml(f.map(faltaEstoqueTexto).join('; ')) + '</div>' : '';
   }
   // Tudo da carga, para quem tocou no quadrado: pager, faturamento, devolução, produtos e as ações.
   function cargaDetailHtml(c) {
@@ -5605,11 +5639,10 @@
     }
     if (c.obs) info += row('Observações', escapeHtml(c.obs));
     if (!done) {
-      var faltas = produtosOrdenados().map(function(p) {
-        var e = estoqueDe(p.id, c), pede = quantidadeNaCarga(c, p.id);
-        return (e && pede > e.disponivel) ? 'falta ' + qtdUnidade(pede - Math.max(0, e.disponivel), unidadeDe(p)) + ' de ' + p.nome : '';
-      }).filter(Boolean);
-      if (faltas.length) info += row('Estoque', escapeHtml(faltas.join('; ')), 'ask');
+      var faltas = faltasEstoqueCarga(c);
+      if (faltas.length) info += row('⚠ Estoque insuficiente', escapeHtml(faltas.map(function(f) {
+        return f.p.nome + ': pedido ' + qtdUnidade(f.pede, unidadeDe(f.p)) + ', disponível ' + qtdUnidade(f.disponivel, unidadeDe(f.p)) + ' (falta ' + qtdUnidade(f.falta, unidadeDe(f.p)) + ')';
+      }).join('; ')), 'ask');
     }
     html += '<div class="pedido-resumo">' + info + '</div>';
     if (done) html += viagemDetailHtml(c);
@@ -7761,12 +7794,26 @@
       toOut: toOut,
       totalGeral: function() {
         return state.reduce(function(a, cl) { var t = totals(cl); a.p += t.p; a.c += t.c; a.b += t.b; return a; }, { p: 0, c: 0, b: 0 });
+      },
+      // falta de estoque para atender o que está no formulário (todos os clientes juntos)
+      faltasEstoque: function() {
+        var id = opts.getCargaId ? opts.getCargaId() : null, ref = id ? findCarga(id) : null;
+        return produtosOrdenados().map(function(p) { return faltaEstoqueProduto(p, totalProduto(p.id), ref); }).filter(Boolean);
       }
     };
   }
 
   function renderCgTotaisInto(elId, editor) {
     var t = editor.totalGeral();
+    var faltas = elId === 'cg-totais' ? editor.faltasEstoque() : [];
+    var aviso = document.getElementById(elId + '-estoque');
+    if (aviso) {
+      aviso.innerHTML = faltas.length ? '<b>⚠ Estoque insuficiente para atender ' + (session && session.role === 'representante' ? 'este pedido' : 'esta carga') + '</b>' + faltas.map(function(f) {
+        var u = unidadeDe(f.p);
+        return '<div class="estoque-falta-l">' + escapeHtml(f.p.nome) + ': pedido ' + escapeHtml(qtdUnidade(f.pede, u)) + ' · disponível ' + escapeHtml(qtdUnidade(f.disponivel, u)) + ' · <b>falta ' + escapeHtml(qtdUnidade(f.falta, u)) + '</b></div>';
+      }).join('') + '<div class="estoque-falta-n">Dá para salvar assim mesmo; o disponível já desconta as cargas que estão antes na fila.</div>' : '';
+      aviso.classList.toggle('hidden', !faltas.length);
+    }
     document.getElementById(elId).innerHTML = '<div class="resumo-row"><span class="resumo-k">Total da carga</span><span class="resumo-v mono"><span class="figure-wood">' + fmtInt(t.p) + palavraPaletes(t.p) + '</span> · <span class="figure-teal">' + fmtInt(t.c) + ' chapatex</span>' +
       (t.b ? ' · <span class="figure-bat">' + fmtInt(t.b) + ' soltos (batidos)</span>' : '') + '</span></div>';
   }
@@ -8119,6 +8166,62 @@
     }).join('');
     if (sorted.some(function(m) { return m.nome === current; })) sel.value = current;
   }
+  // Busca escrevendo num <select> (pedido de 28/10/2026: achar o freteiro digitando o nome). O select continua sendo o
+  // campo (valor e eventos); acima dele, a caixa de busca mostra até 8 resultados — nome, veículo e transportadora — e
+  // tocar num resultado (ou Enter, no primeiro) escolhe.
+  function anexarBuscaSelect(sel, cfg) {
+    if (!sel || sel.getAttribute('data-busca')) return null;
+    sel.setAttribute('data-busca', '1');
+    cfg = cfg || {};
+    var wrap = document.createElement('div');
+    wrap.className = 'sel-busca';
+    wrap.innerHTML = '<input type="search" class="sel-busca-inp" autocomplete="off" enterkeyhint="search" placeholder="' + escapeHtml(cfg.placeholder || 'Digite para buscar') + '" aria-label="' + escapeHtml(cfg.rotulo || 'Buscar') + '" />' +
+      '<div class="sel-busca-lista hidden" role="listbox"></div>';
+    sel.parentNode.insertBefore(wrap, sel);
+    var inp = wrap.querySelector('input'), lista = wrap.querySelector('.sel-busca-lista'), achados = [];
+    if (cfg.id) inp.id = cfg.id;
+    function extra(v) { return cfg.extra ? (cfg.extra(v) || '') : ''; }
+    function filtrar() {
+      var q = buscaNorm(inp.value);
+      if (!q) { achados = []; lista.innerHTML = ''; lista.classList.add('hidden'); return; }
+      var termos = q.split(' ');
+      achados = Array.prototype.filter.call(sel.options, function(o) {
+        if (!o.value) return false;
+        var t = buscaNorm(o.textContent + ' ' + extra(o.value));
+        return termos.every(function(w) { return t.indexOf(w) !== -1; });
+      });
+      lista.innerHTML = achados.length
+        ? achados.slice(0, 8).map(function(o, i) {
+            var x = extra(o.value);
+            return '<button type="button" class="sel-busca-op" role="option" data-i="' + i + '">' + escapeHtml(o.textContent) + (x ? '<span class="sel-busca-x">' + escapeHtml(x) + '</span>' : '') + '</button>';
+          }).join('') + (achados.length > 8 ? '<p class="sel-busca-mais">e mais ' + (achados.length - 8) + ': continue escrevendo</p>' : '')
+        : '<p class="sel-busca-mais">Nenhum ' + escapeHtml(cfg.nada || 'resultado') + ' com “' + escapeHtml(inp.value.trim()) + '”.</p>';
+      lista.classList.remove('hidden');
+    }
+    function escolher(o) {
+      if (!o) return;
+      sel.value = o.value;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      inp.value = ''; filtrar();
+      if (cfg.aoEscolher) cfg.aoEscolher(o.value);
+    }
+    inp.addEventListener('input', filtrar);
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); escolher(achados[0]); }
+      else if (e.key === 'Escape' && inp.value) { e.preventDefault(); e.stopPropagation(); inp.value = ''; filtrar(); }
+    });
+    lista.addEventListener('click', function(e) {
+      var b = e.target.closest('.sel-busca-op');
+      if (b) { e.preventDefault(); escolher(achados[+b.getAttribute('data-i')]); }
+    });
+    return { limpar: function() { inp.value = ''; filtrar(); }, input: inp };
+  }
+  function extraMotorista(nome) {
+    var m = motoristas.find(function(x) { return x.nome === nome; });
+    if (!m) return '';
+    var t = transportadoraDe(m);
+    return [t ? t.nome : '', m.placa || ''].filter(Boolean).join(' · ');
+  }
   // Entrega anterior do motorista: a última carga dele já carregada; enquanto não houver nenhuma,
   // usa a última entrega concluída no controle de paletes (vale para o período de transição).
   function previousDeliveryForMotorista(nome, excludeId) {
@@ -8191,6 +8294,7 @@
   document.getElementById('cg-motorista').addEventListener('change', function(e) {
     renderCgMotoristaInfo(e.target.value, editingCargaId ? findCarga(editingCargaId) : null);
   });
+  var cgBuscaMot = anexarBuscaSelect(document.getElementById('cg-motorista'), { id: 'cg-motorista-busca', placeholder: '🔎 Buscar freteiro: digite o nome', rotulo: 'Buscar motorista (freteiro)', nada: 'motorista', extra: extraMotorista });
   // Caminhão próprio do cliente (pedido de 26/10/2026): sem motorista da Levíssima, sem frete e sem viagem no app;
   // ao concluir o carregamento, quem retirou assina e a entrega já fica concluída.
   function cgRetiraAplicar(on, rep) {
@@ -8210,6 +8314,7 @@
     document.getElementById('cg-data').value = (prefillCarga && prefillCarga.data) || todayIso();
     document.getElementById('cg-hora').value = (prefillCarga && prefillCarga.hora) || '';
     renderCgMotoristaSelect((prefillCarga && prefillCarga.motorista) || '');
+    if (cgBuscaMot) cgBuscaMot.limpar();
     renderCgMotoristaInfo((prefillCarga && prefillCarga.motorista) || '', prefillCarga);
     document.getElementById('cg-obs').value = (prefillCarga && prefillCarga.obs) || '';
     document.getElementById('cg-retira-nome').value = (prefillCarga && prefillCarga.retiraNome) || '';
@@ -8868,6 +8973,7 @@
     setVal('f-chapatex-dev', numStr(p.chapatexDevolvidos));
     renderMotoristaSelect();
     setVal('f-motorista-designado', p.motorista || '');
+    if (fBuscaMot) fBuscaMot.limpar();
     setVal('f-responsavel', p.responsavel || '');
     setVal('f-qualidade', p.qualidade || '');
     setVal('f-obs', p.obs || '');

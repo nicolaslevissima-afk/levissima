@@ -100,11 +100,11 @@ TROCAS_MANUTENCAO_FICHAS = [
      "const COLS = ['equipamentos', 'elementos', 'chamados', 'preventivas', 'lubrificacao', 'pecas', 'movimentos', 'ferramentas', 'config', 'fichas'];"),
     ("  { id: 'preventiva', nome: 'Preventiva', ico: 'calendar', sec: 'Planos' },",
      "  { id: 'preventiva', nome: 'Preventiva', ico: 'calendar', sec: 'Planos' },\n"
-     "  { id: 'fichas', nome: 'Fichas de preventiva', curto: 'Fichas', ico: 'list', sec: 'Planos' },"),
+     "  { id: 'fichas', nome: 'Fichas de preventiva e lubrificação', curto: 'Fichas', ico: 'list', sec: 'Planos' },"),
     ("  h += '<div class=\"blk\"><div class=\"blk-h\"><h3>Preventiva · ' + prev.length",
      "  h += fichasDoEquipHtml(e);\n  h += '<div class=\"blk\"><div class=\"blk-h\"><h3>Preventiva · ' + prev.length"),
     ("      if (p.descricao || p.obs) h += '<div class=\"blk\"><h3>Instruções</h3>",
-     "      if (col === 'preventivas') h += fichaBlocoPlano(p);\n      if (p.descricao || p.obs) h += '<div class=\"blk\"><h3>Instruções</h3>"),
+     "      h += fichaBlocoPlano(p, col);\n      if (p.descricao || p.obs) h += '<div class=\"blk\"><h3>Instruções</h3>"),
     ("  hist.push({ data: d.data, horas: d.horas == null ? null : d.horas, por: d.por || nomeUsuario(), obs: d.obs || '', pecas: d.pecas || [], prevista: st.proxima || null, t: Date.now(), checklist: d.checklist || null });",
      "  hist.push({ data: d.data, horas: d.horas == null ? null : d.horas, por: d.por || nomeUsuario(), obs: d.obs || '', pecas: d.pecas || [], prevista: st.proxima || null, t: Date.now(), checklist: d.checklist || null, resultado: d.resultado || null });\n"
      "  hist.sort((a, b) => String(a.data || '').localeCompare(String(b.data || '')) || (a.t || 0) - (b.t || 0));\n"
@@ -114,16 +114,24 @@ TROCAS_MANUTENCAO_FICHAS = [
     ("fDate('ex-data', 'Data da execução', hoje(), { name: 'data', req: true })",
      "fDate('ex-data', 'Data da execução', el.dataset.data && el.dataset.data <= hoje() ? el.dataset.data : hoje(), { name: 'data', req: true })"),
     ("      + ((p.checklist || []).length ? '<div class=\"field\"><span class=\"flabel\">Checklist</span>'",
-     "      + (col === 'preventivas' ? fChips('resultado', 'Resultado (como na ficha)', [{ v: 'O', l: 'O = Normal' }, { v: 'X', l: 'X = Anormal' }], 'O', { hint: 'Anormal: descreva nas observações o que foi encontrado.' }) : '')\n"
+     "      + (col === 'preventivas' || p.fichaId ? fChips('resultado', 'Resultado (como na ficha)', [{ v: 'O', l: 'O = Normal' }, { v: 'X', l: 'X = Anormal' }], 'O', { hint: 'Anormal: descreva nas observações o que foi encontrado.' }) : '')\n"
      "      + ((p.checklist || []).length ? '<div class=\"field\"><span class=\"flabel\">Checklist</span>'"),
     ("  if (!d.por) return toast('Informe quem executou.', 'crit');",
      "  if (!d.por) return toast('Informe quem executou.', 'crit');\n"
-     "  const resultado = col === 'preventivas' ? (d.resultado === 'X' ? 'X' : 'O') : null;\n"
+     "  const resultado = col === 'preventivas' || p.fichaId ? (d.resultado === 'X' ? 'X' : 'O') : null;\n"
      "  if (resultado === 'X' && !d.obs) return toast('Anormal (X): descreva nas observações o que foi encontrado.', 'crit');"),
     ("    const r = await executarPlano(col, p, { data: d.data, horas, por: d.por, obs, pecas, checklist: d.ck || null });",
      "    const r = await executarPlano(col, p, { data: d.data, horas, por: d.por, obs, pecas, checklist: d.ck || null, resultado });\n"
      "    if (resultado === 'X') toast('Registrado como anormal (X). Se precisar de conserto, abra um chamado.', 'crit');"),
     ("180: 'semestral', 365: 'anual' }[n]", "180: 'semestral', 365: 'anual', 730: 'a cada 2 anos' }[n]"),
+    # 28/10/2026: ficha de lubrificação (o mesmo modelo); a importação de planilha da Preventiva/Lubrificação aceita a
+    # ficha e a manda para Fichas; o método que veio da ficha e não está na lista continua no formulário
+    ("""' Frequência aceita "mensal", "trimestral", "30 dias", "500 h" e parecidos.' : '')""",
+     """' Frequência aceita "mensal", "trimestral", "30 dias", "500 h" e parecidos. A ficha no modelo da ficha de preventiva (LINHA, EQUIPAMENTO e Nº CONTROLE no topo e uma coluna por mês) também é aceita: ela entra em Fichas.' : '')"""),
+    ("fSel('pf-met', 'Método', opts(METODOS_LUB, p.metodo, 'Escolha')",
+     "fSel('pf-met', 'Método', opts(METODOS_LUB.concat(p.metodo && METODOS_LUB.indexOf(p.metodo) < 0 ? [p.metodo] : []), p.metodo, 'Escolha')"),
+    ("fSel('pf-un', 'Unidade', opts(['g', 'ml', 'kg', 'L', 'bombadas', 'gotas'], p.unidade || 'g')",
+     "fSel('pf-un', 'Unidade', opts(['g', 'ml', 'kg', 'L', 'bombadas', 'gotas'].concat(p.unidade && ['g', 'ml', 'kg', 'L', 'bombadas', 'gotas'].indexOf(p.unidade) < 0 ? [p.unidade] : []), p.unidade || 'g')"),
     ("'<div class=\"ev\"><div class=\"w\">' + fmtData(x.data) + (x.horas != null ?",
      "'<div class=\"ev\"><div class=\"w\">' + fmtData(x.data) + (x.resultado === 'X' ? ' · <b style=\"color:var(--crit)\">X anormal</b>' : x.resultado === 'O' ? ' · O normal' : '') + (x.horas != null ?"),
 ]
