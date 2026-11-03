@@ -69,7 +69,9 @@ type Quem = { papel: string; ref: string; soInclui: boolean };
 const MODULOS = ['manutencao', 'empilhadeiras', 'uniformes', 'garrafoes'];
 // 'lider_producao' (21/10/2026): o acesso só lança a produção hora a hora (o app mostra só essa tela)
 const PERMISSOES = ['canhotos', 'liberar_carga', 'abas', 'lider_producao'];
-const ABAS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas'];
+// 'fretes' e 'rh' (03/11/2026): abas da senha mestre que ela pode liberar para uma pessoa (só com a caixa marcada;
+// a senha da equipe, sem a marca 'abas', nunca as vê — regras no banco em 0042)
+const ABAS = ['cargas', 'paletes', 'estoque', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'fretes', 'rh'];
 // nível de cada aba marcada (19/10/2026): 'ver:<aba>' = só visualiza, 'inclui:<aba>' = só inclui; sem nada = edita
 const NIVEIS = ['ver', 'inclui'];
 

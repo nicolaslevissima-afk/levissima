@@ -1026,7 +1026,7 @@
   .org-arvore ul li::after { content: ''; position: absolute; left: 0; top: 28px; width: 12px; border-top: 2px solid var(--line); }
   .org-arvore ul li:last-child::before { bottom: auto; height: 28px; }
   .org-arvore .org-cartao { display: inline-flex; }
-  #equipe-acesso-checks .acesso-grupo:first-child .acesso-grade { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+  #equipe-acesso-checks .acesso-grupo:first-child .acesso-grade, #equipe-acesso-checks .acesso-grade.com-nivel { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
   .acesso-nivel { margin-left: auto; font-size: 0.8125rem; padding: 2px 4px; min-height: 0; width: auto; flex-shrink: 0; max-width: 46%; }
   .acesso-linha { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .acesso-linha .check { min-width: 0; }
@@ -1879,7 +1879,7 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-rh">
-    <p class="tagline">Funcionários por <b>função</b>, <b>turno</b> e <b>situação</b>, com os prazos do contrato de experiência e as NRs. Só a senha mestre vê esta aba. O cadastro é o mesmo do módulo Uniformes e EPI.</p>
+    <p class="tagline">Funcionários por <b>função</b>, <b>turno</b> e <b>situação</b>, com os prazos do contrato de experiência e as NRs. Só a senha mestre e quem ela marcar em Cadastros › Equipe com senha veem esta aba. O cadastro é o mesmo do módulo Uniformes e EPI.</p>
     <div class="est-cards" id="rh-cards"></div>
     <div class="est-alertas hidden" id="rh-alertas" role="status"></div>
     <nav class="segmented" id="rh-visao" aria-label="Agrupar funcionários">
@@ -2046,7 +2046,7 @@
     <div id="cn-conteudo"></div>
   </div>
   <div class="tab-panel hidden" id="tab-fretes">
-    <p class="tagline">Fretes dos motoristas: quanto falta pagar a cada um e a tabela de valores por destino. Só a senha mestre vê esta aba.</p>
+    <p class="tagline">Fretes dos motoristas: quanto falta pagar a cada um e a tabela de valores por destino. Só a senha mestre e quem ela marcar em Cadastros › Equipe com senha veem esta aba.</p>
     <section class="drivers-admin" id="fretes-resumo-admin">
       <div class="section-head"><h2 class="section-title">Fretes a pagar por motorista</h2><span class="count-chip" id="fretes-resumo-total" style="white-space:nowrap"></span></div>
       <p class="hint">Entram as cargas com carregamento concluído. Quem trabalha por uma transportadora entra no total dela. Toque em <b>Abrir</b> para confirmar, pagar ou tirar o relatório (da transportadora ou do motorista).</p>
@@ -4131,7 +4131,10 @@
     { marca: 'Colina Azul', slug: 'colina-azul', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'] },
     { marca: 'Betel', slug: 'betel', itens: ['510ml-natural', '1500ml-natural'] },
     { marca: 'New Mania', slug: 'new-mania', itens: ['510ml-natural'] },
-    { marca: 'Bom Coração', slug: 'bom-coracao', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'] },
+    // Bom Coração (03/11/2026): o 510ml natural e o com gás saem sempre em palete de 175 fardos (7 fileiras de 25)
+    { marca: 'Bom Coração', slug: 'bom-coracao', itens: ['510ml-natural', '510ml-gas', '1500ml-natural', '1500ml-gas', '6l'],
+      palete: { '510ml-natural': { unidade: 'fardos', unidadesPorPalete: 175, tipoChapatex: 'fileira', unidadesPorFileira: 25 },
+        '510ml-gas': { unidade: 'fardos', unidadesPorPalete: 175, tipoChapatex: 'fileira', unidadesPorFileira: 25 } } },
     { marca: 'Bulnez', slug: 'bulnez', itens: ['510ml-natural', '1500ml-natural'],
       palete: { '1500ml-natural': { unidade: 'fardos', unidadesPorPalete: 108, tipoChapatex: 'fileira', unidadesPorFileira: 27 } } }
   ];
@@ -4944,9 +4947,9 @@
   // aba Fretes: quanto falta pagar a cada motorista
   function renderFretesResumo() {
     var list = document.getElementById('fretes-resumo-list');
-    if (!list || !session || session.role !== 'admin') return;
+    if (!list || !podeVerFretes()) return;
     var tot = document.getElementById('fretes-resumo-total');
-    if (!fretesTabela) { tot.textContent = ''; list.innerHTML = '<p class="field-hint">' + (fretesCarregado ? 'Cadastre a tabela de fretes abaixo para o app calcular os valores.' : 'Carregando…') + '</p>'; return; }
+    if (!fretesTabela) { tot.textContent = ''; list.innerHTML = '<p class="field-hint">' + (fretesCarregado ? (podeEditarFretes() ? 'Cadastre a tabela de fretes abaixo para o app calcular os valores.' : 'A tabela de fretes ainda não foi cadastrada.') : 'Carregando…') + '</p>'; return; }
     var geral = 0, nConf = 0;
     var linhas = motoristas.map(function(m) { var rf = resumoFretesMotorista(m); geral += rf.apagar; nConf += rf.nConfirmar; return { m: m, rf: rf }; })
       .sort(function(a, b) { return (b.rf.apagar - a.rf.apagar) || (b.rf.nConfirmar - a.rf.nConfirmar) || a.m.nome.localeCompare(b.m.nome, 'pt-BR'); });
@@ -6811,6 +6814,13 @@
   // abas que a equipe do escritório pode ter; no acesso individual, a senha mestre marca quais a pessoa vê (19/10/2026)
   var ABAS_EQUIPE = [['cargas', 'Cargas'], ['paletes', 'Paletes e chapatex'], ['estoque', 'Estoque'], ['producao', 'Produção'], ['materia', 'Matéria-prima'],
     ['agenda', 'Agenda'], ['salas', 'Salas'], ['qualidade', 'Qualidade'], ['metas', 'Metas'], ['compras', 'Compras'], ['trocas', 'Trocas e devoluções']];
+  // abas que eram só da senha mestre e agora a senha mestre pode liberar para uma pessoa (03/11/2026): nunca vêm com a senha
+  // da equipe nem marcadas de saída; só aparecem para quem tem a caixa marcada no acesso individual. Nível: edita ou só visualiza.
+  // Cadastros (senhas e segurança) e Pesquisas (cifradas com a senha mestre) continuam só da senha mestre.
+  var ABAS_OPCIONAIS = [['fretes', 'Fretes'], ['rh', 'RH']];
+  function veAbaOpcional(aba) { return !!session && (session.role === 'admin' || (session.role === 'equipe' && temPermissao('abas') && temPermissao('aba:' + aba))); }
+  function podeVerFretes() { return veAbaOpcional('fretes'); }
+  function podeEditarFretes() { return podeVerFretes() && (session.role === 'admin' || nivelDaAba('fretes') === 'edita'); }
   // nível de cada aba (19/10/2026): na pessoa com acesso individual, cada aba marcada pode ser só visualiza ('ver:<aba>')
   // ou só inclui ('inclui:<aba>'); sem nada, edita. O app segura pela aba aberta; com o mesmo nível em todas, o banco também.
   var NIVEIS_ACESSO = [['', 'Edita'], ['inclui', 'Só inclui'], ['ver', 'Só visualiza']];
@@ -6831,7 +6841,8 @@
       // PCP (03/11/2026): quem tem a aba Produção (as ordens) vê também o PCP, logo antes dela
       return pcpComAba(['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
         .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : [])
-        .concat(escolhidas && !temPermissao('aba:producao') && podeVerLancProducao() ? ['producao'] : []));
+        .concat(escolhidas && !temPermissao('aba:producao') && podeVerLancProducao() ? ['producao'] : [])
+        .concat(ABAS_OPCIONAIS.filter(function(a) { return veAbaOpcional(a[0]); }).map(function(a) { return a[0]; })));
     }
     var org = podeVerOrganograma(), brd = podeVerBrindes();
     return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd) && t !== 'producaohora'; });
@@ -11056,13 +11067,14 @@
       fretesDestinosCarreta = (s.exists && Array.isArray(s.data().carreta)) ? s.data().carreta.slice() : [];
       renderFretesDatalist();
     }, function(err) { console.error('destinos de frete', err); });
-    if (session.role !== 'admin') return;
+    if (!podeVerFretes()) return; // a tabela e os fretes: senha mestre e quem tem a aba Fretes marcada (03/11/2026)
     db.doc('fretes-tabela/atual').onSnapshot(function(s) {
       fretesTabela = s.exists ? s.data() : null; fretesCarregado = true; renderFretesTudo();
     }, function(err) { console.error('tabela de fretes', err); fretesCarregado = true; renderFretesTudo(); });
     db.collection('fretes').onSnapshot(function(snap) {
       var m = {}; snap.docs.forEach(function(d) { m[d.id] = d.data(); }); fretesCargas = m; renderFretesTudo();
     }, function(err) { console.error('fretes', err); });
+    if (session.role !== 'admin') return; // dados pessoais e documentos dos motoristas: só a senha mestre
     db.collection('motorista-docs').onSnapshot(function(snap) {
       var docs = [], dados = {};
       snap.docs.forEach(function(d) {
@@ -11075,8 +11087,8 @@
   function renderFretesTudo() {
     if (!session || session.role === 'motorista') return;
     renderFretesDatalist();
-    if (session.role !== 'admin') return;
-    renderDriversAdmin();
+    if (!podeVerFretes()) return;
+    if (session.role === 'admin') renderDriversAdmin(); else renderFretesResumo();
     renderTabelaFretesAdmin();
     renderMotoristaPage(false);
   }
@@ -11241,15 +11253,17 @@
   function renderTabelaFretesAdmin() {
     var sec = document.getElementById('fretes-admin');
     if (!sec) return;
-    var mestre = !!session && session.role === 'admin';
-    sec.classList.toggle('hidden', !mestre);
-    if (!mestre) return;
+    var ve = podeVerFretes(), edita = podeEditarFretes();
+    sec.classList.toggle('hidden', !ve);
+    if (!ve) return;
     var list = document.getElementById('fretes-tabela-list'), vers = document.getElementById('fretes-versao');
     var adic = document.getElementById('f-fretes-adicional');
     if (document.activeElement !== adic) adic.value = String(adicionalFrete());
+    adic.disabled = !edita;
+    document.getElementById('btn-add-frete-linha').classList.toggle('hidden', !edita);
     if (!fretesTabela) {
       vers.textContent = '';
-      list.innerHTML = '<p class="field-hint">' + (fretesCarregado ? 'Nenhuma tabela ainda: adicione os destinos e os valores.' : 'Carregando a tabela…') + '</p>';
+      list.innerHTML = '<p class="field-hint">' + (fretesCarregado ? (edita ? 'Nenhuma tabela ainda: adicione os destinos e os valores.' : 'Nenhuma tabela ainda.') : 'Carregando a tabela…') + '</p>';
       return;
     }
     vers.textContent = (fretesTabela.versao ? 'tabela de ' + fretesTabela.versao : '') +
@@ -11266,12 +11280,13 @@
       }
       return '<div class="fl-row"><span class="fl-nome">' + escapeHtml(x.l.destino) + '</span>' +
         '<span class="fl-vals">' + (Number(x.l.v16) > 0 ? '16: ' + fmtBRL(x.l.v16) + ' · 18: ' + (Number(x.l.v18) > 0 ? fmtBRL(x.l.v18) : 'proporcional') : 'só carreta') + (Number(x.l.vCarreta) > 0 ? ' · carreta: ' + fmtBRL(x.l.vCarreta) : '') + '</span>' +
-        '<button class="btn-text" data-action="fl-editar" data-i="' + x.i + '">Editar</button>' +
-        '<button class="btn-text danger" data-action="fl-remover" data-i="' + x.i + '">Remover</button></div>';
+        (edita ? '<button class="btn-text" data-action="fl-editar" data-i="' + x.i + '">Editar</button>' +
+        '<button class="btn-text danger" data-action="fl-remover" data-i="' + x.i + '">Remover</button>' : '') + '</div>';
     }).join('') + (busca ? '' : '<p class="field-hint">' + (fretesTabela.linhas || []).length + ' destinos na tabela.</p>')
       : '<p class="field-hint">Nenhum destino encontrado.</p>';
   }
   function abrirLinhaFrete(i) {
+    if (!podeEditarFretes()) return;
     flEditIndex = i;
     var l = (i != null && fretesTabela && fretesTabela.linhas[i]) || { destino: '', v16: '', v18: '', vCarreta: '' };
     document.getElementById('fl-sheet-title').textContent = i == null ? 'Adicionar destino' : 'Editar — ' + l.destino;
@@ -11318,6 +11333,7 @@
   document.getElementById('btn-add-frete-linha').addEventListener('click', function() { abrirLinhaFrete(null); });
   document.getElementById('f-fretes-busca').addEventListener('input', renderTabelaFretesAdmin);
   document.getElementById('f-fretes-adicional').addEventListener('change', function(e) {
+    if (!podeEditarFretes()) return;
     var v = numBR(e.target.value);
     if (isNaN(v) || v < 0) { e.target.value = String(adicionalFrete()); return; }
     var t = tabelaParaEditar();
@@ -11329,6 +11345,7 @@
     var b = e.target.closest('[data-action]');
     if (!b) return;
     var a = b.dataset.action, i = Number(b.dataset.i);
+    if (!podeEditarFretes()) return;
     if (a === 'fl-editar') abrirLinhaFrete(i);
     else if (a === 'fl-remover') { flConfirmRemover = i; renderTabelaFretesAdmin(); }
     else if (a === 'fl-remover-cancelar') { flConfirmRemover = null; renderTabelaFretesAdmin(); }
@@ -11345,6 +11362,9 @@
   var motPage = { id: null, tab: 'fretes', filtro: 'apagar', confirmDoc: null, confirmTodos: false, confirmMotorista: false };
   function motoristaAberto() { return motoristas.find(function(x) { return x.id === motPage.id; }) || null; }
   function abrirMotoristaPage(id, tab) {
+    if (!session || (session.role !== 'admin' && !podeVerFretes())) return;
+    // quem só tem a aba Fretes vê só os fretes do motorista (dados pessoais, documentos e senha: só a senha mestre)
+    if (session.role !== 'admin') tab = 'fretes';
     motPage = { id: id, tab: tab || 'fretes', filtro: 'apagar', confirmDoc: null, confirmTodos: false, confirmMotorista: false };
     document.getElementById('mot-overlay').classList.remove('hidden');
     renderMotoristaPage(true);
@@ -11360,6 +11380,9 @@
     // atualização automática (dados chegando do banco) não apaga o que está sendo digitado
     if (!forcar && body.contains(document.activeElement) && /^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
     document.getElementById('mot-title').textContent = m.nome;
+    var soFretes = session.role !== 'admin';
+    if (soFretes) motPage.tab = 'fretes';
+    document.getElementById('mot-tabs').classList.toggle('hidden', soFretes);
     document.querySelectorAll('#mot-tabs .seg-btn').forEach(function(b) {
       var on = b.dataset.mtab === motPage.tab;
       b.classList.toggle('active', on);
@@ -11440,6 +11463,7 @@
     function opt(v, rot) { return '<option value="' + escapeHtml(v) + '"' + (motPage.filtro === v ? ' selected' : '') + '>' + escapeHtml(rot) + '</option>'; }
     var opcoes = opt('apagar', 'A pagar e a confirmar') + ff.meses.map(function(ym) { return opt(ym, nomeMes(ym)); }).join('') + opt('tudo', 'Todas as viagens');
     var semTabela = !fretesTabela ? '<p class="field-hint warn">Sem tabela de fretes: cadastre os destinos na aba Fretes.</p>' : '';
+    var edita = podeEditarFretes();
     var html = semTabela +
       '<div class="frete-filtro"><label>Mostrar<select id="mot-frete-filtro">' + opcoes + '</select></label>' +
         '<button type="button" class="btn btn-secondary btn-sm" data-action="frete-relatorio"' + (ff.lista.length ? '' : ' disabled') + '>Relatório em PDF</button></div>' +
@@ -11449,7 +11473,7 @@
         (t.nConfirmar ? '<div class="resumo-row ask"><span class="resumo-k">A confirmar</span><span class="resumo-v mono">' + t.nConfirmar + (t.nConfirmar === 1 ? ' viagem' : ' viagens') + ' · sugestão ' + fmtBRL(t.confirmar) + '</span></div>' : '') +
         (t.nPago ? '<div class="resumo-row ok"><span class="resumo-k">Pago</span><span class="resumo-v mono">' + fmtBRL(t.pago) + '</span></div>' : '') +
       '</div>';
-    if (t.nApagar) {
+    if (t.nApagar && edita) {
       html += motPage.confirmTodos
         ? '<div class="driver-confirm">Marcar ' + t.nApagar + (t.nApagar === 1 ? ' frete' : ' fretes') + ' (' + fmtBRL(t.apagar) + ') como pago hoje?' +
           '<button class="btn-text" data-action="frete-pagar-todos-ok">Marcar como pago</button><button class="btn-text" data-action="frete-pagar-todos-cancelar">Cancelar</button></div>'
@@ -11480,6 +11504,7 @@
       } else {
         acoes = '<button class="btn-text" data-action="frete-despagar" data-id="' + escapeHtml(c.id) + '">Desfazer pagamento</button>';
       }
+      if (!edita) acoes = '';
       return '<div class="frete-item est-' + f.estado + '">' +
         '<div class="frete-top"><span><b>' + escapeHtml(formatDateBR(c.data)) + '</b> · carga ' + escapeHtml(cargaCode(c)) +
           '<span class="chip-est ' + f.estado + '">' + estadoFreteTexto(f.estado) + '</span></span>' +
@@ -11487,7 +11512,7 @@
         '<div class="frete-sub">' + escapeHtml(clientes || 'sem clientes') + ' · ' + fmtInt(f.paletes) + palavraPaletes(f.paletes) + (f.com175 ? ' (com palete de 175)' : '') + '</div>' +
         '<div class="frete-sub">' + escapeHtml(info) + (f.reg && f.reg.obs ? ' · Obs.: ' + escapeHtml(f.reg.obs) : '') +
           (f.reg && f.reg.pagoEm ? ' · pago em ' + escapeHtml(formatDateTimeBR(f.reg.pagoEm)) : '') + '</div>' +
-        '<div class="frete-acoes">' + acoes + '</div></div>';
+        (acoes ? '<div class="frete-acoes">' + acoes + '</div>' : '') + '</div>';
     }).join('');
     return html;
   }
@@ -11557,6 +11582,8 @@
     if (!b) return;
     var a = b.dataset.action, id = b.dataset.id, m = motoristaAberto();
     if (!m) return;
+    // sem a senha mestre: só o relatório e, com a aba Fretes em "edita", confirmar e pagar os fretes
+    if (session.role !== 'admin' && a !== 'frete-relatorio' && (!podeEditarFretes() || !/^frete-/.test(a))) return;
     var f;
     if (a === 'mot-senha') openDriverForm('reset', m);
     else if (a === 'mot-remover') { motPage.confirmMotorista = true; renderMotoristaPage(true); }
@@ -11632,6 +11659,7 @@
     av.classList.toggle('hidden', !ed);
   }
   function abrirFreteForm(cargaId) {
+    if (!podeEditarFretes()) return;
     var c = cargas.find(function(x) { return x.id === cargaId; });
     if (!c) return;
     var f = freteDaCarga(c), reg = f.reg || {};
@@ -13232,7 +13260,9 @@
     return sbCliente.rpc('modulo_gravar', { p_modulo: 'uniformes', p_caminho: caminho, p_id: id, p_dados: dados, p_mesclar: !!mesclar })
       .then(function(r) { if (r && r.error) throw r.error; return r ? r.data : null; });
   }
-  function ehMestreRH() { return !!session && session.role === 'admin'; }
+  // quem abre o RH: a senha mestre e quem ela marcar no acesso individual (03/11/2026); "só visualiza" não grava nada
+  function ehMestreRH() { return veAbaOpcional('rh'); }
+  function rhPodeEditar() { return ehMestreRH() && (session.role === 'admin' || nivelDaAba('rh') === 'edita'); }
   function rhId(prefixo) { return prefixo + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
   function rhDiasEntre(a, b) { return Math.round((Date.parse(b + 'T12:00:00') - Date.parse(a + 'T12:00:00')) / 86400000); }
   function rhMaisMeses(iso, n) {
@@ -13388,7 +13418,7 @@
     if (b.dataset.visao) { rhUi.visao = b.dataset.visao; renderRH(); return; }
     var a = b.dataset.rh;
     if (a === 'abrir') abrirRhSheet(b.dataset.id);
-    else if (a === 'novo') abrirRhSheet(null);
+    else if (a === 'novo') { if (rhPodeEditar()) abrirRhSheet(null); }
     else if (a === 'atualizar') rhCarregar();
     else if (a === 'avisos') { rhUi.todosAvisos = !rhUi.todosAvisos; renderRH(); }
     else if (a === 'desligados') { rhUi.desligados = !rhUi.desligados; b.textContent = rhUi.desligados ? 'Ver ativos' : 'Ver desligados'; renderRH(); }
@@ -13417,6 +13447,9 @@
     document.getElementById('rh-setores-list').innerHTML = rhListaOpcoes('setor');
     document.getElementById('rh-funcoes-list').innerHTML = rhListaOpcoes('funcao');
     document.getElementById('rh-sheet-erro').classList.add('hidden');
+    var edita = rhPodeEditar();
+    Array.prototype.forEach.call(document.querySelectorAll('#rh-form input, #rh-form select, #rh-form textarea'), function(el) { el.disabled = !edita; });
+    document.getElementById('btn-rh-salvar').classList.toggle('hidden', !edita);
     document.getElementById('rh-sheet-overlay').classList.remove('hidden');
     rhCamposSituacao();
     renderRhSheet();
@@ -13440,8 +13473,9 @@
       (nrs.length ? nrs.map(function(x) {
         var s = x.s, txt = s.estado === 'pendente' ? 'pendente (sem registro)' : s.estado === 'vencido' ? 'vencida em ' + formatDateBR(s.venc) : s.estado === 'vencendo' ? 'vence em ' + formatDateBR(s.venc) : 'ok' + (s.data ? ', feito em ' + formatDateBR(s.data) : '') + (s.venc ? ', vale até ' + formatDateBR(s.venc) : '');
         return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.t.codigo + ' · ' + x.t.nome) + '<span class="driver-sub ' + (s.estado === 'ok' ? '' : 'alerta') + '">' + escapeHtml(txt) + '</span></span></div>';
-      }).join('') : '<p class="field-hint">Nenhuma NR exigida para a função e nenhum treinamento registrado.</p>') +
-      '<div class="inline-form rh-treino"><select id="f-rh-nr"><option value="">Registrar treinamento…</option>' + rhDados.nrTipos.filter(function(t) { return t.ativo !== false; })
+      }).join('') : '<p class="field-hint">Nenhuma NR exigida para a função e nenhum treinamento registrado.</p>');
+    if (!rhPodeEditar()) { box.innerHTML = h + '<p class="hint">Você só visualiza o RH.</p>'; return; }
+    h += '<div class="inline-form rh-treino"><select id="f-rh-nr"><option value="">Registrar treinamento…</option>' + rhDados.nrTipos.filter(function(t) { return t.ativo !== false; })
         .sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); })
         .map(function(t) { return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.codigo + ' · ' + t.nome) + '</option>'; }).join('') + '</select>' +
       '<input type="date" id="f-rh-nr-data" value="' + hoje + '" max="' + hoje + '" aria-label="Data do treinamento" /><button type="button" class="btn-text" data-rhs="treino">Registrar</button></div>' +
@@ -13467,7 +13501,7 @@
     var b = e.target.closest('[data-rhs]');
     if (!b || !rhUi.editando) return;
     var id = rhUi.editando, f = rhDados.funcionarios.find(function(x) { return x.id === id; }), a = b.dataset.rhs, agora = Date.now();
-    if (!f) return;
+    if (!f || !rhPodeEditar()) return;
     function salvar(dados, msg) {
       rhGravar('funcionarios', id, Object.assign({ atualizadoEm: agora }, dados), true).then(function() { rhAplicarLocal(id, dados); renderRhSheet(); showToast(msg); })
         .catch(function(x) { console.error('RH', x); showToast('Não foi possível salvar agora.'); });
@@ -13490,6 +13524,7 @@
     e.preventDefault();
     var er = document.getElementById('rh-sheet-erro');
     function falha(m) { er.textContent = m; er.classList.remove('hidden'); }
+    if (!rhPodeEditar()) return falha('Você só visualiza o RH.');
     var nome = document.getElementById('f-rh-nome').value.replace(/\s+/g, ' ').trim();
     if (!nome) return falha('Informe o nome.');
     var id = rhUi.editando, sit = document.getElementById('f-rh-situacao').value;
@@ -21758,10 +21793,11 @@
     return ['abas'].concat(ABAS_EQUIPE.map(function(a) { return 'aba:' + a[0]; }), eq, l);
   }
   function resumoAcesso(l) {
-    var abas = ABAS_EQUIPE.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0; }).length;
+    var todas = ABAS_EQUIPE.concat(ABAS_OPCIONAIS);
+    var abas = todas.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0; }).length;
     var mods = MODULOS_FABRICA.filter(function(m) { return nivelDe(l, m.id); }).length;
-    var sv = ABAS_EQUIPE.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0 && l.indexOf('ver:' + a[0]) >= 0; }).length;
-    var si = ABAS_EQUIPE.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0 && l.indexOf('inclui:' + a[0]) >= 0; }).length;
+    var sv = todas.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0 && l.indexOf('ver:' + a[0]) >= 0; }).length;
+    var si = todas.filter(function(a) { return l.indexOf('aba:' + a[0]) >= 0 && l.indexOf('inclui:' + a[0]) >= 0; }).length;
     return [abas + (abas === 1 ? ' aba' : ' abas') + (sv ? ' (' + sv + ' só vê' + (si ? ', ' + si + ' só inclui' : '') + ')' : si ? ' (' + si + ' só inclui)' : ''), mods ? mods + (mods === 1 ? ' módulo' : ' módulos') : '',
       l.indexOf('canhotos') >= 0 ? 'Canhotos' : '', l.indexOf('liberar_carga') >= 0 ? 'Libera carga' : ''].filter(Boolean).join(' · ').replace(/^.*$/, function(t) { return l.indexOf('lider_producao') >= 0 ? 'Líder de produção (só lança a produção)' : t; });
   }
@@ -21774,6 +21810,12 @@
           return '<div class="acesso-linha"><label class="check"><input type="checkbox" data-acesso="aba:' + a[0] + '"' + (tem('aba:' + a[0]) ? ' checked' : '') + ' /> ' + escapeHtml(a[1]) + '</label>' +
             '<select class="acesso-nivel" data-acesso-nivel="' + a[0] + '" aria-label="Nível em ' + escapeHtml(a[1]) + '">' + NIVEIS_ACESSO.map(function(n) { return '<option value="' + n[0] + '"' + (n[0] === nv ? ' selected' : '') + '>' + n[1] + '</option>'; }).join('') + '</select></div>';
         }).join('') + '</div><p class="field-hint">Em cada aba: <b>Edita</b> (inclui, altera e apaga), <b>Só inclui</b> (lança, mas não altera nem apaga) ou <b>Só visualiza</b>.</p></div>' +
+      '<div class="acesso-grupo"><p class="acesso-grupo-t">Abas da senha mestre <span class="opt">(só para quem você marcar)</span></p><div class="acesso-grade com-nivel">' +
+        ABAS_OPCIONAIS.map(function(a) {
+          var nv = tem('ver:' + a[0]) ? 'ver' : '';
+          return '<div class="acesso-linha"><label class="check"><input type="checkbox" data-acesso="aba:' + a[0] + '"' + (tem('aba:' + a[0]) ? ' checked' : '') + ' /> ' + escapeHtml(a[1]) + '</label>' +
+            '<select class="acesso-nivel" data-acesso-nivel="' + a[0] + '" aria-label="Nível em ' + escapeHtml(a[1]) + '">' + NIVEIS_ACESSO.filter(function(n) { return n[0] !== 'inclui'; }).map(function(n) { return '<option value="' + n[0] + '"' + (n[0] === nv ? ' selected' : '') + '>' + n[1] + '</option>'; }).join('') + '</select></div>';
+        }).join('') + '</div><p class="field-hint"><b>Fretes</b>: a pagar por motorista e transportadora, tabela de fretes e relatórios. <b>RH</b>: funcionários, experiência e NRs. Ficam escondidas de todo mundo e aparecem só para quem tiver a caixa marcada aqui. Os dados pessoais e os documentos dos motoristas, o Cadastros e as Pesquisas continuam só da senha mestre.</p></div>' +
       '<div class="acesso-grupo"><p class="acesso-grupo-t">Módulos da fábrica</p>' +
         MODULOS_FABRICA.map(function(m) {
           var n = nivelDe(lista, m.id);
@@ -22769,10 +22811,10 @@
   function transportadoraDe(m) { return m && m.transportadoraId ? transportadoras.find(function(t) { return t.id === m.transportadoraId; }) || null : null; }
   function motoristasDaTransportadora(t) { return motoristas.filter(function(m) { return m.transportadoraId === t.id; }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); }); }
   function subscribeTransportadoras() {
-    if (!session || session.role !== 'admin') return;
+    if (!podeVerFretes()) return; // senha mestre e quem tem a aba Fretes (os fretes são pagos à transportadora)
     db.collection('transportadoras').onSnapshot(function(snap) {
       transportadoras = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-      if (session) { renderDriversAdmin(); renderMotoristaPage(false); }
+      if (session) { if (session.role === 'admin') renderDriversAdmin(); else renderFretesResumo(); renderMotoristaPage(false); }
     }, function(err) { console.error('transportadoras', err); });
   }
   function loadLocalTransportadoras() { try { transportadoras = JSON.parse(localStorage.getItem(TRANSP_LOCAL_KEY) || '[]') || []; } catch (e) { transportadoras = []; } }
@@ -22876,7 +22918,7 @@
           (tt.nPago ? '<div class="resumo-row ok"><span class="resumo-k">Pago</span><span class="resumo-v mono">' + fmtBRL(tt.pago) + '</span></div>' : '') + '</div>' +
         '<ul class="oc-itens">' + Object.keys(porMot).map(function(k) { return '<li><b>' + escapeHtml(k) + '</b>' + (porMot[k].veic ? ' · ' + escapeHtml(porMot[k].veic) : '') + '<small>' + (porMot[k].n ? fmtBRL(porMot[k].v) + ' a pagar (' + porMot[k].n + (porMot[k].n === 1 ? ' frete' : ' fretes') + ')' : 'nada a pagar') + '</small></li>'; }).join('') + '</ul>' +
         (ff.lista.length ? '<button type="button" class="btn btn-secondary btn-sm" data-ger="tpf-pdf">Relatório da transportadora em PDF</button>' : '<p class="empty-state">Nenhuma viagem neste período.</p>') +
-        (tt.nApagar ? ' <button type="button" class="btn-text" data-ger="tpf-pagar">Marcar os ' + tt.nApagar + ' fretes a pagar como pagos</button>' : '');
+        (tt.nApagar && podeEditarFretes() ? ' <button type="button" class="btn-text" data-ger="tpf-pagar">Marcar os ' + tt.nApagar + ' fretes a pagar como pagos</button>' : '');
     }
     gerAbrir({
       titulo: 'Fretes · ' + t.nome, html: '<div id="tpf-corpo">' + corpo() + '</div>',
@@ -22889,6 +22931,7 @@
           openDoc('Relatório de fretes', function() { return renderRelatorioFretes(pseudo, ff.lista, ff.periodo); },
             { modo: 'arquivo', numero: '', texto: 'Relatório de fretes — ' + t.nome + ' — ' + ff.periodo + '.' });
         } else if (a === 'tpf-pagar') {
+          if (!podeEditarFretes()) return;
           if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Tocar de novo para marcar como pago hoje'; return; }
           var agora = new Date().toISOString(), lista = ff.lista.filter(function(x) { return x.estado === 'apagar'; });
           Promise.all(lista.map(function(x) { return salvarFrete(x.carga.id, registroConfirmado(x, x.valor, { pagoEm: agora })); }))
