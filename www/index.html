@@ -299,6 +299,14 @@
   .sel-busca-mais { padding: 8px 12px; font-size: 0.8125rem; color: var(--muted); margin: 0; }
   .carga-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 18px; }
   .carga-busca { display: flex; align-items: center; gap: 8px; margin: -6px 0 14px; }
+  .carga-rel-bar { display: flex; justify-content: flex-end; margin: -6px 0 12px; }
+  .crel-sit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; margin: 4px 0 10px; }
+  .crel-sit .check { margin: 0; }
+  .crel-dias { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
+  .crel-dias .btn-text.ativo { font-weight: 800; text-decoration: underline; text-underline-offset: 4px; }
+  .crel-resumo { background: var(--tint, #F1EEF4); border-radius: 8px; padding: 10px 12px; margin: 8px 0 12px; font-size: 14px; }
+  .crel-resumo b { font-family: var(--font-display); }
+  .crel-botoes { display: flex; flex-wrap: wrap; gap: 8px; }
   .carga-busca input { flex: 1; min-width: 0; }
   @media (min-width: 560px) { .carga-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .cg-filter { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; cursor: pointer; font-family: var(--font-display); color: var(--ink); }
@@ -1771,6 +1779,7 @@
       <button type="button" class="btn-text hidden" id="carga-busca-limpar">Limpar</button></div>
     <p class="filter-note hidden" id="carga-busca-nota" role="status"></p>
     <p class="filter-note hidden" id="carga-filter-note"></p>
+    <div class="carga-rel-bar"><button type="button" class="btn btn-secondary btn-sm" id="btn-cargas-relatorio">Relatório de cargas</button></div>
 
     <div id="patio-strip" class="patio hidden" aria-live="polite"></div>
     <div class="section-head"><h2 class="section-title">Aguardando carregamento</h2></div>
@@ -6799,6 +6808,234 @@
     ui.showAllDone = !ui.showAllDone;
     renderCargasSection();
   });
+  // ---------- relatório de cargas (03/11/2026) ----------
+  // Por dia (ou período) e situação: carregadas, pendentes (aguardando carregamento, com as atrasadas), com ok e sem ok
+  // do faturamento. Marcar mais de uma do mesmo grupo soma; um grupo sem nada marcado vale tudo. As carregadas
+  // entram pelo dia em que carregaram; as pendentes, pelo dia programado (as atrasadas de dias anteriores entram no
+  // dia de hoje). Sai em PDF (A4, várias páginas) ou planilha.
+  var crelUi = { de: '', ate: '', sit: {} };
+  var CREL_SIT = [['carregadas', 'Carregadas'], ['pendentes', 'Pendentes'], ['fatOk', 'Com ok do faturamento'], ['fatSem', 'Sem ok do faturamento']];
+  function crelDiaDaCarga(c) {
+    if (c.status === 'concluida') return isoLocal(c.concluidoEm) || String(c.data || '').slice(0, 10);
+    var d = String(c.data || '').slice(0, 10), hoje = todayIso();
+    return d && d < hoje ? hoje : d; // atrasada: continua pendente hoje
+  }
+  function crelLista() {
+    var de = crelUi.de || todayIso(), ate = crelUi.ate && crelUi.ate >= de ? crelUi.ate : de, st = crelUi.sit;
+    var gCarr = st.carregadas || st.pendentes, gFat = st.fatOk || st.fatSem;
+    return cargas.filter(function(c) {
+      var conc = c.status === 'concluida';
+      var d = crelDiaDaCarga(c);
+      if (!(d >= de && d <= ate)) return false;
+      if (gCarr && !((conc && st.carregadas) || (!conc && st.pendentes))) return false;
+      if (gFat && !((c.faturamentoOk && st.fatOk) || (!c.faturamentoOk && st.fatSem))) return false;
+      return true;
+    }).sort(function(a, b) {
+      return String(crelDiaDaCarga(a)).localeCompare(String(crelDiaDaCarga(b))) || ((a.status === 'concluida' ? 0 : 1) - (b.status === 'concluida' ? 0 : 1)) ||
+        String(a.status === 'concluida' ? a.concluidoEm || '' : (a.data || '') + (a.hora || '')).localeCompare(String(b.status === 'concluida' ? b.concluidoEm || '' : (b.data || '') + (b.hora || '')));
+    });
+  }
+  function crelPeriodoTexto() {
+    var de = crelUi.de || todayIso(), ate = crelUi.ate && crelUi.ate > de ? crelUi.ate : '';
+    return ate ? formatDateBR(de) + ' a ' + formatDateBR(ate) : formatDateBR(de);
+  }
+  function crelFiltrosTexto() {
+    var l = CREL_SIT.filter(function(x) { return crelUi.sit[x[0]]; }).map(function(x) { return x[1].replace(/ \(.*\)$/, ''); });
+    return l.length ? l.join(' · ') : 'Todas as situações';
+  }
+  function crelSituacao(c) {
+    if (c.status === 'concluida') {
+      var f = faseViagem(c);
+      return { txt: 'Carregada' + (f === 'entregue' ? ' · entregue' : f === 'viagem' ? ' · em viagem' : ''), cor: 'verde' };
+    }
+    var k = cargaStatusKey(c);
+    return { txt: k === 'atrasada' ? 'Atrasada (pendente)' : 'Pendente', cor: k === 'atrasada' ? 'laranja' : 'ink' };
+  }
+  function crelFaturamento(c) {
+    return c.faturamentoOk ? 'Ok' + (c.faturamentoPor ? ' · ' + (nomePessoa(c.faturamentoPor) || c.faturamentoPor) : '') : 'Sem ok';
+  }
+  function crelProdutos(c) {
+    var t = {};
+    (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+      var k = it.produtoNome || '—'; t[k] = t[k] || { q: 0, u: it.unidade || '' }; t[k].q += Number(it.quantidade) || 0;
+    }); });
+    return Object.keys(t).map(function(k) { return k + ' ' + qtdUnidade(t[k].q, t[k].u); }).join(' · ');
+  }
+  function crelMotorista(c) { return c.retira ? retiraTexto(c) : (c.motorista || 'sem motorista'); }
+  function crelTotais(lista) {
+    var t = { n: lista.length, pal: 0, chx: 0, carr: 0, pend: 0, atr: 0, fatOk: 0, fatSem: 0 };
+    lista.forEach(function(c) {
+      t.pal += Number(c.totalPaletes) || 0; t.chx += Number(c.totalChapatex) || 0;
+      if (c.status === 'concluida') t.carr++; else { t.pend++; if (cargaStatusKey(c) === 'atrasada') t.atr++; }
+      if (c.faturamentoOk) t.fatOk++; else t.fatSem++;
+    });
+    return t;
+  }
+  function crelResumoHtml() {
+    var l = crelLista(), t = crelTotais(l);
+    return '<div class="crel-resumo"><b>' + fmtInt(t.n) + (t.n === 1 ? ' carga' : ' cargas') + '</b> · ' + fmtInt(t.pal) + palavraPaletes(t.pal) + ' · ' + fmtInt(t.chx) + ' chapatex' +
+      (t.n ? '<br>' + t.carr + (t.carr === 1 ? ' carregada' : ' carregadas') + ' · ' + t.pend + (t.pend === 1 ? ' pendente' : ' pendentes') + (t.atr ? ' (' + t.atr + (t.atr === 1 ? ' atrasada' : ' atrasadas') + ')' : '') +
+        ' · ' + t.fatOk + ' com ok do faturamento · ' + t.fatSem + ' sem ok' : '') + '</div>';
+  }
+  function abrirRelatorioCargas() {
+    crelUi = { de: todayIso(), ate: '', sit: {} };
+    function corpo() {
+      var hoje = todayIso();
+      return '<p class="hint">Escolha o dia (ou um período) e as situações. Nada marcado num grupo = todas. As <b>carregadas</b> entram pelo dia em que carregaram; as <b>pendentes</b>, pelo dia programado (as atrasadas entram no dia de hoje).</p>' +
+        '<div class="crel-dias">' + [[-1, 'Ontem'], [0, 'Hoje'], [1, 'Amanhã']].map(function(x) { var d = addDiasIso(hoje, x[0]); return '<button type="button" class="btn-text' + (crelUi.de === d && !crelUi.ate ? ' ativo' : '') + '" data-ger="crel-dia" data-dia="' + d + '">' + x[1] + '</button>'; }).join('') + '</div>' +
+        '<div class="row-2"><label>Dia<input type="date" id="crel-de" value="' + escapeHtml(crelUi.de) + '" /></label>' +
+        '<label>Até <span class="opt">(para um período)</span><input type="date" id="crel-ate" value="' + escapeHtml(crelUi.ate) + '" min="' + escapeHtml(crelUi.de) + '" /></label></div>' +
+        '<p class="acesso-grupo-t">Situação</p><div class="crel-sit">' + CREL_SIT.map(function(x) {
+          return '<label class="check"><input type="checkbox" class="crel-chk" value="' + x[0] + '"' + (crelUi.sit[x[0]] ? ' checked' : '') + ' /> ' + escapeHtml(x[1]) + '</label>'; }).join('') + '</div>' +
+        '<div id="crel-resumo">' + crelResumoHtml() + '</div>' +
+        '<div class="crel-botoes"><button type="button" class="btn btn-primary btn-sm" data-ger="crel-pdf">Relatório em PDF</button><button type="button" class="btn btn-secondary btn-sm" data-ger="crel-csv">Baixar planilha</button></div>';
+    }
+    function ler() {
+      crelUi.de = gerVal('crel-de') || todayIso();
+      var a = gerVal('crel-ate'); crelUi.ate = a && a > crelUi.de ? a : '';
+      crelUi.sit = {};
+      document.querySelectorAll('#ger-form-body .crel-chk').forEach(function(c) { if (c.checked) crelUi.sit[c.value] = true; });
+    }
+    function atualizar() {
+      var r = document.getElementById('crel-resumo'); if (r) r.innerHTML = crelResumoHtml();
+      var at = document.getElementById('crel-ate'); if (at) at.min = crelUi.de;
+      document.querySelectorAll('#ger-form-body [data-ger="crel-dia"]').forEach(function(b) { b.classList.toggle('ativo', b.dataset.dia === crelUi.de && !crelUi.ate); });
+    }
+    gerAbrir({
+      titulo: 'Relatório de cargas', html: '<div id="crel-corpo">' + corpo() + '</div>',
+      change: function(el) { if (el.id === 'crel-de' || el.id === 'crel-ate' || el.classList.contains('crel-chk')) { ler(); atualizar(); } },
+      input: function(el) { if (el.id === 'crel-de' || el.id === 'crel-ate') { ler(); atualizar(); } },
+      acao: function(a, b) {
+        if (a === 'crel-dia') { ler(); crelUi.de = b.dataset.dia; crelUi.ate = ''; document.getElementById('crel-corpo').innerHTML = corpo(); return; }
+        ler();
+        var lista = crelLista();
+        if (!lista.length) { gerErro('Nenhuma carga neste dia com essas situações.'); return; }
+        if (a === 'crel-csv') { exportarRelatorioCargas(lista); return; }
+        if (a === 'crel-pdf') {
+          var per = crelPeriodoTexto(), filt = crelFiltrosTexto();
+          gerFechar();
+          openDoc('Relatório de cargas', function() { return renderRelatorioCargas(lista, per, filt); },
+            { modo: 'arquivo', numero: '', texto: 'Relatório de cargas — ' + per + ' — ' + filt + '.' });
+        }
+      }
+    });
+  }
+  document.getElementById('btn-cargas-relatorio').addEventListener('click', abrirRelatorioCargas);
+  function exportarRelatorioCargas(lista) {
+    var esc = function(v) { var x = String(v == null ? '' : v); return /[;"\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Clientes', 'Pedido / NF', 'Destinos', 'Motorista', 'Produtos', 'Paletes', 'Chapatex', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em'].join(';')];
+    lista.forEach(function(c) {
+      var cls = c.clientes || [];
+      linhas.push([formatDateBR(crelDiaDaCarga(c)), formatDateBR(c.data), c.hora || '', cargaCode(c), cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '),
+        cls.map(function(x) { return x.pedidoNf || x.numeroDocumento || ''; }).filter(Boolean).join(', '), cls.map(function(x) { return x.destino || ''; }).filter(Boolean).join(', '),
+        crelMotorista(c), crelProdutos(c), fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), crelSituacao(c).txt, c.concluidoEm ? formatDateTimeBR(c.concluidoEm) : '',
+        c.faturamentoOk ? 'ok' : 'sem ok', c.faturamentoOk ? (nomePessoa(c.faturamentoPor) || c.faturamentoPor || '') : '', c.faturamentoEm ? formatDateTimeBR(c.faturamentoEm) : ''].map(esc).join(';'));
+    });
+    var nome = 'relatorio-cargas-' + (crelUi.de || todayIso()) + (crelUi.ate ? '-a-' + crelUi.ate : '') + '.csv';
+    triggerDownload(new Blob(['\ufeff' + linhas.join('\n')], { type: 'text/csv;charset=utf-8' }), nome);
+    showToast('Planilha das cargas baixada (' + lista.length + (lista.length === 1 ? ' carga).' : ' cargas).'));
+  }
+  // PDF em A4 (1240 × 1754), quantas páginas precisar; a prévia junta as páginas em tamanho menor
+  function renderRelatorioCargas(lista, periodo, filtros) {
+    return loadReceiptFonts().then(function() {
+      var W = RW, H = RBASE_H, L = RM, R = W - RM, CW = R - L, pages = [], cv, ctx, y;
+      var cHora = L, cCarga = L + 128, cCli = L + 268, cMot = R - 470, cPal = R - 268, cSit = R - 250, cFat = R;
+      var emitido = 'Emitido em ' + formatDateTimeBR(new Date().toISOString()) + ' por ' + (quemSessao() || '—');
+      function cabTabela() {
+        txt(ctx, 'Hora*', cHora, y, rFont(500, 20, R_DISP), RC.muted, 'left');
+        txt(ctx, 'Carga', cCarga, y, rFont(500, 20, R_DISP), RC.muted, 'left');
+        txt(ctx, 'Clientes, destinos e produtos', cCli, y, rFont(500, 20, R_DISP), RC.muted, 'left');
+        txt(ctx, 'Motorista', cMot, y, rFont(500, 20, R_DISP), RC.muted, 'left');
+        txt(ctx, 'Plt', cPal, y, rFont(500, 20, R_DISP), RC.muted, 'right');
+        txt(ctx, 'Situação · faturamento', cFat, y, rFont(500, 20, R_DISP), RC.muted, 'right');
+        y += 12; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2); y += 34;
+      }
+      function novaPagina() {
+        cv = document.createElement('canvas'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
+        ctx.fillStyle = RC.white; ctx.fillRect(0, 0, W, H);
+        faixaMarca(ctx, W, 16);
+        if (!pages.length) {
+          txtFit(ctx, 'Relatório de cargas', L, 130, 800, R_DISP, 56, 36, 700, RC.ink, 'left');
+          var lw = desenharSimbolo(ctx, L, 147, 32);
+          txt(ctx, 'LEVÍSSIMA · Carregamentos', L + (lw ? lw + 12 : 0), 172, rFont(500, 26, R_DISP), RC.muted, 'left');
+          txt(ctx, / a /.test(periodo) ? 'Período' : 'Dia', R, 100, rFont(500, 22, R_DISP), RC.muted, 'right');
+          txtFit(ctx, periodo, R, 138, 600, R_DISP, 32, 20, 420, RC.ink, 'right');
+          txtFit(ctx, filtros, R, 172, 500, R_DISP, 22, 16, 460, RC.muted, 'right');
+          ctx.fillStyle = RC.ink; ctx.fillRect(L, 196, CW, 4);
+          y = 236;
+          var t = crelTotais(lista);
+          ctx.fillStyle = RC.tint; ctx.fillRect(L, y, CW, 104); ctx.fillStyle = RC.teal; ctx.fillRect(L, y, 8, 104);
+          txt(ctx, fmtInt(t.n) + (t.n === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(t.pal) + palavraPaletes(t.pal) + ' · ' + fmtInt(t.chx) + ' chapatex', L + 30, y + 44, rFont(700, 30, R_DISP), RC.ink, 'left');
+          txt(ctx, t.carr + (t.carr === 1 ? ' carregada' : ' carregadas') + ' · ' + t.pend + (t.pend === 1 ? ' pendente' : ' pendentes') + (t.atr ? ' (' + t.atr + (t.atr === 1 ? ' atrasada' : ' atrasadas') + ')' : '') +
+            ' · ' + t.fatOk + ' com ok do faturamento · ' + t.fatSem + ' sem ok', L + 30, y + 82, rFont(500, 22, R_DISP), RC.muted, 'left');
+          y += 104 + 40;
+        } else {
+          txt(ctx, 'Relatório de cargas · ' + periodo, L, 80, rFont(700, 26, R_DISP), RC.ink, 'left');
+          txt(ctx, filtros, R, 80, rFont(500, 20, R_DISP), RC.muted, 'right');
+          ctx.fillStyle = RC.ink; ctx.fillRect(L, 96, CW, 3);
+          y = 136;
+        }
+        pages.push(cv);
+        cabTabela();
+      }
+      novaPagina();
+      var diaAtual = '';
+      lista.forEach(function(c) {
+        var dia = crelDiaDaCarga(c), cls = c.clientes || [], i;
+        ctx.font = rFont(600, 22, R_DISP);
+        var cl = wrapLines(ctx, cls.map(function(x) { return (x.cliente || '—') + (x.destino ? ' (' + x.destino + ')' : '') + (x.pedidoNf ? ' · ' + x.pedidoNf : ''); }).join('; ') || 'sem clientes', cMot - cCli - 20, 3);
+        ctx.font = rFont(400, 18, R_DISP);
+        var pr = wrapLines(ctx, crelProdutos(c) || '—', cMot - cCli - 20, 2);
+        ctx.font = rFont(500, 20, R_DISP);
+        var ml = wrapLines(ctx, crelMotorista(c), cPal - cMot - 50, 2);
+        var okFalta = pedidoRep(c) && !liberadaCarga(c) ? faltaOkTexto(c) : '';
+        // altura da linha: do primeiro texto até a linha de baixo
+        var altura = Math.max(cl.length * 28 + pr.length * 24, okFalta ? 76 : 52, ml.length * 26) - 14;
+        if (y + altura + (dia !== diaAtual ? 44 : 0) > H - 120) { novaPagina(); diaAtual = ''; }
+        if (dia !== diaAtual) {
+          diaAtual = dia;
+          var doDia = lista.filter(function(x) { return crelDiaDaCarga(x) === dia; });
+          txt(ctx, formatDateBR(dia) + ' · ' + doDia.length + (doDia.length === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(doDia.reduce(function(a, x) { return a + (Number(x.totalPaletes) || 0); }, 0)) + ' paletes', L, y, rFont(700, 24, R_DISP), RC.teal, 'left');
+          y += 44;
+        }
+        txt(ctx, c.status === 'concluida' && c.concluidoEm ? horaDe(c.concluidoEm) : (c.hora || '—'), cHora, y, rFont(600, 22, R_MONO), RC.ink, 'left');
+        if (c.data && c.data !== dia) txt(ctx, 'prog. ' + formatDateBR(c.data).slice(0, 5), cHora, y + 26, rFont(500, 16, R_DISP), c.status === 'concluida' ? RC.muted : RC.laranjaTexto, 'left');
+        txt(ctx, cargaCode(c), cCarga, y, rFont(500, 18, R_MONO), RC.muted, 'left');
+        for (i = 0; i < cl.length; i++) txt(ctx, cl[i], cCli, y + i * 28, rFont(600, 22, R_DISP), RC.ink, 'left');
+        for (i = 0; i < pr.length; i++) txt(ctx, pr[i], cCli, y + cl.length * 28 + i * 24 - 4, rFont(400, 18, R_DISP), RC.muted, 'left');
+        for (i = 0; i < ml.length; i++) txt(ctx, ml[i], cMot, y + i * 26, rFont(500, 20, R_DISP), RC.ink, 'left');
+        txt(ctx, fmtInt(c.totalPaletes), cPal, y, rFont(600, 22, R_MONO), RC.wood, 'right');
+        var si = crelSituacao(c);
+        txtFit(ctx, si.txt, cFat, y, 700, R_DISP, 20, 14, R - cSit, si.cor === 'verde' ? RC.verdeTexto : si.cor === 'laranja' ? RC.laranjaTexto : RC.ink, 'right');
+        txtFit(ctx, (c.faturamentoOk ? '✓ ' : '') + crelFaturamento(c), cFat, y + 28, 500, R_DISP, 18, 13, R - cSit, c.faturamentoOk ? RC.verdeTexto : RC.laranjaTexto, 'right');
+        if (okFalta) txtFit(ctx, okFalta, cFat, y + 52, 500, R_DISP, 16, 12, R - cSit, RC.laranjaTexto, 'right');
+        y += altura;
+        ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 1);
+        y += 38;
+      });
+      pages.forEach(function(p, i) {
+        var c2 = p.getContext('2d');
+        c2.fillStyle = RC.line; c2.fillRect(L, H - 100, CW, 2);
+        txt(c2, '* Carregadas: hora em que carregaram; pendentes: hora programada ("prog." = dia programado, quando é outro).', L, H - 64, rFont(400, 18, R_DISP), RC.muted, 'left');
+        txt(c2, emitido, L, H - 36, rFont(400, 18, R_DISP), RC.muted, 'left');
+        txt(c2, 'Página ' + (i + 1) + ' de ' + pages.length, R, H - 36, rFont(500, 18, R_DISP), RC.muted, 'right');
+      });
+      // prévia e imagem: as páginas uma embaixo da outra (em tamanho menor quando são muitas)
+      var k = pages.length > 2 ? 0.5 : 1, n = Math.min(pages.length, 16);
+      var pv = document.createElement('canvas'); pv.width = Math.round(W * k); pv.height = Math.round(H * k * n + (n - 1) * 12);
+      var pc = pv.getContext('2d'); pc.fillStyle = '#E5E3EA'; pc.fillRect(0, 0, pv.width, pv.height);
+      for (var j = 0; j < n; j++) pc.drawImage(pages[j], 0, Math.round(j * (H * k + 12)), Math.round(W * k), Math.round(H * k));
+      var pngDataUrl = pv.toDataURL('image/png');
+      var pdfBytes = buildPdfFromJpegs(pages.map(function(p) { return { jpeg: dataUrlToBytes(p.toDataURL('image/jpeg', 0.9)), w: W, h: H }; }));
+      return {
+        baseName: 'relatorio-cargas-' + (crelUi.de || todayIso()).replace(/-/g, '') + (crelUi.ate ? '-a-' + crelUi.ate.replace(/-/g, '') : ''),
+        pngDataUrl: pngDataUrl,
+        pngBlob: new Blob([dataUrlToBytes(pngDataUrl)], { type: 'image/png' }),
+        pdfBlob: new Blob([pdfBytes], { type: 'application/pdf' })
+      };
+    });
+  }
+
   // "Atrasada" depende do relógio: atualiza o quadro a cada minuto enquanto ele estiver aberto.
   setInterval(function() {
     if (ehEscritorio() && ui.tab === 'cargas' && !document.getElementById('admin-view').classList.contains('hidden')) renderCargasSection();
