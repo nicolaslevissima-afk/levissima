@@ -12,6 +12,16 @@
 //   { acao: 'lista' }                                              -> { senhas: [...] }  (só a senha mestre)
 //   { acao: 'bio_exigir', ref, exige }                             -> { ok }             (só a senha mestre: exige o rosto)
 //   { acao: 'bio_apagar', ref }                                    -> { ok }             (só a senha mestre: apaga os rostos cadastrados)
+// Segurança (29/10/2026, migração 0037):
+//   'entrar' da senha mestre com o código ligado -> { segundoFator, ticket, rosto } (ainda sem login)
+//   { acao: 'entrar_codigo', ticket, codigo }                      -> login              (código do autenticador ou de emergência)
+//   { acao: 'bio_ticket_proprio', senha }                          -> { ticket, nome }   (logado: cadastra o rosto no aparelho)
+//   { acao: 'totp_estado' } / 'totp_iniciar' (senha) / 'totp_confirmar' (codigo) / 'totp_codigos_novos' (senha, codigo)
+//   / 'totp_desligar' (senha, codigo)                                                     (só a senha mestre)
+//   { acao: 'sair_aparelhos', ref }                                -> { ok }             (só a senha mestre: derruba os logins)
+//   { acao: 'aparelhos', ref }                                     -> { aparelhos }      (só a senha mestre)
+//   'entrar' guarda o aparelho (corpo.dispositivo) e avisa a senha mestre de aparelho novo; trocar a senha derruba os
+//   logins abertos daquela senha. Senha nova: 8 caracteres e sem as fáceis (acesso_definir).
 // Entrar com o rosto (passkey do aparelho; verificação em webauthn.js):
 //   'entrar' com a senha de quem exige o rosto: sem rosto cadastrado -> { cadastrarRosto, ticket, nome } (ainda sem login);
 //                                               com rosto cadastrado -> erro 'biometria' (a senha sozinha não entra)
@@ -235,6 +245,94 @@ async function ticketValido(ticket: string) {
   return t && new Date(t.expira).getTime() > Date.now() ? t : null;
 }
 
+// ---------- segurança (0037): aparelhos, revogação, segundo fator ----------
+async function aviso(tipo: string, ref: string, nome: string, detalhe: string, origem = '') {
+  await admin.from('seguranca_eventos').insert({ tipo, ref, nome: nome.slice(0, 120), detalhe: detalhe.slice(0, 500), origem: origem.slice(0, 80) }).then(() => {}, () => {});
+}
+function textoCurto(v: unknown, n: number) { return String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').slice(0, n); }
+async function registrarAparelho(id: { ref: string; nome: string }, corpo: Record<string, unknown>, origem: string) {
+  const aparelho = textoCurto(corpo.dispositivo, 64);
+  if (!/^[A-Za-z0-9_-]{8,64}$/.test(aparelho)) return;
+  const descricao = textoCurto(corpo.dispositivoDesc, 80);
+  const agora = new Date().toISOString();
+  const { data: ja } = await admin.from('acesso_aparelhos').select('aparelho').eq('ref', id.ref).eq('aparelho', aparelho).maybeSingle();
+  if (ja) { await admin.from('acesso_aparelhos').update({ ultimo_em: agora, origem: origem.slice(0, 80), descricao }).eq('ref', id.ref).eq('aparelho', aparelho); return; }
+  const { count } = await admin.from('acesso_aparelhos').select('aparelho', { count: 'exact', head: true }).eq('ref', id.ref);
+  await admin.from('acesso_aparelhos').insert({ ref: id.ref, aparelho, descricao, origem: origem.slice(0, 80), primeiro_em: agora, ultimo_em: agora });
+  if ((count || 0) > 0 || id.ref === 'mestre') {
+    await aviso('aparelho_novo', id.ref, id.nome, 'Entrada num aparelho novo' + (descricao ? ' (' + descricao + ')' : '') + '. Se não foi quem tem essa senha, use "Sair de todos os aparelhos" e troque a senha.', origem);
+  }
+}
+// derruba todos os logins abertos desta senha: o banco recusa os tokens emitidos antes (papel_atual) e o usuário
+// do login é apagado (as sessões e a renovação somem; no próximo login ele é criado de novo)
+async function revogar(ref: string, por: string) {
+  const em = new Date(Math.floor(Date.now() / 1000) * 1000).toISOString();
+  await admin.from('acesso_revogacoes').upsert({ ref, em, por });
+  const { data } = await admin.from('acesso_senhas').select('usuario').eq('ref', ref).maybeSingle();
+  const usuario = data && (data as { usuario: string | null }).usuario;
+  if (usuario) await admin.auth.admin.deleteUser(String(usuario)).then(() => {}, () => {});
+}
+const B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+function b32enc(b: Uint8Array) {
+  let bits = 0, val = 0, out = '';
+  for (const x of b) { val = (val << 8) | x; bits += 8; while (bits >= 5) { out += B32[(val >>> (bits - 5)) & 31]; bits -= 5; } }
+  if (bits > 0) out += B32[(val << (5 - bits)) & 31];
+  return out;
+}
+function b32dec(s: string) {
+  const t = s.toUpperCase().replace(/[^A-Z2-7]/g, '');
+  let bits = 0, val = 0; const out: number[] = [];
+  for (const c of t) { val = (val << 5) | B32.indexOf(c); bits += 5; if (bits >= 8) { out.push((val >>> (bits - 8)) & 255); bits -= 8; } }
+  return new Uint8Array(out);
+}
+async function hotp(segredo: string, passo: number) {
+  const chave = await crypto.subtle.importKey('raw', b32dec(segredo), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  const msg = new Uint8Array(8); let x = passo;
+  for (let i = 7; i >= 0; i--) { msg[i] = x & 255; x = Math.floor(x / 256); }
+  const h = new Uint8Array(await crypto.subtle.sign('HMAC', chave, msg));
+  const o = h[h.length - 1] & 15;
+  const n = ((h[o] & 127) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3];
+  return String(n % 1000000).padStart(6, '0');
+}
+// código de 6 números do autenticador (aceita o anterior e o próximo, por diferença de relógio; nunca o mesmo duas vezes)
+async function passoDoCodigo(segredo: string, codigo: string, ultimo: number): Promise<number | null> {
+  if (!/^\d{6}$/.test(codigo)) return null;
+  const agora = Math.floor(Date.now() / 30000);
+  for (const d of [0, -1, 1]) { const p = agora + d; if (p > ultimo && await hotp(segredo, p) === codigo) return p; }
+  return null;
+}
+async function sha256hex(t: string) { return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))).map((b) => b.toString(16).padStart(2, '0')).join(''); }
+function codigosEmergencia(): string[] {
+  const out: string[] = [];
+  for (let i = 0; i < 8; i++) { const b = b32enc(crypto.getRandomValues(new Uint8Array(6))).slice(0, 8); out.push(b.slice(0, 4) + '-' + b.slice(4)); }
+  return out;
+}
+async function totpDe(ref: string) {
+  const { data } = await admin.from('acesso_totp').select('segredo, ativo, ultimo_passo, recuperacao').eq('ref', ref).maybeSingle();
+  return data as { segredo: string; ativo: boolean; ultimo_passo: number; recuperacao: string[] } | null;
+}
+// confere o código do autenticador ou um código de emergência (que só vale uma vez)
+async function conferirSegundo(ref: string, codigoBruto: string): Promise<boolean> {
+  const t = await totpDe(ref);
+  if (!t || !t.ativo) return false;
+  const codigo = codigoBruto.replace(/\s+/g, '');
+  const passo = await passoDoCodigo(t.segredo, codigo, Number(t.ultimo_passo) || 0);
+  if (passo !== null) { await admin.from('acesso_totp').update({ ultimo_passo: passo }).eq('ref', ref); return true; }
+  const norm = codigo.toUpperCase().replace(/[^A-Z2-7]/g, '');
+  if (norm.length !== 8) return false;
+  const h = await sha256hex(norm);
+  const lista = t.recuperacao || [];
+  if (!lista.includes(h)) return false;
+  await admin.from('acesso_totp').update({ recuperacao: lista.filter((x) => x !== h) }).eq('ref', ref);
+  await aviso('codigo_emergencia', ref, '', 'Um código de emergência foi usado para entrar (restam ' + (lista.length - 1) + ').');
+  return true;
+}
+async function segundoBloqueado(ref: string) {
+  const { count } = await admin.from('acesso_tentativas').select('id', { count: 'exact', head: true })
+    .eq('origem', 'codigo:' + ref).eq('ok', false).gt('em', new Date(Date.now() - 15 * 60000).toISOString());
+  return (count || 0) >= 5;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') return erro('metodo', 405);
@@ -246,11 +344,26 @@ Deno.serve(async (req) => {
     if (acao === 'entrar') {
       // limpeza das tentativas com mais de um dia (não atrasa o login)
       admin.from('acesso_tentativas').delete().lt('em', new Date(Date.now() - 86400000).toISOString()).then(() => {}, () => {});
+      // histórico e avisos têm prazo: auditoria 90 dias, tentativas de PIN 30 dias, avisos de segurança 180 dias
+      admin.from('auditoria').delete().lt('em', new Date(Date.now() - 90 * 86400000).toISOString()).then(() => {}, () => {});
+      admin.from('pin_tentativas').delete().lt('em', new Date(Date.now() - 30 * 86400000).toISOString()).then(() => {}, () => {});
+      admin.from('seguranca_eventos').delete().lt('em', new Date(Date.now() - 180 * 86400000).toISOString()).then(() => {}, () => {});
       const senha = String(corpo.senha || '');
       if (!senha || senha.length > 200) return erro('senha', 401);
       const id = await conferir(senha, origem);
       if (id === 'bloqueado') return erro('tentativas', 429);
       if (!id) return erro('senha', 401);
+      // senha mestre com o segundo fator ligado: a senha sozinha não entra (rosto ou código do autenticador)
+      if (id.ref === 'mestre') {
+        const t = await totpDe('mestre');
+        if (t && t.ativo) {
+          limparDesafios();
+          const ticket = desafioNovo();
+          const { error } = await admin.from('acesso_desafios').insert({ tipo: 'segundo', ref: 'mestre', ticket, expira: emMinutos(5) });
+          if (error) throw error;
+          return resposta({ segundoFator: true, ticket, rosto: (await rostosDe('mestre')).length > 0, nome: id.nome });
+        }
+      }
       const linha = await linhaDe(id.ref);
       if (linha && linha.biometria) {
         // exige o rosto: com rosto cadastrado, a senha sozinha não entra; sem rosto, cadastra antes de entrar
@@ -261,7 +374,31 @@ Deno.serve(async (req) => {
         if (error) throw error;
         return resposta({ cadastrarRosto: true, ticket, nome: id.nome });
       }
-      return resposta(await sessaoPara(id));
+      const sess = await sessaoPara(id);
+      await registrarAparelho(id, corpo, origem);
+      return resposta(sess);
+    }
+
+    if (acao === 'entrar_codigo') {
+      const ticket = String(corpo.ticket || '');
+      if (!/^[A-Za-z0-9_-]{30,64}$/.test(ticket)) return erro('ticket', 401);
+      const { data: tk } = await admin.from('acesso_desafios').select('id, ref, expira').eq('ticket', ticket).eq('tipo', 'segundo').maybeSingle();
+      const t = tk as { id: number; ref: string; expira: string } | null;
+      if (!t || new Date(t.expira).getTime() < Date.now()) return erro('ticket', 401);
+      if (await segundoBloqueado(t.ref)) return erro('tentativas', 429);
+      const ok = await conferirSegundo(t.ref, String(corpo.codigo || ''));
+      await admin.from('acesso_tentativas').insert({ origem: 'codigo:' + t.ref, ok });
+      if (!ok) {
+        if (await segundoBloqueado(t.ref)) await aviso('codigo_bloqueio', t.ref, '', '5 códigos do autenticador errados em 15 minutos depois da senha mestre certa: bloqueado por 15 minutos. Se não foi você, troque a senha mestre.', origem);
+        return erro('codigo', 401);
+      }
+      await admin.from('acesso_desafios').delete().eq('id', t.id);
+      const linha = await linhaDe(t.ref);
+      if (!linha) return erro('ticket', 401);
+      const ident = { ref: t.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario };
+      const sess = await sessaoPara(ident);
+      await registrarAparelho(ident, corpo, origem);
+      return resposta(sess);
     }
 
     if (acao === 'bio_registro_opcoes') {
@@ -296,7 +433,10 @@ Deno.serve(async (req) => {
       await admin.from('acesso_desafios').delete().eq('id', t.id);
       const linha = await linhaDe(t.ref);
       if (!linha) return erro('ticket', 401);
-      return resposta(await sessaoPara({ ref: t.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario }));
+      const identR = { ref: t.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario };
+      const sessR = await sessaoPara(identR);
+      await registrarAparelho(identR, corpo, origem);
+      return resposta(sessR);
     }
 
     if (acao === 'bio_entrar_opcoes') {
@@ -326,7 +466,10 @@ Deno.serve(async (req) => {
       await admin.from('acesso_biometria').update({ contador: r.contador, usado_em: new Date().toISOString() }).eq('cred_id', cred.cred_id);
       const linha = await linhaDe(cred.ref);
       if (!linha) return erro('rosto', 401);
-      return resposta(await sessaoPara({ ref: cred.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario }));
+      const identB = { ref: cred.ref, papel: linha.papel, nome: linha.nome, usuario: linha.usuario };
+      const sessB = await sessaoPara(identB);
+      await registrarAparelho(identB, corpo, origem);
+      return resposta(sessB);
     }
 
     const quem = await quemChamou(req);
@@ -338,7 +481,63 @@ Deno.serve(async (req) => {
       return resposta({ ok: !!id && id.ref === quem.ref, papel: id && id !== 'bloqueado' && id.ref === quem.ref ? id.papel : null });
     }
 
+    // cadastrar o rosto no aparelho em que está logado (confirma a própria senha)
+    if (acao === 'bio_ticket_proprio') {
+      const id = await conferir(String(corpo.senha || ''), origem);
+      if (id === 'bloqueado') return erro('tentativas', 429);
+      if (!id || id.ref !== quem.ref) return erro('senha', 401);
+      limparDesafios();
+      const ticket = desafioNovo();
+      const { error } = await admin.from('acesso_desafios').insert({ tipo: 'cadastro', ref: quem.ref, ticket, expira: emMinutos(10) });
+      if (error) throw error;
+      return resposta({ ticket, nome: id.nome });
+    }
+
     if (quem.papel !== 'mestre' || quem.soInclui) return erro('permissao', 403); // a diretoria (só inclui) não mexe em senhas
+
+    if (acao === 'totp_estado') {
+      const t = await totpDe('mestre');
+      return resposta({ ativo: !!(t && t.ativo), emergencia: t && t.ativo ? (t.recuperacao || []).length : 0, rostos: (await rostosDe('mestre')).length });
+    }
+    if (acao === 'totp_iniciar' || acao === 'totp_codigos_novos' || acao === 'totp_desligar') {
+      const id = await conferir(String(corpo.senha || ''), origem);
+      if (id === 'bloqueado') return erro('tentativas', 429);
+      if (!id || id.ref !== 'mestre') return erro('senha', 401);
+      const t = await totpDe('mestre');
+      if (acao === 'totp_iniciar') {
+        if (t && t.ativo) return erro('ja_ativo', 409);
+        const segredo = b32enc(crypto.getRandomValues(new Uint8Array(20)));
+        const { error } = await admin.from('acesso_totp').upsert({ ref: 'mestre', segredo, ativo: false, ultimo_passo: 0, recuperacao: [] });
+        if (error) throw error;
+        return resposta({ segredo, uri: 'otpauth://totp/LEVISSIMA:Senha%20mestre?secret=' + segredo + '&issuer=LEVISSIMA&digits=6&period=30&algorithm=SHA1' });
+      }
+      if (!t || !t.ativo) return erro('desligado', 409);
+      if (await segundoBloqueado('mestre')) return erro('tentativas', 429);
+      const okc = await conferirSegundo('mestre', String(corpo.codigo || ''));
+      await admin.from('acesso_tentativas').insert({ origem: 'codigo:mestre', ok: okc });
+      if (!okc) return erro('codigo', 401);
+      if (acao === 'totp_desligar') {
+        await admin.from('acesso_totp').delete().eq('ref', 'mestre');
+        await aviso('segundo_fator_desligado', 'mestre', '', 'O código do autenticador da senha mestre foi desligado.', origem);
+        return resposta({ ok: true });
+      }
+      const codigos = codigosEmergencia();
+      await admin.from('acesso_totp').update({ recuperacao: await Promise.all(codigos.map((c) => sha256hex(c.replace('-', '')))) }).eq('ref', 'mestre');
+      return resposta({ codigos });
+    }
+    if (acao === 'totp_confirmar') {
+      const t = await totpDe('mestre');
+      if (!t) return erro('desligado', 409);
+      if (t.ativo) return erro('ja_ativo', 409);
+      const passo = await passoDoCodigo(t.segredo, String(corpo.codigo || '').replace(/\s+/g, ''), 0);
+      if (passo === null) return erro('codigo', 401);
+      const codigos = codigosEmergencia();
+      const { error } = await admin.from('acesso_totp').update({ ativo: true, ultimo_passo: passo, ativado_em: new Date().toISOString(),
+        recuperacao: await Promise.all(codigos.map((c) => sha256hex(c.replace('-', '')))) }).eq('ref', 'mestre');
+      if (error) throw error;
+      await aviso('segundo_fator_ligado', 'mestre', '', 'A senha mestre passou a pedir o código do autenticador (ou o rosto).', origem);
+      return resposta({ codigos });
+    }
 
     if (acao === 'lista') {
       const { data, error } = await admin.from('acesso_senhas').select('ref, papel, nome, atualizado_em, modulos, biometria').order('ref');
@@ -346,13 +545,29 @@ Deno.serve(async (req) => {
       const { data: rs } = await admin.from('acesso_biometria').select('ref, criado_em, usado_em');
       const porRef: Record<string, { n: number; usadoEm: string | null }> = {};
       ((rs || []) as { ref: string; usado_em: string | null }[]).forEach((x) => { const p = porRef[x.ref] || (porRef[x.ref] = { n: 0, usadoEm: null }); p.n++; if (x.usado_em && (!p.usadoEm || x.usado_em > p.usadoEm)) p.usadoEm = x.usado_em; });
+      const { data: aps } = await admin.from('acesso_aparelhos').select('ref, ultimo_em');
+      const apRef: Record<string, { n: number; ultimo: string | null }> = {};
+      ((aps || []) as { ref: string; ultimo_em: string }[]).forEach((x) => { const a = apRef[x.ref] || (apRef[x.ref] = { n: 0, ultimo: null }); a.n++; if (!a.ultimo || x.ultimo_em > a.ultimo) a.ultimo = x.ultimo_em; });
       return resposta({ senhas: (data || []).map((l) => ({ ...l, modulos: limparModulos((l as { modulos?: unknown }).modulos),
-        rostos: (porRef[(l as { ref: string }).ref] || { n: 0 }).n, rostoUsadoEm: (porRef[(l as { ref: string }).ref] || { usadoEm: null }).usadoEm })) });
+        rostos: (porRef[(l as { ref: string }).ref] || { n: 0 }).n, rostoUsadoEm: (porRef[(l as { ref: string }).ref] || { usadoEm: null }).usadoEm,
+        aparelhos: (apRef[(l as { ref: string }).ref] || { n: 0 }).n, aparelhoUsadoEm: (apRef[(l as { ref: string }).ref] || { ultimo: null }).ultimo })) });
     }
 
     const ref = String(corpo.ref || '');
     const papel = papelDaRef(ref);
     if (!papel) return erro('dados', 400);
+
+    if (acao === 'sair_aparelhos') {
+      const { data: l } = await admin.from('acesso_senhas').select('nome').eq('ref', ref).maybeSingle();
+      if (!l) return erro('nao_encontrado', 404);
+      await revogar(ref, quem.ref);
+      await aviso('sair_aparelhos', ref, String((l as { nome?: string }).nome || ''), 'A senha mestre tirou esta senha de todos os aparelhos (os logins abertos caíram).', origem);
+      return resposta({ ok: true, eu: ref === quem.ref });
+    }
+    if (acao === 'aparelhos') {
+      const { data } = await admin.from('acesso_aparelhos').select('descricao, origem, primeiro_em, ultimo_em').eq('ref', ref).order('ultimo_em', { ascending: false }).limit(30);
+      return resposta({ aparelhos: data || [] });
+    }
 
     if (acao === 'definir') {
       const senha = String(corpo.senha || '');
@@ -366,12 +581,23 @@ Deno.serve(async (req) => {
         if (atual === 'bloqueado') return erro('tentativas', 429);
         if (!atual || atual.ref !== 'mestre') return erro('senha_atual', 403);
       }
+      const { data: jaExistia } = await admin.from('acesso_senhas').select('ref').eq('ref', ref).maybeSingle();
       const { error } = await admin.rpc('acesso_definir', { p_ref: ref, p_papel: papel, p_nome: nome, p_senha: senha });
       if (error) {
         const msg = String(error.message || '');
         if (msg.includes('senha em uso')) return erro('senha_em_uso', 409);
         if (msg.includes('senha curta')) return erro('senha_curta', 400);
+        if (msg.includes('senha fraca')) return erro('senha_fraca', 400);
         throw error;
+      }
+      // senha trocada: quem estava com a senha antiga sai de todos os aparelhos
+      let revogado = false;
+      let sessao: unknown = null;
+      if (jaExistia) {
+        await revogar(ref, quem.ref); revogado = true;
+        await aviso('senha_trocada', ref, nome, 'Senha trocada pela senha mestre: os logins abertos com a senha antiga caíram.', origem);
+        // quem trocou a própria senha continua logado neste aparelho (login novo); os outros aparelhos saem
+        if (ref === quem.ref) { const l2 = await linhaDe(ref); if (l2) sessao = await sessaoPara({ ref, papel: l2.papel, nome: l2.nome, usuario: null }); }
       }
       if (papel === 'equipe' || papel === 'setor') {
         if (papel === 'setor' || individual || corpo.modulos !== undefined) await gravarModulos(ref, modulos, null);
@@ -380,7 +606,7 @@ Deno.serve(async (req) => {
         const { error: e2 } = await admin.from('acesso_senhas').update({ biometria: corpo.biometria === true }).eq('ref', ref);
         if (e2) throw e2;
       }
-      return resposta({ ok: true });
+      return resposta({ ok: true, revogado, eu: revogado && ref === quem.ref, sessao });
     }
 
     if (acao === 'bio_exigir') {

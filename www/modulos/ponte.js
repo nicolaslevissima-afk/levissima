@@ -107,8 +107,52 @@
     try { sessionStorage.setItem(SESSAO_MOTIVO, motivo); } catch (e) {}
     try { sb.auth.signOut({ scope: 'local' }).then(irParaLogin, irParaLogin); } catch (e) { irParaLogin(); }
   }
+  // ---------- app instalado parado (29/10/2026): pede a senha de novo e continua no módulo ----------
+  // O tempo vem do app principal (Cadastros › Segurança), guardado neste aparelho ao entrar.
+  var travaAberta = false;
+  function travaMin() { var n = 0; try { n = Number(localStorage.getItem('levissima-trava-min')) || 0; } catch (e) {} return n || 30; }
+  function travaParada() { if (!appNativo() || !ident || saindo || travaAberta) return false; var u = ultimoUso(); return !!u && Date.now() - u > travaMin() * 60000; }
+  function travaAbrir() {
+    if (travaAberta) return;
+    travaAberta = true;
+    var min = travaMin();
+    var ov = document.createElement('div');
+    ov.id = 'lev-trava';
+    ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'App bloqueado');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:2147483000;background:#fff;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#1C2A2E';
+    ov.innerHTML = '<form style="max-width:360px;width:100%" novalidate><p style="font-weight:700;font-size:1.15rem;margin:0 0 8px">🔒 App bloqueado</p>' +
+      '<p style="margin:0 0 12px;color:#545869">Ficou mais de ' + (min >= 60 ? (min / 60) + (min === 60 ? ' hora' : ' horas') : min + ' minutos') + ' sem uso. Digite a senha de acesso para continuar de onde parou.</p>' +
+      '<input type="password" autocomplete="current-password" aria-label="Senha" style="width:100%;box-sizing:border-box;font-size:1rem;padding:10px 12px;border:1px solid #D6D5DE;border-radius:8px" />' +
+      '<p class="lev-trava-erro" style="color:#A8412E;margin:8px 0 0;display:none"></p>' +
+      '<button type="submit" style="margin-top:12px;width:100%;padding:11px;border:0;border-radius:8px;background:#702082;color:#fff;font-size:1rem;font-weight:600">Continuar</button>' +
+      '<button type="button" class="lev-trava-sair" style="margin-top:8px;width:100%;padding:9px;border:0;background:none;color:#702082;font-weight:600">Sair (entrar com outra senha)</button></form>';
+    document.body.appendChild(ov);
+    var input = ov.querySelector('input'), err = ov.querySelector('.lev-trava-erro'), btn = ov.querySelector('button[type="submit"]');
+    setTimeout(function () { input.focus(); }, 50);
+    function falhou(msg) { btn.disabled = false; err.textContent = msg; err.style.display = 'block'; input.value = ''; input.focus(); }
+    ov.querySelector('.lev-trava-sair').addEventListener('click', function () { travaAberta = false; sairDaSessao('tempo'); });
+    ov.querySelector('form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!input.value || btn.disabled) return;
+      btn.disabled = true; err.style.display = 'none';
+      sb.functions.invoke('acesso', { body: { acao: 'conferir', senha: input.value } }).then(function (r) {
+        if (!r.error && r.data && r.data.ok) { travaAberta = false; ov.remove(); gravarUso(true); return; }
+        if (!r.error) return falhou('Senha errada.');
+        var ctx = r.error.context;
+        return (ctx && typeof ctx.json === 'function' ? ctx.json().catch(function () { return {}; }) : Promise.resolve({})).then(function (j) {
+          if (j && j.erro === 'login') { travaAberta = false; sairDaSessao('tempo'); return; }
+          falhou(j && j.erro === 'tentativas' ? 'Muitas tentativas erradas. Espere alguns minutos.' : 'Sem conexão para conferir agora. Tente de novo.');
+        });
+      }, function () { falhou('Sem conexão para conferir agora. Tente de novo.'); });
+    });
+  }
   function aoUsar(e) {
-    if (!ident || saindo) return;
+    if (!ident || saindo || travaAberta) return;
+    if (travaParada()) {
+      if (e && e.cancelable && (e.type === 'pointerdown' || e.type === 'click' || e.type === 'keydown')) { e.preventDefault(); e.stopPropagation(); }
+      travaAbrir();
+      return;
+    }
     if (sessaoParada()) {
       if (e && e.cancelable && (e.type === 'pointerdown' || e.type === 'click' || e.type === 'keydown')) { e.preventDefault(); e.stopPropagation(); }
       sairDaSessao('tempo');
@@ -118,9 +162,9 @@
   }
   ['pointerdown', 'click', 'keydown'].forEach(function (ev) { document.addEventListener(ev, aoUsar, true); });
   ['wheel', 'scroll', 'input', 'touchmove'].forEach(function (ev) { document.addEventListener(ev, aoUsar, { capture: true, passive: true }); });
-  setInterval(function () { if (ident && sessaoParada()) sairDaSessao('tempo'); }, 15000);
-  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && ident && sessaoParada()) sairDaSessao('tempo'); });
-  window.addEventListener('focus', function () { if (ident && sessaoParada()) sairDaSessao('tempo'); });
+  setInterval(function () { if (ident && sessaoParada()) sairDaSessao('tempo'); else if (travaParada()) travaAbrir(); }, 15000);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && ident) { if (sessaoParada()) sairDaSessao('tempo'); else if (travaParada()) travaAbrir(); } });
+  window.addEventListener('focus', function () { if (ident) { if (sessaoParada()) sairDaSessao('tempo'); else if (travaParada()) travaAbrir(); } });
 
   var sb = null;
   var ident = null; // { uid, nome, papel, nivel }

@@ -1398,6 +1398,37 @@
   .func-chip { display: inline-block; font-size: 0.6875rem; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); margin-left: 8px; font-weight: 600; vertical-align: 1px; }
   .func-chip.cargo { color: #702082; border-color: rgba(112, 32, 130, 0.45); }
   .func-chip.app { color: var(--wood); border-color: rgba(var(--wood-rgb), 0.45); }
+  .func-chip.warn { color: var(--danger); border-color: rgba(var(--danger-rgb), 0.5); }
+  /* segurança (29/10/2026) */
+  .seg-aviso { border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px; margin-bottom: 6px; background: var(--card); }
+  .seg-aviso.novo { border-left: 4px solid var(--laranja); }
+  .seg-aviso.grave { border-left: 4px solid var(--danger); }
+  .seg-aviso-t { font-weight: 600; overflow-wrap: anywhere; }
+  .seg-aviso-d { font-size: 0.8125rem; color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; }
+  .seg-box { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: var(--card); }
+  .seg-box .btn { margin: 6px 6px 0 0; }
+  .seg-qr { display: flex; justify-content: center; margin: 10px 0; }
+  .seg-qr img, .seg-qr svg { width: 200px; height: 200px; image-rendering: pixelated; }
+  .seg-segredo { font-family: var(--font-mono); font-size: 0.95rem; letter-spacing: 0.06em; word-break: break-all; background: rgba(var(--teal-rgb), 0.06); padding: 6px 8px; border-radius: 6px; }
+  .seg-codigos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; font-family: var(--font-mono); font-size: 1rem; margin: 8px 0; }
+  .seg-codigos span { border: 1px dashed var(--line); border-radius: 6px; padding: 6px; text-align: center; }
+  .seg-tab-badge { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: var(--danger); color: #fff; font-size: 0.6875rem; font-weight: 700; line-height: 18px; text-align: center; margin-left: 4px; }
+  #trava-overlay { position: fixed; inset: 0; z-index: 9000; background: var(--paper); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  #trava-overlay .lock-card { max-width: 380px; width: 100%; }
+  /* histórico e lixeira (29/10/2026) */
+  .hist-abas { display: flex; gap: 6px; margin: 4px 0 8px; }
+  .hist-aba { flex: 1; border: 1px solid var(--line); background: var(--card); border-radius: 8px; padding: 8px; font: inherit; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .hist-aba[aria-pressed="true"] { border-color: var(--teal); color: var(--teal); background: rgba(var(--teal-rgb), 0.06); }
+  #hist-busca { margin-bottom: 8px; }
+  .hist-item { border: 1px solid var(--line); border-radius: 8px; padding: 9px 11px; margin-bottom: 8px; background: var(--card); }
+  .hist-top { font-weight: 600; overflow-wrap: anywhere; }
+  .hist-meta { font-size: 0.8125rem; color: var(--muted); margin-top: 2px; overflow-wrap: anywhere; }
+  .hist-acts { display: flex; gap: 12px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+  .hist-ok { font-size: 0.8125rem; color: var(--verde-texto); font-weight: 600; }
+  .hist-det { margin-top: 6px; font-size: 0.8125rem; border-top: 1px dashed var(--line); padding-top: 6px; }
+  .hist-det div { overflow-wrap: anywhere; }
+  .hist-det b { font-weight: 600; }
+  .pin-exposto-aviso { border: 1px solid rgba(var(--danger-rgb), 0.45); border-left: 4px solid var(--danger); background: rgba(var(--danger-rgb), 0.06); border-radius: 8px; padding: 10px 12px; margin: 0 0 12px; font-size: 0.9rem; }
   .acesso-set { border-top: 1px solid var(--line); padding-top: 12px; }
   .acesso-titulo { font-size: 0.875rem; font-weight: 700; margin: 10px 0 4px; }
   .acesso-grupo { margin: 0 0 10px; }
@@ -1622,8 +1653,22 @@
       <button type="button" class="btn btn-primary" id="btn-rosto-cadastrar">Cadastrar o meu rosto</button>
       <button type="button" class="btn-text" id="btn-rosto-voltar">Voltar</button>
     </div>
+    <div id="lock-segundo" class="hidden">
+      <p class="lock-rosto-t">Senha mestre: confirme que é você</p>
+      <p class="hint" id="lock-segundo-hint">Abra o Google Authenticator e digite o código de 6 números do LEVÍSSIMA.</p>
+      <label class="lock-label">Código
+        <input type="text" id="segundo-codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="9" autocapitalize="characters" spellcheck="false" />
+      </label>
+      <p class="form-error hidden" id="lock-segundo-erro"></p>
+      <button type="button" class="btn btn-primary" id="btn-segundo-entrar">Entrar</button>
+      <button type="button" class="btn btn-secondary hidden" id="btn-segundo-rosto">Usar o rosto</button>
+      <p class="hint">Sem o celular com o autenticador? Digite um <b>código de emergência</b> (8 letras e números) no lugar.</p>
+      <button type="button" class="btn-text" id="btn-segundo-voltar">Voltar</button>
+    </div>
   </div>
 </div>
+
+<div id="trava-overlay" class="hidden" role="dialog" aria-modal="true" aria-label="App bloqueado"></div>
 
 <div id="admin-view" class="hidden">
 <div id="app">
@@ -2036,6 +2081,25 @@
       <div id="acesso-list"></div>
     </section>
 
+    <section class="drivers-admin" id="seguranca-admin">
+      <div class="section-head"><h2 class="section-title">Segurança</h2><span class="count-chip hidden" id="seg-n"></span></div>
+      <p class="hint">Avisos de tentativas de senha, bloqueios de assinatura e entradas em aparelho novo. Aqui também ficam o segundo fator da senha mestre, o bloqueio do app parado e o botão para tirar uma senha de todos os aparelhos.</p>
+      <div id="seg-avisos"><p class="field-hint">Carregando…</p></div>
+      <h3 class="acesso-sub">Segundo fator da senha mestre</h3>
+      <div id="seg-2fa"><p class="field-hint">Conferindo…</p></div>
+      <h3 class="acesso-sub">Backup na nuvem</h3>
+      <div id="seg-backup"><p class="field-hint">Conferindo…</p></div>
+      <h3 class="acesso-sub">Bloqueio do app parado (app instalado)</h3>
+      <p class="field-hint">Depois desse tempo sem uso, o app pede a senha de novo e volta para a mesma tela. No navegador, o app sai sozinho depois de 30 minutos sem uso.</p>
+      <div class="row-2">
+        <label>Escritório<select id="seg-trava-esc"><option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">1 hora</option><option value="120">2 horas</option><option value="240">4 horas</option></select></label>
+        <label>Motoristas e fábrica<select id="seg-trava-campo"><option value="30">30 minutos</option><option value="60">1 hora</option><option value="120">2 horas</option><option value="240">4 horas</option><option value="480">8 horas</option></select></label>
+      </div>
+      <h3 class="acesso-sub">Sair de todos os aparelhos</h3>
+      <p class="field-hint">Celular perdido, pessoa que saiu da empresa ou senha que vazou: toque em <b>Sair de todos os aparelhos</b> na senha e quem estiver com ela aberta sai na hora. Trocar a senha também tira todo mundo que estava com a senha antiga.</p>
+      <div id="seg-sair"></div>
+    </section>
+
     <section class="drivers-admin hidden" id="cp-sec">
       <div class="section-head"><h2 class="section-title">Pedidos de senha</h2><span class="count-chip" id="cp-n"></span></div>
       <p class="hint">Quem criou a própria senha de 4 números com a foto do documento e uma selfie. Confira o rosto e os dados e aprove; as fotos são apagadas na decisão.</p>
@@ -2051,6 +2115,17 @@
       <p class="hint">Faturamento dá o ok; conferente conclui o carregamento. Cada pessoa digita a própria senha de 4 números e o nome dela aparece sozinho.</p>
       <div id="equipe-list"></div>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-add-membro">+ Adicionar pessoa</button>
+    </section>
+    <section class="drivers-admin" id="historico-admin">
+      <div class="section-head"><h2 class="section-title">Histórico e lixeira</h2></div>
+      <p class="hint">Tudo o que foi alterado ou apagado nos últimos 90 dias, com quem fez e quando. <b>Restaurar</b> devolve o que foi apagado e <b>Desfazer</b> volta uma alteração (só a senha mestre). A restauração também fica no histórico.</p>
+      <div class="hist-abas" role="group" aria-label="O que mostrar">
+        <button type="button" class="hist-aba" data-hist-aba="apagou" aria-pressed="true">🗑 Apagados</button>
+        <button type="button" class="hist-aba" data-hist-aba="alterou" aria-pressed="false">✎ Alterações</button>
+      </div>
+      <input type="search" id="hist-busca" autocomplete="off" placeholder="Filtrar: cliente, nome, quem fez…" aria-label="Filtrar o histórico" />
+      <div id="hist-lista"><button type="button" class="btn btn-secondary btn-sm" id="hist-abrir">Ver o histórico</button></div>
+      <button type="button" class="btn-text hidden" id="hist-mais">Ver mais antigos</button>
     </section>
   </div>
 
@@ -3145,7 +3220,7 @@
   var ajustes = Object.assign({}, AJUSTES_PADRAO);
 
   // ---------- faturamento (ok com senha de 4 números) ----------
-  var equipe = [];               // [{ id, nome, pinHash, faturamento, conferente }]
+  var equipe = [];               // [{ id, nome, temPin, pinTrocar, faturamento, conferente }] (o PIN fica só no servidor)
   var confirmDeleteMembro = null;
 
   // ---------- helpers ----------
@@ -3694,7 +3769,16 @@
     try { localStorage.setItem(LOCAL_DIRETORIA_KEY, JSON.stringify(cfg)); } catch (e) {}
     return Promise.resolve();
   }
+  // A chave privada das pesquisas vai cifrada com a senha mestre: só o login da senha mestre lê o documento inteiro
+  // (0038). Os outros logins recebem só a parte pública, que basta para cifrar as respostas.
   function subscribeDiretoria() {
+    if (!session || session.ref !== 'mestre') {
+      db.rpc('diretoria_publica').then(function(r) {
+        diretoriaCfg = r && r.pub ? { pub: r.pub, chaveId: r.chaveId || '', publica: true } : null;
+        if (session) render();
+      }).catch(function(err) { console.warn('diretoria', err); });
+      return;
+    }
     db.doc('config/diretoria').onSnapshot(function(snap) {
       diretoriaCfg = snap.exists ? snap.data() : null;
       if (diretoriaCfg && pesqSenhaLogin) abrirPesquisasCom(pesqSenhaLogin);
@@ -3785,17 +3869,15 @@
   function subscribeAjustes() {
     db.doc('config/ajustes').onSnapshot(function(snap) {
       ajustes = Object.assign({}, AJUSTES_PADRAO, snap.exists ? snap.data() : {});
+      travaGuardar();
       if (session) render();
     }, function(err) { console.error('ajustes error', err); });
   }
 
   // ---------- faturamento: quem dá o ok, cada pessoa com a sua senha de 4 números ----------
-  // As senhas ficam guardadas só como hash (nunca em texto puro).
-  var EQUIPE_PADRAO = [
-    { id: 'equipe-jaqueline', nome: 'Jaqueline', pinHash: '8fe57443675ecebfd10fcfecc3988ba43354c57c9ce5cb5c1b023db02b61a419', faturamento: true },
-    { id: 'equipe-natieli', nome: 'Natieli', pinHash: '0d61e38b364591d3df7f23f7cfb204cb05b26233b3f4dd7179d550080c966835', faturamento: true },
-    { id: 'equipe-priscilla', nome: 'Priscilla', pinHash: 'ba9482e50cc91e295b0b966561f5ea61ead6cd1f0da98b5fd859ca8d3148853e', faturamento: true }
-  ];
+  // Desde 29/10/2026 a senha de 4 números é conferida no servidor (pin_conferir, migração 0034): o app não recebe
+  // nem guarda hash de PIN. A equipe é cadastrada em Cadastros › Equipe com senha (nada vem pronto no código).
+  var EQUIPE_PADRAO = [];
   // Nomes da equipe (pedido de 19/10/2026): o cadastro guarda o NOME COMPLETO (nomeCompleto, campo "nome" no banco);
   // no resto do app a pessoa aparece só com o primeiro nome e o cargo na frente ("Ana · Analista"). Dois com o
   // mesmo primeiro nome ganham a inicial do último sobrenome ("Gabriel C."). O que assinarem a partir daqui sai assim.
@@ -3871,7 +3953,7 @@
   var equipeSeedChecked = false;
   function subscribeEquipe() {
     db.collection('equipe').onSnapshot(function(snap) {
-      equipe = nomesCurtosEquipe(snap.docs.map(function(d) { var x = Object.assign({ id: d.id }, d.data()); x.nomeCompleto = x.nome || ''; return x; }));
+      equipe = nomesCurtosEquipe(snap.docs.map(function(d) { var x = Object.assign({ id: d.id }, d.data()); x.nomeCompleto = x.nome || ''; if (x.pinHash) { x.temPin = true; delete x.pinHash; } return x; }));
       if (!equipeSeedChecked) { equipeSeedChecked = true; seedEquipeDb(); }
       if (session) render();
     }, function(err) { console.error('equipe error', err); });
@@ -4559,6 +4641,10 @@
     var el = document.getElementById('pesq-area');
     if (!el) return;
     if (!session || session.role !== 'admin') { el.innerHTML = ''; pesq.estado = ''; return; }
+    if (mode === 'db' && session.ref !== 'mestre') {
+      if (pesq.estado !== 'so-mestre') el.innerHTML = '<div class="pq-lock"><h2>Pesquisas de satisfação</h2><p class="hint">As respostas ficam guardadas criptografadas e abrem só no login da senha mestre.</p></div>';
+      pesq.estado = 'so-mestre'; return;
+    }
     var estado = !criptoOk() ? 'semcripto' : !diretoriaCfg ? 'criar' : !pesq.chave ? (pesq.esqueci ? 'esqueci' : 'entrar') : 'aberta';
     if (estado !== 'aberta' && estado === pesq.estado && el.firstChild) return; // não apaga o que está sendo digitado
     var foco = document.activeElement;
@@ -4909,13 +4995,287 @@
     el.innerHTML = '<div class="driver-row"><span class="driver-name">Senha mestre<span class="est-sub">a sua: abre tudo, inclusive Cadastros, Pesquisas e todos os módulos</span></span>' +
       '<button class="btn-text" data-action="acesso-mestre">Trocar</button></div>' + linhaEquipe + blocoSetores;
     if (carregando && !acessoBuscando) carregarAcessoInfo();
+    renderSeguranca();
+  }
+  // ---------- Cadastros › Segurança (29/10/2026, migrações 0034 e 0037) ----------
+  var seg = { backup: undefined, eventos: null, buscadoEm: 0, buscando: false, bloqueios: [], dois: null, doisBuscando: false, passo: '', segredo: '', uri: '', codigos: null, confirmarSair: null, erro: '' };
+  var SEG_TIPOS = {
+    pin_bloqueio: ['🔒 Assinatura bloqueada por 15 min', false], pin_bloqueio_mestre: ['⛔ Assinatura bloqueada até você liberar', true],
+    pin_definido: ['🔑 Senha de 4 números definida', false], pin_liberado: ['✓ Assinatura liberada', false],
+    senha_tentativas: ['⚠ Muitas senhas de acesso erradas', true], senha_ataque: ['🚨 Possível ataque às senhas', true],
+    aparelho_novo: ['📱 Entrada em aparelho novo', false], sair_aparelhos: ['🚪 Saiu de todos os aparelhos', false], senha_trocada: ['🔑 Senha de acesso trocada', false],
+    segundo_fator_ligado: ['🛡 Segundo fator da senha mestre ligado', false], segundo_fator_desligado: ['⚠ Segundo fator da senha mestre desligado', true],
+    codigo_emergencia: ['🆘 Código de emergência usado', true], codigo_bloqueio: ['🚨 Códigos do autenticador errados (senha mestre certa)', true]
+  };
+  function segMestreDeVerdade() { return !!(session && session.role === 'admin' && !session.soInclui && mode === 'db'); }
+  function segNomeRef(ref) {
+    if (!ref) return '';
+    if (ref === 'mestre') return 'Senha mestre';
+    if (ref === 'equipe') return 'Senha da equipe do escritório';
+    var a = acessoInfo && acessoInfo.todas ? acessoInfo.todas.find(function(x) { return x.ref === ref; }) : null;
+    var tipo = { motorista: 'Motorista', setor: 'Setor', representante: 'Representante', diretoria: 'Diretoria', escritorio: 'Escritório' }[ref.split(':')[0]];
+    if (a) return (tipo ? tipo + ' · ' : '') + a.nome;
+    var m = equipe.find(function(x) { return x.id === ref || 'escritorio:' + x.id === ref; });
+    return m ? (m.nomeCompleto || m.nome) : ref;
+  }
+  function segBuscarEventos(forcar) {
+    if (!segMestreDeVerdade() || seg.buscando || (!forcar && seg.eventos && Date.now() - seg.buscadoEm < 60000)) return;
+    seg.buscando = true;
+    Promise.all([
+      sbCliente.from('seguranca_eventos').select('id,em,tipo,ref,nome,detalhe,origem,visto').order('em', { ascending: false }).limit(40),
+      db.rpc('pin_bloqueios', {}).catch(function() { return []; }),
+      Promise.resolve(sbCliente.from('backup_execucoes').select('em,tipo,tag,tamanho,linhas,arquivos').order('em', { ascending: false }).limit(1))
+        .catch(function() { return null; })
+    ]).then(function(rs) {
+      seg.buscando = false; seg.buscadoEm = Date.now();
+      seg.backup = rs[2] && !rs[2].error ? ((rs[2].data || [])[0] || false) : null;
+      seg.eventos = (rs[0] && rs[0].data) || [];
+      seg.bloqueios = Array.isArray(rs[1]) ? rs[1] : [];
+      segBadge();
+      renderSeguranca();
+    }).catch(function(e) { seg.buscando = false; console.error('seguranca', e); });
+  }
+  function segBadge() {
+    var n = (seg.eventos || []).filter(function(x) { return !x.visto; }).length + (seg.bloqueios || []).length;
+    var chip = document.getElementById('seg-n');
+    if (chip) { chip.textContent = n ? n + (n === 1 ? ' aviso novo' : ' avisos novos') : ''; chip.classList.toggle('hidden', !n); }
+    var tab = document.querySelector('#admin-tabs .seg-btn[data-tab="cadastros"]');
+    if (tab) {
+      var b = tab.querySelector('.seg-tab-badge');
+      if (n && !b) { b = document.createElement('span'); b.className = 'seg-tab-badge'; tab.appendChild(b); }
+      if (b) { if (n) b.textContent = n > 9 ? '9+' : String(n); else b.remove(); }
+    }
+  }
+  function segMarcarVistos() {
+    var novos = (seg.eventos || []).filter(function(x) { return !x.visto; });
+    if (!novos.length) return;
+    sbCliente.from('seguranca_eventos').update({ visto: true }).eq('visto', false).then(function() {
+      novos.forEach(function(x) { x.visto = true; });
+      segBadge();
+    }, function() {});
+  }
+  function renderSeguranca() {
+    var sec = document.getElementById('seguranca-admin');
+    if (!sec) return;
+    var mostrar = !!(session && session.role === 'admin' && mode === 'db');
+    sec.classList.toggle('hidden', !mostrar);
+    if (!mostrar) return;
+    if (!segMestreDeVerdade()) {
+      document.getElementById('seg-avisos').innerHTML = '<p class="field-hint">Só a senha mestre vê os avisos e mexe na segurança.</p>';
+      ['seg-2fa', 'seg-sair', 'seg-backup'].forEach(function(id) { document.getElementById(id).innerHTML = ''; });
+      return;
+    }
+    segBuscarEventos(false);
+    if (!ui || ui.tab !== 'cadastros') return; // só desenha (e só marca como visto) com Cadastros aberto
+    // avisos e bloqueios
+    var h = '';
+    (seg.bloqueios || []).forEach(function(b) {
+      h += '<div class="seg-aviso grave"><div class="seg-aviso-t">' + (b.ate_mestre ? '⛔' : '🔒') + ' Assinatura bloqueada: ' + escapeHtml(segNomeRef(b.ref) || b.nome || 'acesso') + '</div>' +
+        '<div class="seg-aviso-d">' + b.erros + ' senhas de 4 números erradas · última ' + escapeHtml(formatDateTimeBR(b.ultimo)) + (b.ate_mestre ? ' · fica bloqueada até você liberar' : ' · libera sozinha em 15 min') + '</div>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-seg="liberar" data-ref="' + escapeHtml(b.ref) + '">Liberar agora</button></div>';
+    });
+    var ev = seg.eventos;
+    if (!ev) h += '<p class="field-hint">Carregando os avisos…</p>';
+    else if (!ev.length && !(seg.bloqueios || []).length) h += '<p class="field-hint">Nenhum aviso de segurança. Tudo tranquilo.</p>';
+    else ev.slice(0, 15).forEach(function(x) {
+      var t = SEG_TIPOS[x.tipo] || ['Aviso', false];
+      h += '<div class="seg-aviso' + (t[1] ? ' grave' : !x.visto ? ' novo' : '') + '"><div class="seg-aviso-t">' + escapeHtml(t[0]) + (x.ref ? ' · ' + escapeHtml(segNomeRef(x.ref) || x.nome) : x.nome ? ' · ' + escapeHtml(x.nome) : '') + '</div>' +
+        '<div class="seg-aviso-d">' + escapeHtml(formatDateTimeBR(x.em)) + ' · ' + escapeHtml(x.detalhe || '') + (x.origem ? ' · rede ' + escapeHtml(x.origem) : '') + '</div></div>';
+    });
+    document.getElementById('seg-avisos').innerHTML = h;
+    if (ev && ev.some(function(x) { return !x.visto; })) setTimeout(segMarcarVistos, 2500);
+    // tempo do bloqueio do app parado
+    var se = document.getElementById('seg-trava-esc'), sc = document.getElementById('seg-trava-campo');
+    if (document.activeElement !== se) se.value = String(ajustes.travaEscMin || 30);
+    if (document.activeElement !== sc) sc.value = String(ajustes.travaCampoMin || 120);
+    document.getElementById('seg-backup').innerHTML = segBackupHtml();
+    renderSeg2fa();
+    renderSegSair();
+  }
+  // backup diário criptografado no GitHub privado (0039): o último que deu certo; mais de 36 horas = aviso
+  function segBackupHtml() {
+    var b = seg.backup;
+    if (b === undefined) return '<p class="field-hint">Conferindo…</p>';
+    if (b === null) return '<p class="field-hint">Não foi possível conferir agora.</p>';
+    if (!b) return '<p class="field-hint">Ainda não houve backup. Ele começa a rodar sozinho, toda madrugada, quando o repositório privado de backups estiver pronto no GitHub.</p>';
+    var horas = (Date.now() - Date.parse(b.em)) / 3600000;
+    var mb = (Number(b.tamanho) || 0) / 1048576;
+    var txt = 'Último backup: ' + escapeHtml(formatDateTimeBR(b.em)) + ' · ' + (mb >= 1 ? mb.toFixed(1).replace('.', ',') + ' MB' : Math.max(1, Math.round((Number(b.tamanho) || 0) / 1024)) + ' KB') +
+      ' · ' + fmtInt(b.linhas || 0) + ' registros · ' + fmtInt(b.arquivos || 0) + ' arquivos' + (b.tipo === 'mensal' ? ' (mensal, com todos os arquivos)' : '');
+    if (horas > 36) return '<div class="seg-aviso grave"><div class="seg-aviso-t">⚠ O backup está atrasado</div><div class="seg-aviso-d">' + txt +
+      '. Confira no GitHub o repositório de backups (aba Actions): o GitHub também manda e-mail quando o backup falha.</div></div>';
+    return '<div class="seg-aviso"><div class="seg-aviso-t">✓ Backup em dia</div><div class="seg-aviso-d">' + txt + '. Diários guardados por 30 dias e mensais por 12 meses, criptografados.</div></div>';
+  }
+  function renderSeg2fa() {
+    var box = document.getElementById('seg-2fa');
+    if (!seg.dois && !seg.doisBuscando) {
+      seg.doisBuscando = true;
+      chamarAcesso({ acao: 'totp_estado' }).then(function(r) { seg.dois = r || { ativo: false }; }, function() { seg.dois = { erro: true }; })
+        .then(function() { seg.doisBuscando = false; renderSeg2fa(); });
+    }
+    var d = seg.dois, erro = seg.erro ? '<p class="form-error">' + escapeHtml(seg.erro) + '</p>' : '';
+    var podeRosto = rostoDisponivel() && !appNativo();
+    var h = '';
+    if (!d) h = '<p class="field-hint">Conferindo…</p>';
+    else if (d.erro) h = '<p class="field-hint">Não foi possível conferir agora.</p>';
+    else if (seg.passo === 'senha' || seg.passo === 'senha-novos' || seg.passo === 'senha-desligar' || seg.passo === 'senha-rosto') {
+      var precisaCodigo = seg.passo === 'senha-novos' || seg.passo === 'senha-desligar';
+      h = '<div class="seg-box"><label>Senha mestre atual<input type="password" id="seg-senha" autocomplete="current-password" /></label>' +
+        (precisaCodigo ? '<label>Código do autenticador<input type="text" id="seg-codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="9" /></label>' : '') + erro +
+        '<button type="button" class="btn btn-primary btn-sm" data-seg="' + ({ senha: 'iniciar', 'senha-novos': 'novos', 'senha-desligar': 'desligar', 'senha-rosto': 'rosto' })[seg.passo] + '">' +
+        ({ senha: 'Continuar', 'senha-novos': 'Gerar códigos novos', 'senha-desligar': 'Desligar o segundo fator', 'senha-rosto': 'Cadastrar o rosto' })[seg.passo] + '</button>' +
+        '<button type="button" class="btn-text" data-seg="cancelar">Cancelar</button></div>';
+    } else if (seg.passo === 'qr') {
+      h = '<div class="seg-box"><p><b>1.</b> Instale o <b>Google Authenticator</b> no seu celular (Play Store ou App Store).<br><b>2.</b> No autenticador, toque em <b>+</b> › <b>Ler código QR</b> e aponte para o código abaixo (ou toque em “Inserir chave” e digite a chave).<br><b>3.</b> Digite o código de 6 números que aparecer.</p>' +
+        '<div class="seg-qr" id="seg-qr">gerando o código…</div><p class="field-hint">Chave: <span class="seg-segredo">' + escapeHtml(seg.segredo.replace(/(.{4})/g, '$1 ').trim()) + '</span></p>' +
+        '<label>Código de 6 números<input type="text" id="seg-codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6" /></label>' + erro +
+        '<button type="button" class="btn btn-primary btn-sm" data-seg="confirmar">Ligar</button><button type="button" class="btn-text" data-seg="cancelar">Cancelar</button></div>';
+    } else if (seg.passo === 'codigos' && seg.codigos) {
+      h = '<div class="seg-box"><p><b>Códigos de emergência</b> — use um deles se perder o celular com o autenticador. Cada código vale uma vez. <b>Anote ou imprima e guarde longe do celular.</b> Eles não aparecem de novo.</p>' +
+        '<div class="seg-codigos">' + seg.codigos.map(function(c) { return '<span>' + escapeHtml(c) + '</span>'; }).join('') + '</div>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-seg="guardei">Guardei os códigos</button></div>';
+    } else if (d.ativo) {
+      h = '<div class="seg-box"><p>🛡 <b>Ligado.</b> Depois da senha mestre, o app pede o código do Google Authenticator' + (d.rostos ? ' ou o rosto (no iPhone e no computador)' : '') + '. ' +
+        'Códigos de emergência que restam: <b>' + (d.emergencia || 0) + '</b>. Rostos cadastrados: <b>' + (d.rostos || 0) + '</b>.</p>' + erro +
+        (podeRosto ? '<button type="button" class="btn btn-secondary btn-sm" data-seg="pedir-rosto">Cadastrar o rosto neste aparelho</button>' : '') +
+        '<button type="button" class="btn btn-secondary btn-sm" data-seg="pedir-novos">Novos códigos de emergência</button>' +
+        '<button type="button" class="btn-text danger" data-seg="pedir-desligar">Desligar</button></div>';
+    } else {
+      h = '<div class="seg-box"><p><b>Desligado:</b> hoje a senha mestre sozinha abre tudo. Com o segundo fator, mesmo quem descobrir a senha não entra sem o código que muda a cada 30 segundos no seu celular (ou o seu rosto, no iPhone e no computador).</p>' + erro +
+        '<button type="button" class="btn btn-primary btn-sm" data-seg="pedir-iniciar">Ligar o código do autenticador</button></div>';
+    }
+    box.innerHTML = h;
+    if (seg.passo === 'qr' && seg.uri) desenharQrSeg(seg.uri);
+  }
+  function desenharQrSeg(uri) {
+    function pintar() {
+      var el = document.getElementById('seg-qr');
+      if (!el || !window.qrcode) return;
+      var q = window.qrcode(0, 'M'); q.addData(uri); q.make();
+      el.innerHTML = q.createSvgTag({ cellSize: 5, margin: 2, scalable: true });
+    }
+    if (window.qrcode) return pintar();
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+    sc.onload = pintar;
+    sc.onerror = function() { var el = document.getElementById('seg-qr'); if (el) el.textContent = 'Sem internet para desenhar o QR: use a chave abaixo no autenticador.'; };
+    document.head.appendChild(sc);
+  }
+  function renderSegSair() {
+    var box = document.getElementById('seg-sair');
+    if (!acessoInfo || !acessoInfo.todas) { box.innerHTML = '<p class="field-hint">' + (acessoInfo && acessoInfo.erro ? 'Não foi possível conferir agora.' : 'Conferindo…') + '</p>'; return; }
+    var ordem = { mestre: 0, equipe: 1, diretoria: 2, escritorio: 3, setor: 4, representante: 5, motorista: 6 };
+    var lista = acessoInfo.todas.slice().sort(function(a, b) { return (ordem[a.ref.split(':')[0]] || 9) - (ordem[b.ref.split(':')[0]] || 9) || segNomeRef(a.ref).localeCompare(segNomeRef(b.ref), 'pt-BR'); });
+    box.innerHTML = lista.map(function(x) {
+      var sub = x.aparelhos ? x.aparelhos + (x.aparelhos === 1 ? ' aparelho' : ' aparelhos') + (x.aparelhoUsadoEm ? ' · último login ' + formatDateTimeBR(x.aparelhoUsadoEm) : '') : 'sem login registrado desde 30/10/2026';
+      if (seg.confirmarSair === x.ref) {
+        return '<div class="driver-confirm">Tirar “' + escapeHtml(segNomeRef(x.ref)) + '” de todos os aparelhos agora?' + (x.ref === 'mestre' ? ' Você também sai e entra de novo.' : ' Quem estiver usando volta para a tela de senha.') +
+          '<button class="btn-text danger" data-seg="sair-confirmar" data-ref="' + escapeHtml(x.ref) + '">Sair de todos</button><button class="btn-text" data-seg="sair-cancelar">Cancelar</button></div>';
+      }
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(segNomeRef(x.ref)) + '<span class="est-sub">' + escapeHtml(sub) + '</span></span>' +
+        '<button class="btn-text danger" data-seg="sair" data-ref="' + escapeHtml(x.ref) + '">Sair de todos os aparelhos</button></div>';
+    }).join('');
+  }
+  function segErroTexto(c) {
+    return c === 'senha' ? 'Senha mestre errada.' : c === 'codigo' ? 'Código errado. Confira o código que está aparecendo agora no autenticador.'
+      : c === 'tentativas' ? 'Muitas tentativas erradas. Espere 15 minutos.' : c === 'ja_ativo' ? 'O segundo fator já está ligado.'
+      : 'Não foi possível agora. Confira a internet e tente de novo.';
+  }
+  document.getElementById('seguranca-admin').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-seg]');
+    if (!b || b.disabled) return;
+    var a = b.getAttribute('data-seg'), ref = b.getAttribute('data-ref');
+    var val = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    var falhou = function(err) { b.disabled = false; seg.erro = segErroTexto(err && err.codigo); renderSeg2fa(); };
+    if (a === 'liberar') {
+      b.disabled = true;
+      db.rpc('pin_desbloquear', { p_ref: ref }).then(function() { showToast('Assinatura liberada.'); segBuscarEventos(true); }, function() { b.disabled = false; showToast('Não foi possível liberar agora.'); });
+      return;
+    }
+    if (a === 'cancelar' || a === 'guardei') { seg.passo = ''; seg.erro = ''; seg.codigos = null; seg.segredo = ''; seg.uri = ''; seg.dois = null; renderSeg2fa(); return; }
+    if (a === 'pedir-iniciar' || a === 'pedir-novos' || a === 'pedir-desligar' || a === 'pedir-rosto') {
+      seg.passo = { 'pedir-iniciar': 'senha', 'pedir-novos': 'senha-novos', 'pedir-desligar': 'senha-desligar', 'pedir-rosto': 'senha-rosto' }[a]; seg.erro = '';
+      renderSeg2fa(); setTimeout(function() { var el = document.getElementById('seg-senha'); if (el) el.focus(); }, 30); return;
+    }
+    if (a === 'iniciar') {
+      b.disabled = true;
+      chamarAcesso({ acao: 'totp_iniciar', senha: val('seg-senha') }).then(function(r) { seg.passo = 'qr'; seg.segredo = r.segredo || ''; seg.uri = r.uri || ''; seg.erro = ''; renderSeg2fa(); }, falhou);
+      return;
+    }
+    if (a === 'confirmar') {
+      b.disabled = true;
+      chamarAcesso({ acao: 'totp_confirmar', codigo: val('seg-codigo') }).then(function(r) { seg.passo = 'codigos'; seg.codigos = r.codigos || []; seg.erro = ''; renderSeg2fa(); showToast('Segundo fator ligado.'); }, falhou);
+      return;
+    }
+    if (a === 'novos') {
+      b.disabled = true;
+      chamarAcesso({ acao: 'totp_codigos_novos', senha: val('seg-senha'), codigo: val('seg-codigo') }).then(function(r) { seg.passo = 'codigos'; seg.codigos = r.codigos || []; seg.erro = ''; renderSeg2fa(); }, falhou);
+      return;
+    }
+    if (a === 'desligar') {
+      b.disabled = true;
+      chamarAcesso({ acao: 'totp_desligar', senha: val('seg-senha'), codigo: val('seg-codigo') }).then(function() { seg.passo = ''; seg.erro = ''; seg.dois = null; renderSeg2fa(); showToast('Segundo fator desligado.'); }, falhou);
+      return;
+    }
+    if (a === 'rosto') {
+      b.disabled = true;
+      var ticket = null;
+      chamarAcesso({ acao: 'bio_ticket_proprio', senha: val('seg-senha') }).then(function(r) {
+        ticket = r.ticket;
+        return chamarAcesso({ acao: 'bio_registro_opcoes', ticket: ticket });
+      }).then(function(o) {
+        var p = o.opcoes;
+        return navigator.credentials.create({ publicKey: { rp: p.rp, user: { id: b64uParaBytes(p.user.id), name: p.user.name, displayName: p.user.displayName }, challenge: b64uParaBytes(p.challenge),
+          pubKeyCredParams: p.pubKeyCredParams, timeout: p.timeout, attestation: p.attestation, authenticatorSelection: p.authenticatorSelection, excludeCredentials: credenciaisDe(p.excludeCredentials) } });
+      }).then(function(c) {
+        if (!c) throw erroComCodigo('NotAllowedError');
+        return chamarAcesso(comDispositivo({ acao: 'bio_registro', ticket: ticket, credencial: credencialJson(c), aparelho: dispositivoDesc().split(' · ')[0] }));
+      }).then(function(r) {
+        // o servidor devolve um login novo da mesma senha: troca o token em silêncio (a tela continua)
+        if (r && r.access_token) sbCliente.auth.setSession({ access_token: r.access_token, refresh_token: r.refresh_token }).catch(function() {});
+        seg.passo = ''; seg.erro = ''; seg.dois = null; renderSeg2fa(); showToast('Rosto cadastrado neste aparelho.');
+      }).catch(function(err) { b.disabled = false; seg.erro = err && err.name ? msgRosto(err) : segErroTexto(err && err.codigo); renderSeg2fa(); });
+      return;
+    }
+    if (a === 'sair') { seg.confirmarSair = ref; renderSegSair(); return; }
+    if (a === 'sair-cancelar') { seg.confirmarSair = null; renderSegSair(); return; }
+    if (a === 'sair-confirmar') {
+      b.disabled = true;
+      chamarAcesso({ acao: 'sair_aparelhos', ref: ref }).then(function(r) {
+        seg.confirmarSair = null;
+        if (r && r.eu) { showToast('Você saiu de todos os aparelhos. Entre de novo.'); setTimeout(logout, 1200); return; }
+        showToast(segNomeRef(ref) + ' saiu de todos os aparelhos.');
+        renderSegSair(); segBuscarEventos(true);
+      }, function() { b.disabled = false; showToast('Não foi possível agora. Tente de novo.'); });
+    }
+  });
+  ['seg-trava-esc', 'seg-trava-campo'].forEach(function(id) {
+    document.getElementById(id).addEventListener('change', function(e) {
+      var patch = {}; patch[id === 'seg-trava-esc' ? 'travaEscMin' : 'travaCampoMin'] = Number(e.target.value);
+      saveAjustes(patch).then(function() { showToast('Tempo do bloqueio salvo.'); }, function() { showToast('Não foi possível salvar agora.'); });
+    });
+  });
+  // aviso de segurança novo chega na hora para a senha mestre (tempo real)
+  var segCanal = null;
+  function segOuvir() {
+    if (segCanal || !segMestreDeVerdade() || !sbCliente || !sbCliente.channel) return;
+    try {
+      segCanal = sbCliente.channel('seguranca-eventos').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'seguranca_eventos' }, function(p) {
+        var x = p && p.new; if (!x) return;
+        seg.eventos = [x].concat(seg.eventos || []).slice(0, 40);
+        segBadge();
+        var t = SEG_TIPOS[x.tipo];
+        if (t && t[1]) showToast('🔒 ' + t[0] + (x.ref ? ' · ' + segNomeRef(x.ref) : '') + '. Veja em Cadastros › Segurança.');
+        if (ui && ui.tab === 'cadastros') renderSeguranca();
+      }).subscribe();
+    } catch (e) { segCanal = null; }
   }
   function carregarAcessoInfo() {
     acessoBuscando = true;
     chamarAcesso({ acao: 'lista' }).then(function(r) {
       var info = { mestre: null, equipe: null, equipeModulos: [], setores: [], reps: {}, diretoria: [], escritorio: [], todas: [] };
       (r.senhas || []).forEach(function(x) {
-        if (x.ref) info.todas.push({ ref: x.ref, nome: x.nome || '', papel: x.papel || '' });
+        if (x.ref) info.todas.push({ ref: x.ref, nome: x.nome || '', papel: x.papel || '', aparelhos: Number(x.aparelhos) || 0, aparelhoUsadoEm: x.aparelhoUsadoEm || null });
         if (x.ref === 'mestre') info.mestre = x.atualizado_em || true;
         if (x.ref === 'equipe') { info.equipe = x.atualizado_em || true; info.equipeModulos = x.modulos || []; }
         if (/^setor:/.test(x.ref || '')) info.setores.push({ ref: x.ref, nome: x.nome || '', modulos: x.modulos || [], em: x.atualizado_em });
@@ -4966,7 +5326,11 @@
     if (mode === 'db') {
       var corpo = { acao: 'definir', ref: modo, senha: nova };
       if (modo === 'mestre') corpo.senhaAtual = atual;
-      return chamarAcesso(corpo).then(function() { if (modo === 'mestre') return reembrulharChavePesquisas(atual, nova); });
+      return chamarAcesso(corpo).then(function(r) {
+        // trocar a senha tira dos outros aparelhos quem estava com a antiga; aqui o servidor manda um login novo
+        var troca = r && r.sessao && r.sessao.access_token ? sbCliente.auth.setSession({ access_token: r.sessao.access_token, refresh_token: r.sessao.refresh_token }) : Promise.resolve();
+        return troca.then(function() { if (modo === 'mestre') return reembrulharChavePesquisas(atual, nova); });
+      });
     }
     return Promise.all([sha256Hex(atual || ''), sha256Hex(nova)]).then(function(h) {
       if (modo === 'mestre' && (!adminConfig || h[0] !== adminConfig.senhaHash)) throw erroComCodigo('senha_atual');
@@ -5019,10 +5383,9 @@
     e.preventDefault();
     var modo = acessoModo, err = document.getElementById('acesso-form-error');
     var atual = document.getElementById('f-acesso-atual').value, nova = document.getElementById('f-acesso-nova').value, nova2 = document.getElementById('f-acesso-nova2').value;
-    var min = 6;
     function mostrar(msg) { err.textContent = msg; err.classList.remove('hidden'); }
     if (modo === 'mestre' && !atual) return mostrar('Digite a sua senha atual.');
-    if (nova.length < min) return mostrar('A nova senha precisa ter pelo menos ' + min + ' caracteres.');
+    if (senhaAcessoProblema(nova)) return mostrar(senhaAcessoProblema(nova));
     if (nova !== nova2) return mostrar('As duas senhas novas não são iguais.');
     err.classList.add('hidden');
     var btn = document.getElementById('btn-acesso-submit');
@@ -5037,8 +5400,7 @@
       btn.disabled = false;
       var c = x && x.codigo;
       mostrar(c === 'senha_atual' ? 'A senha atual está errada.'
-        : c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.'
-        : c === 'senha_curta' ? 'A nova senha precisa ter pelo menos ' + min + ' caracteres.'
+        : c === 'senha_em_uso' || c === 'senha_curta' || c === 'senha_fraca' ? msgSenhaServidor(c)
         : c === 'tentativas' ? 'Muitas tentativas erradas. Espere alguns minutos.'
         : 'Não foi possível salvar agora. Tente novamente.');
     });
@@ -5063,7 +5425,7 @@
         var nome = gerVal('dir-nome'), senha = document.getElementById('dir-senha').value, senha2 = document.getElementById('dir-senha2').value, rosto = document.getElementById('dir-rosto').checked;
         if (!nome) return gerErro('Digite o nome.');
         if (!x && !senha) return gerErro('Crie a senha.');
-        if (senha && senha.length < 6) return gerErro('A senha precisa ter pelo menos 6 caracteres.');
+        if (senha && senhaAcessoProblema(senha)) return gerErro(senhaAcessoProblema(senha));
         if (senha !== senha2) return gerErro('As duas senhas não são iguais.');
         var ref = x ? x.ref : 'diretoria:' + (String(nome).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'dir') + '-' + uid().slice(-6).replace(/[^A-Za-z0-9]/g, 'x');
         var corpo = senha ? { acao: 'definir', ref: ref, nome: nome, senha: senha, biometria: rosto } : { acao: 'ajustar', ref: ref, nome: nome, biometria: rosto };
@@ -5072,7 +5434,7 @@
           showToast(x ? 'Acesso salvo.' : 'Acesso de ' + nome + ' criado.' + (rosto ? ' No 1º acesso, ' + nome.split(' ')[0] + ' cadastra o rosto.' : ''));
         }).catch(function(e) {
           var c = e && e.codigo;
-          gerErro(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.' : 'Não foi possível salvar agora. Tente novamente.');
+          gerErro(msgSenhaServidor(c));
           return false;
         });
       }
@@ -5144,7 +5506,7 @@
     if (modo !== 'equipe' && !nome) return mostrar('Digite o nome do setor ou da pessoa.');
     if (modo !== 'equipe' && !modulos.length) return mostrar('Marque pelo menos um módulo que essa senha abre.');
     if (modo === 'novo' && !senha) return mostrar('Crie a senha.');
-    if (senha && senha.length < 6) return mostrar('A senha precisa ter pelo menos 6 caracteres.');
+    if (senha && senhaAcessoProblema(senha)) return mostrar(senhaAcessoProblema(senha));
     if (senha !== senha2) return mostrar('As duas senhas não são iguais.');
     err.classList.add('hidden');
     var corpo;
@@ -5163,8 +5525,7 @@
     }).catch(function(x) {
       btn.disabled = false;
       var c = x && x.codigo;
-      mostrar(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.'
-        : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.'
+      mostrar(c === 'senha_em_uso' || c === 'senha_curta' || c === 'senha_fraca' ? msgSenhaServidor(c)
         : c === 'modulos' ? 'Marque pelo menos um módulo que essa senha abre.'
         : c === 'nao_encontrado' ? (modo === 'equipe' ? 'Crie primeiro a senha da equipe do escritório.' : 'Essa senha não existe mais.')
         : 'Não foi possível salvar agora. Tente novamente.');
@@ -6097,6 +6458,27 @@
   // ---------- senha de 4 números: identifica quem dá o ok, sem digitar nome ----------
   var pinCtx = null, pinChecking = false;
   function membrosCom(funcao) { return equipe.filter(function(m) { return !!m[funcao]; }); }
+  function membroTemPin(m) { return !!(m && (m.temPin || m.pinHash)); }
+  function pinFacil(pin) { return /^(\d)\1{3}$/.test(pin) || '01234567890'.indexOf(pin) >= 0 || '09876543210'.indexOf(pin) >= 0; }
+  // Confere a senha de 4 números no servidor (migração 0034): devolve { ok, membro (id), trocar, bloqueado, minutos,
+  // mestre, restam }. Sem banco (modo local de demonstração), confere com o hash guardado neste aparelho.
+  function conferirPin(pin) {
+    if (mode === 'db' && db && db.rpc) return db.rpc('pin_conferir', { p_pin: pin }).then(function(r) { return r || { ok: false }; });
+    return sha256Hex(pin).then(function(hash) {
+      var m = equipe.find(function(x) { return x.pinHash && x.pinHash === hash; });
+      return m ? { ok: true, membro: m.id } : { ok: false };
+    });
+  }
+  // texto do erro (ou '' quando a senha vale para esta assinatura)
+  function pinErroTexto(r, m, cabe, quem) {
+    if (r && r.bloqueado && r.mestre) return 'Muitas senhas erradas: a assinatura com senha de 4 números ficou bloqueada neste acesso até a senha mestre liberar (Cadastros › Acesso ao app).';
+    if (r && r.bloqueado) return 'Muitas senhas erradas. Espere ' + (r.minutos || 15) + ' min para tentar de novo.';
+    if (r && r.trocar) return (m ? m.nomeCurto || m.nome : 'Essa pessoa') + ': esta senha ficou exposta e não vale mais. Peça uma senha nova à senha mestre (Cadastros › Equipe com senha) ou use “Criar a minha senha”.';
+    if (!r || !r.ok || !m) return 'Senha não reconhecida.' + (r && r.restam === 0 ? ' Muitas senhas erradas: espere 15 min para tentar de novo.'
+      : r && r.restam != null && r.restam <= 2 ? ' Mais ' + r.restam + (r.restam === 1 ? ' erro bloqueia' : ' erros bloqueiam') + ' a assinatura por 15 min.' : ' Tente de novo.');
+    if (!cabe) return 'Essa senha não é de quem ' + quem + '.';
+    return '';
+  }
   function openPinDialog(opts) {
     pinCtx = opts;
     document.getElementById('pin-title').textContent = opts.titulo;
@@ -6107,7 +6489,7 @@
     // quem entrou com o próprio acesso e pode assinar esta etapa assina com um toque (pedido de 20/10/2026)
     var eu = opts.eu || null, bEu = document.getElementById('btn-pin-eu'), ou = document.getElementById('pin-ou');
     bEu.classList.toggle('hidden', !eu); bEu.textContent = eu ? 'Assinar como ' + eu.nome + ' (o seu acesso)' : '';
-    var temPin = !!(opts.permite ? equipe.filter(function(m) { return opts.permite(m) && m.pinHash; }) : membrosCom(opts.funcao)).length;
+    var temPin = !!(opts.permite ? equipe.filter(function(m) { return opts.permite(m) && membroTemPin(m); }) : membrosCom(opts.funcao)).length;
     ou.classList.toggle('hidden', !eu || !temPin);
     if (!temPin) {
       err.textContent = opts.semCadastro;
@@ -6136,13 +6518,14 @@
     if (v.length < 4 || !pinCtx || pinChecking) return;
     pinChecking = true;
     var ctx = pinCtx;
-    sha256Hex(v).then(function(hash) {
+    conferirPin(v).then(function(r) {
       pinChecking = false;
       if (pinCtx !== ctx) return;
-      var m = equipe.find(function(x) { return x.pinHash === hash; });
-      if (!m || !(ctx.permite ? ctx.permite(m) : m[ctx.funcao])) {
+      var m = r && r.membro ? equipe.find(function(x) { return x.id === r.membro; }) : null;
+      var msg = pinErroTexto(r, m, !!(m && (ctx.permite ? ctx.permite(m) : m[ctx.funcao])), ctx.funcaoTexto);
+      if (msg) {
         var err = document.getElementById('pin-error');
-        err.textContent = m ? 'Essa senha não é de quem ' + ctx.funcaoTexto + '.' : 'Senha não reconhecida. Tente de novo.';
+        err.textContent = msg;
         err.classList.remove('hidden');
         input.value = '';
         input.focus();
@@ -6150,6 +6533,13 @@
       }
       closePinDialog();
       ctx.onOk(m);
+    }, function(e) {
+      pinChecking = false;
+      console.error('pin_conferir', e);
+      var err = document.getElementById('pin-error');
+      err.textContent = 'Sem conexão para conferir a senha agora. Tente de novo.';
+      err.classList.remove('hidden');
+      input.value = '';
     });
   }
   document.getElementById('pin-input').addEventListener('input', checkPin);
@@ -6172,10 +6562,12 @@
   var FAT_SEM_CADASTRO = 'Ninguém do faturamento está cadastrado. Cadastre em Cadastros › Equipe com senha.';
   // Quem é o dono desta senha (só entre as pessoas com a função pedida).
   function membroPorPin(pin, funcao) {
-    return sha256Hex(pin).then(function(hash) {
-      var m = equipe.find(function(x) { return x.pinHash === hash; });
-      return { membro: m && m[funcao] ? m : null, outraFuncao: !!(m && !m[funcao]) };
-    });
+    return conferirPin(pin).then(function(r) {
+      var m = r && r.ok && r.membro ? equipe.find(function(x) { return x.id === r.membro; }) : null;
+      var tm = r && r.trocar && r.membro ? equipe.find(function(x) { return x.id === r.membro; }) : null;
+      var erro = pinErroTexto(r, m || tm, !!(m && m[funcao]), 'confere');
+      return { membro: m && m[funcao] ? m : null, outraFuncao: !!(m && !m[funcao]), erro: erro };
+    }, function() { return { membro: null, outraFuncao: false, erro: 'Sem conexão para conferir a senha agora. Tente de novo.' }; });
   }
   function darOkFaturamento(id) {
     openPinDialog({
@@ -6436,6 +6828,7 @@
     ui.tab = abasPermitidas().indexOf(t) >= 0 ? t : abaPadrao(abasPermitidas());
     savePref(LOCAL_TAB_KEY, ui.tab);
     applyTab();
+    if (ui.tab === 'cadastros') renderSeguranca();
     window.scrollTo(0, 0);
   }
   ui.tab = 'inicio'; // toda vez que o app abre, começa no Início (pedido de 21/10/2026)
@@ -8801,7 +9194,7 @@
         hint.textContent = '✓ Conferente: ' + r.membro.nome;
         hint.className = 'field-hint ok';
       } else {
-        hint.textContent = r.outraFuncao ? 'Essa senha não é de um conferente.' : 'Senha não reconhecida. Tente de novo.';
+        hint.textContent = r.outraFuncao ? 'Essa senha não é de um conferente.' : (r.erro || 'Senha não reconhecida. Tente de novo.');
         hint.className = 'field-hint warn';
         input.value = '';
         input.setAttribute('aria-invalid', 'true');
@@ -10034,6 +10427,7 @@
     document.getElementById('lock-setup-form').classList.toggle('hidden', state !== 'setup');
     document.getElementById('lock-login-form').classList.toggle('hidden', state !== 'login');
     document.getElementById('lock-rosto').classList.toggle('hidden', state !== 'rosto');
+    document.getElementById('lock-segundo').classList.toggle('hidden', state !== 'segundo');
     document.getElementById('btn-login-rosto').classList.toggle('hidden', !rostoDisponivel());
     document.getElementById('lock-screen').classList.remove('hidden');
     document.getElementById('admin-view').classList.add('hidden');
@@ -10127,10 +10521,11 @@
     if (mode === 'db') {
       // a senha é conferida no servidor; o app recebe só um login com o papel da pessoa
       btn.textContent = 'Entrando…';
-      chamarAcesso({ acao: 'entrar', senha: pass }).then(function(r) {
+      chamarAcesso(comDispositivo({ acao: 'entrar', senha: pass })).then(function(r) {
         btn.disabled = false;
         btn.textContent = 'Entrar';
         if (r && r.cadastrarRosto) { abrirCadastroRosto(r); return null; } // 1º acesso: cadastra o rosto antes de entrar
+        if (r && r.segundoFator) { abrirSegundoFator(r, pass); return null; } // senha mestre: rosto ou código do autenticador
         return abrirSessaoDoServidor(r, pass);
       }).catch(function(e) {
         btn.textContent = 'Entrar';
@@ -10192,8 +10587,8 @@
       comecarSessao(ident, senhaDigitada || null, x.data && x.data.session && x.data.session.access_token);
     });
   }
-  function entrarComRosto() {
-    var err = document.getElementById('login-error'), btn = document.getElementById('btn-login-rosto');
+  function entrarComRosto(errEl, btnEl) {
+    var err = errEl && errEl.nodeType ? errEl : document.getElementById('login-error'), btn = btnEl && btnEl.nodeType ? btnEl : document.getElementById('btn-login-rosto');
     if (btn.disabled) return;
     btn.disabled = true;
     chamarAcesso({ acao: 'bio_entrar_opcoes' }).then(function(o) {
@@ -10201,7 +10596,7 @@
       return navigator.credentials.get({ publicKey: { challenge: b64uParaBytes(p.challenge), rpId: p.rpId, timeout: p.timeout, userVerification: p.userVerification, allowCredentials: credenciaisDe(p.allowCredentials) } });
     }).then(function(c) {
       if (!c) throw erroComCodigo('NotAllowedError');
-      return chamarAcesso({ acao: 'bio_entrar', credencial: credencialJson(c) });
+      return chamarAcesso(comDispositivo({ acao: 'bio_entrar', credencial: credencialJson(c) }));
     }).then(function(r) { err.classList.add('hidden'); return abrirSessaoDoServidor(r, null); })
       .catch(function(e) { console.warn('rosto', e); err.textContent = msgRosto(e); err.classList.remove('hidden'); })
       .then(function() { btn.disabled = false; });
@@ -10215,7 +10610,45 @@
     document.getElementById('btn-rosto-cadastrar').disabled = !rostoDisponivel();
     showLockState('rosto');
   }
-  document.getElementById('btn-login-rosto').addEventListener('click', entrarComRosto);
+  document.getElementById('btn-login-rosto').addEventListener('click', function() { entrarComRosto(); });
+  // ---------- segundo fator da senha mestre (29/10/2026): rosto (iPhone e computador) ou código do autenticador ----------
+  var segundo = { ticket: null, senha: null };
+  function abrirSegundoFator(r, senhaDigitada) {
+    segundo.ticket = r.ticket; segundo.senha = senhaDigitada || null;
+    var podeRosto = !!r.rosto && rostoDisponivel() && !appNativo();
+    document.getElementById('btn-segundo-rosto').classList.toggle('hidden', !podeRosto);
+    document.getElementById('lock-segundo-hint').textContent = podeRosto
+      ? 'Toque em “Usar o rosto” ou digite o código de 6 números do Google Authenticator.'
+      : 'Abra o Google Authenticator e digite o código de 6 números do LEVÍSSIMA.';
+    document.getElementById('lock-segundo-erro').classList.add('hidden');
+    document.getElementById('segundo-codigo').value = '';
+    showLockState('segundo');
+    setTimeout(function() { if (podeRosto) document.getElementById('btn-segundo-rosto').focus(); else document.getElementById('segundo-codigo').focus(); }, 30);
+  }
+  function enviarSegundoCodigo() {
+    var btn = document.getElementById('btn-segundo-entrar'), err = document.getElementById('lock-segundo-erro');
+    var codigo = document.getElementById('segundo-codigo').value.trim();
+    if (!segundo.ticket || btn.disabled) return;
+    if (!/^\d{6}$/.test(codigo.replace(/\s+/g, '')) && codigo.replace(/[^A-Za-z0-9]/g, '').length !== 8) { err.textContent = 'Digite os 6 números do autenticador (ou um código de emergência).'; err.classList.remove('hidden'); return; }
+    btn.disabled = true; err.classList.add('hidden');
+    chamarAcesso(comDispositivo({ acao: 'entrar_codigo', ticket: segundo.ticket, codigo: codigo })).then(function(r) {
+      var senha = segundo.senha;
+      segundo.ticket = null; segundo.senha = null;
+      return abrirSessaoDoServidor(r, senha);
+    }).catch(function(e) {
+      var c = e && e.codigo;
+      if (c === 'ticket') { segundo.ticket = null; showLockState('login'); var le = document.getElementById('login-error'); le.textContent = 'O tempo para o código acabou. Digite a senha de novo.'; le.classList.remove('hidden'); return; }
+      err.textContent = c === 'codigo' ? 'Código errado. Confira o código que está aparecendo agora no autenticador.'
+        : c === 'tentativas' ? 'Muitos códigos errados. Espere 15 minutos.' : 'Não foi possível entrar agora. Confira a internet e tente de novo.';
+      err.classList.remove('hidden');
+      document.getElementById('segundo-codigo').value = '';
+    }).then(function() { btn.disabled = false; });
+  }
+  document.getElementById('btn-segundo-entrar').addEventListener('click', enviarSegundoCodigo);
+  document.getElementById('segundo-codigo').addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); enviarSegundoCodigo(); } });
+  document.getElementById('segundo-codigo').addEventListener('input', function(e) { if (/^\d{6}$/.test(e.target.value)) enviarSegundoCodigo(); });
+  document.getElementById('btn-segundo-rosto').addEventListener('click', function() { entrarComRosto(document.getElementById('lock-segundo-erro'), this); });
+  document.getElementById('btn-segundo-voltar').addEventListener('click', function() { segundo.ticket = null; segundo.senha = null; showLockState('login'); });
   document.getElementById('btn-rosto-voltar').addEventListener('click', function() { rostoTicket = null; showLockState('login'); });
   document.getElementById('btn-rosto-cadastrar').addEventListener('click', function() {
     var btn = this, err = document.getElementById('lock-rosto-erro');
@@ -10228,7 +10661,7 @@
     }).then(function(c) {
       if (!c) throw erroComCodigo('NotAllowedError');
       var ua = navigator.userAgent, aparelho = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Mac/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Navegador';
-      return chamarAcesso({ acao: 'bio_registro', ticket: rostoTicket, credencial: credencialJson(c), aparelho: aparelho });
+      return chamarAcesso(comDispositivo({ acao: 'bio_registro', ticket: rostoTicket, credencial: credencialJson(c), aparelho: aparelho }));
     }).then(function(r) {
       rostoTicket = null;
       return abrirSessaoDoServidor(r, null).then(function() { showToast('Rosto cadastrado. Nos próximos acessos, toque em “Entrar com o rosto”.'); });
@@ -10293,7 +10726,7 @@
     var err = document.getElementById('driver-form-error');
     if (extraMot.capacidadePaletes && (extraMot.capacidadePaletes < 1 || extraMot.capacidadePaletes > 40)) { err.textContent = 'Capacidade entre 1 e 40 paletes.'; err.classList.remove('hidden'); return; }
     if (!editingDriverId && !nome) { err.textContent = 'Informe o nome do motorista.'; err.classList.remove('hidden'); return; }
-    if (senha && senha.length < 6) { err.textContent = 'A senha precisa ter pelo menos 6 caracteres (números ou letras).'; err.classList.remove('hidden'); return; }
+    if (senha && senhaAcessoProblema(senha)) { err.textContent = senhaAcessoProblema(senha); err.classList.remove('hidden'); return; }
     if (telefone && !waNumero(telefone)) { err.textContent = 'Celular incompleto: informe DDD e número.'; err.classList.remove('hidden'); return; }
     if (!editingDriverId && motoristas.some(function(m) { return m.nome.toLowerCase() === nome.toLowerCase(); })) {
       err.textContent = 'Já existe um motorista com esse nome.'; err.classList.remove('hidden'); return;
@@ -10310,9 +10743,8 @@
         return db.collection('motoristas').doc(mid).set(Object.assign({ nome: nome, telefone: telefone, vinculo: vinculo, criadoEm: new Date().toISOString() }, extraMot));
       }).then(function() { btnSalvar.disabled = false; closeDriverForm(); }).catch(function(e) {
         btnSalvar.disabled = false;
-        if (!e || (e.codigo !== 'senha_em_uso' && e.codigo !== 'senha_curta')) console.error('driver save error', e);
-        err.textContent = e && e.codigo === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.'
-          : e && e.codigo === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.'
+        if (!e || (e.codigo !== 'senha_em_uso' && e.codigo !== 'senha_curta' && e.codigo !== 'senha_fraca')) console.error('driver save error', e);
+        err.textContent = e && (e.codigo === 'senha_em_uso' || e.codigo === 'senha_curta' || e.codigo === 'senha_fraca') ? msgSenhaServidor(e.codigo)
           : 'Não foi possível salvar agora. Tente novamente.';
         err.classList.remove('hidden');
       });
@@ -11790,7 +12222,7 @@
     var err = document.getElementById('repsenha-error');
     function erro(m) { err.textContent = m; err.classList.remove('hidden'); }
     if (!r) { fecharRepSenha(); return; }
-    if (s1.length < 6) return erro('A senha precisa ter pelo menos 6 caracteres.');
+    if (senhaAcessoProblema(s1)) return erro(senhaAcessoProblema(s1));
     if (s1 !== s2) return erro('As duas senhas não são iguais.');
     var btn = document.getElementById('btn-repsenha-submit'); btn.disabled = true;
     chamarAcesso({ acao: 'definir', ref: refRep(r), nome: r.nome, senha: s1 }).then(function() {
@@ -11798,7 +12230,7 @@
     }).catch(function(x) {
       btn.disabled = false;
       var c = x && x.codigo;
-      erro(c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.' : c === 'senha_curta' ? 'A senha precisa ter pelo menos 6 caracteres.' : 'Não foi possível salvar agora. Tente novamente.');
+      erro(msgSenhaServidor(c));
     });
   });
 
@@ -18271,7 +18703,7 @@
         if (!ger.fotos.rosto) return gerErro('Tire a selfie (foto do seu rosto).');
         if (!/^[0-9]{4}$/.test(pin)) return gerErro('A senha tem 4 números.');
         if (pin !== pin2) return gerErro('As duas senhas não são iguais.');
-        if (/^(\d)\1{3}$/.test(pin) || pin === '1234' || pin === '4321') return gerErro('Senha fácil demais. Escolha outra (sem números repetidos ou em sequência).');
+        if (pinFacil(pin)) return gerErro('Senha fácil demais. Escolha outra (sem números repetidos ou em sequência).');
         if (!document.getElementById('cp-aceite').checked) return gerErro('Para continuar, marque a autorização do uso das fotos.');
         var pasta = 'pedidos/' + uid(), fotos = ger.fotos;
         function subir(f, nomeArq) {
@@ -18283,13 +18715,12 @@
         var caminhos = {};
         return subir(fotos.doc, 'documento').then(function(c1) { caminhos.doc = c1; return subir(fotos.rosto, 'rosto'); }).then(function(c2) {
           caminhos.rosto = c2;
-          return sha256Hex(pin);
-        }).then(function(hash) {
-          return db.rpc('cadastro_pedir', { p: { nome: nome, matricula: gerVal('cp-mat'), cpf: cpf, pinHash: hash, fotoDoc: caminhos.doc, fotoRosto: caminhos.rosto, aceite: true, aceiteTexto: CP_ACEITE } })
+          // o PIN vai direto para o servidor (por conexão criptografada) e fica guardado lá, protegido (0034)
+          return db.rpc('cadastro_pedir', { p: { nome: nome, matricula: gerVal('cp-mat'), cpf: cpf, pin: pin, fotoDoc: caminhos.doc, fotoRosto: caminhos.rosto, aceite: true, aceiteTexto: CP_ACEITE } })
             .then(function() { showToast('Pedido enviado. A senha passa a valer quando a diretoria aprovar.'); }, function(err) {
               var erro = String((err && (err.message || err.code)) || err || '');
               sbCliente.storage.from(BUCKET_CADASTROS).remove([caminhos.doc, caminhos.rosto]).catch(function() {});
-              gerErro(/senha_em_uso/.test(erro) ? 'Essa senha já é de outra pessoa. Escolha outra.' : /ja_pedido/.test(erro) ? 'Já existe um pedido esperando aprovação com esse CPF.' : /cpf/.test(erro) ? 'CPF inválido.' : 'Não foi possível enviar agora. Tente novamente.');
+              gerErro(/senha_em_uso/.test(erro) ? 'Essa senha já é de outra pessoa. Escolha outra.' : /pin_facil/.test(erro) ? 'Senha fácil demais. Escolha outra (sem números repetidos ou em sequência).' : /ja_pedido/.test(erro) ? 'Já existe um pedido esperando aprovação com esse CPF.' : /cpf/.test(erro) ? 'CPF inválido.' : 'Não foi possível enviar agora. Tente novamente.');
               return false;
             });
         });
@@ -18301,8 +18732,8 @@
   function membroDoPedido(x) {
     var n = normNome(x.nome), p = normNome(primeiroNome(x.nome));
     return equipe.find(function(m) { return normNome(m.nomeCompleto || m.nome) === n; }) ||
-      equipe.find(function(m) { return !m.pinHash && normNome(primeiroNome(m.nomeCompleto || m.nome)) === p && String(m.nomeCompleto || m.nome).trim().split(/\s+/).length === 1; }) ||
-      equipe.find(function(m) { return !m.pinHash && normNome(primeiroNome(m.nomeCompleto || m.nome)) === p && n.indexOf(normNome(m.nomeCompleto || m.nome)) === 0; });
+      equipe.find(function(m) { return (!membroTemPin(m) || m.pinTrocar) && normNome(primeiroNome(m.nomeCompleto || m.nome)) === p && String(m.nomeCompleto || m.nome).trim().split(/\s+/).length === 1; }) ||
+      equipe.find(function(m) { return (!membroTemPin(m) || m.pinTrocar) && normNome(primeiroNome(m.nomeCompleto || m.nome)) === p && n.indexOf(normNome(m.nomeCompleto || m.nome)) === 0; });
   }
   function renderPedidosSenha() {
     var sec = document.getElementById('cp-sec'), box = document.getElementById('cp-lista');
@@ -18351,18 +18782,24 @@
       acao: function(a) {
         var motivo = gerVal('cp-motivo');
         if (a === 'recusar' && !motivo) { gerErro('Escreva o motivo da recusa.'); return; }
-        var agora = new Date().toISOString(), fim = { status: a === 'aprovar' ? 'aprovado' : 'recusado', decididoEm: agora, decididoPor: quemSessao(), motivo: motivo, cpf: cpfMascara(x.cpf), fotoDoc: '', fotoRosto: '', pinHash: '' };
+        var agora = new Date().toISOString(), fim = { status: a === 'aprovar' ? 'aprovado' : 'recusado', decididoEm: agora, decididoPor: quemSessao(), motivo: motivo, cpf: cpfMascara(x.cpf), fotoDoc: '', fotoRosto: '' };
         var passo;
         if (a === 'aprovar') {
-          if (equipe.some(function(m) { return m.pinHash === x.pinHash && (!ja || m.id !== ja.id); })) { gerErro('Essa senha já é de outra pessoa da equipe: recuse e peça outra.'); return; }
           var verif = { em: agora, por: quemSessao(), pedidoId: x.id };
-          if (ja) passo = saveMembro(ja.id, { pinHash: x.pinHash, cadastroVerificado: verif });
+          if (ja) passo = saveMembro(ja.id, { cadastroVerificado: verif }).then(function() { return ja.id; });
           else {
-            var novo = { nome: x.nome, pinHash: x.pinHash, criadoEm: agora, cadastroVerificado: verif };
+            var novo = { nome: x.nome, criadoEm: agora, cadastroVerificado: verif };
             document.querySelectorAll('#ger-form-body .cp-func').forEach(function(c) { novo[c.value] = c.checked; });
-            passo = saveMembro(null, novo);
+            passo = saveMembro(null, novo).then(function(ref) { return ref && ref.id; });
           }
-        } else passo = Promise.resolve();
+          // o PIN do pedido passa para a pessoa no servidor (ele nunca veio para o app)
+          passo = passo.then(function(idMembro) {
+            return db.rpc('pin_aprovar_cadastro', { p_pedido: x.id, p_membro: idMembro }).catch(function(e) {
+              if (/pin_em_uso/.test(String((e && e.message) || e))) { var e2 = new Error('pin_em_uso'); e2.pinEmUso = true; throw e2; }
+              throw e;
+            });
+          });
+        } else passo = db.rpc('pin_descartar_pedido', { p_pedido: x.id }).catch(function(e) { console.error('descartar pin do pedido', e); });
         passo.then(function() {
           return db.collection(CP_COL).doc(x.id).update(fim);
         }).then(function() {
@@ -18370,7 +18807,7 @@
         }).then(function() {
           gerFechar();
           showToast(a === 'aprovar' ? (ja ? 'Senha de ' + x.nome + ' trocada.' : x.nome + ' entrou na equipe com a senha que criou.') + ' As fotos foram apagadas.' : 'Pedido recusado; as fotos foram apagadas.');
-        }).catch(function(err) { console.error('pedido de senha', err); gerErro('Não foi possível salvar agora. Tente novamente.'); });
+        }).catch(function(err) { console.error('pedido de senha', err); gerErro(err && err.pinEmUso ? 'Essa senha já é de outra pessoa da equipe: recuse e peça outra.' : 'Não foi possível salvar agora. Tente novamente.'); });
       }
     });
   }
@@ -19308,6 +19745,117 @@
       .catch(function(e) { console.error('ajustes save error', e); err.textContent = 'Não foi possível salvar agora.'; err.classList.remove('hidden'); });
   });
 
+  // ---------- histórico e lixeira (migração 0036): só a senha mestre restaura; a diretoria só vê ----------
+  var HIST_ROTULOS = { cargas: 'Carga', registros: 'Entrega', equipe: 'Pessoa da equipe', motoristas: 'Motorista', produtos: 'Produto', estoque: 'Estoque',
+    'compras-ordens': 'Pedido de compra', 'producao-ordens': 'Ordem de produção', 'mp-movs': 'Matéria-prima · movimento', 'mp-insumos': 'Matéria-prima', 'mp-fichas': 'Ficha técnica',
+    canhotos: 'Canhoto', representantes: 'Representante', transportadoras: 'Transportadora', 'agenda-fixos': 'Agenda', 'saidas-programadas': 'Saída programada', metas: 'Metas',
+    config: 'Configuração', 'qualidade-documentos': 'Documento da qualidade', 'carteira-clientes': 'Carteira de clientes', 'clientes-novos': 'Cliente novo', trocas: 'Troca/devolução',
+    'manutencao/chamados': 'Manutenção · chamado', 'manutencao/equipamentos': 'Manutenção · equipamento', 'manutencao/preventivas': 'Manutenção · preventiva',
+    'manutencao/lubrificacao': 'Manutenção · lubrificação', 'manutencao/pecas': 'Manutenção · peça', 'manutencao/fichas': 'Manutenção · ficha', 'manutencao/movimentos': 'Manutenção · estoque',
+    'uniformes/funcionarios': 'Uniformes · funcionário', 'uniformes/entregas': 'Uniformes · entrega', 'empilhadeiras/maquinas': 'Empilhadeira', 'garrafoes/movimentos': 'Garrafões · movimento' };
+  var HIST_CAMPOS = 'id,em,tabela,escopo,chave,acao,campos,quem_nome,quem_papel,quem_ref,restaurado_em,rotulo,nome:antes->>nome,cliente:antes->>cliente,titulo:antes->>titulo,descricao:antes->>descricao,ponto:antes->>ponto,motorista:antes->>motorista,data:antes->>data,produtoNome:antes->>produtoNome';
+  var hist = { aba: 'apagou', itens: [], aberto: false, carregando: false, fim: false, confirmar: null, detalhe: {} };
+  function histRotulo(escopo) {
+    if (HIST_ROTULOS[escopo]) return HIST_ROTULOS[escopo];
+    var t = String(escopo || '').replace('/', ' · ').replace(/-/g, ' ');
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+  function histResumo(x) {
+    if (x.rotulo) return x.rotulo;
+    var partes = [x.nome, x.cliente, x.titulo, x.descricao, x.produtoNome, x.ponto, x.motorista ? 'motorista ' + x.motorista : '', x.data ? formatDateBR(String(x.data).slice(0, 10)) : '']
+      .filter(function(v) { return v && String(v).length < 200; });
+    return partes.slice(0, 3).join(' · ') || ('código ' + x.chave);
+  }
+  function histQuem(x) {
+    if (x.quem_ref === 'sistema') return 'o sistema';
+    return nomePessoa(x.quem_nome) || x.quem_nome || (x.quem_ref === 'mestre' ? 'a senha mestre' : x.quem_ref) || 'alguém';
+  }
+  function histCarregar(mais) {
+    if (!(mode === 'db' && sbCliente) || hist.carregando) return;
+    hist.carregando = true;
+    var q = sbCliente.from('auditoria').select(HIST_CAMPOS).eq('acao', hist.aba).order('id', { ascending: false }).limit(50);
+    if (mais && hist.itens.length) q = q.lt('id', hist.itens[hist.itens.length - 1].id);
+    q.then(function(r) {
+      hist.carregando = false;
+      if (r.error) throw r.error;
+      var novos = r.data || [];
+      hist.itens = mais ? hist.itens.concat(novos) : novos;
+      hist.fim = novos.length < 50;
+      renderHistorico();
+    }).catch(function(e) {
+      hist.carregando = false;
+      console.error('historico', e);
+      document.getElementById('hist-lista').innerHTML = '<p class="form-error">Não foi possível abrir o histórico agora.</p>';
+    });
+  }
+  function histValor(v) {
+    if (v == null) return '—';
+    if (typeof v === 'string') return /^data:image\//.test(v) ? '(imagem/assinatura)' : (v.length > 120 ? v.slice(0, 117) + '…' : v);
+    var t = JSON.stringify(v);
+    return t.length > 120 ? t.slice(0, 117) + '…' : t;
+  }
+  function renderHistorico() {
+    var box = document.getElementById('hist-lista');
+    if (!box) return;
+    if (!hist.aberto) return;
+    var q = buscaNorm(document.getElementById('hist-busca').value);
+    var lista = hist.itens.filter(function(x) { return !q || buscaNorm([histRotulo(x.escopo), histResumo(x), histQuem(x), (x.campos || []).join(' ')].join(' ')).indexOf(q) !== -1; });
+    var podeRestaurar = !!(session && session.role === 'admin' && !session.soInclui);
+    box.innerHTML = lista.length ? lista.map(function(x) {
+      var id = String(x.id);
+      var acao = x.acao === 'apagou' ? 'Apagado' : 'Alterado';
+      var botao = x.restaurado_em ? '<span class="hist-ok">✓ ' + (x.acao === 'apagou' ? 'restaurado' : 'desfeito') + ' em ' + escapeHtml(formatDateTimeBR(x.restaurado_em)) + '</span>'
+        : !podeRestaurar ? ''
+        : hist.confirmar === id ? '<button type="button" class="btn btn-primary btn-sm" data-hist="confirmar" data-id="' + id + '">Confirmar ' + (x.acao === 'apagou' ? 'restauração' : 'desfazer') + '</button><button type="button" class="btn-text" data-hist="cancelar">Cancelar</button>'
+        : '<button type="button" class="btn btn-secondary btn-sm" data-hist="restaurar" data-id="' + id + '">' + (x.acao === 'apagou' ? 'Restaurar' : 'Desfazer') + '</button>';
+      var det = hist.detalhe[id];
+      var detHtml = det === 'carregando' ? '<div class="hist-det">carregando…</div>'
+        : det ? '<div class="hist-det">' + (x.acao === 'alterou' ? (x.campos || []).map(function(k) { return '<div><b>' + escapeHtml(k) + '</b> antes: ' + escapeHtml(k in det ? histValor(det[k]) : '(não existia)') + '</div>'; }).join('')
+          : Object.keys(det).slice(0, 25).map(function(k) { return '<div><b>' + escapeHtml(k) + ':</b> ' + escapeHtml(histValor(det[k])) + '</div>'; }).join('')) + '</div>' : '';
+      return '<div class="hist-item"><div class="hist-top">' + escapeHtml(histRotulo(x.escopo)) + ' · ' + escapeHtml(histResumo(x)) + '</div>' +
+        '<div class="hist-meta">' + acao + ' por ' + escapeHtml(histQuem(x)) + ' · ' + escapeHtml(formatDateTimeBR(x.em)) + (x.acao === 'alterou' && (x.campos || []).length ? ' · mudou: ' + escapeHtml(x.campos.slice(0, 6).join(', ')) + (x.campos.length > 6 ? '…' : '') : '') + '</div>' +
+        '<div class="hist-acts">' + botao + '<button type="button" class="btn-text" data-hist="detalhe" data-id="' + id + '">' + (det ? 'Esconder' : 'Ver o que era') + '</button></div>' + detHtml + '</div>';
+    }).join('') : '<p class="empty-state">' + (hist.carregando ? 'Carregando…' : q ? 'Nada encontrado com esse filtro.' : hist.aba === 'apagou' ? 'Nada apagado nos últimos 90 dias.' : 'Nenhuma alteração registrada ainda.') + '</p>';
+    document.getElementById('hist-mais').classList.toggle('hidden', hist.fim || !hist.itens.length);
+  }
+  document.getElementById('historico-admin').addEventListener('click', function(e) {
+    var aba = e.target.closest('[data-hist-aba]');
+    if (aba) {
+      hist.aba = aba.getAttribute('data-hist-aba'); hist.confirmar = null; hist.detalhe = {}; hist.aberto = true;
+      document.querySelectorAll('#historico-admin .hist-aba').forEach(function(b) { b.setAttribute('aria-pressed', String(b === aba)); });
+      hist.itens = []; renderHistorico(); histCarregar(false); return;
+    }
+    if (e.target.closest('#hist-abrir')) { hist.aberto = true; hist.itens = []; histCarregar(false); return; }
+    if (e.target.closest('#hist-mais')) { histCarregar(true); return; }
+    var b = e.target.closest('[data-hist]');
+    if (!b) return;
+    var acao = b.getAttribute('data-hist'), id = b.getAttribute('data-id');
+    if (acao === 'restaurar') { hist.confirmar = id; renderHistorico(); return; }
+    if (acao === 'cancelar') { hist.confirmar = null; renderHistorico(); return; }
+    if (acao === 'detalhe') {
+      if (hist.detalhe[id]) { delete hist.detalhe[id]; renderHistorico(); return; }
+      hist.detalhe[id] = 'carregando'; renderHistorico();
+      sbCliente.from('auditoria').select('antes').eq('id', Number(id)).maybeSingle().then(function(r) {
+        hist.detalhe[id] = (r && r.data && r.data.antes) || {}; renderHistorico();
+      }, function() { delete hist.detalhe[id]; renderHistorico(); });
+      return;
+    }
+    if (acao === 'confirmar') {
+      b.disabled = true;
+      db.rpc('auditoria_restaurar', { p_id: Number(id) }).then(function() {
+        var x = hist.itens.find(function(i) { return String(i.id) === id; });
+        if (x) x.restaurado_em = new Date().toISOString();
+        hist.confirmar = null; renderHistorico();
+        showToast(x && x.acao === 'apagou' ? 'Restaurado: ' + histRotulo(x.escopo) + ' voltou.' : 'Alteração desfeita.');
+      }, function(err) {
+        var t = String((err && err.message) || err || '');
+        b.disabled = false;
+        showToast(/ja_existe/.test(t) ? 'Já existe um item com esse código: não dá para restaurar por cima.' : /apagado/.test(t) ? 'Esse item foi apagado depois: restaure a exclusão primeiro.' : /permissao/.test(t) ? 'Só a senha mestre restaura.' : 'Não foi possível restaurar agora.');
+      });
+    }
+  });
+  document.getElementById('hist-busca').addEventListener('input', function() { if (hist.aberto) renderHistorico(); });
+
   // ---------- faturamento: cadastro de quem dá o ok (somente no modo escritório) ----------
   function renderEquipeAdmin() {
     var list = document.getElementById('equipe-list');
@@ -19317,13 +19865,18 @@
       list.innerHTML = '<p class="empty-state">Ninguém cadastrado. Sem isso, ninguém consegue dar o ok do faturamento, do financeiro ou da logística, nem conferir com senha.</p>';
       return;
     }
-    list.innerHTML = sorted.map(function(m) {
+    // senha de 4 números exposta (antes de 29/10/2026): a pessoa só volta a assinar com senha nova
+    var expostos = sorted.filter(function(m) { return membroTemPin(m) && m.pinTrocar; });
+    var avisoExp = expostos.length ? '<div class="pin-exposto-aviso" role="note"><b>⚠ ' + expostos.length + (expostos.length === 1 ? ' pessoa precisa' : ' pessoas precisam') + ' de senha de 4 números nova:</b> ' +
+      escapeHtml(expostos.map(function(m) { return m.nomeCompleto || m.nome; }).join(', ')) +
+      '. A senha antiga ficou exposta e não assina mais. Toque em <b>Editar</b> na pessoa e escreva a nova (ou peça para ela usar “Criar a minha senha”).</div>' : '';
+    list.innerHTML = avisoExp + sorted.map(function(m) {
       if (confirmDeleteMembro === m.id) {
         return '<div class="driver-confirm">Remover ' + escapeHtml(m.nomeCompleto || m.nome) + '? Os oks já dados continuam registrados.' + (acessoDoMembro(m) ? ' O acesso ao app também é removido.' : '') +
           '<button class="btn-text danger" data-action="confirm-remove-membro" data-id="' + escapeHtml(m.id) + '">Remover</button>' +
           '<button class="btn-text" data-action="cancel-remove-membro">Cancelar</button></div>';
       }
-      var chips = (m.cargo ? '<span class="func-chip cargo">' + escapeHtml(cargoNome(m.cargo) + (m.area ? ' · ' + m.area : '')) + '</span>' : '') + (!m.pinHash ? '<span class="func-chip">sem senha</span>' : '') +
+      var chips = (m.cargo ? '<span class="func-chip cargo">' + escapeHtml(cargoNome(m.cargo) + (m.area ? ' · ' + m.area : '')) + '</span>' : '') + (!membroTemPin(m) ? '<span class="func-chip">sem senha</span>' : m.pinTrocar ? '<span class="func-chip warn" title="A senha antiga ficou exposta: defina uma senha nova">⚠ senha exposta: trocar</span>' : '') +
         (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
         (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '') +
         (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '') +
@@ -19398,6 +19951,25 @@
     document.getElementById('equipe-sheet-overlay').classList.remove('hidden');
     setTimeout(function() { document.getElementById(kind === 'add' ? 'f-equipe-nome' : 'f-equipe-pin').focus(); }, 30);
   }
+  // Senha de 4 números de alguém da equipe, definida pela senha mestre: vai para o servidor (pin_definir, 0034).
+  // Devolve '' quando deu certo ou o texto do erro.
+  function definirPinMembro(id, pin) {
+    if (!id) return Promise.resolve('Não foi possível salvar a senha agora.');
+    if (!(mode === 'db' && db && db.rpc)) return sha256Hex(pin).then(function(hash) { return saveMembro(id, { pinHash: hash, temPin: true }).then(function() { return ''; }); });
+    return db.rpc('pin_definir', { p_membro: id, p_pin: pin }).then(function() {
+      // o servidor já marcou o documento (chega pelo tempo real); aqui só adianta a tela
+      var mm = equipe.find(function(x) { return x.id === id; });
+      if (mm) { mm.temPin = true; mm.pinTrocar = false; }
+      if (session) render();
+      return '';
+    }, function(e) {
+      var t = String((e && (e.message || e.code)) || e || '');
+      return /pin_em_uso/.test(t) ? 'Essa senha de 4 números já é de outra pessoa. Escolha outra.'
+        : /pin_facil/.test(t) ? 'Senha de 4 números fácil demais (números repetidos ou em sequência). Escolha outra.'
+        : /permissao/.test(t) ? 'Só a senha mestre define a senha de 4 números.'
+        : 'Não foi possível salvar a senha de 4 números agora. Tente novamente.';
+    });
+  }
   function closeEquipeForm() {
     document.getElementById('equipe-sheet-overlay').classList.add('hidden');
     editingMembroId = null;
@@ -19460,10 +20032,11 @@
       while (curS && !vistoS[curS]) { if (curS === editingMembroId) return fail('“Responde a” faria uma volta no organograma: escolha outra pessoa.'); vistoS[curS] = true; var xs = equipe.find(function(y) { return y.id === curS; }); curS = xs ? xs.superiorId : ''; }
     }
     if (pin && !/^[0-9]{4}$/.test(pin)) return fail('A senha de assinar precisa ter 4 números.');
+    if (pin && pinFacil(pin)) return fail('Senha de assinar fácil demais (números repetidos ou em sequência). Escolha outra.');
     var acesso = gereAcessos() && !document.getElementById('equipe-acesso-set').classList.contains('hidden') ? {
       senha: document.getElementById('f-equipe-acesso-senha').value, senha2: document.getElementById('f-equipe-acesso-senha2').value, modulos: lerAcessoChecks() } : null;
     if (acesso && (acesso.senha || acesso.senha2)) {
-      if (acesso.senha.length < 6) return fail('A senha de acesso ao app precisa ter pelo menos 6 caracteres.');
+      if (senhaAcessoProblema(acesso.senha)) return fail('Senha de acesso ao app: ' + senhaAcessoProblema(acesso.senha).replace(/^A senha/, 'ela').replace(/^./, function(x) { return x.toLowerCase(); }));
       if (acesso.senha !== acesso.senha2) return fail('As duas senhas de acesso ao app não são iguais.');
     }
     var membroAtual = editingMembroId ? equipe.find(function(x) { return x.id === editingMembroId; }) : null;
@@ -19471,21 +20044,25 @@
     if (!cargo && !area && !temAcesso && !fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Escolha o cargo, marque o que essa pessoa faz ou dê o acesso ao app.');
     if (equipe.some(function(m) { return m.id !== editingMembroId && normNome(m.nomeCompleto || m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
-    (pin ? sha256Hex(pin) : Promise.resolve('')).then(function(hash) {
-      // Duas pessoas com a mesma senha: não daria para saber de quem é o ok.
-      if (hash && equipe.some(function(m) { return m.id !== editingMembroId && m.pinHash === hash; })) { fail('Essa senha já é de outra pessoa. Escolha outra.'); return null; }
+    Promise.resolve().then(function() {
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
         superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
         veBrindes: document.getElementById('f-equipe-brindes').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked,
         aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, gestorDocumentos: document.getElementById('f-equipe-gestor-docs').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
-      if (hash) patch.pinHash = hash;
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch).then(function() { return editingMembroId; })
         : saveMembro(null, Object.assign({ nome: nome, criadoEm: new Date().toISOString() }, patch)).then(function(ref) { return ref && ref.id; })
-      ).then(function(idSalvo) { return salvarAcessoMembro(idSalvo, nome, acesso, fail); })
-        .then(function(okAcesso) { if (okAcesso !== false) closeEquipeForm(); });
+      ).then(function(idSalvo) {
+        // pessoa nova já gravada: se o PIN der erro, salvar de novo edita (não duplica)
+        if (idSalvo) editingMembroId = idSalvo;
+        // a senha de 4 números vai para o servidor (Duas pessoas com a mesma senha: não daria para saber de quem é o ok.)
+        return (pin ? definirPinMembro(idSalvo, pin) : Promise.resolve('')).then(function(erroPin) {
+          if (erroPin) { fail(erroPin); return false; }
+          return salvarAcessoMembro(idSalvo, nome, acesso, fail);
+        });
+      }).then(function(okAcesso) { if (okAcesso !== false) closeEquipeForm(); });
     }).catch(function(e2) {
       console.error('membro save error', e2);
       fail(e2 && e2.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : 'Não foi possível salvar agora. Tente novamente.');
@@ -20366,7 +20943,7 @@
     document.getElementById('equipe-acesso-status').textContent = !acessoInfo ? 'Conferindo o acesso…'
       : acessoInfo.erro ? 'Não foi possível conferir o acesso agora.'
       : x ? 'Tem acesso ao app com senha própria' + (x.em ? ' (desde ' + formatDateTimeBR(x.em) + ')' : '') + '. Para trocar a senha, digite uma nova.'
-      : 'Ainda sem acesso ao app. Para dar acesso, crie a senha (pelo menos 6 caracteres) e marque o que a pessoa pode acessar.';
+      : 'Ainda sem acesso ao app. Para dar acesso, crie a senha (pelo menos 8 caracteres, sem datas nem sequências) e marque o que a pessoa pode acessar.';
     document.getElementById('equipe-acesso-senha-rot').textContent = x ? 'Nova senha de acesso ao app (deixe em branco para manter)' : 'Senha de acesso ao app';
     document.getElementById('f-equipe-acesso-senha').value = '';
     document.getElementById('f-equipe-acesso-senha2').value = '';
@@ -20397,7 +20974,7 @@
     }).catch(function(e) {
       var c = e && e.codigo;
       falhar(c === 'senha_em_uso' ? 'O cadastro foi salvo, mas essa senha de acesso já é usada por outra pessoa. Escolha outra.'
-        : c === 'senha_curta' ? 'A senha de acesso precisa ter pelo menos 6 caracteres.' : 'O cadastro foi salvo, mas não deu para salvar o acesso ao app agora. Tente de novo.');
+        : c === 'senha_curta' || c === 'senha_fraca' ? 'O cadastro foi salvo, mas a senha de acesso não: ' + msgSenhaServidor(c).replace(/^./, function(x) { return x.toLowerCase(); }) : 'O cadastro foi salvo, mas não deu para salvar o acesso ao app agora. Tente de novo.');
       return false;
     });
   }
@@ -23606,8 +24183,66 @@
     }
     showLockState('login');
   }
+  // ---------- app instalado parado (29/10/2026): pede a senha de novo e volta para a mesma tela ----------
+  // O tempo é escolhido pela senha mestre em Cadastros › Segurança (escritório: 30 min; motoristas e fábrica: 2 h).
+  // A tela de baixo continua como estava (não recarrega); o GPS da viagem continua. Os módulos da fábrica fazem a
+  // mesma conta no ponte.js, com o tempo guardado neste aparelho.
+  var TRAVA_MIN_KEY = 'levissima-trava-min', travaAberta = false;
+  function travaLimiteMin() {
+    if (!session) return 0;
+    var campo = session.role === 'motorista' || session.role === 'setor';
+    return Number(campo ? ajustes.travaCampoMin : ajustes.travaEscMin) || (campo ? 120 : 30);
+  }
+  function travaGuardar() { try { if (session) localStorage.setItem(TRAVA_MIN_KEY, String(travaLimiteMin())); } catch (e) {} }
+  function travaParada() { if (!appNativo() || !session || travaAberta) return false; var u = ultimoUso(); return !!u && Date.now() - u > travaLimiteMin() * 60000; }
+  function travaPodePin() { return !!(session && session.role === 'equipe' && (session.ref === 'equipe' || /^escritorio:/.test(session.ref || ''))); }
+  function travaAbrir() {
+    if (travaAberta || !session) return;
+    travaAberta = true;
+    var min = travaLimiteMin(), ov = document.getElementById('trava-overlay');
+    ov.innerHTML = '<div class="lock-card"><p class="lock-time">🔒 App bloqueado</p>' +
+      '<p class="hint">Ficou mais de ' + (min >= 60 ? (min / 60) + (min === 60 ? ' hora' : ' horas') : min + ' minutos') + ' sem uso. Digite a senha de acesso' + (travaPodePin() ? ' (ou a sua senha de 4 números)' : '') + ' para continuar de onde parou.</p>' +
+      '<form id="trava-form" novalidate><label class="lock-label">Senha<input type="password" id="trava-senha" autocomplete="current-password" /></label>' +
+      '<p class="form-error hidden" id="trava-erro"></p><button type="submit" class="btn btn-primary" id="trava-ok">Continuar</button></form>' +
+      '<button type="button" class="btn-text" id="trava-sair">Sair (entrar com outra senha)</button></div>';
+    ov.classList.remove('hidden');
+    try { document.activeElement && document.activeElement.blur && document.activeElement.blur(); } catch (e) {}
+    setTimeout(function() { var f = document.getElementById('trava-senha'); if (f) f.focus(); }, 50);
+  }
+  function travaFechar() { travaAberta = false; document.getElementById('trava-overlay').classList.add('hidden'); document.getElementById('trava-overlay').innerHTML = ''; gravarUso(true); }
+  document.getElementById('trava-overlay').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var input = document.getElementById('trava-senha'), err = document.getElementById('trava-erro'), btn = document.getElementById('trava-ok');
+    var v = input.value;
+    if (!v || btn.disabled) return;
+    btn.disabled = true; err.classList.add('hidden');
+    var falhou = function(msg) { btn.disabled = false; err.textContent = msg; err.classList.remove('hidden'); input.value = ''; input.focus(); };
+    if (/^\d{4}$/.test(v) && travaPodePin()) {
+      conferirPin(v).then(function(r) {
+        if (r && r.ok && (session.ref === 'equipe' || 'escritorio:' + r.membro === session.ref)) return travaFechar();
+        falhou(r && r.bloqueado ? 'Muitas senhas erradas. Espere e tente de novo.' : 'Senha não reconhecida.');
+      }, function() { falhou('Sem conexão para conferir agora.'); });
+      return;
+    }
+    chamarAcesso({ acao: 'conferir', senha: v }).then(function(r) {
+      if (r && r.ok) return travaFechar();
+      falhou('Senha errada.');
+    }, function(x) {
+      var c = x && x.codigo;
+      if (c === 'login') { travaAberta = false; logout(); return; } // o login caiu (saiu de todos os aparelhos ou venceu)
+      falhou(c === 'tentativas' ? 'Muitas tentativas erradas. Espere alguns minutos.' : 'Sem conexão para conferir agora. Tente de novo.');
+    });
+  });
+  document.getElementById('trava-overlay').addEventListener('click', function(e) {
+    if (e.target.closest('#trava-sair')) { travaAberta = false; document.getElementById('trava-overlay').classList.add('hidden'); logout(); }
+  });
   function aoUsar(e) {
-    if (!session) return;
+    if (!session || travaAberta) return;
+    if (travaParada()) {
+      if (e && e.cancelable && (e.type === 'pointerdown' || e.type === 'click' || e.type === 'keydown')) { e.preventDefault(); e.stopPropagation(); }
+      travaAbrir();
+      return;
+    }
     if (sessaoParada()) {
       // o toque que "acorda" o app depois dos 30 min não chega a fazer nada: vai direto para a senha
       if (e && e.cancelable && (e.type === 'pointerdown' || e.type === 'click' || e.type === 'keydown')) { e.preventDefault(); e.stopPropagation(); }
@@ -23618,9 +24253,9 @@
   }
   ['pointerdown', 'click', 'keydown'].forEach(function(ev) { document.addEventListener(ev, aoUsar, true); });
   ['wheel', 'scroll', 'input', 'touchmove'].forEach(function(ev) { document.addEventListener(ev, aoUsar, { capture: true, passive: true }); });
-  setInterval(function() { if (session && sessaoParada()) sairPorTempo(); }, 15000);
-  document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible' && session && sessaoParada()) sairPorTempo(); });
-  window.addEventListener('focus', function() { if (session && sessaoParada()) sairPorTempo(); });
+  setInterval(function() { if (session && sessaoParada()) sairPorTempo(); else if (travaParada()) travaAbrir(); }, 15000);
+  document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible' && session) { if (sessaoParada()) sairPorTempo(); else if (travaParada()) travaAbrir(); } });
+  window.addEventListener('focus', function() { if (session) { if (sessaoParada()) sairPorTempo(); else if (travaParada()) travaAbrir(); } });
 
   // ---------- voltar na mesma tela (pedido de 23/10/2026) ----------
   // Minimizar o app e voltar: tudo continua como estava, sem senha. Fechar o app pede a senha de novo. Se o celular
@@ -23733,9 +24368,48 @@
     }
     if (s.role === 'motorista') showDriverView(); else { ui.tab = 'inicio'; showAdminView(); retomadaAoEntrar(!senhaDigitada && !comecarComSenha); }
     comecarComSenha = false;
+    travaGuardar();
+    // senha mestre: avisos de segurança (número no botão Cadastros e aviso na hora dos graves)
+    if (s.role === 'admin' && !s.soInclui && mode === 'db') setTimeout(function() { segBuscarEventos(true); segOuvir(); }, 1500);
     if (s.role === 'admin' && senhaDigitada) abrirPesquisasCom(senhaDigitada);
   }
   var comecarComSenha = false; // login digitado agora (senha, PIN ou rosto) — não é só o app recarregando
+  // Senha de acesso ao app (29/10/2026, migração 0037): pelo menos 8 caracteres e sem as fáceis — sequências,
+  // tudo igual, datas e as comuns. O servidor confere de novo (acesso_definir); aqui é só para avisar na hora.
+  function senhaAcessoProblema(senha) {
+    var s = String(senha || ''), l = s.toLowerCase(), n = l.replace(/[^a-z0-9]/g, '');
+    if (s.length < 8) return 'A senha precisa ter pelo menos 8 caracteres.';
+    if (/^(.)\1+$/.test(l)) return 'Senha fácil demais (tudo igual). Misture letras e números.';
+    if ('01234567890123456789'.indexOf(l) >= 0 || '98765432109876543210'.indexOf(l) >= 0 || 'abcdefghijklmnopqrstuvwxyz'.indexOf(l) >= 0 || 'qwertyuiopasdfghjklzxcvbnm'.indexOf(l) >= 0) return 'Senha fácil demais (sequência). Misture letras e números.';
+    if (/^(levissima|senha|password|admin|mudar|teste|brasil)[0-9]*$/.test(n) || ['12345678', '87654321', '11223344', '12341234', '12121212', 'abc12345', 'abcd1234', 'qwerty123', 'iloveyou'].indexOf(l) >= 0) return 'Senha fácil demais (muito usada). Escolha outra.';
+    if ((/^\d{2}[\/.-]?\d{2}[\/.-]?(\d{2}|\d{4})$/.test(l) && +n.slice(0, 2) >= 1 && +n.slice(0, 2) <= 31 && +n.slice(2, 4) >= 1 && +n.slice(2, 4) <= 12) || /^(19|20)\d{2}[\/.-]?\d{2}[\/.-]?\d{2}$/.test(l)) return 'Não use data (aniversário, admissão…) como senha.';
+    return '';
+  }
+  function msgSenhaServidor(c, pad) {
+    return c === 'senha_em_uso' ? 'Essa senha já é usada por outra pessoa. Escolha outra.'
+      : c === 'senha_curta' ? 'A senha precisa ter pelo menos 8 caracteres.'
+      : c === 'senha_fraca' ? 'Senha fácil demais (sequência, data ou muito usada). Escolha outra, misturando letras e números.'
+      : pad || 'Não foi possível salvar agora. Tente novamente.';
+  }
+  // aparelho: um código sorteado e guardado neste aparelho (não identifica a pessoa), para a senha mestre ser avisada
+  // quando uma senha entrar num aparelho novo
+  var DISPOSITIVO_KEY = 'levissima-dispositivo';
+  function dispositivoId() {
+    var id = '';
+    try { id = localStorage.getItem(DISPOSITIVO_KEY) || ''; } catch (e) {}
+    if (!/^[A-Za-z0-9_-]{16,64}$/.test(id)) {
+      id = bytesParaB64u(crypto.getRandomValues(new Uint8Array(18)));
+      try { localStorage.setItem(DISPOSITIVO_KEY, id); } catch (e) {}
+    }
+    return id;
+  }
+  function dispositivoDesc() {
+    var ua = navigator.userAgent || '';
+    var so = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Macintosh|Mac OS X/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : /Linux/.test(ua) ? 'Linux' : 'Aparelho';
+    var onde = appNativo() ? 'app' : /Edg\//.test(ua) ? 'Edge' : /Chrome\//.test(ua) ? 'Chrome' : /Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'navegador';
+    return so + ' · ' + onde;
+  }
+  function comDispositivo(corpo) { corpo.dispositivo = dispositivoId(); corpo.dispositivoDesc = dispositivoDesc(); return corpo; }
   // Chama a função de acesso do Supabase; em erro, devolve { codigo } (senha, tentativas, permissao, senha_em_uso...).
   function chamarAcesso(corpo) {
     function falha(codigo) { var e = new Error(codigo); e.codigo = codigo; return e; }

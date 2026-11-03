@@ -1,0 +1,27 @@
+name: Backup diário
+
+# Todo dia às 03:17 (horário de Brasília) e quando alguém clicar em "Run workflow".
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # token OIDC do GitHub: é com ele que a função "backup" do Supabase reconhece este repositório
+  contents: write   # criar e apagar as releases (onde ficam os backups cifrados)
+
+concurrency:
+  group: backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fazer o backup
+        env:
+          BACKUP_SENHA: ${{ secrets.BACKUP_SENHA }}
+          GH_TOKEN: ${{ github.token }}
+        run: bash ferramentas/backup.sh
