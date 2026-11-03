@@ -13979,8 +13979,8 @@
     var hoje = todayIso(), analise = analisarOrdens(), porId = {}, pv = pcpPrevisoes();
     analise.forEach(function(a) { porId[a.o.id] = a; });
     var comProblema = analise.filter(function(a) { return a.faltas.length || a.mat.semFicha.length; });
-    var concl = mp.ordens.filter(function(o) { return o.status === 'concluida'; }).sort(function(a, b) { return String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); });
-    var conclHoje = concl.filter(function(o) { return isoLocal(o.concluidoEm) === hoje; });
+    var concl = mp.ordens.filter(function(o) { return o.status === 'concluida'; }).sort(function(a, b) { return dataProducaoOp(b).localeCompare(dataProducaoOp(a)) || String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); });
+    var conclHoje = concl.filter(function(o) { return dataProducaoOp(o) === hoje; });
     var palAbertas = analise.reduce(function(s, a) { return s + paletesOp(a.o.itens); }, 0);
     var palHoje = conclHoje.reduce(function(s, o) { return s + paletesOp(o.produzido || o.itens); }, 0);
     var rodando = analise.filter(function(a) { return opExec(a.o).estado === 'rodando'; }).length, pend = pcpPendentes();
@@ -14032,7 +14032,7 @@
           '<button class="btn-text danger" data-mp="op-desfazer-ok" data-id="' + id + '">Desfazer</button><button class="btn-text" data-mp="op-desfazer-nao">Cancelar</button></div>' : '';
       var ed = (o.editadoAposConcluir || []).slice(-1)[0];
       return desf || ('<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(o.numero)) + (o.linha ? ' · ' + escapeHtml(phLinhaNome(o.linha)) : '') + '<span class="driver-sub">' + escapeHtml(resumoItensOp(o.produzido || o.itens)) + '</span>' +
-        '<span class="driver-sub">concluída em ' + escapeHtml(formatDateTimeBR(o.concluidoEm)) + ' · entrou no estoque' + ((o.consumo || []).length ? ' · ' + o.consumo.length + ' insumos baixados' : '') +
+        '<span class="driver-sub">produzida em ' + escapeHtml(formatDateBR(dataProducaoOp(o))) + ' · concluída no app em ' + escapeHtml(formatDateTimeBR(o.concluidoEm)) + ' · entrou no estoque' + ((o.consumo || []).length ? ' · ' + o.consumo.length + ' insumos baixados' : '') +
         (o.dataLimite ? ' · ' + (opNoPrazo(o) ? 'no prazo' : '<b class="alerta">fora do prazo</b>') + ' (limite ' + escapeHtml(formatDateBR(o.dataLimite).slice(0, 5)) + ')' : '') +
         (ed ? ' · corrigida por ' + escapeHtml(ed.por || '—') + ' em ' + escapeHtml(formatDateTimeBR(ed.em)) : '') + '</span></span>' +
         (podeConcl ? '<button class="btn-text" data-mp="op-concl-editar" data-id="' + id + '">Editar</button>' : '') +
@@ -14839,7 +14839,7 @@
     if (!mpUi.todosMovs) eventos = eventos.slice(0, 30);
     document.getElementById('mp-movs').innerHTML = (eventos.length ? eventos.map(function(ev) {
       if (ev.o) {
-        return '<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(ev.o.numero)) + ' concluída<span class="driver-tel">' + escapeHtml(formatDateTimeBR(ev.o.concluidoEm) + ' · consumo de ' + ev.o.consumo.length + ' insumos') + '</span></span>' +
+        return '<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(ev.o.numero)) + ' concluída<span class="driver-tel">' + escapeHtml('produção de ' + formatDateBR(dataProducaoOp(ev.o)) + ' · concluída no app em ' + formatDateTimeBR(ev.o.concluidoEm) + ' · consumo de ' + ev.o.consumo.length + ' insumos') + '</span></span>' +
           '<span class="mov-qtd">−</span></div>';
       }
       var m = ev.m, ins = insumoPorId(m.insumoId), u = m.unidade || (ins && ins.unidade) || '';
@@ -15016,11 +15016,23 @@
     var fila = pcpFilaLinha(st.linha).filter(function(x) { return x.id !== mpSheet.id; });
     return '<div class="op-prev-box">' + pcpPrevisaoHtml(sim, pv) + (pv && pv.fim && fila.length && !mpSheet.id ? '<p class="field-hint" style="margin:2px 0 0">Entra no fim da sequência da linha (depois de ' + fila.length + (fila.length === 1 ? ' OP' : ' OPs') + '); dá para mudar a ordem no PCP.</p>' : '') + '</div>';
   }
+  // data em que a OP foi produzida (03/11/2026): a conclusão fica registrada nesse dia, e não no dia em que o PCP
+  // conclui no app. Vem do último apontamento ou lançamento da OP; sem nenhum, da última vez que ela rodou
+  // (iniciar/pausar); sem nada disso, da própria data da OP ("produzir a partir de"). Nunca depois de hoje.
+  function opDataProducaoSugerida(o) {
+    var hoje = todayIso(), and = o ? opAndamento()[o.id] : null, d = '', fonte = '';
+    ((and && and.lancs) || []).forEach(function(m) { var x = String(m.data || '').slice(0, 10); if (x > d) { d = x; fonte = 'lanc'; } });
+    if (!d) opEventos(o.id).forEach(function(e) { var x = isoLocal(e.em); if (x && x > d) { d = x; fonte = 'evento'; } });
+    if (!d && o.data) { d = String(o.data).slice(0, 10); fonte = 'op'; }
+    if (!d || d > hoje) { d = hoje; fonte = 'hoje'; }
+    return { data: d, fonte: fonte };
+  }
+  function dataProducaoOp(o) { return (o && (o.dataProducao || isoLocal(o.concluidoEm))) || ''; }
   function abrirOpConcluir(o) {
     if (!pcpPodeConfirmar()) { showToast('A conclusão da OP é do PCP (senha mestre e quem tem “Confirma a produção”).'); return; }
     var and = opAndamento()[o.id], porHora = {}, est = 0;
     if (and) { and.itens.forEach(function(it) { porHora[it.produtoId] = it.feito; }); est = and.est || 0; }
-    var temHora = Object.keys(porHora).some(function(k) { return porHora[k] > 0; });
+    var temHora = Object.keys(porHora).some(function(k) { return porHora[k] > 0; }), dps = opDataProducaoSugerida(o);
     var rows = (o.itens || []).map(function(it) {
       var p = findProduto(it.produtoId) || { id: it.produtoId, nome: it.produtoNome, unidade: it.unidade, unidadesPorPalete: 0 }, ph = Math.round(porHora[it.produtoId] || 0);
       return linhaProdutoHtml(p, ph || Number(it.quantidade) || 0, ' · na ordem: ' + qtdUnidade(it.quantidade, it.unidade || unidadeDe(p)) + (ph ? ' · apontado: ' + qtdUnidade(ph, it.unidade || unidadeDe(p)) : ''));
@@ -15029,7 +15041,9 @@
       modo: 'op-concluir', id: o.id, ordem: o, titulo: 'Concluir OP nº ' + o.numero, botao: 'Concluir e dar entrada',
       html: '<p class="hint">Confira o que foi produzido (se saiu diferente, corrija). Ao concluir, a produção <b>entra no estoque de produtos</b> e a matéria-prima <b>sai do estoque de matéria-prima</b>.</p>' +
         (temHora ? '<p class="field-hint">Os apontamentos desta OP' + (est ? ' (' + fmtInt(Math.round(est)) + ' estimados, aguardando o PCP)' : '') + ' são confirmados agora; no estoque entra só a diferença para o que você informar (para mais ou para menos), sem contar duas vezes.</p>' : '') +
-        '<label>Data da produção<input type="date" id="mp-op-dataprod" value="' + escapeHtml(todayIso()) + '" /></label>' +
+        '<label>Data da produção <span class="opt">(o dia em que a OP foi produzida)</span><input type="date" id="mp-op-dataprod" value="' + escapeHtml(dps.data) + '" max="' + escapeHtml(todayIso()) + '" /></label>' +
+        '<p class="field-hint">' + (dps.fonte === 'lanc' ? 'Veio do último apontamento desta OP (' + formatDateBR(dps.data) + ').' : dps.fonte === 'evento' ? 'Veio da última vez que a OP rodou (' + formatDateBR(dps.data) + ').' : dps.fonte === 'op' ? 'Veio da data da OP (' + formatDateBR(dps.data) + ').' : 'A OP é para depois de hoje: ficou hoje.') +
+          ' A entrada no estoque e os indicadores ficam nesse dia; se a produção foi em outro dia, troque aqui.</p>' +
         '<div class="est-form-head"><span>Produto</span><span>Paletes</span><span>Produzido</span></div><div class="est-rows">' + rows + '</div>' +
         '<div class="section-head"><h2 class="section-title">Matéria-prima consumida</h2></div><div id="mp-vivo"></div>'
     });
@@ -15257,7 +15271,8 @@
       msg = (s.id ? 'OP nº ' + s.ordem.numero + ' atualizada' : 'OP nº ' + rec.numero + ' lançada') + (falta ? ' — atenção: falta matéria-prima.' : '.');
     } else if (s.modo === 'op-concluir') {
       if (!pcpPodeConfirmar()) return erroMpSheet('A conclusão da OP é do PCP.');
-      var prod = itensDoFormProdutos(), dp = document.getElementById('mp-op-dataprod').value || todayIso();
+      var prod = itensDoFormProdutos(), dp = document.getElementById('mp-op-dataprod').value || opDataProducaoSugerida(s.ordem).data;
+      if (dp > todayIso()) return erroMpSheet('A data da produção não pode ser depois de hoje.');
       if (!prod.length) return erroMpSheet('Informe o que foi produzido.');
       var cons = materiaisDe(prod, false).lista.map(function(m) { return { insumoId: m.insumoId, nome: m.nome, unidade: m.unidade, qtd: m.qtd }; });
       // o que foi apontado para a OP é confirmado agora (entra no estoque); a conclusão lança só a diferença (03/11/2026)
