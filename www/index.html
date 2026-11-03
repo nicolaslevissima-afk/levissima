@@ -846,8 +846,8 @@
   .pcp-linha-cab > b { font-family: var(--font-display); font-size: 1.05rem; }
   .pcp-linha-info { font-size: 0.8125rem; color: var(--muted); }
   .op-pos { display: inline-block; min-width: 2em; padding: 0 6px; border-radius: 999px; background: rgba(var(--teal-rgb), 0.12); color: var(--teal); font-weight: 700; text-align: center; font-size: 0.8125rem; }
-  .op-card.op-rodando { box-shadow: inset 4px 0 0 var(--verde); }
-  .op-card.op-pausada { box-shadow: inset 4px 0 0 var(--laranja); }
+  .op-card.op-rodando { background: rgba(67, 176, 42, 0.07); }
+  .op-card.op-pausada { background: rgba(255, 106, 19, 0.07); }
   .op-prev { margin-top: 4px; }
   .op-prev.warn { color: var(--laranja-texto); }
   .op-prev-box { margin: 4px 0 10px; }
@@ -13785,7 +13785,7 @@
     if (!r || !r.lancado) return '';
     var falta = r.itens.filter(function(it) { return it.falta > 0; }).map(function(it) { return qtdUnidade(Math.round(it.falta), it.unidade) + (r.itens.length > 1 ? ' de ' + it.nome : ''); }).join(', ');
     return r.estado === 'fim' ? 'Quantidade atingida pelos lançamentos: o PCP confirma e conclui a OP'
-      : (r.estado === 'perto' ? 'Perto do fim: ' : '') + 'faltam ' + falta + (r.minutos !== null ? ' (~' + fmtDuracao(r.minutos) + ' no ritmo das últimas horas)' : '');
+      : (r.estado === 'perto' ? 'Perto do fim: ' : '') + 'faltam ' + falta + (r.minutos !== null ? ' (~' + fmtDuracao(r.minutos) + ' no ritmo real dos últimos lançamentos)' : '');
   }
   function opAndamentoHtml(r) {
     if (!r || !r.lancado) return '';
