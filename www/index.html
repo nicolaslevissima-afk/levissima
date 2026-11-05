@@ -176,6 +176,20 @@
 
   .sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; z-index: 50; }
   .sheet-overlay.hidden { display: none; }
+  /* tela pausada (minimizada) e a barra "Pausadas" embaixo (04/11/2026) */
+  .sheet-overlay.tela-min { display: none !important; }
+  .sheet-header .tela-min-btn { margin-left: auto; font-weight: 700; font-size: 1.25rem; line-height: 1; }
+  .telas-pausadas { position: fixed; left: 0; right: 0; bottom: 0; z-index: 55; display: flex; gap: 8px; align-items: center; overflow-x: auto; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--paper); box-shadow: 0 -4px 14px rgba(0,0,0,0.18); }
+  .telas-pausadas.hidden { display: none; }
+  .telas-pausadas .tp-t { flex-shrink: 0; font-family: var(--font-display); font-weight: 700; font-size: 0.8125rem; }
+  .telas-pausadas .tp-chip { flex-shrink: 0; display: inline-flex; flex-direction: column; align-items: flex-start; max-width: 230px; background: var(--paper); color: var(--ink); border: none; border-radius: 10px; padding: 6px 12px; font-family: var(--font-display); font-weight: 600; font-size: 0.8125rem; cursor: pointer; text-align: left; }
+  .telas-pausadas .tp-chip span { max-width: 206px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .telas-pausadas .tp-chip small { font-weight: 400; color: var(--muted); font-size: 0.6875rem; }
+  body.com-pausadas { padding-bottom: 64px; }
+  body.com-pausadas .fab { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+  /* com telas pausadas, a folha aberta fica acima da barra (dá para trocar de uma tela para outra) */
+  body.com-pausadas .sheet-overlay { padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); }
+  body.com-pausadas .sheet { max-height: calc(90vh - 60px); border-radius: 16px; }
   .sheet { background: var(--paper); width: 100%; max-width: 720px; margin: 0 auto; max-height: 90vh; overflow-y: auto; border-radius: 16px 16px 0 0; padding: 18px 18px calc(18px + env(safe-area-inset-bottom, 0px)); }
   .sheet-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .sheet-header h2 { font-size: 1.125rem; margin: 0; }
@@ -302,6 +316,30 @@
   .carga-rel-bar { display: flex; justify-content: flex-end; margin: -6px 0 12px; }
   .crel-sit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; margin: 4px 0 10px; }
   .crel-sit .check { margin: 0; }
+  /* produtos do dia na aba Cargas, com o aviso de falta de estoque (04/11/2026) */
+  .cdia { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 12px 14px; margin: 0 0 18px; }
+  .cdia-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .cdia-top .section-title { margin: 0; }
+  .cdia-dias { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .cdia-dias .btn-text.ativo { font-weight: 800; text-decoration: underline; text-underline-offset: 4px; }
+  .cdia-dias input[type=date] { width: auto; padding: 6px 8px; font-size: 0.875rem; }
+  .cdia-resumo { margin: 8px 0; font-size: 0.875rem; color: var(--muted); }
+  .cdia-resumo b { color: var(--ink); }
+  .cdia .estoque-falta-box { margin: 6px 0 10px; }
+  .cdia-lista { display: flex; flex-direction: column; }
+  .cdia-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .cdia-item:first-child { border-top: none; }
+  .cdia-nome { min-width: 0; flex: 1 1 auto; }
+  .cdia-nome b { display: block; font-family: var(--font-display); }
+  .cdia-nome small, .cdia-num small { display: block; font-size: 0.75rem; color: var(--muted); }
+  .cdia-num { text-align: right; flex: 0 1 auto; max-width: 55%; }
+  .cdia-num b { font-family: var(--font-display); white-space: nowrap; }
+  .cdia-num small.ok { color: var(--ok, #2D7A1C); }
+  .cdia-num small.falta { color: var(--danger); font-weight: 700; }
+  .cdia-item.falta .cdia-nome b { color: var(--danger); }
+  .cdia .field-hint { margin: 6px 0 0; }
+  .crel-ordem { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 10px; }
+  .crel-ordem .check { margin: 0; }
   .crel-dias { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 10px; }
   .crel-dias .btn-text.ativo { font-weight: 800; text-decoration: underline; text-underline-offset: 4px; }
   .crel-resumo { background: var(--tint, #F1EEF4); border-radius: 8px; padding: 10px 12px; margin: 8px 0 12px; font-size: 14px; }
@@ -1780,6 +1818,7 @@
     <p class="filter-note hidden" id="carga-busca-nota" role="status"></p>
     <p class="filter-note hidden" id="carga-filter-note"></p>
     <div class="carga-rel-bar"><button type="button" class="btn btn-secondary btn-sm" id="btn-cargas-relatorio">Relatório de cargas</button></div>
+    <section class="cdia" id="cargas-dia" aria-label="Produtos a carregar no dia"></section>
 
     <div id="patio-strip" class="patio hidden" aria-live="polite"></div>
     <div class="section-head"><h2 class="section-title">Aguardando carregamento</h2></div>
@@ -2387,6 +2426,7 @@
     </div>
     <div class="doc-actions">
       <button type="button" class="btn btn-primary" id="btn-doc-pdf" disabled>Emitir PDF</button>
+      <button type="button" class="btn btn-secondary" id="btn-doc-imprimir" disabled>🖨 Imprimir</button>
       <button type="button" class="btn btn-secondary" id="btn-doc-whats" disabled>Enviar pelo WhatsApp</button>
       <button type="button" class="btn btn-secondary" id="btn-doc-img" disabled>Emitir imagem</button>
     </div>
@@ -2394,7 +2434,7 @@
     <p class="hint" id="doc-status"></p>
     <p class="form-error hidden" id="doc-error"></p>
     <img id="doc-preview" class="doc-preview hidden" alt="Comprovante com o saldo final" />
-    <p class="hint doc-hint">O arquivo é baixado como em qualquer site — confira a pasta de downloads do aparelho.</p>
+    <p class="hint doc-hint">O arquivo é baixado como em qualquer site — confira a pasta de downloads do aparelho. Para imprimir sem baixar, use <b>🖨 Imprimir</b>.</p>
     <div class="sheet-actions">
       <button type="button" class="btn btn-secondary" id="btn-doc-close">Fechar</button>
     </div>
@@ -3197,6 +3237,8 @@
 
 <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
+<div id="telas-pausadas" class="telas-pausadas hidden" role="region" aria-label="Telas pausadas"></div>
+
 <script>
 (function() {
   'use strict';
@@ -3382,6 +3424,57 @@
     a.click();
     document.body.removeChild(a);
     setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  // ---------- imprimir sem baixar (04/11/2026) ----------
+  // Navegador: as páginas do documento vão para uma moldura escondida e abre a janela de impressão do aparelho.
+  // App Android: o PDF vai direto para a impressão do Android (função "Impressora" do app); em versão antiga do app
+  // (ou no iPhone), abre o compartilhar com o PDF, onde está a opção de imprimir.
+  function imprimirDocumento(res, titulo) {
+    if (!res) return;
+    var nome = res.baseName || 'documento';
+    if (appNativo()) {
+      var imp = pluginNativo('Impressora');
+      if (imp && imp.imprimirPdf) {
+        blobParaBase64(res.pdfBlob).then(function(b64) { return imp.imprimirPdf({ dados: b64, nome: nome }); })
+          .catch(function(e) { console.error('imprimir', e); showToast('Não foi possível abrir a impressão agora. Tente de novo.'); });
+        return;
+      }
+      showToast('Escolha a impressora (ou “Imprimir”) no compartilhar. Na versão nova do app, a impressão abre direto.');
+      compartilharArquivoNativo(res.pdfBlob, nome + '.pdf').catch(function(e) { console.error('imprimir (compartilhar)', e); });
+      return;
+    }
+    imprimirImagens(res.paginas && res.paginas.length ? res.paginas : [res.pngDataUrl], titulo || nome, !!res.a4);
+  }
+  function imprimirImagens(urls, titulo, a4) {
+    var velho = document.getElementById('moldura-impressao');
+    if (velho) velho.parentNode.removeChild(velho);
+    var fr = document.createElement('iframe');
+    fr.id = 'moldura-impressao'; fr.setAttribute('aria-hidden', 'true'); fr.setAttribute('tabindex', '-1');
+    fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none';
+    document.body.appendChild(fr);
+    var d = fr.contentWindow.document;
+    d.open();
+    d.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>' + escapeHtml(titulo || 'Documento') + '</title><style>' +
+      '@page{size:A4;margin:' + (a4 ? '0' : '8mm') + '}html,body{margin:0;padding:0;background:#fff}' +
+      '.pg{width:' + (a4 ? '210mm' : '100%') + ';height:' + (a4 ? '296mm' : 'auto') + ';display:flex;align-items:flex-start;justify-content:center;overflow:hidden;page-break-after:always;break-after:page}' +
+      '.pg:last-child{page-break-after:auto;break-after:auto}img{display:block;max-width:100%;' + (a4 ? 'max-height:100%;' : '') + 'height:auto}</style></head><body>' +
+      urls.map(function(u) { return '<div class="pg"><img src="' + u + '" alt=""></div>'; }).join('') + '</body></html>');
+    d.close();
+    var foi = false;
+    function imprimir() {
+      if (foi) return; foi = true;
+      try { fr.contentWindow.focus(); fr.contentWindow.print(); }
+      catch (e) { console.error('imprimir', e); showToast('Não foi possível abrir a impressão. Use “Emitir PDF” e imprima o arquivo.'); }
+      setTimeout(function() { if (fr.parentNode) fr.parentNode.removeChild(fr); }, 120000);
+    }
+    var imgs = Array.prototype.slice.call(d.images), falta = imgs.length;
+    if (!falta) { setTimeout(imprimir, 50); return; }
+    imgs.forEach(function(im) {
+      if (im.complete) { if (--falta === 0) setTimeout(imprimir, 50); return; }
+      im.onload = im.onerror = function() { if (--falta === 0) setTimeout(imprimir, 50); };
+    });
+    setTimeout(imprimir, 4000);
   }
 
   // ---------- senha (hash local, nunca guardamos a senha em texto puro) ----------
@@ -6179,6 +6272,7 @@
     entregasIdx = indexarEntregas();
     try {
       renderCargaFilters();
+      renderCargasDia();
       var qBusca = buscaNorm(ui.cargaBusca);
       var visible = cargas.filter(function(c) { return cargaMatchesFilter(c, ui.cargaFilter) && cargaCombinaBusca(c, qBusca); });
       var notaB = document.getElementById('carga-busca-nota'), limparB = document.getElementById('carga-busca-limpar');
@@ -6808,17 +6902,123 @@
     ui.showAllDone = !ui.showAllDone;
     renderCargasSection();
   });
+  // ---------- produtos do dia na aba Cargas (04/11/2026) ----------
+  // Soma, por produto, o que as cargas do dia ainda vão carregar (no dia de hoje, com as atrasadas) e o que já
+  // carregou, e compara com o estoque: acusa possível falta quando o que falta carregar passa do estoque que sobra
+  // para o dia (o estoque de agora menos o que as cargas pendentes de dias anteriores já reservaram). A produção que
+  // ainda vai entrar não está na conta. Produto sem controle de estoque (nunca contado) não avisa.
+  var cdiaUi = { dia: '', fechado: loadPref('levissima-cdia-fechado', '') === '1' };
+  function cdiaDiaEfetivo(c) { var d = String(c.data || '').slice(0, 10), hoje = todayIso(); return d && d < hoje ? hoje : d; }
+  function cdiaDados(dia) {
+    var hoje = todayIso(), porProd = {}, ordem = [], r = { nPend: 0, nCarr: 0, palPend: 0, palCarr: 0, itens: [], faltas: [] };
+    function reg(it) {
+      var p = it.produtoId ? produtos.find(function(x) { return x.id === it.produtoId; }) : null;
+      var k = it.produtoId || ('nome:' + normNome(it.produtoNome));
+      if (!porProd[k]) { porProd[k] = { id: it.produtoId || '', p: p, nome: (p && p.nome) || it.produtoNome || '—', u: (p && unidadeDe(p)) || it.unidade || '', pend: 0, carr: 0, palPend: 0, cargas: {} }; ordem.push(k); }
+      return porProd[k];
+    }
+    cargas.forEach(function(c) {
+      var conc = c.status === 'concluida';
+      if (conc ? isoLocal(c.concluidoEm) !== dia : (dia < hoje || cdiaDiaEfetivo(c) !== dia)) return;
+      if (conc) { r.nCarr++; r.palCarr += Number(c.totalPaletes) || 0; } else { r.nPend++; r.palPend += Number(c.totalPaletes) || 0; }
+      (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+        var x = reg(it), q = Number(it.quantidade) || 0;
+        if (conc) x.carr += q; else { x.pend += q; x.palPend += Number(it.paletes) || 0; x.cargas[c.id] = 1; }
+      }); });
+    });
+    r.itens = ordem.map(function(k) {
+      var x = porProd[k];
+      x.nCargas = Object.keys(x.cargas).length;
+      x.est = x.id ? estoqueDe(x.id) : null;
+      if (x.est && x.pend > 0) {
+        // o que as cargas pendentes de antes deste dia já reservaram
+        var antes = cargas.reduce(function(a, c) { return c.status !== 'concluida' && cdiaDiaEfetivo(c) < dia ? a + quantidadeNaCarga(c, x.id) : a; }, 0);
+        x.dispDia = x.est.estoque - antes;
+        x.falta = Math.max(0, x.pend - Math.max(0, x.dispDia));
+        if (x.falta > 0) r.faltas.push(x);
+      }
+      return x;
+    }).sort(function(a, b) { return (b.falta ? 1 : 0) - (a.falta ? 1 : 0) || normNome(a.nome).localeCompare(normNome(b.nome), 'pt-BR'); });
+    return r;
+  }
+  function renderCargasDia() {
+    var el = document.getElementById('cargas-dia');
+    if (!el) return;
+    if (!session || session.role === 'motorista') { el.innerHTML = ''; el.classList.add('hidden'); return; }
+    el.classList.remove('hidden');
+    var hoje = todayIso(), dia = cdiaUi.dia || hoje, d = cdiaDados(dia);
+    var rotulo = dia === hoje ? 'Hoje' : dia === addDiasIso(hoje, 1) ? 'Amanhã' : dia === addDiasIso(hoje, -1) ? 'Ontem' : formatDateBR(dia);
+    var pend = d.itens.filter(function(x) { return x.pend > 0; }), carr = d.itens.filter(function(x) { return !x.pend && x.carr > 0; });
+    var html = '<div class="cdia-top"><h2 class="section-title">Produtos do dia</h2><div class="cdia-dias">' +
+      [[0, 'Hoje'], [1, 'Amanhã']].map(function(x) { var di = addDiasIso(hoje, x[0]); return '<button type="button" class="btn-text' + (dia === di ? ' ativo' : '') + '" data-cdia-dia="' + di + '">' + x[1] + '</button>'; }).join('') +
+      '<input type="date" id="cdia-data" value="' + escapeHtml(dia) + '" aria-label="Dia dos produtos" />' +
+      '<button type="button" class="btn-text" data-cdia-ver="1">' + (cdiaUi.fechado ? 'Mostrar' : 'Esconder') + '</button></div></div>';
+    html += '<p class="cdia-resumo"><b>' + escapeHtml(rotulo) + (rotulo !== formatDateBR(dia) ? ' (' + formatDateBR(dia).slice(0, 5) + ')' : '') + ':</b> ' +
+      (dia < hoje ? '' : fmtInt(d.nPend) + (d.nPend === 1 ? ' carga para carregar' : ' cargas para carregar') + (d.nPend ? ' (' + fmtInt(d.palPend) + palavraPaletes(d.palPend) + ')' : '') + ' · ') +
+      fmtInt(d.nCarr) + (d.nCarr === 1 ? ' já carregada' : ' já carregadas') + (d.nCarr ? ' (' + fmtInt(d.palCarr) + palavraPaletes(d.palCarr) + ')' : '') +
+      (dia === hoje && d.nPend ? ' · as atrasadas entram hoje' : '') + '</p>';
+    if (d.faltas.length) {
+      html += '<div class="estoque-falta-box" role="alert"><b>⚠ Possível falta de estoque ' + (dia === hoje ? 'hoje' : 'neste dia') + '</b>' + d.faltas.map(function(x) {
+        return '<div>' + escapeHtml(x.nome) + ': faltam <strong>' + escapeHtml(qtdUnidade(x.falta, x.u)) + '</strong> (carregar ' + escapeHtml(qtdUnidade(x.pend, x.u)) + ', estoque para o dia ' + escapeHtml(qtdUnidade(Math.max(0, x.dispDia), x.u)) + ')</div>';
+      }).join('') + '</div>';
+    }
+    if (!cdiaUi.fechado) {
+      if (!pend.length && !carr.length) html += '<p class="empty-state">Nenhuma carga ' + (dia < hoje ? 'carregada' : 'para carregar') + ' neste dia.</p>';
+      else {
+        html += '<div class="cdia-lista">' + pend.concat(carr).map(function(x) {
+          var sub = [], est = '';
+          if (x.pend) sub.push(x.nCargas + (x.nCargas === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(x.palPend) + palavraPaletes(x.palPend));
+          if (x.carr) sub.push('já carregado: ' + qtdUnidade(x.carr, x.u));
+          if (x.pend) {
+            if (!x.est) est = '<small>sem controle de estoque</small>';
+            else if (x.falta) est = '<small class="falta">estoque ' + escapeHtml(qtdUnidade(Math.max(0, x.dispDia), x.u)) + ' · falta ' + escapeHtml(qtdUnidade(x.falta, x.u)) + '</small>';
+            else est = '<small class="ok">estoque ' + escapeHtml(qtdUnidade(x.dispDia, x.u)) + ' · sobra ' + escapeHtml(qtdUnidade(x.dispDia - x.pend, x.u)) + '</small>';
+          }
+          return '<div class="cdia-item' + (x.falta ? ' falta' : '') + '"><div class="cdia-nome"><b>' + escapeHtml(x.nome) + '</b><small>' + escapeHtml(sub.join(' · ')) + '</small></div>' +
+            '<div class="cdia-num"><b>' + escapeHtml(x.pend ? qtdUnidade(x.pend, x.u) : qtdUnidade(x.carr, x.u)) + '</b>' + (x.pend ? '<small>a carregar</small>' : '<small>carregado</small>') + est + '</div></div>';
+        }).join('') + '</div>';
+        if (pend.length) html += '<p class="field-hint">Estoque para o dia = estoque de agora (última contagem + produção confirmada − cargas já carregadas) menos o que as cargas pendentes de dias anteriores já reservaram. A produção que ainda vai entrar não está na conta.</p>';
+      }
+    }
+    el.innerHTML = html;
+  }
+  document.getElementById('cargas-dia').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-cdia-dia]');
+    if (b) { cdiaUi.dia = b.getAttribute('data-cdia-dia') === todayIso() ? '' : b.getAttribute('data-cdia-dia'); renderCargasDia(); return; }
+    if (e.target.closest('[data-cdia-ver]')) { cdiaUi.fechado = !cdiaUi.fechado; savePref('levissima-cdia-fechado', cdiaUi.fechado ? '1' : ''); renderCargasDia(); }
+  });
+  document.getElementById('cargas-dia').addEventListener('change', function(e) {
+    if (e.target.id === 'cdia-data') { var v = e.target.value; cdiaUi.dia = v && v !== todayIso() ? v : ''; renderCargasDia(); }
+  });
+
   // ---------- relatório de cargas (03/11/2026) ----------
   // Por dia (ou período) e situação: carregadas, pendentes (aguardando carregamento, com as atrasadas), com ok e sem ok
   // do faturamento. Marcar mais de uma do mesmo grupo soma; um grupo sem nada marcado vale tudo. As carregadas
   // entram pelo dia em que carregaram; as pendentes, pelo dia programado (as atrasadas de dias anteriores entram no
   // dia de hoje). Sai em PDF (A4, várias páginas) ou planilha.
-  var crelUi = { de: '', ate: '', sit: {} };
+  var crelUi = { de: '', ate: '', sit: {}, ordem: 'carregamento' };
   var CREL_SIT = [['carregadas', 'Carregadas'], ['pendentes', 'Pendentes'], ['fatOk', 'Com ok do faturamento'], ['fatSem', 'Sem ok do faturamento']];
+  // ordem da lista (04/11/2026), sempre dentro de cada dia: carregamento (as carregadas pela hora em que carregaram,
+  // depois as pendentes pela hora programada), alfabética (pelo cliente) ou de pedido (ordem em que foram lançados)
+  var CREL_ORDEM = [['carregamento', 'Ordem de carregamento'], ['alfabetica', 'Ordem alfabética (cliente)'], ['pedido', 'Ordem de pedido (lançamento)']];
   function crelDiaDaCarga(c) {
     if (c.status === 'concluida') return isoLocal(c.concluidoEm) || String(c.data || '').slice(0, 10);
     var d = String(c.data || '').slice(0, 10), hoje = todayIso();
     return d && d < hoje ? hoje : d; // atrasada: continua pendente hoje
+  }
+  function crelClientes(c) {
+    var l = (c.clientes || []).slice();
+    if (crelUi.ordem === 'alfabetica') l.sort(function(a, b) { return normNome(a.cliente).localeCompare(normNome(b.cliente), 'pt-BR'); });
+    return l;
+  }
+  function crelChaveCarregamento(c) { return (c.status === 'concluida' ? '0' + String(c.concluidoEm || '') : '1' + String(c.data || '') + (c.hora || '99:99')) + String(c.criadoEm || ''); }
+  function crelComparar(a, b) {
+    var o = crelUi.ordem, r = 0;
+    if (o === 'alfabetica') {
+      var na = crelClientes(a).map(function(x) { return normNome(x.cliente); }).filter(Boolean)[0] || '￿', nb = crelClientes(b).map(function(x) { return normNome(x.cliente); }).filter(Boolean)[0] || '￿';
+      r = na.localeCompare(nb, 'pt-BR');
+    } else if (o === 'pedido') r = String(a.criadoEm || '').localeCompare(String(b.criadoEm || ''));
+    return r || crelChaveCarregamento(a).localeCompare(crelChaveCarregamento(b)) || String(a.id).localeCompare(String(b.id));
   }
   function crelLista() {
     var de = crelUi.de || todayIso(), ate = crelUi.ate && crelUi.ate >= de ? crelUi.ate : de, st = crelUi.sit;
@@ -6830,18 +7030,16 @@
       if (gCarr && !((conc && st.carregadas) || (!conc && st.pendentes))) return false;
       if (gFat && !((c.faturamentoOk && st.fatOk) || (!c.faturamentoOk && st.fatSem))) return false;
       return true;
-    }).sort(function(a, b) {
-      return String(crelDiaDaCarga(a)).localeCompare(String(crelDiaDaCarga(b))) || ((a.status === 'concluida' ? 0 : 1) - (b.status === 'concluida' ? 0 : 1)) ||
-        String(a.status === 'concluida' ? a.concluidoEm || '' : (a.data || '') + (a.hora || '')).localeCompare(String(b.status === 'concluida' ? b.concluidoEm || '' : (b.data || '') + (b.hora || '')));
-    });
+    }).sort(function(a, b) { return String(crelDiaDaCarga(a)).localeCompare(String(crelDiaDaCarga(b))) || crelComparar(a, b); });
   }
   function crelPeriodoTexto() {
     var de = crelUi.de || todayIso(), ate = crelUi.ate && crelUi.ate > de ? crelUi.ate : '';
     return ate ? formatDateBR(de) + ' a ' + formatDateBR(ate) : formatDateBR(de);
   }
+  function crelOrdemTexto() { var o = CREL_ORDEM.find(function(x) { return x[0] === crelUi.ordem; }) || CREL_ORDEM[0]; return o[1].replace(/ \(.*\)$/, ''); }
   function crelFiltrosTexto() {
     var l = CREL_SIT.filter(function(x) { return crelUi.sit[x[0]]; }).map(function(x) { return x[1].replace(/ \(.*\)$/, ''); });
-    return l.length ? l.join(' · ') : 'Todas as situações';
+    return (l.length ? l.join(' · ') : 'Todas as situações') + ' · ' + crelOrdemTexto();
   }
   function crelSituacao(c) {
     if (c.status === 'concluida') {
@@ -6861,6 +7059,22 @@
     }); });
     return Object.keys(t).map(function(k) { return k + ' ' + qtdUnidade(t[k].q, t[k].u); }).join(' · ');
   }
+  // descrição completa de um item da carga, para a conferência: produto, quantidade, paletes, chapatex e o que foge do padrão
+  function crelItemTexto(it) {
+    return (it.produtoNome || '—') + ': ' + qtdUnidade(Number(it.quantidade) || 0, it.unidade || '') + ' · ' + fmtInt(it.paletes) + palavraPaletes(it.paletes) + ' · ' + fmtInt(it.chapatex) + ' chapatex';
+  }
+  function crelItemAviso(it) { var a = avisoItem(it); return a ? a.texto : ''; }
+  // total de cada produto nas cargas do relatório (conferência)
+  function crelTotalProdutos(lista) {
+    var t = {}, ordem = [];
+    lista.forEach(function(c) { (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+      var k = it.produtoId || it.produtoNome || '—';
+      if (!t[k]) { t[k] = { nome: it.produtoNome || '—', u: it.unidade || '', q: 0, pal: 0, chx: 0, soltos: 0, cargas: {} }; ordem.push(k); }
+      t[k].q += Number(it.quantidade) || 0; t[k].pal += Number(it.paletes) || 0; t[k].chx += Number(it.chapatex) || 0; t[k].soltos += Number(it.batidos) || 0; t[k].cargas[c.id] = 1;
+    }); }); });
+    return ordem.map(function(k) { var x = t[k]; x.nCargas = Object.keys(x.cargas).length; return x; })
+      .sort(function(a, b) { return normNome(a.nome).localeCompare(normNome(b.nome), 'pt-BR'); });
+  }
   function crelMotorista(c) { return c.retira ? retiraTexto(c) : (c.motorista || 'sem motorista'); }
   function crelTotais(lista) {
     var t = { n: lista.length, pal: 0, chx: 0, carr: 0, pend: 0, atr: 0, fatOk: 0, fatSem: 0 };
@@ -6878,23 +7092,26 @@
         ' · ' + t.fatOk + ' com ok do faturamento · ' + t.fatSem + ' sem ok' : '') + '</div>';
   }
   function abrirRelatorioCargas() {
-    crelUi = { de: todayIso(), ate: '', sit: {} };
+    crelUi = { de: todayIso(), ate: '', sit: {}, ordem: crelUi.ordem || 'carregamento' };
     function corpo() {
       var hoje = todayIso();
-      return '<p class="hint">Escolha o dia (ou um período) e as situações. Nada marcado num grupo = todas. As <b>carregadas</b> entram pelo dia em que carregaram; as <b>pendentes</b>, pelo dia programado (as atrasadas entram no dia de hoje).</p>' +
+      return '<p class="hint">Escolha o dia (ou um período), as situações e a ordem da lista. Nada marcado num grupo = todas. As <b>carregadas</b> entram pelo dia em que carregaram; as <b>pendentes</b>, pelo dia programado (as atrasadas entram no dia de hoje). Cada carga sai com a <b>descrição completa dos produtos</b> por cliente (quantidade, paletes e chapatex), e no alto vai o total de cada produto, para a conferência.</p>' +
         '<div class="crel-dias">' + [[-1, 'Ontem'], [0, 'Hoje'], [1, 'Amanhã']].map(function(x) { var d = addDiasIso(hoje, x[0]); return '<button type="button" class="btn-text' + (crelUi.de === d && !crelUi.ate ? ' ativo' : '') + '" data-ger="crel-dia" data-dia="' + d + '">' + x[1] + '</button>'; }).join('') + '</div>' +
         '<div class="row-2"><label>Dia<input type="date" id="crel-de" value="' + escapeHtml(crelUi.de) + '" /></label>' +
         '<label>Até <span class="opt">(para um período)</span><input type="date" id="crel-ate" value="' + escapeHtml(crelUi.ate) + '" min="' + escapeHtml(crelUi.de) + '" /></label></div>' +
         '<p class="acesso-grupo-t">Situação</p><div class="crel-sit">' + CREL_SIT.map(function(x) {
           return '<label class="check"><input type="checkbox" class="crel-chk" value="' + x[0] + '"' + (crelUi.sit[x[0]] ? ' checked' : '') + ' /> ' + escapeHtml(x[1]) + '</label>'; }).join('') + '</div>' +
+        '<p class="acesso-grupo-t">Ordem da lista</p><div class="crel-ordem" role="radiogroup" aria-label="Ordem da lista">' + CREL_ORDEM.map(function(x) {
+          return '<label class="check"><input type="radio" name="crel-ordem" class="crel-ord" value="' + x[0] + '"' + (crelUi.ordem === x[0] ? ' checked' : '') + ' /> ' + escapeHtml(x[1]) + '</label>'; }).join('') + '</div>' +
         '<div id="crel-resumo">' + crelResumoHtml() + '</div>' +
-        '<div class="crel-botoes"><button type="button" class="btn btn-primary btn-sm" data-ger="crel-pdf">Relatório em PDF</button><button type="button" class="btn btn-secondary btn-sm" data-ger="crel-csv">Baixar planilha</button></div>';
+        '<div class="crel-botoes"><button type="button" class="btn btn-primary btn-sm" data-ger="crel-imprimir">🖨 Imprimir</button><button type="button" class="btn btn-secondary btn-sm" data-ger="crel-pdf">Relatório em PDF</button><button type="button" class="btn btn-secondary btn-sm" data-ger="crel-csv">Baixar planilha</button></div>';
     }
     function ler() {
       crelUi.de = gerVal('crel-de') || todayIso();
       var a = gerVal('crel-ate'); crelUi.ate = a && a > crelUi.de ? a : '';
       crelUi.sit = {};
       document.querySelectorAll('#ger-form-body .crel-chk').forEach(function(c) { if (c.checked) crelUi.sit[c.value] = true; });
+      var o = document.querySelector('#ger-form-body .crel-ord:checked'); crelUi.ordem = o ? o.value : 'carregamento';
     }
     function atualizar() {
       var r = document.getElementById('crel-resumo'); if (r) r.innerHTML = crelResumoHtml();
@@ -6903,7 +7120,7 @@
     }
     gerAbrir({
       titulo: 'Relatório de cargas', html: '<div id="crel-corpo">' + corpo() + '</div>',
-      change: function(el) { if (el.id === 'crel-de' || el.id === 'crel-ate' || el.classList.contains('crel-chk')) { ler(); atualizar(); } },
+      change: function(el) { if (el.id === 'crel-de' || el.id === 'crel-ate' || el.classList.contains('crel-chk') || el.classList.contains('crel-ord')) { ler(); atualizar(); } },
       input: function(el) { if (el.id === 'crel-de' || el.id === 'crel-ate') { ler(); atualizar(); } },
       acao: function(a, b) {
         if (a === 'crel-dia') { ler(); crelUi.de = b.dataset.dia; crelUi.ate = ''; document.getElementById('crel-corpo').innerHTML = corpo(); return; }
@@ -6911,8 +7128,15 @@
         var lista = crelLista();
         if (!lista.length) { gerErro('Nenhuma carga neste dia com essas situações.'); return; }
         if (a === 'crel-csv') { exportarRelatorioCargas(lista); return; }
+        var per = crelPeriodoTexto(), filt = crelFiltrosTexto();
+        if (a === 'crel-imprimir') {
+          // imprime direto, sem baixar o arquivo
+          b.disabled = true; showToast('Preparando a impressão…');
+          renderRelatorioCargas(lista, per, filt).then(function(res) { b.disabled = false; imprimirDocumento(res, 'Relatório de cargas — ' + per); })
+            .catch(function(err) { b.disabled = false; console.error('imprimir relatório', err); gerErro('Não foi possível preparar a impressão. Tente de novo.'); });
+          return;
+        }
         if (a === 'crel-pdf') {
-          var per = crelPeriodoTexto(), filt = crelFiltrosTexto();
           gerFechar();
           openDoc('Relatório de cargas', function() { return renderRelatorioCargas(lista, per, filt); },
             { modo: 'arquivo', numero: '', texto: 'Relatório de cargas — ' + per + ' — ' + filt + '.' });
@@ -6921,36 +7145,42 @@
     });
   }
   document.getElementById('btn-cargas-relatorio').addEventListener('click', abrirRelatorioCargas);
+  // planilha: uma linha por produto de cada cliente (para conferir e somar no Excel)
   function exportarRelatorioCargas(lista) {
     var esc = function(v) { var x = String(v == null ? '' : v); return /[;"\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
-    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Clientes', 'Pedido / NF', 'Destinos', 'Motorista', 'Produtos', 'Paletes', 'Chapatex', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em'].join(';')];
+    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Cliente', 'Pedido / NF', 'Destino', 'Motorista', 'Produto', 'Quantidade', 'Unidade', 'Paletes', 'Chapatex', 'Observação do produto', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em', 'Pedido lançado em'].join(';')];
     lista.forEach(function(c) {
-      var cls = c.clientes || [];
-      linhas.push([formatDateBR(crelDiaDaCarga(c)), formatDateBR(c.data), c.hora || '', cargaCode(c), cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '),
-        cls.map(function(x) { return x.pedidoNf || x.numeroDocumento || ''; }).filter(Boolean).join(', '), cls.map(function(x) { return x.destino || ''; }).filter(Boolean).join(', '),
-        crelMotorista(c), crelProdutos(c), fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), crelSituacao(c).txt, c.concluidoEm ? formatDateTimeBR(c.concluidoEm) : '',
-        c.faturamentoOk ? 'ok' : 'sem ok', c.faturamentoOk ? (nomePessoa(c.faturamentoPor) || c.faturamentoPor || '') : '', c.faturamentoEm ? formatDateTimeBR(c.faturamentoEm) : ''].map(esc).join(';'));
+      var base = [formatDateBR(crelDiaDaCarga(c)), formatDateBR(c.data), c.hora || '', cargaCode(c)];
+      var fim = [crelSituacao(c).txt, c.concluidoEm ? formatDateTimeBR(c.concluidoEm) : '', c.faturamentoOk ? 'ok' : 'sem ok', c.faturamentoOk ? (nomePessoa(c.faturamentoPor) || c.faturamentoPor || '') : '', c.faturamentoEm ? formatDateTimeBR(c.faturamentoEm) : '', c.criadoEm ? formatDateTimeBR(c.criadoEm) : ''];
+      var cls = crelClientes(c), algum = false;
+      cls.forEach(function(cl) {
+        (cl.itens || []).forEach(function(it) {
+          algum = true;
+          linhas.push(base.concat([cl.cliente || '', cl.pedidoNf || cl.numeroDocumento || '', cl.destino || '', crelMotorista(c), it.produtoNome || '', fmtInt(it.quantidade), it.unidade || '', fmtInt(it.paletes), fmtInt(it.chapatex), crelItemAviso(it)], fim).map(esc).join(';'));
+        });
+      });
+      if (!algum) linhas.push(base.concat([cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '), '', '', crelMotorista(c), '', '', '', fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), ''], fim).map(esc).join(';'));
     });
     var nome = 'relatorio-cargas-' + (crelUi.de || todayIso()) + (crelUi.ate ? '-a-' + crelUi.ate : '') + '.csv';
-    triggerDownload(new Blob(['\ufeff' + linhas.join('\n')], { type: 'text/csv;charset=utf-8' }), nome);
-    showToast('Planilha das cargas baixada (' + lista.length + (lista.length === 1 ? ' carga).' : ' cargas).'));
+    triggerDownload(new Blob(['﻿' + linhas.join('\n')], { type: 'text/csv;charset=utf-8' }), nome);
+    showToast('Planilha das cargas baixada (' + lista.length + (lista.length === 1 ? ' carga' : ' cargas') + ', um produto por linha).');
   }
-  // PDF em A4 (1240 × 1754), quantas páginas precisar; a prévia junta as páginas em tamanho menor
+  // PDF em A4 (1240 × 1754), quantas páginas precisar; a prévia junta as páginas em tamanho menor.
+  // Cada carga: hora, carga e motorista, e cada cliente com todos os produtos (quantidade, paletes, chapatex e o
+  // que foge do padrão); no alto, o total de cada produto (04/11/2026).
   function renderRelatorioCargas(lista, periodo, filtros) {
     return loadReceiptFonts().then(function() {
-      var W = RW, H = RBASE_H, L = RM, R = W - RM, CW = R - L, pages = [], cv, ctx, y;
-      var cHora = L, cCarga = L + 128, cCli = L + 268, cMot = R - 470, cPal = R - 268, cSit = R - 250, cFat = R;
+      var W = RW, H = RBASE_H, L = RM, R = W - RM, CW = R - L, pages = [], cv, ctx, y, FIM = H - 120;
+      var cHora = L, cMain = L + 132, cPal = R - 268, cSit = R - 246, cFat = R, wMain = cPal - 40 - cMain;
       var emitido = 'Emitido em ' + formatDateTimeBR(new Date().toISOString()) + ' por ' + (quemSessao() || '—');
       function cabTabela() {
         txt(ctx, 'Hora*', cHora, y, rFont(500, 20, R_DISP), RC.muted, 'left');
-        txt(ctx, 'Carga', cCarga, y, rFont(500, 20, R_DISP), RC.muted, 'left');
-        txt(ctx, 'Clientes, destinos e produtos', cCli, y, rFont(500, 20, R_DISP), RC.muted, 'left');
-        txt(ctx, 'Motorista', cMot, y, rFont(500, 20, R_DISP), RC.muted, 'left');
+        txt(ctx, 'Carga, motorista, clientes e produtos', cMain, y, rFont(500, 20, R_DISP), RC.muted, 'left');
         txt(ctx, 'Plt', cPal, y, rFont(500, 20, R_DISP), RC.muted, 'right');
         txt(ctx, 'Situação · faturamento', cFat, y, rFont(500, 20, R_DISP), RC.muted, 'right');
         y += 12; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2); y += 34;
       }
-      function novaPagina() {
+      function novaPagina(semTabela) {
         cv = document.createElement('canvas'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
         ctx.fillStyle = RC.white; ctx.fillRect(0, 0, W, H);
         faixaMarca(ctx, W, 16);
@@ -6960,56 +7190,97 @@
           txt(ctx, 'LEVÍSSIMA · Carregamentos', L + (lw ? lw + 12 : 0), 172, rFont(500, 26, R_DISP), RC.muted, 'left');
           txt(ctx, / a /.test(periodo) ? 'Período' : 'Dia', R, 100, rFont(500, 22, R_DISP), RC.muted, 'right');
           txtFit(ctx, periodo, R, 138, 600, R_DISP, 32, 20, 420, RC.ink, 'right');
-          txtFit(ctx, filtros, R, 172, 500, R_DISP, 22, 16, 460, RC.muted, 'right');
+          txtFit(ctx, filtros, R, 172, 500, R_DISP, 22, 14, 520, RC.muted, 'right');
           ctx.fillStyle = RC.ink; ctx.fillRect(L, 196, CW, 4);
           y = 236;
-          var t = crelTotais(lista);
-          ctx.fillStyle = RC.tint; ctx.fillRect(L, y, CW, 104); ctx.fillStyle = RC.teal; ctx.fillRect(L, y, 8, 104);
-          txt(ctx, fmtInt(t.n) + (t.n === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(t.pal) + palavraPaletes(t.pal) + ' · ' + fmtInt(t.chx) + ' chapatex', L + 30, y + 44, rFont(700, 30, R_DISP), RC.ink, 'left');
-          txt(ctx, t.carr + (t.carr === 1 ? ' carregada' : ' carregadas') + ' · ' + t.pend + (t.pend === 1 ? ' pendente' : ' pendentes') + (t.atr ? ' (' + t.atr + (t.atr === 1 ? ' atrasada' : ' atrasadas') + ')' : '') +
-            ' · ' + t.fatOk + ' com ok do faturamento · ' + t.fatSem + ' sem ok', L + 30, y + 82, rFont(500, 22, R_DISP), RC.muted, 'left');
-          y += 104 + 40;
         } else {
           txt(ctx, 'Relatório de cargas · ' + periodo, L, 80, rFont(700, 26, R_DISP), RC.ink, 'left');
-          txt(ctx, filtros, R, 80, rFont(500, 20, R_DISP), RC.muted, 'right');
+          txtFit(ctx, filtros, R, 80, 500, R_DISP, 20, 13, 520, RC.muted, 'right');
           ctx.fillStyle = RC.ink; ctx.fillRect(L, 96, CW, 3);
           y = 136;
         }
         pages.push(cv);
-        cabTabela();
+        if (!semTabela) cabTabela();
       }
-      novaPagina();
+      novaPagina(true);
+      // resumo e total de cada produto (conferência)
+      var t = crelTotais(lista);
+      ctx.fillStyle = RC.tint; ctx.fillRect(L, y, CW, 104); ctx.fillStyle = RC.teal; ctx.fillRect(L, y, 8, 104);
+      txt(ctx, fmtInt(t.n) + (t.n === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(t.pal) + palavraPaletes(t.pal) + ' · ' + fmtInt(t.chx) + ' chapatex', L + 30, y + 44, rFont(700, 30, R_DISP), RC.ink, 'left');
+      txt(ctx, t.carr + (t.carr === 1 ? ' carregada' : ' carregadas') + ' · ' + t.pend + (t.pend === 1 ? ' pendente' : ' pendentes') + (t.atr ? ' (' + t.atr + (t.atr === 1 ? ' atrasada' : ' atrasadas') + ')' : '') +
+        ' · ' + t.fatOk + ' com ok do faturamento · ' + t.fatSem + ' sem ok', L + 30, y + 82, rFont(500, 22, R_DISP), RC.muted, 'left');
+      y += 104 + 46;
+      var tp = crelTotalProdutos(lista);
+      if (tp.length) {
+        txt(ctx, 'Total de produtos (conferência)', L, y, rFont(700, 24, R_DISP), RC.teal, 'left'); y += 34;
+        var cQ = L + 760, cP = L + 900, cX = R;
+        txt(ctx, 'Produto', L, y, rFont(500, 18, R_DISP), RC.muted, 'left'); txt(ctx, 'Quantidade', cQ, y, rFont(500, 18, R_DISP), RC.muted, 'right');
+        txt(ctx, 'Paletes', cP, y, rFont(500, 18, R_DISP), RC.muted, 'right'); txt(ctx, 'Chapatex', cX, y, rFont(500, 18, R_DISP), RC.muted, 'right');
+        y += 10; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2); y += 30;
+        tp.forEach(function(p) {
+          if (y > FIM - 40) { novaPagina(true); txt(ctx, 'Total de produtos (continuação)', L, y, rFont(700, 22, R_DISP), RC.teal, 'left'); y += 40; }
+          txtFit(ctx, p.nome + ' · ' + p.nCargas + (p.nCargas === 1 ? ' carga' : ' cargas') + (p.soltos ? ' · ' + fmtInt(p.soltos) + ' soltos' : ''), L, y, 600, R_DISP, 21, 15, cQ - L - 200, RC.ink, 'left');
+          txt(ctx, qtdUnidade(p.q, p.u), cQ, y, rFont(700, 21, R_DISP), RC.ink, 'right');
+          txt(ctx, fmtInt(p.pal), cP, y, rFont(600, 21, R_MONO), RC.wood, 'right');
+          txt(ctx, fmtInt(p.chx), cX, y, rFont(600, 21, R_MONO), RC.ink, 'right');
+          y += 10; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 1); y += 26;
+        });
+        y += 22;
+      }
+      if (y > FIM - 200) novaPagina(); else cabTabela();
       var diaAtual = '';
       lista.forEach(function(c) {
-        var dia = crelDiaDaCarga(c), cls = c.clientes || [], i;
-        ctx.font = rFont(600, 22, R_DISP);
-        var cl = wrapLines(ctx, cls.map(function(x) { return (x.cliente || '—') + (x.destino ? ' (' + x.destino + ')' : '') + (x.pedidoNf ? ' · ' + x.pedidoNf : ''); }).join('; ') || 'sem clientes', cMot - cCli - 20, 3);
-        ctx.font = rFont(400, 18, R_DISP);
-        var pr = wrapLines(ctx, crelProdutos(c) || '—', cMot - cCli - 20, 2);
-        ctx.font = rFont(500, 20, R_DISP);
-        var ml = wrapLines(ctx, crelMotorista(c), cPal - cMot - 50, 2);
+        var dia = crelDiaDaCarga(c), i;
+        // linhas da coluna principal: carga e motorista; cada cliente; cada produto (com o que foge do padrão)
+        var linhas = [];
+        ctx.font = rFont(500, 17, R_DISP);
+        wrapLines(ctx, 'Carga ' + cargaCode(c) + ' · ' + (c.retira ? 'Retirada: ' : 'Motorista: ') + crelMotorista(c) + (crelUi.ordem === 'pedido' && c.criadoEm ? ' · pedido lançado em ' + formatDateTimeBR(c.criadoEm) : ''), wMain, 2)
+          .forEach(function(l) { linhas.push({ t: l, f: rFont(500, 17, R_DISP), cor: RC.muted, h: 24 }); });
+        var cls = crelClientes(c);
+        if (!cls.length) linhas.push({ t: 'sem clientes', f: rFont(600, 21, R_DISP), cor: RC.ink, h: 28 });
+        cls.forEach(function(cl) {
+          ctx.font = rFont(700, 21, R_DISP);
+          wrapLines(ctx, (cl.cliente || '—') + (cl.destino ? ' (' + cl.destino + ')' : '') + (cl.pedidoNf ? ' · ' + cl.pedidoNf : ''), wMain, 2)
+            .forEach(function(l, k) { linhas.push({ t: l, f: rFont(700, 21, R_DISP), cor: RC.ink, h: 28, cli: k === 0 }); });
+          (cl.itens || []).forEach(function(it) {
+            ctx.font = rFont(500, 19, R_DISP);
+            wrapLines(ctx, '• ' + crelItemTexto(it), wMain - 16, 3).forEach(function(l, k) { linhas.push({ t: l, f: rFont(500, 19, R_DISP), cor: RC.ink, h: 25, x: k ? 30 : 12 }); });
+            var av = crelItemAviso(it);
+            if (av) { ctx.font = rFont(400, 16, R_DISP); wrapLines(ctx, av, wMain - 30, 3).forEach(function(l) { linhas.push({ t: l, f: rFont(400, 16, R_DISP), cor: RC.laranjaTexto, h: 22, x: 30 }); }); }
+          });
+        });
         var okFalta = pedidoRep(c) && !liberadaCarga(c) ? faltaOkTexto(c) : '';
-        // altura da linha: do primeiro texto até a linha de baixo
-        var altura = Math.max(cl.length * 28 + pr.length * 24, okFalta ? 76 : 52, ml.length * 26) - 14;
-        if (y + altura + (dia !== diaAtual ? 44 : 0) > H - 120) { novaPagina(); diaAtual = ''; }
+        var altura = Math.max(linhas.reduce(function(a, l) { return a + l.h; }, 0), okFalta ? 80 : 56) + 2;
+        var cabDia = dia !== diaAtual ? 44 : 0;
+        if (y + cabDia + Math.min(altura, FIM - 136 - 80) > FIM) { novaPagina(); diaAtual = ''; cabDia = 44; }
         if (dia !== diaAtual) {
           diaAtual = dia;
           var doDia = lista.filter(function(x) { return crelDiaDaCarga(x) === dia; });
           txt(ctx, formatDateBR(dia) + ' · ' + doDia.length + (doDia.length === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(doDia.reduce(function(a, x) { return a + (Number(x.totalPaletes) || 0); }, 0)) + ' paletes', L, y, rFont(700, 24, R_DISP), RC.teal, 'left');
           y += 44;
         }
+        var y0 = y;
         txt(ctx, c.status === 'concluida' && c.concluidoEm ? horaDe(c.concluidoEm) : (c.hora || '—'), cHora, y, rFont(600, 22, R_MONO), RC.ink, 'left');
         if (c.data && c.data !== dia) txt(ctx, 'prog. ' + formatDateBR(c.data).slice(0, 5), cHora, y + 26, rFont(500, 16, R_DISP), c.status === 'concluida' ? RC.muted : RC.laranjaTexto, 'left');
-        txt(ctx, cargaCode(c), cCarga, y, rFont(500, 18, R_MONO), RC.muted, 'left');
-        for (i = 0; i < cl.length; i++) txt(ctx, cl[i], cCli, y + i * 28, rFont(600, 22, R_DISP), RC.ink, 'left');
-        for (i = 0; i < pr.length; i++) txt(ctx, pr[i], cCli, y + cl.length * 28 + i * 24 - 4, rFont(400, 18, R_DISP), RC.muted, 'left');
-        for (i = 0; i < ml.length; i++) txt(ctx, ml[i], cMot, y + i * 26, rFont(500, 20, R_DISP), RC.ink, 'left');
         txt(ctx, fmtInt(c.totalPaletes), cPal, y, rFont(600, 22, R_MONO), RC.wood, 'right');
+        txt(ctx, fmtInt(c.totalChapatex) + ' chx', cPal, y + 24, rFont(500, 15, R_DISP), RC.muted, 'right');
         var si = crelSituacao(c);
         txtFit(ctx, si.txt, cFat, y, 700, R_DISP, 20, 14, R - cSit, si.cor === 'verde' ? RC.verdeTexto : si.cor === 'laranja' ? RC.laranjaTexto : RC.ink, 'right');
         txtFit(ctx, (c.faturamentoOk ? '✓ ' : '') + crelFaturamento(c), cFat, y + 28, 500, R_DISP, 18, 13, R - cSit, c.faturamentoOk ? RC.verdeTexto : RC.laranjaTexto, 'right');
         if (okFalta) txtFit(ctx, okFalta, cFat, y + 52, 500, R_DISP, 16, 12, R - cSit, RC.laranjaTexto, 'right');
-        y += altura;
+        // coluna principal, linha por linha (uma carga muito grande continua na página seguinte)
+        var yy = y, quebrou = false;
+        for (i = 0; i < linhas.length; i++) {
+          var ln = linhas[i];
+          if (yy + ln.h > FIM + 20) {
+            novaPagina(); diaAtual = dia; quebrou = true;
+            txt(ctx, 'Carga ' + cargaCode(c) + ' (continuação)', cMain, y, rFont(600, 18, R_DISP), RC.muted, 'left');
+            yy = y + 30;
+          }
+          txt(ctx, ln.t, cMain + (ln.x || 0), yy, ln.f, ln.cor, 'left');
+          yy += ln.h;
+        }
+        y = (quebrou ? yy : Math.max(yy, y0 + altura)) - 14;
         ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 1);
         y += 38;
       });
@@ -7026,10 +7297,12 @@
       var pc = pv.getContext('2d'); pc.fillStyle = '#E5E3EA'; pc.fillRect(0, 0, pv.width, pv.height);
       for (var j = 0; j < n; j++) pc.drawImage(pages[j], 0, Math.round(j * (H * k + 12)), Math.round(W * k), Math.round(H * k));
       var pngDataUrl = pv.toDataURL('image/png');
-      var pdfBytes = buildPdfFromJpegs(pages.map(function(p) { return { jpeg: dataUrlToBytes(p.toDataURL('image/jpeg', 0.9)), w: W, h: H }; }));
+      var jpegs = pages.map(function(p) { return p.toDataURL('image/jpeg', 0.9); });
+      var pdfBytes = buildPdfFromJpegs(jpegs.map(function(u) { return { jpeg: dataUrlToBytes(u), w: W, h: H }; }));
       return {
         baseName: 'relatorio-cargas-' + (crelUi.de || todayIso()).replace(/-/g, '') + (crelUi.ate ? '-a-' + crelUi.ate.replace(/-/g, '') : ''),
         pngDataUrl: pngDataUrl,
+        paginas: jpegs, a4: true,
         pngBlob: new Blob([dataUrlToBytes(pngDataUrl)], { type: 'image/png' }),
         pdfBlob: new Blob([pdfBytes], { type: 'application/pdf' })
       };
@@ -7201,6 +7474,7 @@
   ['f-produto-upp', 'f-produto-upf'].forEach(function(id) { document.getElementById(id).addEventListener('input', updateProdutoFormRegra); });
   ['f-produto-unidade', 'f-produto-tipo'].forEach(function(id) { document.getElementById(id).addEventListener('change', updateProdutoFormRegra); });
   function openProdutoForm(p) {
+    if (telaPausadaReabre('produto-sheet-overlay')) return;
     editingProdutoId = p ? p.id : null;
     document.getElementById('produto-sheet-title').textContent = p ? 'Editar produto' : 'Adicionar produto';
     document.getElementById('f-produto-nome').value = p ? p.nome : '';
@@ -9005,6 +9279,7 @@
   }
   document.getElementById('cg-retira').addEventListener('change', function(e) { cgRetiraAplicar(e.target.checked, !!session && session.role === 'representante'); });
   function openCargaForm(prefillCarga) {
+    if (telaPausadaReabre('carga-sheet-overlay')) return;
     editingCargaId = prefillCarga ? prefillCarga.id : null;
     var rep = !!session && session.role === 'representante';
     document.getElementById('carga-sheet-title').textContent = rep ? (editingCargaId ? 'Editar pedido' : 'Novo pedido') : (editingCargaId ? 'Editar carga' : 'Nova carga');
@@ -9370,6 +9645,7 @@
       : 'Carreta (ou carga com mais de 18 paletes): a tabela não tem o valor de carreta deste destino. Pergunte o preço ao motorista ou à transportadora e informe antes de concluir.';
   }
   function openCargaConclude(carga) {
+    if (telaPausadaReabre('carga-conclude-overlay')) return;
     if (!liberadaCarga(carga)) { showToast(faltaOkTexto(carga) + ': pedido da força de vendas ainda não liberado para carregar.'); return; }
     if (!duplaOk(carga) && !liberacaoDe(carga)) {
       // quem pode liberar (senha mestre ou a permissão "liberar_carga") escolhe: liberar sem leitura ou fazer a conferência
@@ -9648,6 +9924,7 @@
   }
 
   function openForm(modeName, prefill) {
+    if (telaPausadaReabre('sheet-overlay')) return;
     formMode = modeName;
     var p = prefill || {};
     editingRecord = p.id ? p : null;
@@ -10602,6 +10879,7 @@
   function setDocButtonsDisabled(flag) {
     document.getElementById('btn-doc-pdf').disabled = !!flag;
     document.getElementById('btn-doc-img').disabled = !!flag;
+    document.getElementById('btn-doc-imprimir').disabled = !!flag;
     // o texto para o motorista não depende do documento: o botão já fica disponível
     document.getElementById('btn-doc-whats').disabled = !!flag && !(docWhats && docWhats.modo === 'texto');
   }
@@ -10727,6 +11005,7 @@
   document.getElementById('btn-doc-pdf').addEventListener('click', function() { emitFile('pdf'); });
   document.getElementById('btn-doc-img').addEventListener('click', function() { emitFile('img'); });
   document.getElementById('btn-doc-whats').addEventListener('click', enviarDocWhatsApp);
+  document.getElementById('btn-doc-imprimir').addEventListener('click', function() { if (docState) imprimirDocumento(docState, document.getElementById('doc-overlay-title').textContent); });
 
   // ---------- telas de acesso (configurar senha / login) e troca de visão ----------
   function showLockState(state) {
@@ -10771,6 +11050,7 @@
   }
   function logout() {
     hideToast();
+    telasPausadasLimpar();
     bloquearPesquisas();
     pesqSenhaLogin = null;
     pararRastreio();
@@ -11896,6 +12176,7 @@
     av.classList.toggle('hidden', !ed);
   }
   function abrirFreteForm(cargaId) {
+    if (telaPausadaReabre('frete-sheet-overlay')) return;
     if (!podeEditarFretes()) return;
     var c = cargas.find(function(x) { return x.id === cargaId; });
     if (!c) return;
@@ -12780,6 +13061,7 @@
 
   var estoqueTipo = 'entrada';
   function openEstoqueForm(tipo) {
+    if (telaPausadaReabre('estoque-sheet-overlay')) return;
     estoqueTipo = tipo;
     var contagem = tipo === 'contagem';
     document.getElementById('estoque-sheet-title').textContent = contagem ? 'Contagem do estoque' : 'Entrada de produção';
@@ -13669,6 +13951,7 @@
     return Object.keys(s).sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }).map(function(v) { return '<option value="' + escapeHtml(v) + '">'; }).join('');
   }
   function abrirRhSheet(id) {
+    if (telaPausadaReabre('rh-sheet-overlay')) return;
     var f = id ? rhDados.funcionarios.find(function(x) { return x.id === id; }) : null;
     rhUi.editando = id || null; rhUi.confirmar = null;
     var r = f ? rhInfo(f) : {};
@@ -19200,7 +19483,8 @@
     var e = ocEu();
     return !!(e && (e.m.compras || aprovaCompraFinal(e.m)));
   }
-  var OC_ASSINATURAS = ['pedido', 'coord', 'cotacao', 'aprovacao', 'compra', 'recebimento', 'fechamento'];
+  // edicao (quem alterou o pedido antes da cotação) e cancelamento também contam: quem fez continua vendo (0043)
+  var OC_ASSINATURAS = ['pedido', 'coord', 'cotacao', 'aprovacao', 'compra', 'recebimento', 'fechamento', 'edicao', 'cancelamento'];
   function ocAssinei(o) {
     var r = minhaRef(), e = ocEu();
     return OC_ASSINATURAS.some(function(k) { var a = o[k]; return !!a && typeof a === 'object' && ((r && a.ref === r) || (e && a.id && a.id === e.m.id)); });
@@ -19216,6 +19500,19 @@
     return o.status === 'pedido' || (!!o.setor && normNome(o.setor) === normNome(e.m.area));
   }
   function ocVisiveis() { return ordensCompra.filter(ocVeCompleta); }
+  // Alterar o pedido (04/11/2026): só enquanto espera a autorização do coordenador ou supervisor (antes da cotação).
+  // Altera quem pediu, quem autoriza o setor, compras, diretoria e a senha mestre. Depois da cotação, o banco também
+  // recusa a mudança nos itens (0043).
+  function ocPodeEditar(o) {
+    if (!o || o.status !== 'pedido' || !session) return false;
+    if (session.role === 'admin' || ocVeTudo() || ocMinha(o)) return true;
+    var e = ocEu();
+    return !!(e && autorizaAntesCotacao(e.m) && coordenaSetor(e.m, o.setor));
+  }
+  // Cancelar (com motivo): no pedido, na cotação e na aprovação da diretoria; depois de aprovada para comprar, não.
+  var OC_CANCELA = ['pedido', 'cotacao', 'justificativa', 'aprovacao'];
+  function ocPodeCancelar(o) { return !!o && OC_CANCELA.indexOf(o.status) >= 0 && ocVeCompleta(o); }
+  function ocQuemSou() { var e = ocEu(); return e ? { nome: e.m.nome, id: e.m.id || '' } : { nome: quemSessao() || 'Escritório', id: '' }; }
   function ocPodeComprar(m) { return !!m && (!!m.compras || aprovaCompraFinal(m)); }
   // gestão: coordenador, supervisor, gerente, diretoria (ou área Gestão) — o pedido dela já sai autorizado
   function ocDaGestao(m) { return !!m && (!!m.gestao || autorizaAntesCotacao(m) || aprovaCompraFinal(m) || normNome(m.area) === normNome('Gestão')); }
@@ -19283,19 +19580,16 @@
   function ocCardHtml(o) {
     var st = OC_STATUS[o.status] || { txt: o.status, cls: '' }, id = escapeHtml(o.id), v = ocValorEscolhido(o), hoje = todayIso();
     var acoes = [];
-    if (ocUi.confirmar === 'cancelar:' + o.id) {
-      acoes.push('<span>Cancelar a OC nº ' + escapeHtml(String(o.numero)) + '?</span><button class="btn-text danger" data-oc="cancelar-ok" data-id="' + id + '">Cancelar OC</button><button class="btn-text" data-oc="nao">Manter</button>');
-    } else {
-      if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Autorizar ou reprovar</b> (coordenador ou supervisor)</button>');
-      if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (compras)</button>');
-      if (o.status === 'justificativa') acoes.push('<button class="btn-text" data-oc="just" data-id="' + id + '"><b>Ok da justificativa</b> (Nicolas)</button>');
-      if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (diretoria: Nicolas ou André)</button>');
-      if (o.status === 'compra') acoes.push('<button class="btn-text" data-oc="comprado" data-id="' + id + '"><b>Marcar como comprado</b> (' + escapeHtml(ocNomesCompra()) + ')</button>');
-      if (o.status === 'comprado') acoes.push('<button class="btn-text" data-oc="recebido" data-id="' + id + '"><b>Dar o recebido</b> (qualquer pessoa)</button>');
-      if (o.status === 'recebido') acoes.push('<button class="btn-text" data-oc="entrega" data-id="' + id + '"><b>Confirmar entrega</b> (quem pediu' + (o.pedido && o.pedido.nome ? ': ' + escapeHtml(o.pedido.nome) : '') + ')</button>');
-      acoes.push('<button class="btn-text" data-oc="ver" data-id="' + id + '">Detalhes</button>');
-      if (o.status === 'pedido' || o.status === 'cotacao') acoes.push('<button class="btn-text danger" data-oc="cancelar" data-id="' + id + '">Cancelar</button>');
-    }
+    if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Autorizar ou reprovar</b> (coordenador ou supervisor)</button>');
+    if (ocPodeEditar(o)) acoes.push('<button class="btn-text" data-oc="editar" data-id="' + id + '">Editar pedido</button>');
+    if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (compras)</button>');
+    if (o.status === 'justificativa') acoes.push('<button class="btn-text" data-oc="just" data-id="' + id + '"><b>Ok da justificativa</b> (Nicolas)</button>');
+    if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (diretoria: Nicolas ou André)</button>');
+    if (o.status === 'compra') acoes.push('<button class="btn-text" data-oc="comprado" data-id="' + id + '"><b>Marcar como comprado</b> (' + escapeHtml(ocNomesCompra()) + ')</button>');
+    if (o.status === 'comprado') acoes.push('<button class="btn-text" data-oc="recebido" data-id="' + id + '"><b>Dar o recebido</b> (qualquer pessoa)</button>');
+    if (o.status === 'recebido') acoes.push('<button class="btn-text" data-oc="entrega" data-id="' + id + '"><b>Confirmar entrega</b> (quem pediu' + (o.pedido && o.pedido.nome ? ': ' + escapeHtml(o.pedido.nome) : '') + ')</button>');
+    acoes.push('<button class="btn-text" data-oc="ver" data-id="' + id + '">Detalhes</button>');
+    if (ocPodeCancelar(o)) acoes.push('<button class="btn-text danger" data-oc="cancelar" data-id="' + id + '">Cancelar</button>');
     var atraso = o.compra && o.compra.previsao && o.status === 'comprado' && o.compra.previsao < hoje;
     return '<div class="frete-item est-' + st.cls + ' oc-card">' +
       '<div class="frete-top"><span><b>OC nº ' + escapeHtml(String(o.numero || '—')) + '</b> · ' + escapeHtml(o.setor || '—') + (o.urgencia === 'urgente' ? ' <span class="chip-est falta" style="margin-left:4px">Urgente</span>' : '') + '</span>' +
@@ -19304,10 +19598,12 @@
         return '<li><b>' + escapeHtml(fmtMp(it.quantidade, it.unidade)) + '</b> ' + escapeHtml(it.descricao) + (it.aplicacao ? '<small>aplicar em: ' + escapeHtml(it.aplicacao) + '</small>' : '') + ocItemExtrasHtml(it) + '</li>';
       }).join('') + '</ul>' +
       '<div class="frete-sub">Pedido por ' + escapeHtml(ocQuem(o.pedido)) + '</div>' +
+      (o.edicao ? '<div class="frete-sub">Alterado por ' + escapeHtml(ocQuem(o.edicao)) + ((o.edicoes || []).length > 1 ? ' (' + o.edicoes.length + ' alterações)' : '') + ', antes da cotação</div>' : '') +
+      (o.status === 'pedido' ? '<div class="frete-sub">Dá para editar até ir para a cotação.</div>' : '') +
       (v ? '<div class="frete-sub">Cotação escolhida: <b>' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + '</b> · ' + escapeHtml(v.fornecedor) + (v.prazo ? ' · entrega em ' + v.prazo + (Number(v.prazo) === 1 ? ' dia' : ' dias') : '') + '</div>' : '') +
       (o.compra ? '<div class="frete-sub' + (atraso ? ' alerta' : '') + '">' + ocCompraTexto(o, atraso) + '</div>' : '') +
       (o.recebimento ? '<div class="frete-sub' + (o.recebimento.conforme ? '' : ' alerta') + '">' + escapeHtml(ocRecebidoTexto(o)) + '</div>' : '') +
-      ((o.status === 'reprovada' || o.status === 'cancelada') ? '<div class="frete-sub alerta">' + escapeHtml(o.status === 'cancelada' ? 'Cancelada' + (o.canceladaPor ? ' por ' + o.canceladaPor : '') : 'Reprovada por ' + ((o.aprovacao && o.aprovacao.decisao === 'reprovado') ? o.aprovacao.nome + ': ' + (o.aprovacao.obs || '') : (o.coord ? o.coord.nome + ': ' + (o.coord.obs || '') : ''))) + '</div>' : '') +
+      ((o.status === 'reprovada' || o.status === 'cancelada') ? '<div class="frete-sub alerta">' + escapeHtml(o.status === 'cancelada' ? ocCanceladaTexto(o) : 'Reprovada por ' + ((o.aprovacao && o.aprovacao.decisao === 'reprovado') ? o.aprovacao.nome + ': ' + (o.aprovacao.obs || '') : (o.coord ? o.coord.nome + ': ' + (o.coord.obs || '') : ''))) + '</div>' : '') +
       '<div class="frete-acoes">' + acoes.join('') + '</div></div>';
   }
   function ocCompraTexto(o, atraso) {
@@ -19351,7 +19647,7 @@
     var filtro = OC_FILTROS.find(function(f) { return f.k === ocUi.filtro; }) || OC_FILTROS[0];
     var base = filtro.todos ? ordensCompra : vis;
     var lista = base.filter(filtro.f).sort(function(a, b) { return (b.urgencia === 'urgente') - (a.urgencia === 'urgente') || (Number(b.numero) || 0) - (Number(a.numero) || 0); });
-    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · autorização do <b>coordenador ou supervisor</b> → 3 · <b>cotação</b> (compras) → 4 · aprovação da <b>diretoria (Nicolas ou André)</b> → 5 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 6 · <b>recebido</b> (qualquer pessoa, identificada) → 7 · <b>entregue</b> a quem pediu, que confirma.</p>' +
+    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · autorização do <b>coordenador ou supervisor</b> → 3 · <b>cotação</b> (compras) → 4 · aprovação da <b>diretoria (Nicolas ou André)</b> → 5 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 6 · <b>recebido</b> (qualquer pessoa, identificada) → 7 · <b>entregue</b> a quem pediu, que confirma. Até ir para a cotação, o pedido pode ser <b>editado</b>; dá para <b>cancelar</b> no pedido, na cotação ou na aprovação da diretoria.</p>' +
       (tudo ? '' : '<p class="hint oc-so-meus">Você vê os pedidos que fez ou em que assinou' + (ocEu() && autorizaAntesCotacao(ocEu().m) ? ' e os do seu setor' : '') + '. Em <b>Para receber</b> estão as compras que vão chegar: qualquer pessoa dá o recebido.</p>') +
       '<div class="est-cards">' +
         supCard('c-entrada', tudo ? 'Pedido de compra' : 'Meus pedidos', fmtInt(ocAbertas().length), (ocAbertas().length === 1 ? 'ordem aberta' : 'ordens abertas') + (urg ? ' · <b>' + urg + (urg === 1 ? ' urgente' : ' urgentes') + '</b>' : ''), '<button type="button" class="btn btn-primary btn-sm" data-oc="novo">+ Novo pedido</button>') +
@@ -19402,23 +19698,60 @@
     else if (a === 'comprado' && o) abrirCompradoOc(o);
     else if (a === 'recebido' && o) abrirRecebidoOc(o);
     else if (a === 'entrega' && o) abrirEntregaOc(o);
-    else if (a === 'cancelar' && o) { ocUi.confirmar = 'cancelar:' + o.id; renderCompras(); }
-    else if (a === 'cancelar-ok' && o) { ocUi.confirmar = null; ocGravar(o.id, { status: 'cancelada', canceladaEm: new Date().toISOString(), canceladaPor: quemSessao(), atualizadoEm: new Date().toISOString() }).then(function() { showToast('OC cancelada.'); }).catch(falhaOc); }
+    else if (a === 'editar' && o) abrirPedidoCompra(o);
+    else if (a === 'cancelar' && o) abrirCancelarOc(o);
   });
+  function ocCanceladaTexto(o) {
+    var c = o.cancelamento || {}, et = c.etapa && OC_STATUS[c.etapa] ? ' (' + ({ pedido: 'no pedido', cotacao: 'na cotação', justificativa: 'na cotação', aprovacao: 'na aprovação da diretoria' }[c.etapa] || '') + ')' : '';
+    return 'Cancelada' + (c.nome || o.canceladaPor ? ' por ' + (c.nome || o.canceladaPor) : '') + et + (c.motivo ? ': ' + c.motivo : '');
+  }
+  // cancelar com motivo (04/11/2026): no pedido, na cotação ou na aprovação da diretoria
+  function abrirCancelarOc(o) {
+    if (!ocPodeCancelar(o)) { showToast('Esta OC já foi aprovada para comprar: não dá mais para cancelar.'); return; }
+    gerAbrir({
+      titulo: 'Cancelar · OC nº ' + o.numero, botao: 'Cancelar a OC',
+      html: ocResumoHtml(o) +
+        '<p class="hint">A OC sai das abertas e fica em <b>Reprovadas e canceladas</b>, com o seu nome, a data e o motivo. Dá para cancelar no pedido, na cotação ou na aprovação da diretoria.</p>' +
+        '<label>Motivo do cancelamento <span class="req">*</span><input type="text" id="oc-canc-motivo" maxlength="200" autocomplete="off" placeholder="Ex.: o item não é mais necessário" /></label>',
+      salvar: function() {
+        var motivo = gerVal('oc-canc-motivo').replace(/\s+/g, ' ');
+        if (!motivo) return gerErro('Escreva o motivo do cancelamento.');
+        var f = ocPorId(o.id);
+        if (!ocPodeCancelar(f)) return gerErro('Esta OC já foi aprovada para comprar (ou já foi encerrada): não dá mais para cancelar.');
+        var quem = ocQuemSou(), agora = new Date().toISOString();
+        var canc = { nome: quem.nome, id: quem.id, ref: minhaRef(), em: agora, motivo: motivo, etapa: f.status };
+        var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
+        ocGravar(f.id, { status: 'cancelada', canceladaEm: agora, canceladaPor: quem.nome, cancelamento: canc, atualizadoEm: agora })
+          .then(function() { btn.disabled = false; gerFechar(); showToast('OC nº ' + f.numero + ' cancelada.'); })
+          .catch(function(err) { btn.disabled = false; falhaOc(err); });
+        return false;
+      }
+    });
+  }
 
   // ----- 1. pedido -----
-  function abrirPedidoCompra() {
+  // edita: a OC que está sendo alterada (só enquanto espera a autorização, antes da cotação; 04/11/2026)
+  function abrirPedidoCompra(edita) {
     var nomes = membrosConvidaveis().map(function(m) { return m.nome; }), eu = ocEu();
+    if (edita && !ocPodeEditar(edita)) { showToast(edita.status === 'pedido' ? 'Só quem pediu, quem autoriza o setor, compras ou a diretoria alteram o pedido.' : 'Esta OC já foi para a cotação: não dá mais para alterar.'); return; }
+    var itensIni = edita ? (edita.itens || []).map(function(it) {
+      return { descricao: it.descricao || '', quantidade: it.quantidade != null ? String(it.quantidade) : '', unidade: it.unidade || 'un', aplicacao: it.aplicacao || '', link: it.link || '', fotos: (it.fotos || []).slice(0, 3), fotosArq: [], ia: it.ia || null };
+    }) : [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }];
+    if (!itensIni.length) itensIni.push({ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' });
+    var setorIni = edita ? edita.setor || '' : '', setores = SETORES_SALA.slice();
+    if (setorIni && setores.indexOf(setorIni) < 0) setores.push(setorIni);
     gerAbrir({
-      titulo: 'Novo pedido de compra', botao: 'Enviar pedido', itens: [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }],
-      html: '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para um coordenador ou supervisor autorizar' + (eu && ocDaGestao(eu.m) ? ' — <b>como você é da gestão, ele já sai autorizado e vai direto para a cotação</b>' : '; pedido de quem é da gestão já vai direto para a cotação') + '.</p>' +
-        '<div class="row-2"><label>Setor <span class="req">*</span><select id="oc-setor"><option value="">— escolha —</option>' + SETORES_SALA.map(function(x) { return '<option>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
-        '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente">Urgente</option></select></label></div>' +
+      titulo: edita ? 'Editar pedido · OC nº ' + edita.numero : 'Novo pedido de compra', botao: edita ? 'Salvar alterações' : 'Enviar pedido', itens: itensIni, ocEdita: edita ? edita.id : '',
+      html: (edita ? '<p class="hint">Dá para alterar enquanto o pedido espera a autorização do coordenador ou supervisor. <b>Depois que for para a cotação, não dá mais para alterar.</b> A alteração fica registrada com o seu nome e o que estava antes.</p>'
+          : '<p class="hint">Descreva o que precisa, a quantidade e onde vai aplicar. O pedido vai para um coordenador ou supervisor autorizar' + (eu && ocDaGestao(eu.m) ? ' — <b>como você é da gestão, ele já sai autorizado e vai direto para a cotação</b>' : '; pedido de quem é da gestão já vai direto para a cotação') + '. Até ir para a cotação, dá para editar.</p>') +
+        '<div class="row-2"><label>Setor <span class="req">*</span><select id="oc-setor"><option value="">— escolha —</option>' + setores.map(function(x) { return '<option' + (x === setorIni ? ' selected' : '') + '>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente"' + (edita && edita.urgencia === 'urgente' ? ' selected' : '') + '>Urgente</option></select></label></div>' +
         '<div id="oc-itens"></div><button type="button" class="btn-text" data-ger="it-add">+ outro item</button>' +
-        '<label>Justificativa ou observação <span class="opt">(opcional)</span><input type="text" id="oc-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<label>Seu nome <span class="req">*</span><input type="text" id="oc-nome" maxlength="60" list="oc-nomes" autocomplete="off"' + (eu ? ' value="' + escapeHtml(eu.m.nome) + '" readonly' : '') + ' /></label>' +
+        '<label>Justificativa ou observação <span class="opt">(opcional)</span><input type="text" id="oc-obs" maxlength="200" autocomplete="off" value="' + escapeHtml(edita ? edita.obs || '' : '') + '" /></label>' +
+        (edita ? '<p class="field-hint">Pedido por ' + escapeHtml(ocQuem(edita.pedido)) + '.</p>'
+          : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-nome" maxlength="60" list="oc-nomes" autocomplete="off"' + (eu ? ' value="' + escapeHtml(eu.m.nome) + '" readonly' : '') + ' /></label>' +
         '<datalist id="oc-nomes">' + nomes.map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
-        '<p class="field-hint">' + (eu ? 'O pedido sai no seu nome (você entrou com o seu acesso). Você acompanha o pedido até a entrega; além de você, só quem assina as etapas vê.' : 'Quem está em Cadastros › Equipe assina com a senha de 4 números; os outros, só com o nome.') + '</p>',
+        '<p class="field-hint">' + (eu ? 'O pedido sai no seu nome (você entrou com o seu acesso). Você acompanha o pedido até a entrega; além de você, só quem assina as etapas vê.' : 'Quem está em Cadastros › Equipe assina com a senha de 4 números; os outros, só com o nome.') + '</p>'),
       depois: ocRenderItens,
       input: function(t) { if (t.closest('#oc-itens')) ocLerItens(); },
       change: function(t) {
@@ -19442,12 +19775,14 @@
           var lk = String(it.link || '').trim();
           if (lk && !/^https?:\/\//i.test(lk)) lk = 'https://' + lk;
           if (lk && !linkSeguro(lk)) { erro = 'O link de “' + d + '” não parece um endereço da internet (ex.: https://loja.com.br/produto).'; return; }
-          var novoIt = { descricao: d, quantidade: arred3(q), unidade: it.unidade || 'un', aplicacao: ap, link: lk, fotosArq: (it.fotosArq || []).slice(0, 3) };
+          var novoIt = { descricao: d, quantidade: arred3(q), unidade: it.unidade || 'un', aplicacao: ap, link: lk, fotosArq: (it.fotosArq || []).slice(0, Math.max(0, 3 - (it.fotos || []).length)) };
+          if (edita) novoIt.fotos = (it.fotos || []).slice(0, 3);
           if (it.ia && it.ia.nome) novoIt.ia = it.ia;
           itens.push(novoIt);
         });
         if (erro) return gerErro(erro);
         if (!itens.length) return gerErro('Informe ao menos um item: descrição, quantidade e onde vai aplicar.');
+        if (edita) return ocSalvarEdicao(edita.id, setor, document.getElementById('oc-urg').value, itens, gerVal('oc-obs'));
         if (!nome) return gerErro('Informe o seu nome.');
         var dados = { status: 'pedido', setor: setor, urgencia: document.getElementById('oc-urg').value, itens: itens, obs: gerVal('oc-obs') };
         var membro = eu ? eu.m : membroPorNome(nome);
@@ -19477,6 +19812,33 @@
       }
     });
   }
+  // grava a alteração do pedido (só se ele ainda espera a autorização); guarda quem alterou, quando e o que estava antes
+  function ocSalvarEdicao(id, setor, urgencia, itens, obs) {
+    var f = ocPorId(id);
+    if (!f || f.status !== 'pedido') return gerErro('Esta OC já foi para a cotação (ou foi encerrada): não dá mais para alterar.');
+    var quem = ocQuemSou(), agora = new Date().toISOString();
+    var antes = [ocItensTexto(f), f.setor !== setor ? 'setor ' + (f.setor || '—') : '', (f.urgencia || 'normal') !== urgencia ? 'urgência ' + (f.urgencia || 'normal') : '', (f.obs || '') !== obs ? 'obs.: ' + (f.obs || '—') : ''].filter(Boolean).join(' · ');
+    var reg = { nome: quem.nome, id: quem.id, ref: minhaRef(), em: agora };
+    var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
+    var envio = Promise.resolve();
+    itens.forEach(function(it, ix) {
+      var arqs = it.fotosArq || []; delete it.fotosArq; it.fotos = it.fotos || [];
+      if (!sbCliente || mode !== 'db') return;
+      arqs.forEach(function(fl, k) { envio = envio.then(function() { return enviarFotoBucket(BUCKET_COMPRAS, 'compras/' + id + '/' + (ix + 1) + '-e' + (k + 1) + '-' + uid(), fl).then(function(c) { it.fotos.push(c); }); }); });
+    });
+    envio.then(function() {
+      var g = ocPorId(id);
+      if (!g || g.status !== 'pedido') { var e = new Error('cotacao'); e.codigo = 'cotacao'; throw e; }
+      return ocGravar(id, { setor: setor, urgencia: urgencia, itens: itens, obs: obs, edicao: reg, edicoes: (g.edicoes || []).concat([Object.assign({ antes: antes.slice(0, 600) }, reg)]).slice(-20), atualizadoEm: agora });
+    }).then(function() { btn.disabled = false; gerFechar(); showToast('OC nº ' + f.numero + ' alterada.'); })
+      .catch(function(err) {
+        btn.disabled = false;
+        if (err && (err.codigo === 'cotacao' || /oc_travada/.test(String(err.message || '')))) gerErro('Esta OC acabou de ir para a cotação: não dá mais para alterar.');
+        else if (err && err.codigo === 'grande') gerErro('Foto grande demais (máximo 8 MB).');
+        else falhaOc(err);
+      });
+    return false;
+  }
   function ocRenderItens() {
     var box = document.getElementById('oc-itens');
     if (!box || !ger) return;
@@ -19489,13 +19851,15 @@
         (mode === 'db' && sbCliente ? '<div class="oc-ia"><label class="btn btn-secondary btn-sm">📷 Não sabe o nome? Foto para a IA<input type="file" accept="image/*" capture="environment" class="oc-ia-foto hidden" data-i="' + i + '" /></label>' +
           '<span class="oc-ia-res" id="oc-ia-res-' + i + '">' + (it.ia && it.ia.nome ? 'IA: ' + escapeHtml(it.ia.nome) + (it.ia.confianca ? ' (confiança ' + escapeHtml(it.ia.confianca) + ')' : '') : '') + '</span></div>' : '') +
         '<label>Link do produto na internet <span class="opt">(opcional: sugestão de onde comprar)</span><input type="text" class="oc-link" data-i="' + i + '" maxlength="500" value="' + escapeHtml(it.link || '') + '" placeholder="https://…" autocomplete="off" inputmode="url" /></label>' +
-        (mode === 'db' && sbCliente ? '<p class="acesso-titulo">Fotos do produto <span class="opt">(opcional, até 3)</span></p><div class="foto-campo foto-campo-mini" data-oc-fotos="' + i + '"></div>' : '') + '</div>';
+        ((it.fotos || []).length ? '<p class="acesso-titulo">Fotos já enviadas</p><span class="oc-fotos">' + it.fotos.map(function(f, k) { return '<img data-cn-foto="' + escapeHtml(f) + '" data-cn-bucket="compras" alt="Foto ' + (k + 1) + '" />'; }).join('') + '</span>' : '') +
+        (mode === 'db' && sbCliente && (it.fotos || []).length < 3 ? '<p class="acesso-titulo">' + ((it.fotos || []).length ? 'Mais fotos' : 'Fotos do produto') + ' <span class="opt">(opcional, até ' + (3 - (it.fotos || []).length) + ')</span></p><div class="foto-campo foto-campo-mini" data-oc-fotos="' + i + '"></div>' : '') + '</div>';
     }).join('');
     Array.prototype.forEach.call(box.querySelectorAll('[data-oc-fotos]'), function(el) {
       var it = ger.itens[Number(el.dataset.ocFotos)];
       if (!it) return;
-      var inst = campoFotos(el, { max: 3, rotulo: 'Foto', inicial: it.fotosArq || [], mudou: function() { it.fotosArq = inst.arquivos().map(function(a) { return a.file; }); } });
+      var inst = campoFotos(el, { max: Math.max(1, 3 - (it.fotos || []).length), rotulo: 'Foto', inicial: it.fotosArq || [], mudou: function() { it.fotosArq = inst.arquivos().map(function(a) { return a.file; }); } });
     });
+    if (box.querySelector('img[data-cn-foto]')) carregarFotosCanhoto(box);
   }
   // fotos em outros buckets privados (compras): mesma redução das outras fotos
   function enviarFotoBucket(bucket, caminhoSemExt, file) {
@@ -19558,8 +19922,12 @@
         '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovado">' + (coord ? 'Autorizar' : 'Aprovar') + (v && !coord ? ' (' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + ')' : '') + '</button>' +
         (coord ? '' : '<button type="button" class="btn btn-secondary" data-ger="recotar">Pedir nova cotação</button>') +
         '<button type="button" class="btn btn-secondary oc-reprovar" data-ger="reprovado">Reprovar</button></div>' +
+        ((coord && ocPodeEditar(o)) || ocPodeCancelar(o) ? '<div class="frete-acoes oc-dec-extra">' + (coord && ocPodeEditar(o) ? '<button type="button" class="btn-text" data-ger="oc-editar">Editar o pedido antes de autorizar</button>' : '') +
+          (ocPodeCancelar(o) ? '<button type="button" class="btn-text danger" data-ger="oc-cancelar">Cancelar a OC</button>' : '') + '</div>' : '') +
         '<p class="field-hint">' + (coord ? 'Assina um coordenador, supervisor ou gerente (cargo em Cadastros › Equipe).' : 'Assina a diretoria: Nicolas ou André (cargo diretor em Cadastros › Equipe).') + '</p>',
       acao: function(dec) {
+        if (dec === 'oc-editar') { abrirPedidoCompra(ocPorId(o.id) || o); return; }
+        if (dec === 'oc-cancelar') { abrirCancelarOc(ocPorId(o.id) || o); return; }
         var obs = gerVal('oc-dec-obs');
         if ((dec === 'reprovado' || dec === 'recotar') && !obs) { gerErro(dec === 'recotar' ? 'Escreva o que precisa mudar na cotação.' : 'Escreva o motivo da reprovação.'); return; }
         var onde = coord ? [autorizaAntesCotacao, 'é coordenador, supervisor ou gerente', 'Ninguém com cargo de coordenador, supervisor ou gerente (e senha) em Cadastros › Equipe.', function(m) { return coordenaSetor(m, o.setor) ? null : m.nome + ' não autoriza compras de ' + o.setor + '.'; }]
@@ -19795,7 +20163,15 @@
           linha('4 · Diretoria', o.aprovacao) +
           linha('5 · Comprado', c, c ? [c.fornecedor ? ' · ' + c.fornecedor : '', c.valor ? ' ' + fmtBRL(Number(c.valor) || 0) : '', c.pedidoFornecedor ? ' · nº ' + c.pedidoFornecedor : '', c.previsao ? ' · previsão ' + formatDateBR(c.previsao) : ''].join('') : '') +
           linha('6 · Recebido', r, r ? (r.nf ? ' · NF ' + r.nf : '') + (r.conforme ? ' · conferido' : ' · com diferença') : '') +
-          linha('7 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>'
+          linha('7 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>' +
+        ((o.edicoes || []).length ? '<h3 class="q-plano-t">Alterações antes da cotação</h3><ol class="oc-tl">' + o.edicoes.map(function(e) {
+          return '<li class="ok"><b>Alterado</b><span>' + escapeHtml(ocQuem(e) + (e.antes ? ' · antes: ' + e.antes : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
+        (o.status === 'cancelada' ? '<p class="sup-aviso">' + escapeHtml(ocCanceladaTexto(o) + (o.canceladaEm ? ' — ' + formatDateTimeBR(o.canceladaEm) : '')) + '</p>' : '') +
+        (ocPodeEditar(o) || ocPodeCancelar(o) ? '<div class="frete-acoes">' + (ocPodeEditar(o) ? '<button type="button" class="btn-text" data-ger="oc-editar">Editar pedido</button>' : '') + (ocPodeCancelar(o) ? '<button type="button" class="btn-text danger" data-ger="oc-cancelar">Cancelar a OC</button>' : '') + '</div>' : ''),
+      acao: function(a) {
+        if (a === 'oc-editar') abrirPedidoCompra(ocPorId(o.id) || o);
+        else if (a === 'oc-cancelar') abrirCancelarOc(ocPorId(o.id) || o);
+      }
     });
   }
 
@@ -21064,6 +21440,7 @@
   function autorizaAntesCotacao(m) { return !!m && (!!m.coordenador || ['coordenador', 'supervisor', 'gerente'].indexOf(m.cargo) >= 0); }
   function aprovaCompraFinal(m) { return !!m && (!!m.aprovaCompra || m.cargo === 'diretor'); }
   function openEquipeForm(kind, m) {
+    if (telaPausadaReabre('equipe-sheet-overlay')) return;
     editingMembroId = m ? m.id : null;
     document.getElementById('equipe-sheet-title').textContent = kind === 'add' ? 'Adicionar pessoa' : 'Editar — ' + (m.nomeCompleto || m.nome);
     document.getElementById('equipe-nome-label').classList.remove('hidden');
@@ -25602,6 +25979,7 @@
     if (!session) return;
     guardarMotivoSaida('tempo');
     hideToast();
+    telasPausadasLimpar();
     bloquearPesquisas();
     pesqSenhaLogin = null;
     closeMapa();
@@ -25687,6 +26065,117 @@
   setInterval(function() { if (session && sessaoParada()) sairPorTempo(); else if (travaParada()) travaAbrir(); }, 15000);
   document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible' && session) { if (sessaoParada()) sairPorTempo(); else if (travaParada()) travaAbrir(); } });
   window.addEventListener('focus', function() { if (session) { if (sessaoParada()) sairPorTempo(); else if (travaParada()) travaAbrir(); } });
+
+  // ---------- minimizar uma tela dentro do app (pedido de 04/11/2026) ----------
+  // O botão "–" no alto dos formulários pausa a tela: ela some, o que já foi preenchido fica guardado e aparece a
+  // barra "Pausadas" embaixo; um toque volta para a tela como estava. As folhas gerais (relatórios, compras, PCP,
+  // matéria-prima, qualidade…) podem ter várias telas pausadas ao mesmo tempo; as outras (carga, conclusão do
+  // carregamento, produto, frete, estoque, RH, equipe, pedido de paletes), uma de cada: abrir outra igual volta para a
+  // pausada. Fica só na memória do aparelho: sair da sessão descarta (se o celular fechar o app com uma carga
+  // pausada, ela volta pelo "Continuar de onde parou", como antes).
+  var TELA_PAUSA = {
+    'ger-sheet-overlay': { corpo: 'ger-form-body', titulo: 'ger-sheet-title', botao: 'btn-ger-submit', erro: 'ger-form-error', ler: function() { return ger; }, por: function(v) { ger = v; } },
+    'mp-sheet-overlay': { corpo: 'mp-form-body', titulo: 'mp-sheet-title', botao: 'btn-mp-submit', erro: 'mp-form-error', ler: function() { return mpSheet; }, por: function(v) { mpSheet = v; } },
+    'q-sheet-overlay': { corpo: 'q-form-body', titulo: 'q-sheet-title', botao: 'btn-q-submit', erro: 'q-form-error', ler: function() { return qUi.sheet; }, por: function(v) { qUi.sheet = v; } },
+    'carga-sheet-overlay': {}, 'carga-conclude-overlay': {}, 'produto-sheet-overlay': {}, 'frete-sheet-overlay': {},
+    'estoque-sheet-overlay': {}, 'rh-sheet-overlay': {}, 'equipe-sheet-overlay': {}, 'sheet-overlay': {}
+  };
+  var telasPausadas = [];
+  function telaTitulo(ov) { var h = ov.querySelector('.sheet-header h2'); return (h && h.textContent.replace(/\s+/g, ' ').trim()) || 'Tela'; }
+  function telaPausar(ovId, quieto) {
+    var ov = document.getElementById(ovId), cfg = TELA_PAUSA[ovId];
+    if (!ov || !cfg || ov.classList.contains('hidden') || ov.classList.contains('tela-min')) return false;
+    var item = { id: uid(), ov: ovId, titulo: telaTitulo(ov), em: Date.now() }, sh = ov.querySelector('.sheet');
+    if (cfg.corpo) {
+      var btn = document.getElementById(cfg.botao), err = document.getElementById(cfg.erro), corpo = document.getElementById(cfg.corpo);
+      if (btn && btn.disabled && !btn.classList.contains('hidden')) { if (!quieto) showToast('Espere terminar de salvar para pausar a tela.'); return false; }
+      var frag = document.createDocumentFragment();
+      while (corpo.firstChild) frag.appendChild(corpo.firstChild);
+      item.guardado = { cfg: cfg.ler(), frag: frag, botao: btn ? btn.textContent : '', botaoOculto: !!btn && btn.classList.contains('hidden'),
+        erro: err ? err.textContent : '', erroOculto: !err || err.classList.contains('hidden'), rolagem: sh ? sh.scrollTop : 0 };
+      ov.classList.add('hidden');
+      cfg.por(null);
+    } else {
+      item.rolagem = sh ? sh.scrollTop : 0;
+      ov.classList.add('tela-min');
+    }
+    telasPausadas.push(item);
+    renderTelasPausadas();
+    if (!quieto) showToast('Tela pausada: ' + item.titulo + '. Para voltar, toque nela na barra de baixo.');
+    return true;
+  }
+  function telaVoltar(id) {
+    var item = telasPausadas.find(function(t) { return t.id === id; });
+    if (!item) return;
+    var ov = document.getElementById(item.ov), cfg = TELA_PAUSA[item.ov];
+    if (!ov || !cfg) return;
+    // a tela que estiver aberta é pausada no lugar (troca de uma para a outra; fica uma tela aberta por vez)
+    var presa = Object.keys(TELA_PAUSA).some(function(k) {
+      var o2 = document.getElementById(k);
+      return o2 && !o2.classList.contains('hidden') && !o2.classList.contains('tela-min') && !telaPausar(k, true);
+    });
+    if (presa) { showToast('Espere terminar de salvar a tela aberta.'); return; }
+    if (item.guardado) {
+      var g = item.guardado, corpo = document.getElementById(cfg.corpo), btn = document.getElementById(cfg.botao), err = document.getElementById(cfg.erro);
+      corpo.innerHTML = ''; corpo.appendChild(g.frag);
+      document.getElementById(cfg.titulo).textContent = item.titulo;
+      if (btn) { btn.textContent = g.botao; btn.classList.toggle('hidden', g.botaoOculto); btn.disabled = false; }
+      if (err) { err.textContent = g.erro; err.classList.toggle('hidden', g.erroOculto); }
+      cfg.por(g.cfg);
+      ov.classList.remove('hidden');
+      var sh = ov.querySelector('.sheet'); if (sh) sh.scrollTop = g.rolagem || 0;
+    } else {
+      ov.classList.remove('tela-min');
+      var sh2 = ov.querySelector('.sheet'); if (sh2) sh2.scrollTop = item.rolagem || 0;
+    }
+    telasPausadas = telasPausadas.filter(function(t) { return t !== item; });
+    renderTelasPausadas();
+  }
+  // abrir de novo uma tela (de um tipo só) que está pausada: volta para a pausada, para não perder o que foi preenchido
+  function telaPausadaReabre(ovId) {
+    var t = telasPausadas.find(function(x) { return x.ov === ovId && !x.guardado; });
+    if (!t) return false;
+    telaVoltar(t.id);
+    showToast('Esta tela estava pausada: termine ou feche antes de abrir outra igual.');
+    return true;
+  }
+  function telasPausadasLimpar() {
+    telasPausadas.forEach(function(t) { if (!t.guardado) { var ov = document.getElementById(t.ov); if (ov) ov.classList.remove('tela-min'); } });
+    telasPausadas = [];
+    renderTelasPausadas();
+  }
+  function renderTelasPausadas() {
+    var el = document.getElementById('telas-pausadas');
+    if (!el) return;
+    var n = telasPausadas.length;
+    el.classList.toggle('hidden', !n);
+    document.body.classList.toggle('com-pausadas', n > 0);
+    el.innerHTML = n ? '<span class="tp-t">⏸ ' + (n === 1 ? 'Pausada' : n + ' pausadas') + '</span>' + telasPausadas.map(function(t) {
+      return '<button type="button" class="tp-chip" data-tela-voltar="' + escapeHtml(t.id) + '" aria-label="Voltar para ' + escapeHtml(t.titulo) + '"><span>' + escapeHtml(t.titulo) + '</span><small>pausada às ' + escapeHtml(horaDe(new Date(t.em).toISOString())) + '</small></button>';
+    }).join('') : '';
+  }
+  Object.keys(TELA_PAUSA).forEach(function(id) {
+    var ov = document.getElementById(id), h = ov && ov.querySelector('.sheet-header');
+    if (!h || h.querySelector('.tela-min-btn')) return;
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'icon-btn tela-min-btn'; b.setAttribute('data-tela-pausar', id);
+    b.setAttribute('aria-label', 'Minimizar'); b.title = 'Minimizar: pausa esta tela para voltar depois'; b.textContent = '–';
+    h.insertBefore(b, h.querySelector('.icon-btn'));
+    // tela pausada que é fechada por outro caminho (salvou, saiu): some da barra
+    if (!TELA_PAUSA[id].corpo && window.MutationObserver) new MutationObserver(function() {
+      if (ov.classList.contains('hidden') && ov.classList.contains('tela-min')) {
+        ov.classList.remove('tela-min');
+        telasPausadas = telasPausadas.filter(function(t) { return t.ov !== id || !!t.guardado; });
+        renderTelasPausadas();
+      }
+    }).observe(ov, { attributes: true, attributeFilter: ['class'] });
+  });
+  document.addEventListener('click', function(e) {
+    var p = e.target.closest('[data-tela-pausar]');
+    if (p) { telaPausar(p.getAttribute('data-tela-pausar')); return; }
+    var v = e.target.closest('[data-tela-voltar]');
+    if (v) telaVoltar(v.getAttribute('data-tela-voltar'));
+  });
 
   // ---------- voltar na mesma tela (pedido de 23/10/2026) ----------
   // Minimizar o app e voltar: tudo continua como estava, sem senha. Fechar o app pede a senha de novo. Se o celular
