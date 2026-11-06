@@ -240,6 +240,13 @@
   .pt-bat-l { display: inline-flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 0.8125rem; font-weight: 600; cursor: pointer; color: inherit; line-height: 1.3; }
   .pt-bat-l input { width: 18px; height: 18px; margin: 0; flex: none; }
   .pt-bat-obs { font-weight: 400; opacity: 0.85; }
+  /* troca no carregamento (05/11/2026) */
+  .pt-trc { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; flex: 1 1 260px; min-width: 0; }
+  .pt-trc input[type=number] { width: 84px; min-height: 34px; padding: 4px 8px; margin: 0; }
+  .pt-trc input[type=text] { flex: 1 1 180px; min-width: 0; min-height: 34px; padding: 4px 8px; margin: 0; }
+  .cgc-alteracao { margin: 10px 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--laranja); background: rgba(255, 106, 19, 0.08); }
+  .cgc-alt-t { margin: 0 0 8px; font-size: 0.875rem; overflow-wrap: anywhere; }
+  .mkt-na-carga { margin: 10px 0; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); border-left: 4px solid var(--roxo); background: var(--card); font-size: 0.875rem; display: flex; flex-direction: column; gap: 4px; overflow-wrap: anywhere; }
   .pt-bat-q { display: inline-flex; align-items: center; gap: 6px; }
   .pt-bat-q input { width: 84px; min-height: 34px; padding: 4px 8px; margin: 0; }
   .pt-bat-ro { color: var(--muted); }
@@ -1056,6 +1063,91 @@
   .troca-fotos img { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid var(--line); cursor: zoom-in; background: rgba(var(--wood-rgb), 0.06); }
   .troca-destino { margin: 0; padding: 8px; border-radius: 8px; background: rgba(67, 176, 42, 0.1); display: flex; flex-direction: column; gap: 2px; }
   .troca-acoes { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+  /* material de marketing (05/11/2026) */
+  .mkt-card.mkt-entrada { border-left-color: var(--azul); }
+  .mkt-card.mkt-ajuste { border-left-color: var(--muted); }
+  .mkt-card.cancelado { opacity: 0.7; border-left-color: var(--line); }
+  .mkt-card.cancelado .troca-itens { text-decoration: line-through; }
+  .mkt-modo { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .mkt-modo .est-loc { flex: 1 1 200px; justify-content: center; text-align: center; min-height: 44px; }
+  .mkt-saldo { display: flex; flex-direction: column; }
+  .mkt-linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "nome num" "st st"; gap: 4px 12px; padding: 10px 0 10px 10px; border-top: 1px solid var(--line); border-left: 4px solid transparent; }
+  .mkt-linha.st-falta { border-left-color: var(--danger); }
+  .mkt-linha.st-aviso { border-left-color: var(--laranja); }
+  .mkt-linha-nome { grid-area: nome; min-width: 0; overflow-wrap: anywhere; }
+  .mkt-linha-nome .driver-sub { display: block; }
+  .mkt-linha-num { grid-area: num; text-align: right; }
+  .mkt-linha-num .driver-sub { display: block; }
+  .mkt-saldo-n { font-family: var(--font-display); font-weight: 800; font-size: 1.375rem; }
+  .mkt-linha-st { grid-area: st; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+  @media (min-width: 760px) { .mkt-linha { grid-template-columns: minmax(0, 1fr) 150px 260px; grid-template-areas: "nome num st"; align-items: center; } .mkt-linha-st { justify-content: flex-end; } }
+  .mkt-pessoa { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--roxo); border-radius: 10px; padding: 10px 12px; margin: 0 0 10px; }
+  .mkt-pessoas { display: flex; flex-direction: column; }
+  .mkt-pessoa-lin { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 10px 4px; border: none; border-top: 1px solid var(--line); background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; min-height: 48px; }
+  .mkt-pessoa-lin:hover { background: rgba(112, 32, 130, 0.06); }
+  .mkt-pessoa-n { min-width: 0; overflow-wrap: anywhere; }
+  .mkt-pessoa-n .driver-sub, .mkt-pessoa-q .driver-sub { display: block; }
+  .mkt-pessoa-q { text-align: right; flex: 0 0 auto; }
+  .mkt-cont { display: grid; grid-template-columns: minmax(0, 1fr) 96px; align-items: center; gap: 4px 10px; font-size: 0.875rem; }
+  .mkt-cont input { margin: 0; }
+  /* painel de vendas (05/11/2026) */
+  .vd-filtros { display: flex; flex-direction: column; gap: 10px; margin: 0 0 14px; }
+  .vd-filtros .est-loc-chips { margin: 0; }
+  .vd-datas, .vd-selects { display: flex; flex-wrap: wrap; gap: 8px 12px; }
+  .vd-datas label, .vd-selects label { flex: 1 1 140px; min-width: 0; margin: 0; font-size: 0.8125rem; }
+  .vd-periodo { margin: 0; font-family: var(--font-display); font-weight: 700; }
+  .vd-periodo .driver-sub { font-weight: 400; }
+  .vd-kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 0 0 14px; }
+  .vd-kpi { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .vd-kpi-r { font-size: 0.75rem; color: var(--muted); }
+  .vd-kpi-v { font-family: var(--font-display); font-size: 1.375rem; line-height: 1.2; overflow-wrap: anywhere; }
+  .vd-kpi-s { font-size: 0.75rem; color: var(--muted); }
+  .vd-var { font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 700; white-space: nowrap; color: var(--muted); }
+  .vd-var.sobe { color: var(--ok, #2D7A1C); }
+  .vd-var.cai { color: var(--danger); }
+  .vd-sec { margin: 0 0 16px; }
+  .vd-sec-t { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin: 0 0 8px; }
+  .vd-sec-t .section-title { margin: 0; }
+  .vd-graf { width: 100%; height: 280px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+  .vd-simples { display: flex; align-items: stretch; gap: 3px; height: calc(100% - 28px); padding-bottom: 4px; overflow-x: auto; }
+  .vd-simples-c { flex: 1 0 18px; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 18px; }
+  .vd-simples-b { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 1px; }
+  .vd-simples-b i { display: block; flex: 1; max-width: 16px; border-radius: 3px 3px 0 0; min-height: 1px; }
+  .vd-simples-c span { font-size: 0.625rem; color: var(--muted); white-space: nowrap; }
+  .vd-legenda { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+  .vd-cor { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; flex: 0 0 auto; }
+  .vd-areas { margin: 4px 0 12px; }
+  .vd-abc { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.8125rem; margin: 0 0 10px; }
+  .vd-abc-tag { display: inline-block; font-size: 0.6875rem; font-weight: 800; padding: 0 6px; border-radius: 6px; color: #fff; vertical-align: middle; }
+  .vd-abc-tag.vd-abc-A, .vd-abc .vd-abc-A b { background: var(--verde); color: #fff; padding: 0 6px; border-radius: 6px; }
+  .vd-abc-tag.vd-abc-B, .vd-abc .vd-abc-B b { background: var(--azul); color: #fff; padding: 0 6px; border-radius: 6px; }
+  .vd-abc-tag.vd-abc-C, .vd-abc .vd-abc-C b { background: var(--muted); color: #fff; padding: 0 6px; border-radius: 6px; }
+  .vd-rank { display: flex; flex-direction: column; }
+  .vd-rank-cab, .vd-rank-l { display: grid; grid-template-columns: minmax(0, 1fr) 96px 84px 72px; gap: 8px; align-items: center; }
+  .vd-rank-cab { font-size: 0.75rem; color: var(--muted); padding: 0 0 6px; border-bottom: 1px solid var(--line); }
+  .vd-rank-cab span:not(:first-child) { text-align: right; }
+  .vd-rank-l { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .vd-rank-n { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .vd-ck { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; min-height: 40px; margin: 0; }
+  .vd-ck input { width: 18px; height: 18px; margin: 0; }
+  .vd-cli { background: none; border: none; padding: 4px 0; text-align: left; font: inherit; color: inherit; cursor: pointer; min-width: 0; overflow-wrap: anywhere; font-weight: 600; flex: 1 1 auto; }
+  span.vd-cli { cursor: default; }
+  .vd-cli .driver-sub { display: block; font-weight: 400; }
+  .vd-pos { font-family: var(--font-mono); color: var(--muted); font-weight: 400; }
+  .vd-rank-v { text-align: right; font-family: var(--font-mono); font-size: 0.8125rem; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+  .vd-rank-l > .vd-var { text-align: right; }
+  .vd-barra { display: block; width: 100%; height: 6px; border-radius: 3px; background: rgba(var(--wood-rgb), 0.08); overflow: hidden; }
+  .vd-barra i { display: block; height: 100%; background: var(--verde); border-radius: 3px; }
+  .vd-barra.ant i { background: var(--roxo); opacity: 0.5; }
+  .vd-antes-m { display: none; font-size: 0.6875rem; color: var(--muted); white-space: nowrap; }
+  @media (max-width: 520px) { .vd-rank-cab, .vd-rank-l { grid-template-columns: minmax(0, 1fr) 84px 64px; } .vd-rank-cab span:nth-child(3), .vd-rank-l > span:nth-child(3) { display: none; } .vd-antes-m { display: block; } }
+  .vd-detalhe .vd-sec-t { justify-content: flex-start; }
+  .vd-prods { display: flex; flex-direction: column; }
+  .vd-prod-l { display: grid; grid-template-columns: minmax(0, 1fr) 110px 44px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+  .vd-carga-l { padding: 6px 0; border-bottom: 1px solid var(--line); }
+  .vd-escolha { display: flex; flex-wrap: wrap; gap: 6px; }
+  .vd-alerta-l { display: flex; flex-direction: column; align-items: flex-start; width: 100%; text-align: left; background: none; border: none; border-bottom: 1px solid var(--line); padding: 8px 2px; font: inherit; color: inherit; cursor: pointer; min-height: 44px; }
+  .vd-rodape { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 12px 0 0; }
   .org-pessoal { display: flex; flex-direction: column; align-items: center; gap: 0; margin: 6px 0 16px; }
   .org-nivel { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
   .org-liga { width: 2px; height: 18px; background: var(--line); }
@@ -1777,8 +1869,10 @@
       <button type="button" class="seg-btn" data-tab="salas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="1.5"/><path d="M12 15v5M8 20h8M7 9h6"/></svg></span><span class="tab-txt">Salas</span></button>
       <button type="button" class="seg-btn" data-tab="qualidade"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8.5-7 10-4-1.5-7-5-7-10V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="tab-txt">Qualidade</span></button>
       <button type="button" class="seg-btn" data-tab="metas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><span class="tab-txt">Metas</span></button>
+      <button type="button" class="seg-btn" data-tab="vendas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 16l4-5 3 3 5-7"/><path d="M15 7h3v3"/></svg></span><span class="tab-txt">Vendas</span></button>
       <button type="button" class="seg-btn" data-tab="compras"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 4h2.2l2.5 11.3a1 1 0 0 0 1 .7h9.6a1 1 0 0 0 1-.8L20.5 8H6"/></svg></span><span class="tab-txt">Compras</span></button>
       <button type="button" class="seg-btn" data-tab="trocas"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><span class="tab-txt">Trocas e devoluções</span></button>
+      <button type="button" class="seg-btn" data-tab="marketing"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15 9a3 3 0 0 1 0 6M17.5 6.5a7 7 0 0 1 0 11"/></svg></span><span class="tab-txt">Material de marketing</span></button>
       <button type="button" class="seg-btn" data-tab="producaohora"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><span class="tab-txt">Lançar produção</span></button>
       <button type="button" class="seg-btn" data-tab="brindes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8M12 8c-1.5-3-5-3.5-5-1.2C7 8 9.5 8 12 8zM12 8c1.5-3 5-3.5 5-1.2C17 8 14.5 8 12 8z"/></svg></span><span class="tab-txt">Brindes e presentes</span></button>
       <button type="button" class="seg-btn" data-tab="canhotos"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 11.5h6"/><path d="M9.5 16.5l1.8 1.8 3.7-3.7"/></svg></span><span class="tab-txt">Canhotos</span></button>
@@ -2071,6 +2165,12 @@
   </div>
   <div class="tab-panel hidden" id="tab-trocas">
     <div id="trocas-conteudo"></div>
+  </div>
+  <div class="tab-panel hidden" id="tab-marketing">
+    <div id="mkt-conteudo"></div>
+  </div>
+  <div class="tab-panel hidden" id="tab-vendas">
+    <div id="vd-conteudo"></div>
   </div>
   <div class="tab-panel hidden" id="tab-producaohora">
     <div id="ph-conteudo"></div>
@@ -2941,6 +3041,11 @@
       <p class="hint">Confira as quantidades carregadas. Palete com outra quantidade: marque <b>Paletes com quantidade diferente do padrão</b> e escreva quantos paletes com quantos fardos. O chapatex segue as fileiras de cada palete (no copo, 1 por palete).</p>
       <div id="cgc-clientes-list"></div>
       <div class="pedido-resumo" id="cgc-totais"></div>
+      <div class="cgc-alteracao hidden" id="cgc-alteracao" role="status">
+        <p class="cgc-alt-t" id="cgc-alt-lista"></p>
+        <label>Motivo da mudança no carregamento <span class="req">*</span><input type="text" id="cgc-alt-motivo" maxlength="200" autocomplete="off" placeholder="Ex.: produto em falta, trocado por outro a pedido do cliente" /></label>
+      </div>
+      <div class="mkt-na-carga hidden" id="cgc-mkt"></div>
 
       <div class="pedido-resumo hidden" id="cgc-devolucao"></div>
 
@@ -3062,6 +3167,8 @@
       <label class="check"><input type="checkbox" id="f-equipe-conf-prod" /> <b>Confirma a produção</b> (PCP) <span class="opt">(o que foi apontado entra no estoque; conclui a OP)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-op-concl" /> <b>Edita OP concluída</b> <span class="opt">(corrige a OP depois de concluída: estoque e matéria-prima acompanham)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-brindes" /> Vê a aba <b>Brindes e presentes</b> <span class="opt">(ideias e aprovação de brindes)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-mkt" /> Vê a aba <b>Material de marketing</b> <span class="opt">(para quem tem o acesso com abas escolhidas; a senha da equipe já vê)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-vendas" /> Vê o painel de <b>Vendas</b> <span class="opt">(vendas por cliente e produto, comparativos e preços de referência)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-alerta-est" /> Recebe o <b>alerta de falta de estoque</b> no Início <span class="opt">(cargas dos próximos 2 dias que o estoque não cobre)</span></label>
       <div class="homen-set" role="group" aria-label="Homenagens">
         <span class="field-hint">Recebe as mensagens de:</span>
@@ -3661,7 +3768,7 @@
     loadLocalQualidade();
     loadLocalSup();
     loadLocalCompras(); loadLocalBrindes();
-    loadLocalTrocas();
+    loadLocalTrocas(); loadLocalMkt(); loadLocalVendas();
     loadLocalDatas();
     loadLocalTransportadoras();
     loadLocalAgOnline();
@@ -4423,10 +4530,49 @@
   function soltosTexto(n, u) { return qtdUnidade(n, u) + ' soltos por cima (batidos, sem palete e sem chapatex)'; }
   // O mesmo aviso, a partir do item gravado na carga (detalhes e ordem de carregamento).
   function avisoItem(it) {
-    var b = Number(it.batidos) || 0, a = avisoItemPalete(it);
-    if (!b) return a;
-    var t = soltosTexto(b, it.unidade || '');
-    return { texto: t + (a ? '; ' + a.texto : ''), alerta: a ? a.alerta : false };
+    var b = Number(it.batidos) || 0, a = avisoItemPalete(it), tr = trocaTexto(it);
+    var t = [b ? soltosTexto(b, it.unidade || '') : '', a ? a.texto : '', tr].filter(Boolean).join('; ');
+    return t ? { texto: t, alerta: !!(a && a.alerta) || !!tr } : null;
+  }
+  // Troca no carregamento (pedido de 05/11/2026): parte do produto (ou a linha toda) vai para trocar um produto que o
+  // cliente devolveu; não é venda. O motivo é obrigatório.
+  function trocaQtd(it) { return Math.max(0, Math.min(Number(it.troca) || 0, Number(it.quantidade) || 0)); }
+  function trocaTexto(it) {
+    var t = trocaQtd(it);
+    if (!t) return '';
+    return 'TROCA: ' + qtdUnidade(t, it.unidade || '') + (t < (Number(it.quantidade) || 0) ? ' de ' + qtdUnidade(Number(it.quantidade) || 0, it.unidade || '') : '') + (it.trocaMotivo ? ' (motivo: ' + it.trocaMotivo + ')' : '');
+  }
+  // troca sem motivo: devolve a mensagem de erro (ou '')
+  function faltaMotivoTroca(clientes) {
+    var erro = '';
+    (clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+      if (!erro && trocaQtd(it) > 0 && String(it.trocaMotivo || '').trim().length < 3) erro = 'Descreva o motivo da troca de ' + (it.produtoNome || 'produto') + (cl.cliente ? ' (' + cl.cliente + ')' : '') + '.';
+    }); });
+    return erro;
+  }
+  // O que mudou nos produtos entre o que foi lançado e o que foi carregado (para pedir o motivo no carregamento)
+  function mudancasCarregamento(antes, depois) {
+    var l = [];
+    function mapa(cls) {
+      var m = {};
+      (cls || []).forEach(function(cl, i) { (cl.itens || []).forEach(function(it) {
+        var k = i + '|' + (it.produtoId || it.produtoNome);
+        var x = m[k] = m[k] || { cliente: cl.cliente || 'cliente ' + (i + 1), nome: it.produtoNome || '—', u: it.unidade || '', q: 0, t: 0 };
+        x.q += Number(it.quantidade) || 0; x.t += trocaQtd(it);
+      }); });
+      return m;
+    }
+    var a = mapa(antes), d = mapa(depois);
+    Object.keys(a).concat(Object.keys(d).filter(function(k) { return !a[k]; })).forEach(function(k) {
+      var x = a[k], y = d[k], cli = (x || y).cliente, nome = (x || y).nome, u = (x || y).u;
+      if (!y) l.push(cli + ': tirou ' + nome + ' (eram ' + qtdUnidade(x.q, u) + ')');
+      else if (!x) l.push(cli + ': incluiu ' + nome + ' (' + qtdUnidade(y.q, u) + ')');
+      else {
+        if (x.q !== y.q) l.push(cli + ': ' + nome + ' de ' + qtdUnidade(x.q, u) + ' para ' + qtdUnidade(y.q, u));
+        if (x.t !== y.t) l.push(cli + ': troca de ' + nome + ' de ' + fmtInt(x.t) + ' para ' + fmtInt(y.t));
+      }
+    });
+    return l;
   }
   function avisoItemPalete(it) {
     return avisoTexto(it.unidade || '', {
@@ -4737,6 +4883,7 @@
     renderRepCadPage(false);
     renderStorageNote();
     renderCargasSection();
+    if (ui.tab === 'vendas' && session) renderVendas();
     renderProdutosAdmin();
     renderMarcasAdmin();
     renderEquipeAdmin();
@@ -6159,6 +6306,14 @@
       if (ent) info += row('Entregas', escapeHtml(ent.longo), ent.ok ? 'ok' : '');
     }
     if (c.obs) info += row('Observações', escapeHtml(c.obs));
+    (c.alteracoesCarregamento || []).forEach(function(a) {
+      info += row('Mudou no carregamento', escapeHtml(a.mudancas.join('; ') + ' — motivo: ' + (a.motivo || '—') + ' (' + (nomePessoa(a.por) || a.por || '—') + (a.em ? ', ' + formatDateTimeBR(a.em) : '') + ')'), 'ask');
+    });
+    var trocasC = [];
+    (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) { if (trocaQtd(it)) trocasC.push((cl.cliente || '—') + ': ' + trocaTexto(it).replace(/^TROCA: /, '') + ' de ' + (it.produtoNome || '')); }); });
+    if (trocasC.length) info += row('🔁 Trocas', escapeHtml(trocasC.join('; ')), 'ask');
+    var mkD = ehEscritorio() ? mktDaCarga(c.id) : [];
+    if (mkD.length) info += row('🎁 Material de marketing', escapeHtml(mkD.map(mktCargaTexto).join('; ')));
     if (!done) {
       var faltas = faltasEstoqueCarga(c);
       if (faltas.length) info += row('⚠ Estoque insuficiente', escapeHtml(faltas.map(function(f) {
@@ -6196,6 +6351,7 @@
       : '<div class="detail-links">' +
           '<button type="button" class="btn-text" data-action="ordem-carga" data-id="' + id + '">Ordem de carregamento</button>' +
           (done ? '' : '<button type="button" class="btn-text" data-action="edit-carga" data-id="' + id + '">Editar carga</button>') +
+          (!done && abasPermitidas().indexOf('marketing') >= 0 && nivelDaAba('marketing') !== 'ver' ? '<button type="button" class="btn-text" data-action="mkt-carga" data-id="' + id + '">+ Material de marketing</button>' : '') +
           '<button type="button" class="btn-text danger" data-action="delete-carga" data-id="' + id + '">Excluir</button>' +
         '</div>';
     var wa = c.motorista ? waNumero(telefoneDoMotorista(c.motorista)) : '';
@@ -6832,6 +6988,7 @@
     if (action === 'concluir-carga') { closeCargaDetail(); openCargaConclude(c); return; }
     if (action === 'edit-carga') { closeCargaDetail(); openCargaForm(c); return; }
     if (action === 'ordem-carga') { closeCargaDetail(); openOrdemCarregamento(c); return; }
+    if (action === 'mkt-carga') { closeCargaDetail(); mktAbrirEntrega({ cargaId: c.id }); return; }
     if (action === 'fat-ok') { darOkFaturamento(id); return; }
     if (action === 'aceite-registrar') { closeCargaDetail(); aceiteRegistrarEscritorio(id); return; }
     if (action === 'fat-desfazer') { desfazerOkFaturamento(id); return; }
@@ -7148,7 +7305,7 @@
   // planilha: uma linha por produto de cada cliente (para conferir e somar no Excel)
   function exportarRelatorioCargas(lista) {
     var esc = function(v) { var x = String(v == null ? '' : v); return /[;"\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
-    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Cliente', 'Pedido / NF', 'Destino', 'Motorista', 'Produto', 'Quantidade', 'Unidade', 'Paletes', 'Chapatex', 'Observação do produto', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em', 'Pedido lançado em'].join(';')];
+    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Cliente', 'Pedido / NF', 'Destino', 'Motorista', 'Produto', 'Quantidade', 'Unidade', 'Paletes', 'Chapatex', 'Observação do produto', 'Troca (quantidade)', 'Motivo da troca', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em', 'Pedido lançado em'].join(';')];
     lista.forEach(function(c) {
       var base = [formatDateBR(crelDiaDaCarga(c)), formatDateBR(c.data), c.hora || '', cargaCode(c)];
       var fim = [crelSituacao(c).txt, c.concluidoEm ? formatDateTimeBR(c.concluidoEm) : '', c.faturamentoOk ? 'ok' : 'sem ok', c.faturamentoOk ? (nomePessoa(c.faturamentoPor) || c.faturamentoPor || '') : '', c.faturamentoEm ? formatDateTimeBR(c.faturamentoEm) : '', c.criadoEm ? formatDateTimeBR(c.criadoEm) : ''];
@@ -7156,10 +7313,10 @@
       cls.forEach(function(cl) {
         (cl.itens || []).forEach(function(it) {
           algum = true;
-          linhas.push(base.concat([cl.cliente || '', cl.pedidoNf || cl.numeroDocumento || '', cl.destino || '', crelMotorista(c), it.produtoNome || '', fmtInt(it.quantidade), it.unidade || '', fmtInt(it.paletes), fmtInt(it.chapatex), crelItemAviso(it)], fim).map(esc).join(';'));
+          linhas.push(base.concat([cl.cliente || '', cl.pedidoNf || cl.numeroDocumento || '', cl.destino || '', crelMotorista(c), it.produtoNome || '', fmtInt(it.quantidade), it.unidade || '', fmtInt(it.paletes), fmtInt(it.chapatex), crelItemAviso(it), trocaQtd(it) ? fmtInt(trocaQtd(it)) : '', trocaQtd(it) ? it.trocaMotivo || '' : ''], fim).map(esc).join(';'));
         });
       });
-      if (!algum) linhas.push(base.concat([cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '), '', '', crelMotorista(c), '', '', '', fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), ''], fim).map(esc).join(';'));
+      if (!algum) linhas.push(base.concat([cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '), '', '', crelMotorista(c), '', '', '', fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), '', '', ''], fim).map(esc).join(';'));
     });
     var nome = 'relatorio-cargas-' + (crelUi.de || todayIso()) + (crelUi.ate ? '-a-' + crelUi.ate : '') + '.csv';
     triggerDownload(new Blob(['﻿' + linhas.join('\n')], { type: 'text/csv;charset=utf-8' }), nome);
@@ -7315,7 +7472,7 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'pcp', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'compras', 'trocas', 'producaohora', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'pcp', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'vendas', 'compras', 'trocas', 'marketing', 'producaohora', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   var ABAS_COMUNICACAO = ['minhaagenda', 'chat', 'solicitacoes']; // todo mundo do escritório tem (19 e 20/10/2026)
   // Organograma (20/10/2026): escondido de todos; a senha mestre marca em Cadastros › Equipe com senha quem vê a aba
   function podeVerOrganograma() { if (!session) return false; if (session.ref === 'mestre' || (session.role === 'admin' && !session.soInclui && !session.ref)) return true; var m = meuMembro(); return !!(m && m.veOrganograma); }
@@ -7328,6 +7485,10 @@
   // da equipe nem marcadas de saída; só aparecem para quem tem a caixa marcada no acesso individual. Nível: edita ou só visualiza.
   // Cadastros (senhas e segurança) e Pesquisas (cifradas com a senha mestre) continuam só da senha mestre.
   var ABAS_OPCIONAIS = [['fretes', 'Fretes'], ['rh', 'RH']];
+  // Material de marketing e Vendas (05/11/2026): a senha mestre e a diretoria veem; nas pessoas, a marca em Cadastros › Equipe
+  // ("Vê a aba Material de marketing" / "Vê o painel de Vendas"). A senha da equipe e o acesso sem abas escolhidas veem o Marketing.
+  function podeVerMarketing() { if (!session) return false; if (session.role === 'admin') return true; if (session.role !== 'equipe') return false; var m = meuMembro(); return !temPermissao('abas') || !!(m && m.veMarketing); }
+  function podeVerVendas() { if (!session) return false; if (session.role === 'admin') return true; var m = session.role === 'equipe' ? meuMembro() : null; return !!(m && m.veVendas); }
   function veAbaOpcional(aba) { return !!session && (session.role === 'admin' || (session.role === 'equipe' && temPermissao('abas') && temPermissao('aba:' + aba))); }
   function podeVerFretes() { return veAbaOpcional('fretes'); }
   function podeEditarFretes() { return podeVerFretes() && (session.role === 'admin' || nivelDaAba('fretes') === 'edita'); }
@@ -7350,12 +7511,12 @@
       var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
       // PCP (03/11/2026): quem tem a aba Produção (as ordens) vê também o PCP, logo antes dela
       return pcpComAba(['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
-        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : [])
+        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : []).concat(podeVerMarketing() ? ['marketing'] : []).concat(podeVerVendas() ? ['vendas'] : [])
         .concat(escolhidas && !temPermissao('aba:producao') && podeVerLancProducao() ? ['producao'] : [])
         .concat(ABAS_OPCIONAIS.filter(function(a) { return veAbaOpcional(a[0]); }).map(function(a) { return a[0]; })));
     }
-    var org = podeVerOrganograma(), brd = podeVerBrindes();
-    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd) && t !== 'producaohora'; });
+    var org = podeVerOrganograma(), brd = podeVerBrindes(), vds = podeVerVendas();
+    return (mode === 'db' ? TABS : TABS.filter(function(t) { return t !== 'canhotos' && ABAS_COMUNICACAO.indexOf(t) < 0; })).filter(function(t) { return (t !== 'organograma' || org) && (t !== 'brindes' || brd) && (t !== 'vendas' || vds) && t !== 'producaohora'; });
   }
   function abaPadrao(permitidas) { return permitidas.indexOf('inicio') >= 0 ? 'inicio' : permitidas.indexOf('cargas') >= 0 ? 'cargas' : permitidas[0]; }
   function applyTab() {
@@ -7382,6 +7543,8 @@
     if (ui.tab === 'metas') renderMetas();
     if (ui.tab === 'canhotos') renderCanhotos();
     if (ui.tab === 'trocas') renderTrocas();
+    if (ui.tab === 'marketing') renderMkt();
+    if (ui.tab === 'vendas') renderVendas();
     if (ui.tab === 'brindes') renderBrindes();
     if (ui.tab === 'producaohora') renderProducaoHora();
     if (ui.tab !== 'chat' && ui.tab !== 'solicitacoes') chat.montada = '';
@@ -8396,16 +8559,17 @@
 
   // ---------- cargas: lançamento por cliente em lista fixa de produtos (sempre na ordem do catálogo) ----------
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, bat: {}, batOn: {}, grp: {}, grpOn: {}, nf: null }; }
+  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, bat: {}, batOn: {}, grp: {}, grpOn: {}, trc: {}, trcOn: {}, trcMot: {}, nf: null }; }
   // Converte os clientes salvos de uma carga para o editor. Produto que saiu do catálogo continua
   // aparecendo (com a regra gravada na carga), para não perder nada ao editar.
   function editorStateFromCarga(carga) {
     var extras = [];
     var clientes = ((carga && carga.clientes) || []).map(function(cl) {
-      var qtd = {}, bat = {}, batOn = {}, grp = {}, grpOn = {};
+      var qtd = {}, bat = {}, batOn = {}, grp = {}, grpOn = {}, trc = {}, trcOn = {}, trcMot = {};
       (cl.itens || []).forEach(function(it) {
         if (!it.produtoId) return;
         qtd[it.produtoId] = String((Number(qtd[it.produtoId]) || 0) + (Number(it.quantidade) || 0));
+        if (Number(it.troca) > 0) { trcOn[it.produtoId] = true; trc[it.produtoId] = String((Number(trc[it.produtoId]) || 0) + Number(it.troca)); trcMot[it.produtoId] = [trcMot[it.produtoId], it.trocaMotivo].filter(Boolean).join('; '); }
         var gs = gruposDoItem(it);
         if (gs.length) { grpOn[it.produtoId] = true; grp[it.produtoId] = (grp[it.produtoId] || []).concat(gs); }
         if (Number(it.batidos) > 0) { batOn[it.produtoId] = true; bat[it.produtoId] = String((Number(bat[it.produtoId]) || 0) + Number(it.batidos)); }
@@ -8418,7 +8582,8 @@
         }
       });
       Object.keys(bat).forEach(function(pid) { if (Number(bat[pid]) >= (Number(qtd[pid]) || 0)) bat[pid] = ''; }); // tudo solto: "todos"
-      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, bat: bat, batOn: batOn, grp: grp, grpOn: grpOn, nf: cl.nf || null };
+      Object.keys(trc).forEach(function(pid) { if (Number(trc[pid]) >= (Number(qtd[pid]) || 0)) trc[pid] = ''; }); // tudo troca: "todos"
+      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, bat: bat, batOn: batOn, grp: grp, grpOn: grpOn, trc: trc, trcOn: trcOn, trcMot: trcMot, nf: cl.nf || null };
     });
     return { clientes: clientes, extras: extras };
   }
@@ -8437,7 +8602,20 @@
 
     function lista() { return produtosOrdenados().concat(extras.filter(function(x) { return !findProduto(x.id); })); }
     function prod(pid) { return findProduto(pid) || extras.find(function(x) { return x.id === pid; }); }
-    function garantir(cl) { ['qtd', 'bat', 'batOn', 'grp', 'grpOn'].forEach(function(k) { if (!cl[k]) cl[k] = {}; }); }
+    function garantir(cl) { ['qtd', 'bat', 'batOn', 'grp', 'grpOn', 'trc', 'trcOn', 'trcMot'].forEach(function(k) { if (!cl[k]) cl[k] = {}; }); }
+    // troca (05/11/2026): parte da linha vai para trocar produto do cliente (não é venda), com o motivo; vazio = a linha toda
+    function trocaDe(cl, pid) {
+      if (!(cl.trcOn || {})[pid]) return 0;
+      var q = Math.max(0, Math.floor(Number(cl.qtd[pid]) || 0)), v = (cl.trc || {})[pid];
+      return v === '' || v == null ? q : Math.min(q, Math.max(0, Math.floor(Number(v) || 0)));
+    }
+    function trocaHtml(cl, p) {
+      var has = (Number(cl.qtd[p.id]) || 0) > 0, on = !!(cl.trcOn || {})[p.id], attrs = attrsDe(cl, p);
+      if (!has) return '';
+      return '<label class="pt-bat-l" title="Produto que vai para trocar um que o cliente devolveu: não é venda"><input type="checkbox" class="' + prefix + '-trc-check"' + attrs + (on ? ' checked' : '') + ' /><span>🔁 Troca <span class="pt-bat-obs">(substitui produto do cliente; não conta como venda)</span></span></label>' +
+        (on ? '<span class="pt-trc"><input type="number" min="1" step="1" inputmode="numeric" class="' + prefix + '-trc-input"' + attrs + ' value="' + escapeHtml((cl.trc || {})[p.id] || '') + '" placeholder="todos" aria-label="Quantos de ' + escapeHtml(p.nome) + ' são troca" />' +
+          '<input type="text" maxlength="140" class="' + prefix + '-trc-mot"' + attrs + ' value="' + escapeHtml((cl.trcMot || {})[p.id] || '') + '" placeholder="Motivo da troca (obrigatório)" aria-label="Motivo da troca de ' + escapeHtml(p.nome) + '" autocomplete="off" /></span>' : '');
+    }
     // soltos: vazio = todos os fardos da linha; número = só essa parte (o resto vai paletizado)
     function batidosDe(cl, pid) {
       if (!(cl.batOn || {})[pid]) return 0;
@@ -8449,7 +8627,7 @@
     function totals(cl) {
       return lista().reduce(function(a, p) { var c = calc(cl, p.id); a.p += c.paletes; a.c += c.chapatex; a.b += c.batidos; return a; }, { p: 0, c: 0, b: 0 });
     }
-    function batHtml(cl, p, c) { return grpHtml(cl, p, c) + batOnlyHtml(cl, p, c); }
+    function batHtml(cl, p, c) { return grpHtml(cl, p, c) + batOnlyHtml(cl, p, c) + trocaHtml(cl, p); }
     function attrsDe(cl, p) { return ' data-cliente="' + cl.uid + '" data-produto="' + escapeHtml(p.id) + '"'; }
     // um palete com q unidades: fileiras e chapatex (o que o app conta sozinho)
     function grpInfoTexto(p, g) {
@@ -8626,6 +8804,14 @@
     // caixas de marcar: alguns navegadores mandam "input", outros só "change"
     function marcar(cl, t) {
       var pid = t.dataset.produto;
+      if (t.classList.contains(prefix + '-trc-check')) {
+        if (!!cl.trcOn[pid] === t.checked) return true;
+        cl.trcOn[pid] = t.checked;
+        if (t.checked) cl.trc[pid] = '';
+        refreshRow(cl, pid);
+        if (t.checked) { var mi = container.querySelector('input.' + prefix + '-trc-mot[data-cliente="' + cl.uid + '"][data-produto="' + pid + '"]'); if (mi) mi.focus(); }
+        return true;
+      }
       if (allowBatido && t.classList.contains(prefix + '-bat-check')) {
         if (!!cl.batOn[pid] === t.checked) return true;
         cl.batOn[pid] = t.checked;
@@ -8669,6 +8855,12 @@
       } else if (allowBatido && t.classList.contains(prefix + '-bat-input')) {
         cl.bat[pid] = t.value;
         refreshRow(cl, pid);
+      } else if (t.classList.contains(prefix + '-trc-input')) {
+        cl.trc[pid] = t.value;
+        if (opts.onChange) opts.onChange();
+      } else if (t.classList.contains(prefix + '-trc-mot')) {
+        cl.trcMot[pid] = t.value;
+        if (opts.onChange) opts.onChange();
       }
     });
     container.addEventListener('change', function(e) {
@@ -8735,7 +8927,8 @@
             paletes: c.paletes, paletesCalculados: c.paletesAuto, paletesAjustados: false, chapatex: c.chapatex,
             fileirasPorPalete: c.fileirasPadrao, fileirasPadrao: c.fileirasPadrao, fileirasAjustadas: false,
             excedente: 0, resto: c.resto
-          }, c.batidos ? { batidos: c.batidos } : {}, c.grupos.length ? { paletesMistos: c.grupos, paletesResto: c.paletesResto } : {}, c.sobraGrupos ? { sobraGrupos: c.sobraGrupos } : {});
+          }, c.batidos ? { batidos: c.batidos } : {}, c.grupos.length ? { paletesMistos: c.grupos, paletesResto: c.paletesResto } : {}, c.sobraGrupos ? { sobraGrupos: c.sobraGrupos } : {},
+            trocaDe(cl, p.id) ? { troca: trocaDe(cl, p.id), trocaMotivo: String((cl.trcMot || {})[p.id] || '').replace(/\s+/g, ' ').trim() } : {});
         });
         var out = { cliente: (cl.cliente || '').trim(), numeroDocumento: docMask(cl.numeroDocumento || ''), pedidoNf: (cl.pedidoNf || '').trim(), itens: itens };
         if (String(cl.destino || '').trim()) out.destino = String(cl.destino).trim();
@@ -8793,7 +8986,7 @@
   }
 
   var cgEditor = makeClientesEditor('cg-clientes-list', 'cg', { allowClienteEdit: true, allowAjustePaletes: true, allowBatido: true, getCargaId: function() { return editingCargaId; }, onChange: function() { renderCgTotaisInto('cg-totais', cgEditor); } });
-  var cgcEditor = makeClientesEditor('cgc-clientes-list', 'cgc', { allowClienteEdit: false, allowAjustePaletes: true, getCargaId: function() { return cargaConcludeId; }, onChange: function() { renderCgTotaisInto('cgc-totais', cgcEditor); atualizarFreteCombinado(); } });
+  var cgcEditor = makeClientesEditor('cgc-clientes-list', 'cgc', { allowClienteEdit: false, allowAjustePaletes: true, getCargaId: function() { return cargaConcludeId; }, onChange: function() { renderCgTotaisInto('cgc-totais', cgcEditor); atualizarFreteCombinado(); atualizarAlteracaoCgc(); } });
 
   document.getElementById('btn-cg-add-cliente').addEventListener('click', function() { cgEditor.addCliente(); });
 
@@ -9340,6 +9533,7 @@
         if (!clientesOut[i].cliente) { err = 'Informe o nome do cliente em todos os blocos.'; break; }
         if (!clientesOut[i].itens.length) { err = 'Informe ao menos um produto com quantidade em "' + clientesOut[i].cliente + '".'; break; }
       }
+      if (!err) err = faltaMotivoTroca(clientesOut) || null;
     }
     if (err) { errEl.textContent = err; errEl.classList.remove('hidden'); return; }
     errEl.classList.add('hidden');
@@ -9673,6 +9867,10 @@
       devBox.innerHTML = '';
       devBox.classList.add('hidden');
     }
+    document.getElementById('cgc-alt-motivo').value = '';
+    var mkC = document.getElementById('cgc-mkt'), mkH = mktCargaHtml(carga.id);
+    mkC.innerHTML = mkH ? mkH.replace(/^<div class="mkt-na-carga">|<\/div>$/g, '') + '<div class="driver-sub">Confira que o material vai junto: ele sai do estoque de marketing quando a carga for concluída.</div>' : '';
+    mkC.classList.toggle('hidden', !mkH);
     var st = editorStateFromCarga(carga);
     cgcEditor.setState(st.clientes.length ? st.clientes : [newCgCliente()], st.extras);
     document.getElementById('cgc-conferente').value = carga.conferente || '';
@@ -9687,6 +9885,14 @@
     document.getElementById('cgc-frete-valor').value = carga.freteCombinado && Number(carga.freteCombinado.valor) > 0 ? ocValorTexto(carga.freteCombinado.valor) : '';
     atualizarFreteCombinado();
     document.getElementById('carga-conclude-overlay').classList.remove('hidden');
+  }
+  // mudou algum produto na hora de carregar (trocou, tirou, incluiu, mudou a quantidade ou a troca): pede o motivo
+  function atualizarAlteracaoCgc() {
+    var box = document.getElementById('cgc-alteracao');
+    if (!box) return;
+    var c = cargaConcludeId ? findCarga(cargaConcludeId) : null, l = c ? mudancasCarregamento(c.clientes, cgcEditor.toOut()) : [];
+    document.getElementById('cgc-alt-lista').innerHTML = l.length ? '<b>⚠ Mudou no carregamento:</b> ' + l.map(escapeHtml).join('; ') : '';
+    box.classList.toggle('hidden', !l.length);
   }
   function closeCargaConclude() {
     document.getElementById('carga-conclude-overlay').classList.add('hidden');
@@ -9717,7 +9923,8 @@
         tipo: 'entrega', status: carga.retira ? 'concluido' : 'aguardando', criadoEm: (existing && existing.criadoEm) || agora, cargaId: cargaId,
         ordemEntrega: i + 1, nfNumero: (cl.nf && cl.nf.numero) || '',
         itens: (cl.itens || []).map(function(it) {
-          return { produtoId: it.produtoId || '', produtoNome: it.produtoNome || '', unidade: it.unidade || '', quantidade: Number(it.quantidade) || 0, paletes: Number(it.paletes) || 0, chapatex: Number(it.chapatex) || 0 };
+          return Object.assign({ produtoId: it.produtoId || '', produtoNome: it.produtoNome || '', unidade: it.unidade || '', quantidade: Number(it.quantidade) || 0, paletes: Number(it.paletes) || 0, chapatex: Number(it.chapatex) || 0 },
+            trocaQtd(it) ? { troca: trocaQtd(it), trocaMotivo: it.trocaMotivo || '' } : {});
         })
       } });
       if (carga.retira) {
@@ -9795,6 +10002,10 @@
     var clientesOut = cgcEditor.toOut();
     if (!conferente) { errEl.textContent = porSenha ? 'Digite a senha do conferente.' : 'Informe o nome do conferente.'; errEl.classList.remove('hidden'); return; }
     if (!clientesOut.some(function(cl) { return cl.itens.length; })) { errEl.textContent = 'Confira ao menos um produto com quantidade.'; errEl.classList.remove('hidden'); return; }
+    var erroTroca = faltaMotivoTroca(clientesOut);
+    if (erroTroca) { errEl.textContent = erroTroca; errEl.classList.remove('hidden'); return; }
+    var mudancas = mudancasCarregamento((findCarga(cargaConcludeId) || {}).clientes, clientesOut), motivoAlt = document.getElementById('cgc-alt-motivo').value.trim();
+    if (mudancas.length && motivoAlt.length < 3) { errEl.textContent = 'Os produtos mudaram no carregamento: descreva o motivo da mudança.'; errEl.classList.remove('hidden'); document.getElementById('cgc-alt-motivo').focus(); return; }
     var dupC = (findCarga(cargaConcludeId) || {}).dupla || {};
     var espOut = esperadoConferencia({ clientes: clientesOut });
     if (!liberacaoDe(findCarga(cargaConcludeId)) && (!dupC.r1 || !dupC.r2 || !lidosBatem(dupC.r1.lidos, espOut) || !lidosBatem(dupC.r2.lidos, espOut))) {
@@ -9827,6 +10038,7 @@
       concluidoEm: new Date().toISOString()
     });
     if (freteComb) rec.freteCombinado = freteComb;
+    if (mudancas.length) rec.alteracoesCarregamento = (original.alteracoesCarregamento || []).concat([{ em: new Date().toISOString(), por: conferente, motivo: motivoAlt, mudancas: mudancas }]);
     var devSel = document.getElementById('cgc-devolucao-anterior');
     if (devSel && original.entregaAnterior) {
       var devObs = document.getElementById('cgc-devolucao-anterior-obs');
@@ -10787,6 +10999,10 @@
         }
         y += 40;
       });
+      mktDaCarga(c.id).filter(function(v) { return normNome(v.cargaCliente || (v.para && v.para.nome)) === normNome(cl.cliente); }).forEach(function(v) {
+        txtFit(ctx, 'Levar também (material de marketing): ' + mktItensTexto(v), L, y, 700, R_DISP, 26, 18, CW, RC.teal, 'left');
+        y += 40;
+      });
       var subt = (cl.itens || []).reduce(function(acc, it) { acc.p += Number(it.paletes) || 0; acc.c += Number(it.chapatex) || 0; return acc; }, { p: 0, c: 0 });
       txt(ctx, 'Subtotal', qCol, y + 6, rFont(600, 26, R_DISP), RC.muted, 'right');
       txt(ctx, fmtInt(subt.p), palCol, y + 6, rFont(700, 30, R_MONO), RC.wood, 'right');
@@ -10941,8 +11157,9 @@
       L.push('');
       L.push('*' + (i + 1) + '. ' + (cl.cliente || '—') + '*' + (cl.pedidoNf ? ' · ' + cl.pedidoNf : '') + (cl.destino ? ' · ' + cl.destino : ''));
       (cl.itens || []).forEach(function(it) {
-        L.push('• ' + (it.produtoNome || '—') + ': ' + qtdUnidade(it.quantidade, it.unidade || '') + ' (' + fmtInt(it.paletes) + palavraPaletes(it.paletes) + ', ' + fmtInt(it.chapatex) + ' chapatex)');
+        L.push('• ' + (it.produtoNome || '—') + ': ' + qtdUnidade(it.quantidade, it.unidade || '') + ' (' + fmtInt(it.paletes) + palavraPaletes(it.paletes) + ', ' + fmtInt(it.chapatex) + ' chapatex)' + (trocaQtd(it) ? ' — ' + trocaTexto(it) : ''));
       });
+      mktDaCarga(c.id).filter(function(v) { return normNome(v.cargaCliente || (v.para && v.para.nome)) === normNome(cl.cliente); }).forEach(function(v) { L.push('• Levar também (marketing): ' + mktItensTexto(v)); });
       var rec = recolherTexto(saldoClienteSem(cl.cliente, c.id));
       if (rec) L.push('Recolher: ' + rec + ' em aberto');
     });
@@ -18610,10 +18827,20 @@
     { id: 'ficha-tecnica', nome: 'Ficha técnica do produto' },
     { id: 'registro', nome: 'Registro ou notificação na Anvisa' },
     { id: 'certificacao', nome: 'Certificação ou auditoria (ISO, FSSC, BPF)' },
+    { id: 'ficha-cadastro', nome: 'Ficha de cadastro do fornecedor (preenchida e assinada)' },
+    { id: 'cnpj', nome: 'Cartão CNPJ / contrato social / inscrição estadual' },
     { id: 'outro', nome: 'Outro documento' }
   ];
   function laudoTipo(id) { return LAUDO_TIPOS.find(function(t) { return t.id === id; }) || { id: id, nome: id || 'Laudo' }; }
   var SITUACOES_FORN = { homologado: 'Homologado', avaliacao: 'Em avaliação', bloqueado: 'Bloqueado' };
+  // Cadastro dos fornecedores homologados (pedido de 05/11/2026): linha (descartável ou retornável), tipo de embalagem,
+  // produtos que fornece (com as variações), contato da Qualidade e situação da documentação — as mesmas informações
+  // da planilha de fornecedores e da ficha de cadastro enviada a eles.
+  var FORN_LINHAS = ['Descartável', 'Retornável', 'Descartável e retornável', 'Serviços e outros'];
+  var FORN_EMBALAGEM = [['primario', 'Primária (em contato com a água)'], ['secundario', 'Secundária'], ['terciario', 'Terciária (transporte)'], ['nao', 'Não se aplica']];
+  var FORN_DOC = [['', 'Não conferida'], ['ok', 'Completa (OK)'], ['pendente', 'Pendente']];
+  function fornEmbalagemNome(k, curto) { var e = FORN_EMBALAGEM.find(function(x) { return x[0] === k; }); return e ? (curto ? e[1].replace(/ \(.*\)$/, '') : e[1]) : ''; }
+  function fornProdutos(f) { return (f && Array.isArray(f.produtos) ? f.produtos : []).filter(Boolean); }
   // Sugestão de especificação por tipo de insumo (os "__" são para completar com o valor combinado com o fornecedor)
   var ESPEC_SUGERIDA = {
     'Pré-formas': 'Peso: __ g (tolerância ± __ g)\nGargalo: __ (ex.: PCO 1881)\nCor: __\nPET grau alimentício (laudo de migração em dia)\nSem bolhas, pontos pretos, rebarbas ou gargalo deformado',
@@ -18875,10 +19102,13 @@
     var at = laudosAtuais(), todos = sup.forn.slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); });
     var ativos = todos.filter(function(f) { return f.ativo !== false; }), busca = normNome(supUi.busca);
     var lista = (supUi.inativos ? todos : ativos).filter(function(f) {
+      if (supUi.linha && f.linha !== supUi.linha && !(f.linha === 'Descartável e retornável' && /^(Descartável|Retornável)$/.test(supUi.linha))) return false;
+      if (supUi.docPend && !(f.documentacao !== 'ok' && f.ativo !== false)) return false;
       if (!busca) return true;
       var ins = (f.insumos || []).map(function(id) { var i = insumoPorId(id); return i ? i.nome : ''; }).join(' ');
-      return normNome([f.nome, f.cnpj, f.cidade, f.contato, ins].join(' ')).indexOf(busca) >= 0;
+      return normNome([f.nome, f.razaoSocial, f.cnpj, f.cidade, f.contato, f.telefone, f.email, f.contatoQualidade, f.linha, fornEmbalagemNome(f.embalagem), fornProdutos(f).join(' '), ins].join(' ')).indexOf(busca) >= 0;
     });
+    var docPend = ativos.filter(function(f) { return f.documentacao !== 'ok'; }).length;
     var homol = ativos.filter(function(f) { return f.situacao === 'homologado'; }).length;
     var comVenc = ativos.filter(function(f) { return resumoLaudosForn(f.id, at).vencido > 0; }).length;
     var h = '<p class="tagline">Cadastro dos <b>fornecedores</b> de matéria-prima: o que cada um entrega, prazo de entrega, situação (homologado, em avaliação ou bloqueado) e os <b>laudos</b> (aba Laudos, ao lado).</p>' +
@@ -18887,8 +19117,15 @@
       supCard('c-saldo', 'Insumos sem fornecedor', fmtInt(insumosDaArea('producao').concat(insumosDaArea('garrafoes')).filter(function(i) { return !fornDoInsumo(i.id).length; }).length), 'cadastre quem entrega cada insumo') +
       supCard('c-futuro' + (comVenc ? ' alerta' : ''), 'Com laudo vencido', fmtInt(comVenc), comVenc ? 'renove na aba Laudos' : 'nenhum laudo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-sup="ir-laudos">Ver laudos</button>') +
       '</div>' +
-      '<div class="ag-ferramentas"><input type="search" id="sup-busca" placeholder="Buscar fornecedor, CNPJ, cidade ou insumo" value="' + escapeHtml(supUi.busca) + '" autocomplete="off" aria-label="Buscar fornecedor" />' +
-      '<button type="button" class="btn-text" data-sup="forn-inativos">' + (supUi.inativos ? 'Esconder inativos' : 'Ver inativos') + '</button></div>';
+      '<div class="ag-ferramentas"><input type="search" id="sup-busca" placeholder="Buscar fornecedor, produto, contato, CNPJ ou insumo" value="' + escapeHtml(supUi.busca) + '" autocomplete="off" aria-label="Buscar fornecedor" />' +
+      '<button type="button" class="btn-text" data-sup="forn-inativos">' + (supUi.inativos ? 'Esconder inativos' : 'Ver inativos') + '</button>' +
+      (todos.length ? '<button type="button" class="btn-text" data-sup="forn-csv">Baixar planilha</button>' : '') + '</div>' +
+      '<div class="est-loc-chips" role="group" aria-label="Filtrar fornecedores">' +
+        [['', 'Todos'], ['Descartável', 'Descartável'], ['Retornável', 'Retornável'], ['Serviços e outros', 'Serviços e outros']].map(function(o) {
+          return '<button type="button" class="est-loc' + ((supUi.linha || '') === o[0] && !supUi.docPend ? ' on' : '') + '" data-sup="forn-linha" data-l="' + escapeHtml(o[0]) + '">' + escapeHtml(o[1]) + '</button>';
+        }).join('') +
+        '<button type="button" class="est-loc' + (supUi.docPend ? ' on' : '') + '" data-sup="forn-docpend">Documentação pendente' + (docPend ? '<b>' + docPend + '</b>' : '') + '</button>' +
+      '</div>';
     if (!lista.length) h += '<p class="empty-state">' + (todos.length ? 'Nenhum fornecedor encontrado.' : 'Nenhum fornecedor cadastrado. Toque em “+ Fornecedor”.') + '</p>';
     h += lista.map(function(f) {
       var id = escapeHtml(f.id), rl = resumoLaudosForn(f.id, at), sit = f.situacao || 'avaliacao';
@@ -18897,9 +19134,15 @@
       var prox = agAbertos().filter(function(a) { return a.fornecedorId === f.id; }).sort(agOrdenar)[0];
       var chipL = !rl.total ? '<span class="q-chip aviso">sem laudos</span>' : rl.vencido ? '<span class="q-chip falta">' + rl.vencido + (rl.vencido === 1 ? ' laudo vencido' : ' laudos vencidos') + '</span>'
         : rl.vence ? '<span class="q-chip aviso">' + rl.vence + ' vencendo</span>' : '<span class="q-chip ok">' + rl.total + (rl.total === 1 ? ' laudo em dia' : ' laudos em dia') + '</span>';
-      return '<div class="frete-item est-' + cls + '"><div class="frete-top"><span><b>' + escapeHtml(f.nome) + '</b></span><span class="chip-est ' + cls + '">' + escapeHtml(f.ativo === false ? 'Inativo' : SITUACOES_FORN[sit] || sit) + '</span></div>' +
+      var prods = fornProdutos(f), linhaEmb = [f.linha, fornEmbalagemNome(f.embalagem, true) ? 'embalagem ' + fornEmbalagemNome(f.embalagem, true).toLowerCase() : ''].filter(Boolean).join(' · ');
+      var chipDoc = f.documentacao === 'ok' ? '<span class="q-chip ok">documentação OK</span>' : f.documentacao === 'pendente' ? '<span class="q-chip falta">documentação pendente</span>' : '<span class="q-chip aviso">documentação não conferida</span>';
+      return '<div class="frete-item est-' + cls + '"><div class="frete-top"><span><b>' + escapeHtml(f.nome) + '</b>' + (f.razaoSocial && normNome(f.razaoSocial) !== normNome(f.nome) ? ' <span class="driver-sub">' + escapeHtml(f.razaoSocial) + '</span>' : '') + '</span><span class="chip-est ' + cls + '">' + escapeHtml(f.ativo === false ? 'Inativo' : SITUACOES_FORN[sit] || sit) + '</span></div>' +
+        (linhaEmb ? '<div class="frete-sub">' + escapeHtml(linhaEmb) + '</div>' : '') +
+        (prods.length ? '<div class="frete-sub">Fornece: <b>' + escapeHtml(prods.join(' · ')) + '</b></div>' : '') +
         '<div class="frete-sub">' + escapeHtml([f.cnpj ? 'CNPJ ' + f.cnpj : '', f.contato, f.telefone, f.email, f.cidade].filter(Boolean).join(' · ') || 'sem contato cadastrado') + '</div>' +
-        '<div class="frete-sub">' + (ins.length ? 'Entrega: ' + escapeHtml(ins.slice(0, 5).join(', ') + (ins.length > 5 ? ' e mais ' + (ins.length - 5) : '')) : '<span class="alerta">nenhum insumo marcado</span>') +
+        (f.contatoQualidade ? '<div class="frete-sub">Qualidade: ' + escapeHtml(f.contatoQualidade) + '</div>' : '') +
+        '<div class="frete-sub">' + chipDoc + '</div>' +
+        '<div class="frete-sub">' + (ins.length ? 'Insumos do estoque: ' + escapeHtml(ins.slice(0, 5).join(', ') + (ins.length > 5 ? ' e mais ' + (ins.length - 5) : '')) : prods.length ? 'nenhum insumo do estoque marcado' : '<span class="alerta">nenhum insumo marcado</span>') +
           (f.prazoDias ? ' · prazo de entrega ' + escapeHtml(String(f.prazoDias)) + (Number(f.prazoDias) === 1 ? ' dia' : ' dias') : '') + '</div>' +
         '<div class="frete-sub">' + chipL + (prox ? ' próxima entrega ' + escapeHtml(rotuloDia(prox.data, todayIso()) + (prox.hora ? ' ' + prox.hora : '')) : '') + '</div>' +
         (f.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(f.obs) + '</div>' : '') +
@@ -18988,6 +19231,9 @@
     else if (a === 'forn-novo') abrirFornecedorForm(null);
     else if (a === 'forn-editar' && f) abrirFornecedorForm(f);
     else if (a === 'forn-inativos') { supUi.inativos = !supUi.inativos; renderMateria(); }
+    else if (a === 'forn-linha') { supUi.linha = b.dataset.l || ''; supUi.docPend = false; renderMateria(); }
+    else if (a === 'forn-docpend') { supUi.docPend = !supUi.docPend; supUi.linha = ''; renderMateria(); }
+    else if (a === 'forn-csv') exportarFornecedores();
     else if (a === 'forn-ativo' && f) supGravar([{ op: 'update', col: SUP_COL.forn, id: f.id, data: { ativo: f.ativo === false, atualizadoEm: new Date().toISOString() } }]).then(function() { showToast(f.ativo === false ? 'Fornecedor reativado.' : 'Fornecedor desativado.'); }).catch(falhaSup);
     else if (a === 'forn-laudos' && f) { supUi.laudoForn = f.id; irAreaMp('laudos'); }
     else if (a === 'ir-laudos') { supUi.laudoForn = ''; irAreaMp('laudos'); }
@@ -19015,15 +19261,22 @@
     }).join('');
     gerAbrir({
       titulo: f ? 'Editar fornecedor' : 'Novo fornecedor', botao: 'Salvar fornecedor',
-      html: '<label>Nome ou razão social <span class="req">*</span><input type="text" id="fo-nome" maxlength="100" value="' + escapeHtml(f ? f.nome : '') + '" /></label>' +
+      html: '<div class="row-2"><label>Nome do fornecedor <span class="req">*</span><input type="text" id="fo-nome" maxlength="100" value="' + escapeHtml(f ? f.nome : '') + '" /></label>' +
+        '<label>Razão social <span class="opt">(como no CNPJ)</span><input type="text" id="fo-razao" maxlength="120" value="' + escapeHtml((f && f.razaoSocial) || '') + '" /></label></div>' +
         '<div class="row-2"><label>CNPJ <span class="opt">(opcional)</span><input type="text" id="fo-cnpj" maxlength="20" inputmode="numeric" value="' + escapeHtml((f && f.cnpj) || '') + '" placeholder="00.000.000/0000-00" /></label>' +
         '<label>Situação<select id="fo-sit">' + Object.keys(SITUACOES_FORN).map(function(k) { return '<option value="' + k + '"' + (((f && f.situacao) || 'avaliacao') === k ? ' selected' : '') + '>' + SITUACOES_FORN[k] + '</option>'; }).join('') + '</select></label></div>' +
-        '<div class="row-2"><label>Contato<input type="text" id="fo-contato" maxlength="60" value="' + escapeHtml((f && f.contato) || '') + '" /></label>' +
+        '<div class="row-2"><label>Linha<select id="fo-linha"><option value="">—</option>' + FORN_LINHAS.map(function(l) { return '<option' + ((f && f.linha) === l ? ' selected' : '') + '>' + escapeHtml(l) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Tipo de embalagem<select id="fo-emb"><option value="">—</option>' + FORN_EMBALAGEM.map(function(e) { return '<option value="' + e[0] + '"' + ((f && f.embalagem) === e[0] ? ' selected' : '') + '>' + escapeHtml(e[1]) + '</option>'; }).join('') + '</select></label></div>' +
+        '<label>Produtos que fornece <span class="opt">(um por linha, com a variação: peso, cor, tamanho)</span><textarea id="fo-prods" rows="4" maxlength="1500" placeholder="Ex.: Pré-forma 13,40 g&#10;Tampa azul">' + escapeHtml(fornProdutos(f).join('\n')) + '</textarea></label>' +
+        '<div class="row-2"><label>Contato comercial<input type="text" id="fo-contato" maxlength="60" value="' + escapeHtml((f && f.contato) || '') + '" /></label>' +
         '<label>Telefone<input type="tel" id="fo-tel" maxlength="30" value="' + escapeHtml((f && f.telefone) || '') + '" /></label></div>' +
         '<div class="row-2"><label>E-mail<input type="email" id="fo-email" maxlength="80" value="' + escapeHtml((f && f.email) || '') + '" /></label>' +
         '<label>Cidade / UF<input type="text" id="fo-cidade" maxlength="60" value="' + escapeHtml((f && f.cidade) || '') + '" /></label></div>' +
-        '<label>Prazo de entrega <span class="opt">(dias entre o pedido e a entrega)</span><input type="number" id="fo-prazo" min="0" step="1" inputmode="numeric" value="' + escapeHtml(f && f.prazoDias ? String(f.prazoDias) : '') + '" /></label>' +
-        '<p class="field-label">Insumos que entrega</p>' + (todos.length ? '<div class="forn-ins">' + lista + '</div>' : '<p class="field-hint">Nenhum insumo cadastrado ainda.</p>') +
+        '<label>Contato da Qualidade <span class="opt">(nome e telefone)</span><input type="text" id="fo-cq" maxlength="100" value="' + escapeHtml((f && f.contatoQualidade) || '') + '" /></label>' +
+        '<div class="row-2"><label>Documentação<select id="fo-doc">' + FORN_DOC.map(function(d) { return '<option value="' + d[0] + '"' + (((f && f.documentacao) || '') === d[0] ? ' selected' : '') + '>' + escapeHtml(d[1]) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Prazo de entrega <span class="opt">(dias)</span><input type="number" id="fo-prazo" min="0" step="1" inputmode="numeric" value="' + escapeHtml(f && f.prazoDias ? String(f.prazoDias) : '') + '" /></label></div>' +
+        '<p class="field-hint">Os documentos (ficha de cadastro assinada, cartão CNPJ, laudos) ficam em Matéria-prima › Laudos, com a validade de cada um.</p>' +
+        '<p class="field-label">Insumos do estoque que entrega</p>' + (todos.length ? '<div class="forn-ins">' + lista + '</div>' : '<p class="field-hint">Nenhum insumo cadastrado ainda.</p>') +
         '<label>Observações <span class="opt">(opcional)</span><input type="text" id="fo-obs" maxlength="200" value="' + escapeHtml((f && f.obs) || '') + '" /></label>',
       salvar: function() {
         var nome = gerVal('fo-nome').replace(/\s+/g, ' ');
@@ -19034,12 +19287,30 @@
         if (dig.length === 14) cnpj = dig.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
         var ins = []; document.querySelectorAll('#ger-form-body .forn-ins-ck:checked').forEach(function(c) { ins.push(c.value); });
         var prazo = numCampo(gerVal('fo-prazo')), agora = new Date().toISOString();
-        var dados = { nome: nome, cnpj: cnpj, situacao: document.getElementById('fo-sit').value, contato: gerVal('fo-contato'), telefone: gerVal('fo-tel'), email: gerVal('fo-email'),
-          cidade: gerVal('fo-cidade'), prazoDias: prazo && prazo > 0 ? Math.round(prazo) : 0, insumos: ins, obs: gerVal('fo-obs'), atualizadoEm: agora };
+        var prods = String(document.getElementById('fo-prods').value || '').split(/\n+/).map(function(s) { return s.replace(/\s+/g, ' ').trim(); }).filter(function(s, i, l) { return s && l.indexOf(s) === i; }).slice(0, 60);
+        var dados = { nome: nome, razaoSocial: gerVal('fo-razao'), cnpj: cnpj, situacao: document.getElementById('fo-sit').value, contato: gerVal('fo-contato'), telefone: gerVal('fo-tel'), email: gerVal('fo-email'),
+          cidade: gerVal('fo-cidade'), prazoDias: prazo && prazo > 0 ? Math.round(prazo) : 0, insumos: ins, obs: gerVal('fo-obs'), atualizadoEm: agora,
+          linha: document.getElementById('fo-linha').value, embalagem: document.getElementById('fo-emb').value, produtos: prods, contatoQualidade: gerVal('fo-cq'), documentacao: document.getElementById('fo-doc').value };
         if (!f) { dados.ativo = true; dados.criadoEm = agora; dados.criadoPor = quemSessao(); }
         return supGravar([{ op: f ? 'update' : 'set', col: SUP_COL.forn, id: f ? f.id : 'forn-' + (slug(nome) || uid()) + (f ? '' : '-' + uid().slice(-4)), data: dados }]).then(function() { showToast('Fornecedor salvo.'); });
       }
     });
+  }
+  // planilha dos fornecedores (a mesma organização da planilha de controle: um produto por linha)
+  function exportarFornecedores() {
+    var at = laudosAtuais();
+    var esc = function(v) { var s = String(v == null ? '' : v); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    var linhas = [['Fornecedor', 'Razão social', 'CNPJ', 'Situação', 'Ativo', 'Linha', 'Tipo de embalagem', 'Produto', 'Insumos do estoque', 'Contato comercial', 'Telefone', 'E-mail', 'Cidade / UF',
+      'Contato da Qualidade', 'Documentação', 'Laudos em dia', 'Laudos vencidos', 'Prazo de entrega (dias)', 'Observações'].join(';')];
+    sup.forn.slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); }).forEach(function(f) {
+      var rl = resumoLaudosForn(f.id, at), ins = (f.insumos || []).map(function(x) { var i = insumoPorId(x); return i ? i.nome : ''; }).filter(Boolean).join(', ');
+      var doc = (FORN_DOC.find(function(d) { return d[0] === (f.documentacao || ''); }) || ['', ''])[1];
+      (fornProdutos(f).length ? fornProdutos(f) : ['']).forEach(function(p) {
+        linhas.push([f.nome, f.razaoSocial || '', f.cnpj || '', SITUACOES_FORN[f.situacao || 'avaliacao'] || '', f.ativo === false ? 'não' : 'sim', f.linha || '', fornEmbalagemNome(f.embalagem), p, ins,
+          f.contato || '', f.telefone || '', f.email || '', f.cidade || '', f.contatoQualidade || '', doc, rl.ok + rl.vence, rl.vencido, f.prazoDias || '', f.obs || ''].map(esc).join(';'));
+      });
+    });
+    triggerDownload(new Blob(['﻿' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-fornecedores-' + todayIso() + '.csv');
   }
   function abrirLaudoForm(l, pre) {
     pre = pre || {};
@@ -19731,14 +20002,16 @@
 
   // ----- 1. pedido -----
   // edita: a OC que está sendo alterada (só enquanto espera a autorização, antes da cotação; 04/11/2026)
-  function abrirPedidoCompra(edita) {
+  // pre (05/11/2026): pedido já preenchido (ex.: sugestão de compra do material de marketing) { setor, itens, obs }
+  function abrirPedidoCompra(edita, pre) {
     var nomes = membrosConvidaveis().map(function(m) { return m.nome; }), eu = ocEu();
     if (edita && !ocPodeEditar(edita)) { showToast(edita.status === 'pedido' ? 'Só quem pediu, quem autoriza o setor, compras ou a diretoria alteram o pedido.' : 'Esta OC já foi para a cotação: não dá mais para alterar.'); return; }
     var itensIni = edita ? (edita.itens || []).map(function(it) {
       return { descricao: it.descricao || '', quantidade: it.quantidade != null ? String(it.quantidade) : '', unidade: it.unidade || 'un', aplicacao: it.aplicacao || '', link: it.link || '', fotos: (it.fotos || []).slice(0, 3), fotosArq: [], ia: it.ia || null };
-    }) : [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }];
+    }) : pre && pre.itens && pre.itens.length ? pre.itens.map(function(it) { return { descricao: it.descricao || '', quantidade: it.quantidade || '', unidade: it.unidade || 'un', aplicacao: it.aplicacao || '', link: '', fotosArq: [] }; })
+      : [{ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' }];
     if (!itensIni.length) itensIni.push({ descricao: '', quantidade: '', unidade: 'un', aplicacao: '' });
-    var setorIni = edita ? edita.setor || '' : '', setores = SETORES_SALA.slice();
+    var setorIni = edita ? edita.setor || '' : pre && pre.setor || '', setores = SETORES_SALA.slice();
     if (setorIni && setores.indexOf(setorIni) < 0) setores.push(setorIni);
     gerAbrir({
       titulo: edita ? 'Editar pedido · OC nº ' + edita.numero : 'Novo pedido de compra', botao: edita ? 'Salvar alterações' : 'Enviar pedido', itens: itensIni, ocEdita: edita ? edita.id : '',
@@ -19747,7 +20020,7 @@
         '<div class="row-2"><label>Setor <span class="req">*</span><select id="oc-setor"><option value="">— escolha —</option>' + setores.map(function(x) { return '<option' + (x === setorIni ? ' selected' : '') + '>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
         '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente"' + (edita && edita.urgencia === 'urgente' ? ' selected' : '') + '>Urgente</option></select></label></div>' +
         '<div id="oc-itens"></div><button type="button" class="btn-text" data-ger="it-add">+ outro item</button>' +
-        '<label>Justificativa ou observação <span class="opt">(opcional)</span><input type="text" id="oc-obs" maxlength="200" autocomplete="off" value="' + escapeHtml(edita ? edita.obs || '' : '') + '" /></label>' +
+        '<label>Justificativa ou observação <span class="opt">(opcional)</span><input type="text" id="oc-obs" maxlength="200" autocomplete="off" value="' + escapeHtml(edita ? edita.obs || '' : pre && pre.obs || '') + '" /></label>' +
         (edita ? '<p class="field-hint">Pedido por ' + escapeHtml(ocQuem(edita.pedido)) + '.</p>'
           : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-nome" maxlength="60" list="oc-nomes" autocomplete="off"' + (eu ? ' value="' + escapeHtml(eu.m.nome) + '" readonly' : '') + ' /></label>' +
         '<datalist id="oc-nomes">' + nomes.map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
@@ -21226,6 +21499,11 @@
     }
     var trP = trocasPendentes().length;
     tiles.push({ tab: 'trocas', t: 'Trocas e devoluções', v: trP, u: trP === 1 ? 'aguardando a Qualidade' : 'aguardando a Qualidade', s: trP ? 'a Qualidade anota o destino do produto' : 'nada esperando destino', alerta: trP > 0 });
+    if (perm.indexOf('marketing') >= 0 && mkt.mat.length) {
+      var mkC = mktParaComprar().length;
+      tiles.push({ tab: 'marketing', t: 'Material de marketing', v: mkC, u: mkC === 1 ? 'material para comprar' : 'materiais para comprar', s: mkC ? mktParaComprar().slice(0, 2).map(function(x) { return x.m.nome; }).join(', ') + (mkC > 2 ? '…' : '') : 'saldo em dia', alerta: mkC > 0 });
+    }
+    if (perm.indexOf('vendas') >= 0) tiles.push(vdTileInicio());
     if (comunicacaoLigada()) {
       var nCh = naoLidas('chat'), nSo = naoLidas('sol'), souM = minhaRef() === 'mestre';
       var espS = souM ? (function() { var ult = {}; chat.msgs.forEach(function(m) { if (m.tipo === 'sol') ult[m.conversa] = m; }); return Object.keys(ult).filter(function(k) { return ult[k].de !== 'mestre'; }).length; })() : 0;
@@ -21420,6 +21698,8 @@
       if (supM) chips += '<span class="func-chip">responde a ' + escapeHtml(supM.nomeCurto || supM.nome) + '</span>';
       if (m.veOrganograma) chips += '<span class="func-chip">vê o Organograma</span>';
       if (m.veBrindes) chips += '<span class="func-chip">vê Brindes</span>';
+      if (m.veMarketing) chips += '<span class="func-chip">vê Marketing</span>';
+      if (m.veVendas) chips += '<span class="func-chip">vê Vendas</span>';
       if (m.veLancProducao) chips += '<span class="func-chip">corrige lançamentos da produção</span>';
       if (m.confirmaProducao) chips += '<span class="func-chip">confirma a produção (PCP)</span>';
       if (m.editaOpConcluida) chips += '<span class="func-chip">edita OP concluída</span>';
@@ -21463,6 +21743,8 @@
     document.getElementById('f-equipe-h-pai').checked = !!hm.pai;
     document.getElementById('f-equipe-org').checked = !!(m && m.veOrganograma);
     document.getElementById('f-equipe-brindes').checked = !!(m && m.veBrindes);
+    document.getElementById('f-equipe-mkt').checked = !!(m && m.veMarketing);
+    document.getElementById('f-equipe-vendas').checked = !!(m && m.veVendas);
     document.getElementById('f-equipe-lanc-prod').checked = !!(m && m.veLancProducao);
     document.getElementById('f-equipe-conf-prod').checked = !!(m && m.confirmaProducao);
     document.getElementById('f-equipe-op-concl').checked = !!(m && m.editaOpConcluida);
@@ -21583,7 +21865,7 @@
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
         superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
-        veBrindes: document.getElementById('f-equipe-brindes').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked, confirmaProducao: document.getElementById('f-equipe-conf-prod').checked, editaOpConcluida: document.getElementById('f-equipe-op-concl').checked,
+        veBrindes: document.getElementById('f-equipe-brindes').checked, veMarketing: document.getElementById('f-equipe-mkt').checked, veVendas: document.getElementById('f-equipe-vendas').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked, confirmaProducao: document.getElementById('f-equipe-conf-prod').checked, editaOpConcluida: document.getElementById('f-equipe-op-concl').checked,
         aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, gestorDocumentos: document.getElementById('f-equipe-gestor-docs').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
@@ -23891,7 +24173,9 @@
     var filtro = TROCA_FILTROS.find(function(f) { return f.k === trocasUi.filtro; }) || TROCA_FILTROS[0];
     var lista = trocas.filter(filtro.f).sort(function(a, b) { return (Number(b.numero) || 0) - (Number(a.numero) || 0); });
     var pend = trocasPendentes().length, mes = todayIso().slice(0, 7), doMes = trocas.filter(function(t) { return String(t.data || '').slice(0, 7) === mes; }).length;
-    box.innerHTML = '<p class="tagline">A <b>expedição</b> lança o que voltou do cliente (qualquer produto, com até 5 fotos) e a <b>Qualidade</b> anota o destino que será dado ao produto.</p>' +
+    var nasCargas = trocasNasCargas();
+    if (trocasUi.filtro === 'cargas') { box.innerHTML = trocasCargasHtml(nasCargas); return; }
+    box.innerHTML = '<p class="tagline">A <b>expedição</b> lança o que voltou do cliente (qualquer produto, com até 5 fotos) e a <b>Qualidade</b> anota o destino que será dado ao produto. As <b>trocas enviadas nas cargas</b> (o produto novo que vai para o cliente) aparecem em “Nas cargas”.</p>' +
       '<div class="est-cards">' +
         supCard('c-entrada', 'Lançar', fmtInt(doMes), (doMes === 1 ? 'lançamento' : 'lançamentos') + ' neste mês', '<button type="button" class="btn btn-primary btn-sm" data-troca="nova">+ Troca ou devolução</button>') +
         supCard('c-saldo' + (pend ? ' alerta' : ''), 'Qualidade', fmtInt(pend), pend === 1 ? 'aguardando o destino' : 'aguardando o destino') +
@@ -23900,9 +24184,41 @@
       '<div class="est-loc-chips" role="group" aria-label="Filtrar trocas e devoluções">' + TROCA_FILTROS.map(function(f) {
         var c = trocas.filter(f.f).length;
         return '<button type="button" class="est-loc' + (f.k === filtro.k ? ' on' : '') + '" data-troca="filtro" data-f="' + f.k + '">' + escapeHtml(f.nome) + (c ? '<b>' + c + '</b>' : '') + '</button>';
-      }).join('') + '</div>' +
+      }).join('') + '<button type="button" class="est-loc" data-troca="filtro" data-f="cargas">🔁 Nas cargas' + (nasCargas.length ? '<b>' + nasCargas.length + '</b>' : '') + '</button></div>' +
       (lista.length ? '<div class="troca-grade">' + lista.slice(0, 80).map(trocaCardHtml).join('') + '</div>' : '<p class="empty-state">' + (trocas.length ? 'Nada neste filtro.' : 'Nenhuma troca ou devolução lançada ainda. Toque em “+ Troca ou devolução”.') + '</p>');
     carregarFotosCanhoto(box);
+  }
+  // trocas enviadas nas cargas (produto que vai para trocar o que o cliente devolveu), das mais novas para as mais antigas
+  function trocasNasCargas() {
+    var l = [];
+    cargas.forEach(function(c) { (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+      var t = trocaQtd(it);
+      if (t) l.push({ c: c, cliente: cl.cliente || '—', it: it, qtd: t, dia: c.status === 'concluida' ? String(c.concluidoEm || c.data).slice(0, 10) : c.data });
+    }); }); });
+    return l.sort(function(a, b) { return String(b.dia).localeCompare(String(a.dia)); });
+  }
+  function trocasCargasHtml(l) {
+    var h = '<p class="tagline">Produtos que foram <b>como troca nas cargas</b> (marcados no lançamento da carga ou no carregamento, sempre com o motivo). Não contam como venda no painel de vendas.</p>' +
+      '<div class="est-loc-chips" role="group" aria-label="Filtrar trocas e devoluções">' + TROCA_FILTROS.map(function(f) {
+        return '<button type="button" class="est-loc" data-troca="filtro" data-f="' + f.k + '">' + escapeHtml(f.nome) + '</button>';
+      }).join('') + '<button type="button" class="est-loc on" data-troca="filtro" data-f="cargas">🔁 Nas cargas' + (l.length ? '<b>' + l.length + '</b>' : '') + '</button></div>';
+    if (!l.length) return h + '<p class="empty-state">Nenhuma troca nas cargas ainda. Na carga (ou na conclusão do carregamento), marque “🔁 Troca” no produto e escreva o motivo.</p>';
+    return h + '<button type="button" class="btn-text" data-troca="csv-cargas">Baixar planilha</button><div class="troca-grade">' + l.slice(0, 120).map(function(x) {
+      var done = x.c.status === 'concluida';
+      return '<article class="troca-card' + (done ? '' : ' pend') + '"><div class="troca-cab"><b>' + escapeHtml(x.cliente) + '</b><span class="driver-sub">' + escapeHtml(formatDateBR(x.dia)) + '</span>' +
+        '<span class="sol-chip ' + (done ? 'ok' : 'esp') + '">' + (done ? '✓ carregada' : 'aguardando carregar') + '</span></div>' +
+        '<ul class="troca-itens"><li>' + escapeHtml(qtdUnidade(x.qtd, x.it.unidade || '') + ' · ' + (x.it.produtoNome || '—')) + '</li></ul>' +
+        '<p class="driver-sub">Motivo: <b>' + escapeHtml(x.it.trocaMotivo || '—') + '</b></p>' +
+        '<p class="driver-sub">Carga ' + escapeHtml(cargaCode(x.c)) + ' · ' + escapeHtml(x.c.retira ? retiraTexto(x.c) : x.c.motorista || 'motorista a definir') + '</p></article>';
+    }).join('') + '</div>';
+  }
+  function exportarTrocasCargas() {
+    var esc = function(v) { var x = String(v == null ? '' : v); return /[;"\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+    var linhas = [['Data', 'Situação', 'Carga', 'Motorista', 'Cliente', 'Produto', 'Troca (quantidade)', 'Unidade', 'Quantidade na carga', 'Motivo'].join(';')];
+    trocasNasCargas().forEach(function(x) {
+      linhas.push([formatDateBR(x.dia), x.c.status === 'concluida' ? 'carregada' : 'aguardando', cargaCode(x.c), x.c.retira ? retiraTexto(x.c) : x.c.motorista || '', x.cliente, x.it.produtoNome || '', x.qtd, x.it.unidade || '', Number(x.it.quantidade) || 0, x.it.trocaMotivo || ''].map(esc).join(';'));
+    });
+    triggerDownload(new Blob(['\ufeff' + linhas.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-trocas-nas-cargas-' + todayIso() + '.csv');
   }
   function renderTabTrocasBadge() {
     var b = document.querySelector('#admin-tabs .seg-btn[data-tab="trocas"]');
@@ -24046,6 +24362,1181 @@
     else if (a === 'filtro') { trocasUi.filtro = b.dataset.f; renderTrocas(); }
     else if (a === 'destino' && t) abrirDestinoTroca(t);
     else if (a === 'csv') exportarTrocas();
+    else if (a === 'csv-cargas') exportarTrocasCargas();
+  });
+  // =====================================================================================================
+  // MATERIAL DE MARKETING (pedido de 05/11/2026)
+  // Banners, wind banners, folders, panfletos, chaveiros, camisetas, bonés…: o cadastro de cada material (estoque
+  // mínimo e tempo de produção), as entradas, as entregas para clientes, funcionários e vendedores — na hora, com a
+  // ficha simples de entrega, ou junto com uma carga (sai do estoque quando a carga é carregada) —, a contagem, o saldo,
+  // o histórico por pessoa e a sugestão de compra. Nada é apagado: lançamento errado é cancelado com o motivo e continua
+  // no histórico. Coleções "mkt-materiais" e "mkt-movs" (migração 0044: só o escritório lê e grava; só a senha mestre
+  // apaga). O histórico da planilha de controle (desde 14/05/2026) foi importado com os mesmos saldos.
+  var MKT_COL = { mat: 'mkt-materiais', mov: 'mkt-movs' };
+  var mkt = { mat: [], mov: [] };
+  var mktUi = { area: 'saldo', busca: '', tipo: '', para: '', grupo: '', inativos: false, todos: false, confirmar: null };
+  var MKT_GRUPOS = ['Banner', 'Wind banner', 'Folder', 'Panfleto', 'Chaveiro', 'Camiseta', 'Boné', 'Brinde', 'Outros'];
+  var MKT_PARA = [['cliente', 'Cliente'], ['funcionario', 'Funcionário'], ['vendedor', 'Vendedor / representante'], ['outro', 'Outro (evento, parceiro…)']];
+  var MKT_ORIGENS = [['compra', 'Compra ou produção recebida'], ['devolucao', 'Devolução (voltou para o estoque)'], ['inicial', 'Estoque inicial'], ['outro', 'Outra entrada']];
+  var MKT_AREAS = [['saldo', 'Saldo e compras'], ['historico', 'Entregas e entradas'], ['pessoas', 'Por cliente ou funcionário'], ['materiais', 'Materiais']];
+  function mktParaNome(k) { var p = MKT_PARA.find(function(x) { return x[0] === k; }); return p ? p[1].replace(/ \/.*| \(.*/, '') : 'Outro'; }
+  function mktLocalKey(k) { return 'levissima-mkt-' + k + '-v1'; }
+  function loadLocalMkt() { Object.keys(MKT_COL).forEach(function(k) { try { mkt[k] = JSON.parse(localStorage.getItem(mktLocalKey(k)) || '[]') || []; } catch (e) { mkt[k] = []; } }); }
+  function subscribeMkt() {
+    if (!ehEscritorio()) return;
+    Object.keys(MKT_COL).forEach(function(k) {
+      db.collection(MKT_COL[k]).onSnapshot(function(snap) {
+        mkt[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        if (session) { renderMkt(); renderTabMktBadge(); if (ui.tab === 'inicio') renderInicio(); }
+      }, function(err) { console.error(MKT_COL[k], err); });
+    });
+  }
+  // ops: [{ op: 'set' | 'update', col, id, data }], num lote só
+  function mktGravar(ops) {
+    if (mode === 'db' && db) {
+      var b = db.batch();
+      ops.forEach(function(o) { var ref = db.collection(o.col).doc(o.id); if (o.op === 'update') b.update(ref, o.data); else b.set(ref, o.data); });
+      return b.commit();
+    }
+    ops.forEach(function(o) {
+      var k = o.col === MKT_COL.mat ? 'mat' : 'mov', i = mkt[k].findIndex(function(x) { return x.id === o.id; });
+      if (o.op === 'update') { if (i >= 0) mkt[k][i] = Object.assign({}, mkt[k][i], o.data); }
+      else { var novo = Object.assign({ id: o.id }, o.data); if (i >= 0) mkt[k][i] = novo; else mkt[k].push(novo); }
+      try { localStorage.setItem(mktLocalKey(k), JSON.stringify(mkt[k])); } catch (e) {}
+    });
+    renderMkt(); renderTabMktBadge();
+    return Promise.resolve();
+  }
+  function mktNovoId(col) { return (mode === 'db' && db) ? db.collection(col).doc().id : 'local-' + uid(); }
+  function mktFalha(e) { console.error('marketing', e); showToast(e && e.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : 'Não foi possível salvar agora. Tente de novo.'); }
+  function mktPodeEditar() { return nivelDaAba('marketing') === 'edita'; }
+  function mktPodeIncluir() { return nivelDaAba('marketing') !== 'ver'; }
+
+  // ----- materiais -----
+  function mktMatPorId(id) { return mkt.mat.find(function(m) { return m.id === id; }) || null; }
+  function mktOrdemMat(a, b) {
+    var ga = MKT_GRUPOS.indexOf(a.grupo), gb = MKT_GRUPOS.indexOf(b.grupo);
+    return (ga < 0 ? 99 : ga) - (gb < 0 ? 99 : gb) || String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR');
+  }
+  function mktMatsAtivos() { return mkt.mat.filter(function(m) { return m.ativo !== false; }).sort(mktOrdemMat); }
+  function mktPacote(m) { return !!(m && /^pacote/i.test(String(m.unidade || ''))); }
+  function mktNomeMat(m) { return m ? m.nome + (m.unidade && m.unidade !== 'un' ? ' (' + m.unidade + ')' : '') : ''; }
+  // "2 un", "1 pacote", "3 pacotes"
+  function mktQtd(q, m) { var n = Number(q) || 0; return fmtNumQ(n) + (mktPacote(m) ? (Math.abs(n) === 1 ? ' pacote' : ' pacotes') : ' un'); }
+  function mktItemTexto(it) { var m = mktMatPorId(it.materialId); return mktQtd(it.quantidade, m) + ' · ' + (m ? m.nome : it.material || '—'); }
+  function mktItensTexto(v) { return (v.itens || []).map(mktItemTexto).join('; '); }
+
+  // ----- situação, saldo e consumo -----
+  // Entrega que vai numa carga: sai do estoque quando a carga é carregada; antes disso, reserva o saldo.
+  function mktSituacao(v) {
+    if (v.cancelado) return { k: 'cancelado', txt: 'cancelado' };
+    if (v.tipo === 'saida' && v.cargaId) {
+      var c = findCarga(v.cargaId);
+      if (!c) return { k: 'semcarga', txt: 'a carga foi apagada: entregue sem a carga ou cancele' };
+      if (c.status !== 'concluida') return { k: 'nacarga', txt: 'vai na carga de ' + formatDateBR(c.data) + (c.motorista ? ' · ' + c.motorista : ''), c: c };
+      return { k: 'ok', txt: 'entregue na carga de ' + formatDateBR(String(c.concluidoEm || c.data).slice(0, 10)), data: String(c.concluidoEm || '').slice(0, 10) || c.data, c: c };
+    }
+    return { k: 'ok', txt: v.tipo === 'saida' ? 'entregue' : v.tipo === 'entrada' ? 'entrada' : 'contagem' };
+  }
+  function mktDataEf(v, s) { return (s && s.data) || v.data || String(v.lancadoEm || '').slice(0, 10); }
+  function mktJanelaDias() {
+    var hoje = todayIso(), primeira = '';
+    mkt.mov.forEach(function(v) { if (v.tipo === 'saida' && !v.cancelado && v.data && (!primeira || v.data < primeira)) primeira = v.data; });
+    if (!primeira) return 90;
+    return Math.max(14, Math.min(90, -diasAte(primeira)));
+  }
+  function mktSaldos() {
+    var s = {}, lim = addDiasIso(todayIso(), -mktJanelaDias());
+    function x(id) { return s[id] = s[id] || { saldo: 0, reservado: 0, entradas: 0, saidas: 0, consumo: 0, ultima: '' }; }
+    mkt.mov.forEach(function(v) {
+      var st = mktSituacao(v);
+      if (st.k === 'cancelado') return;
+      (v.itens || []).forEach(function(it) {
+        if (!it.materialId) return;
+        var a = x(it.materialId), q = Number(it.quantidade) || 0;
+        if (v.tipo === 'entrada') { a.saldo += q; a.entradas += q; }
+        else if (v.tipo === 'ajuste') a.saldo += q;
+        else if (v.tipo === 'saida') {
+          if (st.k !== 'ok') { a.reservado += q; return; }
+          var d = mktDataEf(v, st);
+          a.saldo -= q; a.saidas += q;
+          if (d >= lim) a.consumo += q;
+          if (d > a.ultima) a.ultima = d;
+        }
+      });
+    });
+    return s;
+  }
+  // Sugestão de compra: consumo por dia (média das entregas da janela, até 90 dias) × tempo de produção = ponto de pedido.
+  // Comprar quando o disponível chega ao mínimo ou não aguenta até o material novo chegar; a sugestão repõe o mínimo
+  // mais o consumo do tempo de produção e de mais 60 dias (no mínimo, o dobro do estoque mínimo).
+  function mktAnalise(m, saldos, janela) {
+    var a = saldos[m.id] || { saldo: 0, reservado: 0, consumo: 0, ultima: '' };
+    var disp = a.saldo - a.reservado, min = Number(m.estoqueMinimo) || 0, prazo = Number(m.prazoDias) || 15;
+    var dia = a.consumo / (janela || 90), ponto = Math.ceil(min + dia * prazo);
+    var dura = dia > 0 ? Math.floor(Math.max(0, disp) / dia) : null;
+    var st = disp <= 0 ? 'sem' : disp <= min ? 'comprar' : disp <= ponto ? 'atencao' : 'ok';
+    if (st === 'sem' && !min && !dia) st = 'parado';
+    var alvo = Math.max(min * 2, Math.ceil(min + dia * (prazo + 60)));
+    var sug = st === 'ok' || st === 'parado' ? 0 : Math.max(1, alvo - disp);
+    return { a: a, disp: disp, min: min, prazo: prazo, mes: Math.round(dia * 30 * 10) / 10, ponto: ponto, dura: dura, st: st, sug: sug };
+  }
+  var MKT_ST = { sem: ['Sem estoque', 'falta'], comprar: ['Abaixo do mínimo: comprar', 'falta'], atencao: ['Comprar já: acaba antes de o novo chegar', 'aviso'], ok: ['OK', 'ok'], parado: ['Sem estoque (sem uso)', ''] };
+  function mktParaComprar() {
+    var s = mktSaldos(), j = mktJanelaDias();
+    return mktMatsAtivos().map(function(m) { return { m: m, r: mktAnalise(m, s, j) }; }).filter(function(x) { return x.r.sug > 0; });
+  }
+  function mktProximoNumero() { return mkt.mov.reduce(function(n, v) { return v.tipo === 'saida' ? Math.max(n, Number(v.numero) || 0) : n; }, 0) + 1; }
+  // pessoas que receberam (para a busca e o resumo): chave = tipo + nome sem acento
+  function mktPessoas() {
+    var p = {};
+    mkt.mov.forEach(function(v) {
+      if (v.tipo !== 'saida' || !v.para || !v.para.nome) return;
+      var st = mktSituacao(v); if (st.k === 'cancelado') return;
+      var k = (v.para.tipo || 'outro') + ':' + normNome(v.para.nome);
+      var x = p[k] = p[k] || { k: k, nome: v.para.nome, tipo: v.para.tipo || 'outro', entregas: 0, itens: {}, qtd: 0, ultima: '', primeira: '', pendentes: 0 };
+      var d = mktDataEf(v, st);
+      x.entregas++;
+      if (st.k !== 'ok') x.pendentes++;
+      if (!x.ultima || d > x.ultima) x.ultima = d;
+      if (!x.primeira || d < x.primeira) x.primeira = d;
+      (v.itens || []).forEach(function(it) {
+        var m = mktMatPorId(it.materialId), nm = m ? m.nome : it.material || '—';
+        x.itens[nm] = (x.itens[nm] || 0) + (Number(it.quantidade) || 0); x.qtd += Number(it.quantidade) || 0;
+      });
+    });
+    return Object.keys(p).map(function(k) { return p[k]; });
+  }
+  function mktNomesPara() {
+    var l = mktPessoas().map(function(x) { return x.nome; }).concat(uniqueClientNames().slice(0, 400), equipe.map(function(m) { return m.nome; }));
+    return l.filter(function(n, i) { return n && l.indexOf(n) === i; }).sort(function(a, b) { return String(a).localeCompare(String(b), 'pt-BR'); });
+  }
+  function mktQuemEntrega() {
+    var l = [quemSessao()].concat(mkt.mov.map(function(v) { return v.entreguePor; }), equipe.map(function(m) { return primeiroNome(m.nomeCompleto || m.nome); }));
+    return l.filter(function(n, i) { return n && n !== 'Equipe' && l.indexOf(n) === i; });
+  }
+  // entregas de material de marketing que vão numa carga (para a carga, a conclusão e a ordem de carregamento)
+  function mktDaCarga(cargaId) {
+    return mkt.mov.filter(function(v) { return v.tipo === 'saida' && v.cargaId === cargaId && !v.cancelado; });
+  }
+  function mktCargaTexto(v) { return mktItensTexto(v) + ' → ' + (v.para && v.para.nome ? v.para.nome : 'cliente'); }
+  function mktCargaHtml(cargaId) {
+    var l = mktDaCarga(cargaId);
+    if (!l.length) return '';
+    return '<div class="mkt-na-carga"><b>🎁 Material de marketing nesta carga</b>' + l.map(function(v) { return '<div>' + escapeHtml(mktCargaTexto(v)) + ' <span class="driver-sub">(entrega nº ' + escapeHtml(String(v.numero || '')) + ')</span></div>'; }).join('') + '</div>';
+  }
+
+  // ----- tela -----
+  function renderTabMktBadge() {
+    var b = document.querySelector('#admin-tabs .seg-btn[data-tab="marketing"]');
+    if (!b) return;
+    var n = ehEscritorio() ? mktParaComprar().length : 0;
+    seloAba(b, n, n + (n === 1 ? ' material de marketing para comprar' : ' materiais de marketing para comprar'));
+  }
+  function renderMkt() {
+    var box = document.getElementById('mkt-conteudo');
+    if (!box || !session || !ehEscritorio() || ui.tab !== 'marketing') return;
+    var saldos = mktSaldos(), janela = mktJanelaDias(), ativos = mktMatsAtivos(), mes = todayIso().slice(0, 7);
+    var comprar = ativos.map(function(m) { return { m: m, r: mktAnalise(m, saldos, janela) }; }).filter(function(x) { return x.r.sug > 0; });
+    var doMes = mkt.mov.filter(function(v) { return v.tipo === 'saida' && !v.cancelado && String(mktDataEf(v, mktSituacao(v))).slice(0, 7) === mes; }).length;
+    var naCarga = mkt.mov.filter(function(v) { var k = mktSituacao(v).k; return v.tipo === 'saida' && (k === 'nacarga' || k === 'semcarga'); }).length;
+    var inc = mktPodeIncluir();
+    var h = '<p class="tagline">Controle do <b>material de marketing</b>: saldo de cada item, entradas, entregas para <b>clientes, funcionários e vendedores</b> (na hora, com a ficha de entrega, ou junto com uma carga) e a <b>sugestão de compra</b>. Nada é apagado: o lançamento errado é cancelado com o motivo e fica no histórico.</p>' +
+      '<div class="est-cards">' +
+        supCard('c-entrada', 'Entregas', fmtInt(doMes), (doMes === 1 ? 'entrega' : 'entregas') + ' neste mês' + (naCarga ? ' · ' + naCarga + (naCarga === 1 ? ' vai numa carga' : ' vão em cargas') : ''), inc ? '<button type="button" class="btn btn-primary btn-sm" data-mkt="entregar">+ Entregar material</button>' : '') +
+        supCard('c-saldo', 'Estoque', fmtInt(ativos.length), ativos.length === 1 ? 'material cadastrado' : 'materiais cadastrados', inc ? '<button type="button" class="btn btn-secondary btn-sm" data-mkt="entrada">+ Entrada</button>' : '') +
+        supCard('c-futuro' + (comprar.length ? ' alerta' : ''), 'Comprar', fmtInt(comprar.length), comprar.length ? (comprar.length === 1 ? 'material abaixo do ponto de compra' : 'materiais abaixo do ponto de compra') : 'nada para comprar agora', comprar.length ? '<button type="button" class="btn btn-secondary btn-sm" data-mkt="area" data-a="saldo">Ver sugestões</button>' : '') +
+      '</div>' +
+      '<div class="est-loc-chips" role="tablist" aria-label="Partes do controle de marketing">' + MKT_AREAS.map(function(a) {
+        return '<button type="button" class="est-loc' + (mktUi.area === a[0] ? ' on' : '') + '" data-mkt="area" data-a="' + a[0] + '">' + escapeHtml(a[1]) + '</button>';
+      }).join('') + '</div>';
+    if (mktUi.area === 'historico') h += mktHtmlHistorico();
+    else if (mktUi.area === 'pessoas') h += mktHtmlPessoas();
+    else if (mktUi.area === 'materiais') h += mktHtmlMateriais(saldos, janela);
+    else h += mktHtmlSaldo(saldos, janela, comprar);
+    box.innerHTML = h;
+  }
+  function mktHtmlSaldo(saldos, janela, comprar) {
+    var ativos = mktMatsAtivos(), h = '';
+    if (!ativos.length) return '<p class="empty-state">Nenhum material cadastrado. Cadastre em “Materiais”.</p>';
+    if (comprar.length) {
+      h += '<div class="est-alertas" role="status"><p class="est-alertas-t">🛒 Sugestão de compra</p><ul>' + comprar.map(function(x) {
+        return '<li class="' + (x.r.st === 'atencao' ? '' : 'neg') + '"><b>' + escapeHtml(mktNomeMat(x.m)) + '</b>: comprar <b>' + escapeHtml(mktQtd(x.r.sug, x.m)) + '</b> · ' +
+          escapeHtml('disponível ' + fmtNumQ(x.r.disp) + ', mínimo ' + fmtNumQ(x.r.min) + (x.r.mes ? ', usa ~' + fmtNumQ(x.r.mes) + ' por mês' : '') + ', produção em ' + x.r.prazo + ' dias') + '</li>';
+      }).join('') + '</ul>' +
+        (abasPermitidas().indexOf('compras') >= 0 && mktPodeIncluir() ? '<button type="button" class="btn btn-primary btn-sm" data-mkt="pedir-compra">Fazer o pedido de compra destes itens</button>' : '') +
+        '<p class="field-hint">A conta: consumo médio dos últimos ' + janela + ' dias × tempo de produção = ponto de compra. A sugestão repõe o mínimo e o uso de mais ~2 meses depois que chegar.</p></div>';
+    }
+    h += '<div class="ag-ferramentas"><label class="sup-filtro">Tipo<select id="mkt-grupo"><option value="">Todos</option>' + MKT_GRUPOS.filter(function(g) { return ativos.some(function(m) { return m.grupo === g; }); }).map(function(g) { return '<option' + (mktUi.grupo === g ? ' selected' : '') + '>' + escapeHtml(g) + '</option>'; }).join('') + '</select></label>' +
+      (mktPodeIncluir() ? '<button type="button" class="btn-text" data-mkt="contagem">Contagem do estoque</button>' : '') +
+      '<button type="button" class="btn-text" data-mkt="csv-saldo">Baixar planilha do saldo</button></div>';
+    var grupo = null;
+    h += '<div class="mkt-saldo">' + ativos.filter(function(m) { return !mktUi.grupo || m.grupo === mktUi.grupo; }).map(function(m) {
+      var r = mktAnalise(m, saldos, janela), st = MKT_ST[r.st], g = '';
+      if ((m.grupo || 'Outros') !== grupo) { grupo = m.grupo || 'Outros'; g = '<p class="mp-grupo">' + escapeHtml(grupo) + '</p>'; }
+      return g + '<div class="mkt-linha' + (st[1] ? ' st-' + st[1] : '') + '">' +
+        '<div class="mkt-linha-nome"><b>' + escapeHtml(m.nome) + '</b>' + (mktPacote(m) ? ' <span class="driver-sub">' + escapeHtml(m.unidade) + '</span>' : '') +
+          '<span class="driver-sub">' + escapeHtml(['mínimo ' + fmtNumQ(r.min), r.mes ? 'usa ~' + fmtNumQ(r.mes) + '/mês' : 'sem uso recente', r.dura !== null ? 'dura ~' + fmtInt(r.dura) + (r.dura === 1 ? ' dia' : ' dias') : '', 'produção ' + r.prazo + ' dias'].filter(Boolean).join(' · ')) + '</span></div>' +
+        '<div class="mkt-linha-num"><span class="mkt-saldo-n">' + escapeHtml(fmtNumQ(r.disp)) + '</span><span class="driver-sub">' + (r.a.reservado ? escapeHtml(fmtNumQ(r.a.saldo) + ' no estoque, ' + fmtNumQ(r.a.reservado) + ' na carga') : 'disponível') + '</span></div>' +
+        '<div class="mkt-linha-st"><span class="q-chip ' + st[1] + '">' + escapeHtml(st[0]) + '</span>' + (r.sug ? '<span class="driver-sub">comprar ' + escapeHtml(mktQtd(r.sug, m)) + '</span>' : '') + '</div></div>';
+    }).join('') + '</div>';
+    return h;
+  }
+  function mktFiltraMovs() {
+    var b = normNome(mktUi.busca);
+    return mkt.mov.filter(function(v) {
+      if (mktUi.tipo && v.tipo !== mktUi.tipo) return false;
+      if (mktUi.para && !(v.tipo === 'saida' && v.para && v.para.tipo === mktUi.para)) return false;
+      if (!b) return true;
+      var t = [v.para && v.para.nome, v.entreguePor, v.fornecedor, v.nf, v.obs, v.numero ? 'n' + v.numero : '', mktItensTexto(v), v.cargaCliente].join(' ');
+      return normNome(t).indexOf(b) >= 0;
+    }).sort(function(a, b2) { return String(mktDataEf(b2, mktSituacao(b2))).localeCompare(String(mktDataEf(a, mktSituacao(a)))) || String(b2.lancadoEm || '').localeCompare(String(a.lancadoEm || '')); });
+  }
+  function mktCardHtml(v) {
+    var st = mktSituacao(v), d = mktDataEf(v, st), id = escapeHtml(v.id), cls = st.k === 'cancelado' ? ' cancelado' : st.k === 'nacarga' || st.k === 'semcarga' ? ' pend' : '';
+    var titulo = v.tipo === 'saida' ? 'Entrega nº ' + (v.numero || '—') : v.tipo === 'entrada' ? 'Entrada' : 'Contagem do estoque';
+    var chip = st.k === 'cancelado' ? '<span class="sol-chip">cancelado</span>' : st.k === 'nacarga' ? '<span class="sol-chip esp">vai na carga</span>' : st.k === 'semcarga' ? '<span class="sol-chip esp">carga apagada</span>' : '<span class="sol-chip ok">' + escapeHtml(v.tipo === 'saida' ? '✓ entregue' : v.tipo === 'entrada' ? '+ entrada' : 'ajuste') + '</span>';
+    var h = '<article class="troca-card mkt-card mkt-' + v.tipo + cls + '"><div class="troca-cab"><b>' + escapeHtml(titulo) + '</b><span class="driver-sub">' + escapeHtml(formatDateBR(d)) + '</span>' + chip + '</div>';
+    if (v.tipo === 'saida') h += '<p class="troca-cli"><b>' + escapeHtml(v.para && v.para.nome || '—') + '</b> <span class="driver-sub">' + escapeHtml(mktParaNome(v.para && v.para.tipo)) + '</span></p>';
+    if (v.tipo === 'entrada') h += '<p class="driver-sub">' + escapeHtml([(MKT_ORIGENS.find(function(o) { return o[0] === v.origem; }) || ['', 'Entrada'])[1], v.fornecedor, v.nf ? 'NF ' + v.nf : ''].filter(Boolean).join(' · ')) + '</p>';
+    h += '<ul class="troca-itens">' + (v.itens || []).map(function(it) {
+      var m = mktMatPorId(it.materialId), q = Number(it.quantidade) || 0;
+      var tq = v.tipo === 'ajuste' ? (q > 0 ? '+' : '') + mktQtd(q, m) + (it.contado != null ? ' (contado ' + fmtNumQ(it.contado) + ')' : '') : mktQtd(q, m);
+      return '<li>' + escapeHtml(tq) + ' · ' + escapeHtml(m ? m.nome : it.material || '—') + (it.materialId ? '' : ' <span class="q-chip aviso" title="Material sem cadastro: não baixa do estoque">sem cadastro</span>') + '</li>';
+    }).join('') + '</ul>';
+    if (v.tipo === 'saida') h += '<p class="driver-sub">' + (v.cargaId ? escapeHtml(st.txt) + (v.entreguePor ? ' · separado por ' + escapeHtml(v.entreguePor) : '') : 'Entregue por <b>' + escapeHtml(v.entreguePor || '—') + '</b>') + '</p>';
+    if (v.tipo === 'ajuste' && v.motivo) h += '<p class="driver-sub">Motivo: ' + escapeHtml(v.motivo) + '</p>';
+    if (v.obs) h += '<p class="driver-sub">Obs.: ' + escapeHtml(v.obs) + '</p>';
+    if (v.cancelado && v.cancelamento) h += '<p class="troca-destino oc-cancelada"><b>Cancelado</b> por ' + escapeHtml(v.cancelamento.por || '—') + (v.cancelamento.em ? ' em ' + escapeHtml(formatDateTimeBR(v.cancelamento.em)) : '') + ': ' + escapeHtml(v.cancelamento.motivo || '') + '</p>';
+    (v.edicoes || []).forEach(function(e) { h += '<p class="driver-sub">✎ ' + escapeHtml(e.texto || '') + ' — ' + escapeHtml(e.por || '') + (e.em ? ', ' + escapeHtml(formatDateTimeBR(e.em)) : '') + '</p>'; });
+    h += '<p class="driver-sub">Lançado por ' + escapeHtml(v.lancadoPor || '—') + (v.lancadoEm ? ' em ' + escapeHtml(formatDateTimeBR(v.lancadoEm)) : '') + '</p>';
+    var ac = '';
+    if (v.tipo === 'saida' && !v.cancelado) ac += '<button type="button" class="btn btn-secondary btn-sm" data-mkt="ficha" data-id="' + id + '">Ficha de entrega</button>';
+    if ((st.k === 'nacarga' || st.k === 'semcarga') && mktPodeEditar()) ac += '<button type="button" class="btn-text" data-mkt="sem-carga" data-id="' + id + '">Entregar sem a carga</button>';
+    if (!v.cancelado && mktPodeEditar()) ac += '<button type="button" class="btn-text danger" data-mkt="cancelar" data-id="' + id + '">Cancelar</button>';
+    if (ac) h += '<div class="troca-acoes">' + ac + '</div>';
+    return h + '</article>';
+  }
+  function mktHtmlHistorico() {
+    var lista = mktFiltraMovs(), max = mktUi.todos ? 400 : 60;
+    var h = '<div class="ag-ferramentas"><input type="search" id="mkt-busca" placeholder="Buscar cliente, funcionário, material, quem entregou ou nº" value="' + escapeHtml(mktUi.busca) + '" autocomplete="off" aria-label="Buscar no histórico do marketing" />' +
+      '<label class="sup-filtro">Lançamento<select id="mkt-tipo"><option value="">Todos</option><option value="saida"' + (mktUi.tipo === 'saida' ? ' selected' : '') + '>Entregas</option><option value="entrada"' + (mktUi.tipo === 'entrada' ? ' selected' : '') + '>Entradas</option><option value="ajuste"' + (mktUi.tipo === 'ajuste' ? ' selected' : '') + '>Contagens</option></select></label>' +
+      '<label class="sup-filtro">Para<select id="mkt-para"><option value="">Todos</option>' + MKT_PARA.map(function(p) { return '<option value="' + p[0] + '"' + (mktUi.para === p[0] ? ' selected' : '') + '>' + escapeHtml(p[1]) + '</option>'; }).join('') + '</select></label>' +
+      '<button type="button" class="btn-text" data-mkt="csv">Baixar planilha</button></div>';
+    // busca por pessoa: o resumo do que ela já recebeu
+    var b = normNome(mktUi.busca);
+    if (b) {
+      var ps = mktPessoas().filter(function(p) { return normNome(p.nome).indexOf(b) >= 0; }).sort(function(a, c) { return String(c.ultima).localeCompare(String(a.ultima)); }).slice(0, 4);
+      h += ps.map(mktResumoPessoaHtml).join('');
+    }
+    h += lista.length ? '<div class="troca-grade">' + lista.slice(0, max).map(mktCardHtml).join('') + '</div>' +
+      (lista.length > max ? '<button type="button" class="btn-text" data-mkt="todos">Mostrar mais (' + (lista.length - max) + ')</button>' : '')
+      : '<p class="empty-state">' + (mkt.mov.length ? 'Nada encontrado.' : 'Nenhum lançamento ainda.') + '</p>';
+    return h;
+  }
+  function mktResumoPessoaHtml(p) {
+    var itens = Object.keys(p.itens).sort(function(a, b) { return p.itens[b] - p.itens[a]; });
+    return '<div class="mkt-pessoa"><div class="frete-top"><span><b>' + escapeHtml(p.nome) + '</b> <span class="driver-sub">' + escapeHtml(mktParaNome(p.tipo)) + '</span></span><span class="chip-est pago">' + p.entregas + (p.entregas === 1 ? ' entrega' : ' entregas') + '</span></div>' +
+      '<div class="frete-sub">Recebeu: ' + escapeHtml(itens.map(function(n) { return fmtNumQ(p.itens[n]) + ' ' + n; }).join(' · ')) + '</div>' +
+      '<div class="frete-sub">' + escapeHtml((p.primeira === p.ultima ? 'Em ' + formatDateBR(p.ultima) : 'De ' + formatDateBR(p.primeira) + ' a ' + formatDateBR(p.ultima)) + (p.pendentes ? ' · ' + p.pendentes + ' ainda na carga' : '')) + '</div></div>';
+  }
+  function mktHtmlPessoas() {
+    var b = normNome(mktUi.busca);
+    var ps = mktPessoas().filter(function(p) { return (!mktUi.para || p.tipo === mktUi.para) && (!b || normNome(p.nome).indexOf(b) >= 0); })
+      .sort(function(a, c) { return String(c.ultima).localeCompare(String(a.ultima)) || String(a.nome).localeCompare(String(c.nome), 'pt-BR'); });
+    var h = '<div class="ag-ferramentas"><input type="search" id="mkt-busca" placeholder="Buscar cliente, funcionário ou vendedor" value="' + escapeHtml(mktUi.busca) + '" autocomplete="off" aria-label="Buscar pessoa" />' +
+      '<label class="sup-filtro">Quem<select id="mkt-para"><option value="">Todos</option>' + MKT_PARA.map(function(p) { return '<option value="' + p[0] + '"' + (mktUi.para === p[0] ? ' selected' : '') + '>' + escapeHtml(p[1]) + '</option>'; }).join('') + '</select></label></div>';
+    if (!ps.length) return h + '<p class="empty-state">Ninguém encontrado.</p>';
+    return h + '<p class="hint">' + ps.length + (ps.length === 1 ? ' pessoa' : ' pessoas') + '. Toque no nome para ver as entregas.</p><div class="mkt-pessoas">' + ps.map(function(p) {
+      var itens = Object.keys(p.itens).sort(function(a, c) { return p.itens[c] - p.itens[a]; });
+      return '<button type="button" class="mkt-pessoa-lin" data-mkt="pessoa" data-nome="' + escapeHtml(p.nome) + '"><span class="mkt-pessoa-n"><b>' + escapeHtml(p.nome) + '</b><span class="driver-sub">' + escapeHtml(mktParaNome(p.tipo) + ' · ' + itens.slice(0, 3).map(function(n) { return fmtNumQ(p.itens[n]) + ' ' + n; }).join(', ') + (itens.length > 3 ? '…' : '')) + '</span></span>' +
+        '<span class="mkt-pessoa-q"><b>' + p.entregas + '</b><span class="driver-sub">' + (p.entregas === 1 ? 'entrega' : 'entregas') + ' · ' + escapeHtml(dataCurta(p.ultima)) + '</span></span></button>';
+    }).join('') + '</div>';
+  }
+  function mktHtmlMateriais(saldos, janela) {
+    var lista = mkt.mat.filter(function(m) { return mktUi.inativos || m.ativo !== false; }).sort(mktOrdemMat);
+    var h = '<div class="ag-ferramentas">' + (mktPodeEditar() ? '<button type="button" class="btn btn-primary btn-sm" data-mkt="mat-novo">+ Material</button>' : '') +
+      '<button type="button" class="btn-text" data-mkt="mat-inativos">' + (mktUi.inativos ? 'Esconder inativos' : 'Ver inativos') + '</button></div>';
+    if (!lista.length) return h + '<p class="empty-state">Nenhum material cadastrado.</p>';
+    return h + lista.map(function(m) {
+      var r = mktAnalise(m, saldos, janela);
+      return '<div class="frete-item' + (m.ativo === false ? '' : ' est-pago') + '"><div class="frete-top"><span><b>' + escapeHtml(m.nome) + '</b></span><span class="chip-est">' + escapeHtml(m.ativo === false ? 'Inativo' : m.grupo || 'Outros') + '</span></div>' +
+        '<div class="frete-sub">' + escapeHtml(['unidade: ' + (m.unidade || 'un'), 'estoque mínimo ' + fmtNumQ(Number(m.estoqueMinimo) || 0), 'tempo de produção ' + (Number(m.prazoDias) || 15) + ' dias', 'saldo ' + fmtNumQ(r.a.saldo)].join(' · ')) + '</div>' +
+        (m.fornecedor ? '<div class="frete-sub">Fornecedor: ' + escapeHtml(m.fornecedor) + '</div>' : '') + (m.obs ? '<div class="frete-sub">Obs.: ' + escapeHtml(m.obs) + '</div>' : '') +
+        (mktPodeEditar() ? '<div class="frete-acoes"><button class="btn-text" data-mkt="mat-editar" data-id="' + escapeHtml(m.id) + '">Editar</button><button class="btn-text' + (m.ativo === false ? '' : ' danger') + '" data-mkt="mat-ativo" data-id="' + escapeHtml(m.id) + '">' + (m.ativo === false ? 'Reativar' : 'Desativar') + '</button></div>' : '') + '</div>';
+    }).join('');
+  }
+
+  // ----- formulários -----
+  function mktOpcoesMat(sel, saldos) {
+    return '<option value="">— escolha —</option>' + mktMatsAtivos().map(function(m) {
+      var a = saldos[m.id] || { saldo: 0, reservado: 0 }, d = a.saldo - a.reservado;
+      return '<option value="' + escapeHtml(m.id) + '"' + (m.id === sel ? ' selected' : '') + '>' + escapeHtml(mktNomeMat(m) + ' — disponível ' + fmtNumQ(d)) + '</option>';
+    }).join('');
+  }
+  function mktItensHtml(saldos) {
+    return ger.itens.map(function(it, i) {
+      return '<div class="oc-it"><div class="sp-row-t"><span>Item ' + (i + 1) + '</span>' + (ger.itens.length > 1 ? '<button type="button" class="btn-text danger" data-ger="mkt-rem" data-i="' + i + '">Tirar</button>' : '') + '</div>' +
+        '<div class="row-2"><label>Material <span class="req">*</span><select class="mkt-mat" data-i="' + i + '">' + mktOpcoesMat(it.materialId, saldos) + '</select></label>' +
+        '<label>Quantidade <span class="req">*</span><input type="number" class="mkt-q" data-i="' + i + '" min="1" step="1" inputmode="numeric" value="' + escapeHtml(it.quantidade) + '" /></label></div></div>';
+    }).join('');
+  }
+  function mktLerItens() {
+    if (!ger || !ger.itens) return;
+    ger.itens.forEach(function(it, i) {
+      var q = function(c) { return document.querySelector('#mkt-itens .' + c + '[data-i="' + i + '"]'); };
+      if (q('mkt-mat')) it.materialId = q('mkt-mat').value;
+      if (q('mkt-q')) it.quantidade = q('mkt-q').value;
+    });
+  }
+  function mktRenderItens() { var b = document.getElementById('mkt-itens'); if (b && ger) b.innerHTML = mktItensHtml(mktSaldos()); }
+  // itens válidos do formulário: { itens, erro }; com checarSaldo, não deixa passar do disponível
+  function mktItensDoForm(checarSaldo, saldos) {
+    mktLerItens();
+    var itens = [], erro = '', soma = {};
+    ger.itens.forEach(function(it, i) {
+      var q = numCampo(it.quantidade), m = mktMatPorId(it.materialId);
+      if (!it.materialId && (q === null || q === 0)) return;
+      if (!m) { erro = 'Escolha o material do item ' + (i + 1) + '.'; return; }
+      if (q === null || q <= 0 || Math.round(q) !== q) { erro = 'Informe a quantidade (número inteiro) de “' + m.nome + '”.'; return; }
+      soma[m.id] = (soma[m.id] || 0) + q;
+      itens.push({ materialId: m.id, material: m.nome, unidade: m.unidade || 'un', quantidade: q });
+    });
+    if (!erro && !itens.length) erro = 'Informe ao menos um material e a quantidade.';
+    if (!erro && checarSaldo) {
+      Object.keys(soma).forEach(function(id) {
+        if (erro) return;
+        var a = saldos[id] || { saldo: 0, reservado: 0 }, d = a.saldo - a.reservado, m = mktMatPorId(id);
+        if (soma[id] > d) erro = 'Saldo insuficiente de “' + m.nome + '”: disponível ' + fmtNumQ(d) + '. Lance a entrada (ou a contagem do estoque) antes.';
+      });
+    }
+    return { itens: itens, erro: erro };
+  }
+  function mktCargasAbertas() {
+    return cargas.filter(function(c) { return c.status !== 'concluida'; }).sort(function(a, b) { return cargaWhenTs(a) - cargaWhenTs(b); });
+  }
+  function mktCargaRotulo(c) {
+    return formatDateBR(c.data).slice(0, 5) + (c.hora ? ' ' + c.hora : '') + ' · ' + (c.retira ? 'cliente retira' : c.motorista || 'motorista a definir') + ' · ' + (c.clientes || []).map(function(cl) { return cl.cliente; }).filter(Boolean).join(', ');
+  }
+  // Entregar: "Entregar agora" (ficha simples de entrega) ou "Mandar junto numa carga" (a escolha muda o formulário)
+  function mktAbrirEntrega(pre) {
+    pre = pre || {};
+    if (!mktMatsAtivos().length) { showToast('Cadastre os materiais primeiro (Material de marketing › Materiais).'); return; }
+    var nomes = mktNomesPara(), quem = mktQuemEntrega();
+    gerAbrir({
+      titulo: 'Entregar material de marketing', botao: 'Lançar entrega', modo: pre.cargaId ? 'carga' : 'direta',
+      v: { paraTipo: 'cliente', paraNome: pre.paraNome || '', data: todayIso(), por: quemSessao() !== 'Equipe' ? quemSessao() : '', cargaId: pre.cargaId || '', cli: pre.cli != null ? String(pre.cli) : '' },
+      itens: [{ materialId: pre.materialId || '', quantidade: '' }],
+      html: '<div class="mkt-modo" role="group" aria-label="Como vai ser a entrega">' +
+          '<button type="button" class="est-loc" data-ger="mkt-modo" data-m="direta">Entregar agora (ficha simples)</button>' +
+          '<button type="button" class="est-loc" data-ger="mkt-modo" data-m="carga">Mandar junto numa carga</button></div>' +
+        '<div id="mkt-ent-modo"></div>' +
+        '<datalist id="mkt-nomes">' + nomes.slice(0, 600).map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>' +
+        '<datalist id="mkt-quem">' + quem.map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>' +
+        '<div id="mkt-itens"></div><button type="button" class="btn-text" data-ger="mkt-add">+ outro material</button>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mkt-obs" maxlength="200" autocomplete="off" placeholder="Ex.: inauguração da loja, evento, reposição" /></label>' +
+        '<label class="check-row"><input type="checkbox" id="mkt-ficha" /> Abrir a ficha de entrega para imprimir e colher a assinatura</label>',
+      depois: function() { mktRenderModo(); mktRenderItens(); },
+      input: function(t) { if (t.closest('#mkt-itens')) mktLerItens(); },
+      change: function(t) {
+        if (t.closest('#mkt-itens')) mktLerItens();
+        if (t.id === 'mkt-carga') { mktLerModo(); ger.v.cli = ''; mktRenderModo(); }
+      },
+      acao: function(a, b) {
+        if (a === 'mkt-modo') { mktLerModo(); ger.modo = b.dataset.m; mktRenderModo(); }
+        else if (a === 'mkt-add') { mktLerItens(); ger.itens.push({ materialId: '', quantidade: '' }); mktRenderItens(); }
+        else if (a === 'mkt-rem') { mktLerItens(); ger.itens.splice(Number(b.dataset.i), 1); if (!ger.itens.length) ger.itens.push({ materialId: '', quantidade: '' }); mktRenderItens(); }
+      },
+      salvar: function() {
+        mktLerModo();
+        var v = ger.v, saldos = mktSaldos(), r = mktItensDoForm(true, saldos), carga = null, cl = null, agora = new Date().toISOString();
+        if (ger.modo === 'carga') {
+          carga = v.cargaId ? findCarga(v.cargaId) : null;
+          if (!carga) return gerErro('Escolha a carga.');
+          if (carga.status === 'concluida') return gerErro('Esta carga já foi carregada. Escolha outra ou entregue agora.');
+          cl = (carga.clientes || [])[Number(v.cli)];
+          if (v.cli === '' || !cl) return gerErro('Escolha para qual cliente da carga vai o material.');
+        } else {
+          if (!v.paraNome) return gerErro('Informe para quem foi entregue.');
+          if (!v.data || v.data > todayIso()) return gerErro('Confira a data (não pode ser no futuro).');
+          if (!v.por) return gerErro('Informe quem entregou.');
+        }
+        if (r.erro) return gerErro(r.erro);
+        var id = mktNovoId(MKT_COL.mov);
+        var dados = { tipo: 'saida', numero: mktProximoNumero(), itens: r.itens, obs: gerVal('mkt-obs'), lancadoPor: quemSessao(), lancadoEm: agora };
+        if (carga) Object.assign(dados, { data: carga.data || todayIso(), para: { tipo: 'cliente', nome: String(cl.cliente || '').trim() }, cargaId: carga.id, cargaCliente: String(cl.cliente || '').trim(), entreguePor: v.por || quemSessao() });
+        else Object.assign(dados, { data: v.data, para: { tipo: v.paraTipo, nome: v.paraNome.replace(/\s+/g, ' ') }, entreguePor: v.por.replace(/\s+/g, ' ') });
+        var abrirFicha = document.getElementById('mkt-ficha').checked;
+        return mktGravar([{ op: 'set', col: MKT_COL.mov, id: id, data: dados }]).then(function() {
+          showToast(carga ? 'Entrega nº ' + dados.numero + ' vai na carga de ' + formatDateBR(carga.data) + ': sai do estoque quando a carga for carregada.' : 'Entrega nº ' + dados.numero + ' lançada.');
+          mktUi.area = 'historico'; renderMkt();
+          if (abrirFicha) setTimeout(function() { abrirFichaMkt(Object.assign({ id: id }, dados)); }, 0);
+        });
+      }
+    });
+  }
+  function mktLerModo() {
+    if (!ger || !ger.v) return;
+    var v = ger.v, g = function(id) { var e = document.getElementById(id); return e ? String(e.value || '').trim() : null; };
+    if (g('mkt-para-tipo') !== null) v.paraTipo = g('mkt-para-tipo');
+    if (g('mkt-para-nome') !== null) v.paraNome = g('mkt-para-nome');
+    if (g('mkt-data') !== null) v.data = g('mkt-data');
+    if (g('mkt-por') !== null) v.por = g('mkt-por');
+    if (g('mkt-carga') !== null) v.cargaId = g('mkt-carga');
+    if (g('mkt-cli') !== null) v.cli = g('mkt-cli');
+  }
+  function mktRenderModo() {
+    var box = document.getElementById('mkt-ent-modo');
+    if (!box || !ger) return;
+    var v = ger.v;
+    document.querySelectorAll('#ger-form-body [data-ger="mkt-modo"]').forEach(function(b) { var on = b.dataset.m === ger.modo; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    if (ger.modo === 'carga') {
+      var abertas = mktCargasAbertas(), c = v.cargaId ? findCarga(v.cargaId) : null;
+      box.innerHTML = abertas.length || c ? '<p class="hint">O material vai junto com a carga e <b>sai do estoque quando a carga for carregada</b>. Até lá, fica reservado. Aparece nos detalhes da carga, na conclusão do carregamento e na ordem de carregamento.</p>' +
+        '<label>Carga <span class="req">*</span><select id="mkt-carga"><option value="">— escolha —</option>' + abertas.map(function(x) { return '<option value="' + escapeHtml(x.id) + '"' + (x.id === v.cargaId ? ' selected' : '') + '>' + escapeHtml(mktCargaRotulo(x)) + '</option>'; }).join('') + '</select></label>' +
+        (c ? '<label>Para qual cliente <span class="req">*</span><select id="mkt-cli"><option value="">— escolha —</option>' + (c.clientes || []).map(function(cl, i) { return cl.cliente ? '<option value="' + i + '"' + (String(i) === v.cli ? ' selected' : '') + '>' + escapeHtml(cl.cliente) + '</option>' : ''; }).join('') + '</select></label>' : '') +
+        '<label>Quem separou <span class="opt">(opcional)</span><input type="text" id="mkt-por" maxlength="60" list="mkt-quem" autocomplete="off" value="' + escapeHtml(v.por) + '" /></label>'
+        : '<p class="empty-state">Nenhuma carga aguardando carregamento. Entregue agora ou lance a carga primeiro.</p>';
+    } else {
+      box.innerHTML = '<div class="row-2"><label>Para <span class="req">*</span><select id="mkt-para-tipo">' + MKT_PARA.map(function(p) { return '<option value="' + p[0] + '"' + (p[0] === v.paraTipo ? ' selected' : '') + '>' + escapeHtml(p[1]) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Nome <span class="req">*</span><input type="text" id="mkt-para-nome" maxlength="80" list="mkt-nomes" autocomplete="off" value="' + escapeHtml(v.paraNome) + '" /></label></div>' +
+        '<div class="row-2"><label>Data <span class="req">*</span><input type="date" id="mkt-data" max="' + todayIso() + '" value="' + escapeHtml(v.data) + '" /></label>' +
+        '<label>Entregue por <span class="req">*</span><input type="text" id="mkt-por" maxlength="60" list="mkt-quem" autocomplete="off" value="' + escapeHtml(v.por) + '" /></label></div>';
+    }
+  }
+  function mktAbrirEntrada(pre) {
+    pre = pre || {};
+    if (!mktMatsAtivos().length) { showToast('Cadastre os materiais primeiro (Material de marketing › Materiais).'); return; }
+    var forns = sup.forn.filter(function(f) { return f.ativo !== false; }).map(function(f) { return f.nome; }).concat(mkt.mat.map(function(m) { return m.fornecedor; }));
+    forns = forns.filter(function(n, i) { return n && forns.indexOf(n) === i; });
+    gerAbrir({
+      titulo: 'Entrada de material de marketing', botao: 'Lançar entrada',
+      itens: (pre.itens || [{ materialId: '', quantidade: '' }]).map(function(x) { return { materialId: x.materialId || '', quantidade: x.quantidade != null ? String(x.quantidade) : '' }; }),
+      html: '<div class="row-2"><label>Origem<select id="mkt-origem">' + MKT_ORIGENS.map(function(o) { return '<option value="' + o[0] + '">' + escapeHtml(o[1]) + '</option>'; }).join('') + '</select></label>' +
+          '<label>Data<input type="date" id="mkt-data-ent" max="' + todayIso() + '" value="' + todayIso() + '" /></label></div>' +
+        '<div class="row-2"><label>Fornecedor <span class="opt">(opcional)</span><input type="text" id="mkt-forn" maxlength="80" list="mkt-forns" autocomplete="off" /></label>' +
+          '<label>Nota fiscal <span class="opt">(opcional)</span><input type="text" id="mkt-nf" maxlength="20" autocomplete="off" /></label></div>' +
+        '<datalist id="mkt-forns">' + forns.map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>' +
+        '<div id="mkt-itens"></div><button type="button" class="btn-text" data-ger="mkt-add">+ outro material</button>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mkt-obs-ent" maxlength="200" autocomplete="off" /></label>' +
+        '<p class="field-hint">Material novo? Cadastre antes em Material de marketing › Materiais.</p>',
+      depois: mktRenderItens,
+      input: function(t) { if (t.closest('#mkt-itens')) mktLerItens(); },
+      change: function(t) { if (t.closest('#mkt-itens')) mktLerItens(); },
+      acao: function(a, b) {
+        if (a === 'mkt-add') { mktLerItens(); ger.itens.push({ materialId: '', quantidade: '' }); mktRenderItens(); }
+        else if (a === 'mkt-rem') { mktLerItens(); ger.itens.splice(Number(b.dataset.i), 1); if (!ger.itens.length) ger.itens.push({ materialId: '', quantidade: '' }); mktRenderItens(); }
+      },
+      salvar: function() {
+        var r = mktItensDoForm(false), data = gerVal('mkt-data-ent') || todayIso();
+        if (r.erro) return gerErro(r.erro);
+        if (data > todayIso()) return gerErro('A data não pode ser no futuro.');
+        var dados = { tipo: 'entrada', data: data, origem: document.getElementById('mkt-origem').value, fornecedor: gerVal('mkt-forn'), nf: gerVal('mkt-nf'), itens: r.itens, obs: gerVal('mkt-obs-ent'),
+          lancadoPor: quemSessao(), lancadoEm: new Date().toISOString() };
+        return mktGravar([{ op: 'set', col: MKT_COL.mov, id: mktNovoId(MKT_COL.mov), data: dados }]).then(function() { showToast('Entrada lançada: ' + mktItensTexto(dados) + '.'); });
+      }
+    });
+  }
+  // contagem do estoque: digita o que foi contado; o app lança a diferença como ajuste (com o motivo)
+  function mktAbrirContagem() {
+    var saldos = mktSaldos(), ativos = mktMatsAtivos(), grupo = null;
+    if (!ativos.length) { showToast('Nenhum material cadastrado.'); return; }
+    gerAbrir({
+      titulo: 'Contagem do estoque de marketing', botao: 'Salvar a contagem',
+      html: '<p class="hint">Digite só o que você contou (deixe em branco o que não contou). A diferença para o saldo do app vira um <b>ajuste</b>, com o seu nome e o motivo; o histórico continua igual.</p>' +
+        ativos.map(function(m) {
+          var a = saldos[m.id] || { saldo: 0 }, g = '';
+          if ((m.grupo || 'Outros') !== grupo) { grupo = m.grupo || 'Outros'; g = '<p class="mp-grupo">' + escapeHtml(grupo) + '</p>'; }
+          return g + '<label class="mkt-cont"><span>' + escapeHtml(mktNomeMat(m)) + ' <span class="driver-sub">no app: ' + escapeHtml(fmtNumQ(a.saldo)) + '</span></span><input type="number" class="mkt-contado" data-id="' + escapeHtml(m.id) + '" min="0" step="1" inputmode="numeric" /></label>';
+        }).join('') +
+        '<label>Motivo da diferença <span class="req">*</span><input type="text" id="mkt-motivo" maxlength="160" autocomplete="off" placeholder="Ex.: inventário do mês; entrega sem lançamento" /></label>',
+      salvar: function() {
+        var itens = [], erro = '';
+        document.querySelectorAll('#ger-form-body .mkt-contado').forEach(function(inp) {
+          if (inp.value === '' || erro) return;
+          var n = numCampo(inp.value), m = mktMatPorId(inp.dataset.id), a = saldos[inp.dataset.id] || { saldo: 0 };
+          if (n === null || n < 0 || Math.round(n) !== n) { erro = 'Confira a contagem de “' + (m ? m.nome : '') + '”.'; return; }
+          if (n !== a.saldo) itens.push({ materialId: m.id, material: m.nome, unidade: m.unidade || 'un', quantidade: n - a.saldo, saldoAntes: a.saldo, contado: n });
+        });
+        if (erro) return gerErro(erro);
+        if (!itens.length) { showToast('A contagem bate com o saldo do app: nada a ajustar.'); return true; }
+        var motivo = gerVal('mkt-motivo');
+        if (motivo.length < 3) return gerErro('Escreva o motivo da diferença.');
+        return mktGravar([{ op: 'set', col: MKT_COL.mov, id: mktNovoId(MKT_COL.mov), data: { tipo: 'ajuste', data: todayIso(), itens: itens, motivo: motivo, lancadoPor: quemSessao(), lancadoEm: new Date().toISOString() } }])
+          .then(function() { showToast('Contagem salva: ' + itens.length + (itens.length === 1 ? ' material ajustado.' : ' materiais ajustados.')); });
+      }
+    });
+  }
+  function mktAbrirMaterial(m) {
+    gerAbrir({
+      titulo: m ? 'Editar material' : 'Novo material de marketing', botao: 'Salvar material',
+      html: '<label>Nome <span class="req">*</span><input type="text" id="mkm-nome" maxlength="80" value="' + escapeHtml(m ? m.nome : '') + '" placeholder="Ex.: Banner Levíssima Geral" /></label>' +
+        '<div class="row-2"><label>Tipo<select id="mkm-grupo">' + MKT_GRUPOS.map(function(g) { return '<option' + ((m ? m.grupo : 'Outros') === g ? ' selected' : '') + '>' + g + '</option>'; }).join('') + '</select></label>' +
+          '<label>Unidade<input type="text" id="mkm-un" maxlength="40" list="mkm-uns" value="' + escapeHtml(m ? m.unidade || 'un' : 'un') + '" /></label></div>' +
+        '<datalist id="mkm-uns"><option value="un"></option><option value="pacote com 400 un."></option><option value="pacote com 800 un."></option></datalist>' +
+        '<div class="row-2"><label>Estoque mínimo <span class="req">*</span><input type="number" id="mkm-min" min="0" step="1" inputmode="numeric" value="' + escapeHtml(m ? String(Number(m.estoqueMinimo) || 0) : '') + '" /></label>' +
+          '<label>Tempo de produção (dias) <span class="req">*</span><input type="number" id="mkm-prazo" min="1" step="1" inputmode="numeric" value="' + escapeHtml(m ? String(Number(m.prazoDias) || 15) : '15') + '" /></label></div>' +
+        '<label>Fornecedor <span class="opt">(opcional)</span><input type="text" id="mkm-forn" maxlength="80" value="' + escapeHtml(m && m.fornecedor || '') + '" /></label>' +
+        (m ? '' : '<label>Estoque inicial <span class="opt">(o que tem hoje; vira uma entrada)</span><input type="number" id="mkm-ini" min="0" step="1" inputmode="numeric" /></label>') +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="mkm-obs" maxlength="200" value="' + escapeHtml(m && m.obs || '') + '" /></label>',
+      salvar: function() {
+        var nome = gerVal('mkm-nome').replace(/\s+/g, ' '), min = numCampo(gerVal('mkm-min')), prazo = numCampo(gerVal('mkm-prazo')), agora = new Date().toISOString();
+        if (!nome) return gerErro('Informe o nome do material.');
+        if (mkt.mat.some(function(x) { return (!m || x.id !== m.id) && normNome(x.nome) === normNome(nome); })) return gerErro('Já existe um material com esse nome.');
+        if (min === null || min < 0) return gerErro('Informe o estoque mínimo (pode ser 0).');
+        if (prazo === null || prazo < 1) return gerErro('Informe o tempo de produção em dias.');
+        var dados = { nome: nome, grupo: document.getElementById('mkm-grupo').value, unidade: gerVal('mkm-un') || 'un', estoqueMinimo: Math.round(min), prazoDias: Math.round(prazo),
+          fornecedor: gerVal('mkm-forn'), obs: gerVal('mkm-obs'), atualizadoEm: agora, atualizadoPor: quemSessao() };
+        var ops = [];
+        if (m) ops.push({ op: 'update', col: MKT_COL.mat, id: m.id, data: dados });
+        else {
+          var id = 'mkt-' + (slug(nome) || uid());
+          if (mktMatPorId(id)) id += '-' + uid().slice(-4);
+          ops.push({ op: 'set', col: MKT_COL.mat, id: id, data: Object.assign(dados, { ativo: true, criadoEm: agora, criadoPor: quemSessao() }) });
+          var ini = numCampo(gerVal('mkm-ini'));
+          if (ini && ini > 0) ops.push({ op: 'set', col: MKT_COL.mov, id: mktNovoId(MKT_COL.mov), data: { tipo: 'entrada', origem: 'inicial', data: todayIso(), itens: [{ materialId: id, material: nome, unidade: dados.unidade, quantidade: Math.round(ini) }], lancadoPor: quemSessao(), lancadoEm: agora } });
+        }
+        return mktGravar(ops).then(function() { showToast('Material salvo.'); });
+      }
+    });
+  }
+  function mktAbrirCancelar(v) {
+    var t = v.tipo === 'saida' ? 'a entrega nº ' + (v.numero || '') : v.tipo === 'entrada' ? 'a entrada' : 'a contagem';
+    gerAbrir({
+      titulo: 'Cancelar ' + t, botao: 'Cancelar o lançamento',
+      html: '<p class="hint">' + escapeHtml(mktItensTexto(v)) + (v.para && v.para.nome ? ' · ' + escapeHtml(v.para.nome) : '') + '</p>' +
+        '<p class="hint">O lançamento continua no histórico, marcado como cancelado, e deixa de contar no saldo.</p>' +
+        '<label>Motivo <span class="req">*</span><input type="text" id="mkt-canc-motivo" maxlength="160" autocomplete="off" /></label>',
+      salvar: function() {
+        var motivo = gerVal('mkt-canc-motivo');
+        if (motivo.length < 3) return gerErro('Escreva o motivo do cancelamento.');
+        return mktGravar([{ op: 'update', col: MKT_COL.mov, id: v.id, data: { cancelado: true, cancelamento: { motivo: motivo, por: quemSessao(), em: new Date().toISOString() } } }])
+          .then(function() { showToast('Lançamento cancelado.'); });
+      }
+    });
+  }
+  function mktEntregarSemCarga(v) {
+    var c = v.cargaId ? findCarga(v.cargaId) : null;
+    gerAbrir({
+      titulo: 'Entregar sem a carga · nº ' + (v.numero || ''), botao: 'Salvar',
+      html: '<p class="hint">' + escapeHtml(mktItensTexto(v)) + ' para <b>' + escapeHtml(v.para && v.para.nome || '') + '</b>' + (c ? ' estava na carga de ' + escapeHtml(formatDateBR(c.data)) : '') + '. Fica registrado que foi entregue de outro jeito.</p>' +
+        '<div class="row-2"><label>Data da entrega<input type="date" id="mkt-sc-data" max="' + todayIso() + '" value="' + todayIso() + '" /></label>' +
+        '<label>Entregue por <span class="req">*</span><input type="text" id="mkt-sc-por" maxlength="60" value="' + escapeHtml(quemSessao() !== 'Equipe' ? quemSessao() : '') + '" /></label></div>',
+      salvar: function() {
+        var por = gerVal('mkt-sc-por'), data = gerVal('mkt-sc-data') || todayIso(), agora = new Date().toISOString();
+        if (!por) return gerErro('Informe quem entregou.');
+        var ed = (v.edicoes || []).concat([{ texto: 'Tirado da carga' + (c ? ' de ' + formatDateBR(c.data) : '') + ' e entregue direto em ' + formatDateBR(data), por: quemSessao(), em: agora }]);
+        return mktGravar([{ op: 'update', col: MKT_COL.mov, id: v.id, data: { cargaId: '', cargaAntes: v.cargaId || '', data: data, entreguePor: por, edicoes: ed } }])
+          .then(function() { showToast('Entrega registrada sem a carga.'); });
+      }
+    });
+  }
+  function mktPedirCompra() {
+    var l = mktParaComprar();
+    if (!l.length) { showToast('Nada para comprar agora.'); return; }
+    abrirPedidoCompra(null, {
+      setor: 'Comercial', obs: 'Material de marketing: sugestão do app (saldo, estoque mínimo, consumo e tempo de produção).',
+      itens: l.map(function(x) { return { descricao: mktNomeMat(x.m), quantidade: String(x.r.sug), unidade: mktPacote(x.m) ? 'pacote' : 'un', aplicacao: 'Material de marketing (disponível ' + fmtNumQ(x.r.disp) + ', mínimo ' + fmtNumQ(x.r.min) + ')' }; })
+    });
+  }
+
+  // ----- ficha de entrega (A4, para imprimir e assinar) -----
+  function renderFichaMkt(v) {
+    return loadReceiptFonts().then(function() {
+      var W = RW, H = RBASE_H, L = RM, R = W - RM, CW = R - L;
+      var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      var ctx = cv.getContext('2d'), st = mktSituacao(v), y;
+      ctx.fillStyle = RC.white; ctx.fillRect(0, 0, W, H);
+      faixaMarca(ctx, W, 16);
+      txtFit(ctx, 'Ficha de entrega', L, 130, 800, R_DISP, 56, 36, 640, RC.ink, 'left');
+      var lw = desenharSimbolo(ctx, L, 147, 32);
+      txt(ctx, 'LEVÍSSIMA · Material de marketing', L + (lw ? lw + 12 : 0), 172, rFont(500, 26, R_DISP), RC.muted, 'left');
+      txt(ctx, 'Nº', R, 100, rFont(500, 22, R_DISP), RC.muted, 'right');
+      txt(ctx, String(v.numero || '—'), R, 150, rFont(700, 48, R_MONO), RC.teal, 'right');
+      ctx.fillStyle = RC.ink; ctx.fillRect(L, 196, CW, 4);
+      y = 262;
+      function campo(rot, val, x, w) {
+        txt(ctx, rot, x, y, rFont(500, 22, R_DISP), RC.muted, 'left');
+        txtFit(ctx, val || '—', x, y + 44, 600, R_DISP, 34, 20, w, RC.ink, 'left');
+      }
+      campo('Para (' + mktParaNome(v.para && v.para.tipo).toLowerCase() + ')', v.para && v.para.nome, L, CW * 0.62);
+      campo('Data', formatDateBR(mktDataEf(v, st)), L + CW * 0.68, CW * 0.32);
+      y += 104;
+      campo(v.cargaId ? 'Vai junto com a carga' : 'Entregue por', v.cargaId ? (st.c ? mktCargaRotulo(st.c).split(' · ').slice(0, 2).join(' · ') : 'carga') : v.entreguePor, L, CW * 0.62);
+      campo('Lançado por', v.lancadoPor, L + CW * 0.68, CW * 0.32);
+      y += 120;
+      txt(ctx, 'Material', L, y, rFont(500, 22, R_DISP), RC.muted, 'left');
+      txt(ctx, 'Quantidade', R, y, rFont(500, 22, R_DISP), RC.muted, 'right');
+      y += 14; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 2); y += 52;
+      (v.itens || []).forEach(function(it) {
+        var m = mktMatPorId(it.materialId);
+        txtFit(ctx, m ? mktNomeMat(m) : it.material || '—', L, y, 600, R_DISP, 32, 20, CW - 280, RC.ink, 'left');
+        txt(ctx, mktQtd(it.quantidade, m), R, y, rFont(700, 32, R_MONO), RC.ink, 'right');
+        y += 18; ctx.fillStyle = RC.line; ctx.fillRect(L, y, CW, 1); y += 50;
+      });
+      if (v.obs) {
+        y += 10; ctx.font = rFont(500, 26, R_DISP);
+        wrapLines(ctx, 'Obs.: ' + v.obs, CW, 3).forEach(function(l) { txt(ctx, l, L, y, rFont(500, 26, R_DISP), RC.muted, 'left'); y += 36; });
+      }
+      // assinaturas
+      var ys = Math.max(y + 120, H - 420), meio = L + CW / 2;
+      ctx.fillStyle = RC.ink; ctx.fillRect(L, ys, CW / 2 - 40, 2); ctx.fillRect(meio + 40, ys, CW / 2 - 40, 2);
+      txt(ctx, 'Recebido por (nome e assinatura)', L, ys + 38, rFont(500, 24, R_DISP), RC.muted, 'left');
+      txt(ctx, 'Entregue por', meio + 40, ys + 38, rFont(500, 24, R_DISP), RC.muted, 'left');
+      txtFit(ctx, v.para && v.para.nome || '', L, ys + 76, 600, R_DISP, 26, 18, CW / 2 - 40, RC.ink, 'left');
+      txtFit(ctx, v.entreguePor || '', meio + 40, ys + 76, 600, R_DISP, 26, 18, CW / 2 - 40, RC.ink, 'left');
+      txt(ctx, 'Data: ____/____/________', L, ys + 140, rFont(500, 24, R_DISP), RC.muted, 'left');
+      var yf = H - 104;
+      ctx.fillStyle = RC.line; ctx.fillRect(L, yf, CW, 2);
+      txt(ctx, 'Emitida em ' + formatDateTimeBR(new Date().toISOString()) + ' por ' + quemSessao() + ' · controle do material de marketing no app', L, yf + 42, rFont(400, 22, R_DISP), RC.muted, 'left');
+      var png = cv.toDataURL('image/png'), jpg = cv.toDataURL('image/jpeg', 0.92);
+      return {
+        baseName: 'ficha-entrega-marketing-' + (v.numero || '') + '-' + (slug(v.para && v.para.nome) || 'entrega'),
+        pngDataUrl: png, paginas: [jpg], a4: true,
+        pngBlob: new Blob([dataUrlToBytes(png)], { type: 'image/png' }),
+        pdfBlob: new Blob([buildPdfFromJpeg(dataUrlToBytes(jpg), W, H)], { type: 'application/pdf' })
+      };
+    });
+  }
+  function abrirFichaMkt(v) {
+    openDoc('Ficha de entrega nº ' + (v.numero || ''), function() { return renderFichaMkt(v); },
+      { modo: 'arquivo', numero: '', texto: 'Ficha de entrega de material de marketing nº ' + (v.numero || '') + ' — ' + (v.para && v.para.nome || '') + '.' });
+  }
+
+  // ----- planilhas -----
+  function mktCsv(linhas, nome) {
+    var esc = function(x) { var s = String(x == null ? '' : x); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    triggerDownload(new Blob(['﻿' + linhas.map(function(l) { return l.map(esc).join(';'); }).join('\r\n')], { type: 'text/csv;charset=utf-8' }), nome);
+  }
+  function mktExportarMovs() {
+    var l = [['Data', 'Lançamento', 'Nº', 'Para (tipo)', 'Para (nome)', 'Material', 'Quantidade', 'Unidade', 'Entregue por', 'Carga', 'Situação', 'Origem / motivo', 'Fornecedor', 'NF', 'Observação', 'Lançado por', 'Lançado em', 'Cancelado (motivo)']];
+    mktFiltraMovs().slice().reverse().forEach(function(v) {
+      var st = mktSituacao(v);
+      (v.itens || []).forEach(function(it) {
+        var m = mktMatPorId(it.materialId);
+        l.push([formatDateBR(mktDataEf(v, st)), v.tipo === 'saida' ? 'Entrega' : v.tipo === 'entrada' ? 'Entrada' : 'Contagem', v.numero || '', v.para ? mktParaNome(v.para.tipo) : '', v.para ? v.para.nome : '',
+          m ? m.nome : it.material, String(it.quantidade).replace('.', ','), m ? m.unidade || 'un' : it.unidade || '', v.entreguePor || '', st.c ? formatDateBR(st.c.data) + ' · ' + (st.c.motorista || '') : '', st.txt,
+          v.tipo === 'entrada' ? (MKT_ORIGENS.find(function(o) { return o[0] === v.origem; }) || ['', ''])[1] : v.motivo || '', v.fornecedor || '', v.nf || '', v.obs || '', v.lancadoPor || '', v.lancadoEm ? formatDateTimeBR(v.lancadoEm) : '',
+          v.cancelado ? (v.cancelamento && v.cancelamento.motivo) || 'sim' : '']);
+      });
+    });
+    mktCsv(l, 'levissima-marketing-lancamentos-' + todayIso() + '.csv');
+  }
+  function mktExportarSaldo() {
+    var s = mktSaldos(), j = mktJanelaDias();
+    var l = [['Tipo', 'Material', 'Unidade', 'Saldo no estoque', 'Na carga (reservado)', 'Disponível', 'Estoque mínimo', 'Uso por mês', 'Tempo de produção (dias)', 'Dura (dias)', 'Situação', 'Sugestão de compra']];
+    mktMatsAtivos().forEach(function(m) {
+      var r = mktAnalise(m, s, j);
+      l.push([m.grupo || '', m.nome, m.unidade || 'un', r.a.saldo, r.a.reservado, r.disp, r.min, String(r.mes).replace('.', ','), r.prazo, r.dura === null ? '' : r.dura, MKT_ST[r.st][0], r.sug || '']);
+    });
+    mktCsv(l, 'levissima-marketing-saldo-' + todayIso() + '.csv');
+  }
+
+  // ----- eventos -----
+  document.getElementById('tab-marketing').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-mkt]');
+    if (!b) return;
+    var a = b.dataset.mkt, v = b.dataset.id ? mkt.mov.find(function(x) { return x.id === b.dataset.id; }) : null, m = b.dataset.id ? mktMatPorId(b.dataset.id) : null;
+    if (a === 'area') { mktUi.area = b.dataset.a; mktUi.todos = false; renderMkt(); }
+    else if (a === 'entregar') mktAbrirEntrega();
+    else if (a === 'entrada') mktAbrirEntrada();
+    else if (a === 'contagem') mktAbrirContagem();
+    else if (a === 'pedir-compra') mktPedirCompra();
+    else if (a === 'csv') mktExportarMovs();
+    else if (a === 'csv-saldo') mktExportarSaldo();
+    else if (a === 'todos') { mktUi.todos = true; renderMkt(); }
+    else if (a === 'ficha' && v) abrirFichaMkt(v);
+    else if (a === 'cancelar' && v) mktAbrirCancelar(v);
+    else if (a === 'sem-carga' && v) mktEntregarSemCarga(v);
+    else if (a === 'pessoa') { mktUi.busca = b.dataset.nome || ''; mktUi.area = 'historico'; mktUi.tipo = ''; renderMkt(); }
+    else if (a === 'mat-novo') mktAbrirMaterial(null);
+    else if (a === 'mat-editar' && m) mktAbrirMaterial(m);
+    else if (a === 'mat-inativos') { mktUi.inativos = !mktUi.inativos; renderMkt(); }
+    else if (a === 'mat-ativo' && m) mktGravar([{ op: 'update', col: MKT_COL.mat, id: m.id, data: { ativo: m.ativo === false, atualizadoEm: new Date().toISOString(), atualizadoPor: quemSessao() } }]).then(function() { showToast(m.ativo === false ? 'Material reativado.' : 'Material desativado (o histórico continua).'); }).catch(mktFalha);
+  });
+  document.getElementById('tab-marketing').addEventListener('input', function(e) {
+    if (e.target.id !== 'mkt-busca') return;
+    mktUi.busca = e.target.value;
+    var pos = e.target.selectionStart;
+    renderMkt();
+    var n = document.getElementById('mkt-busca'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) {} }
+  });
+  document.getElementById('tab-marketing').addEventListener('change', function(e) {
+    if (e.target.id === 'mkt-tipo') { mktUi.tipo = e.target.value; renderMkt(); }
+    else if (e.target.id === 'mkt-para') { mktUi.para = e.target.value; renderMkt(); }
+    else if (e.target.id === 'mkt-grupo') { mktUi.grupo = e.target.value; renderMkt(); }
+  });
+  // =====================================================================================================
+  // PAINEL DE VENDAS (pedido de 05/11/2026)
+  // Relatório de vendas com comparativo por cliente, a partir das cargas carregadas (o que saiu da fábrica): o total do
+  // período contra o período anterior (ou o mesmo período do ano passado), a evolução no tempo, o ranking dos clientes
+  // com a variação, a curva ABC, os clientes novos, em queda e parados, o detalhe de cada cliente e a comparação entre
+  // clientes. Medidas: paletes, volumes (fardos, galões e caixas) e, com os preços de referência, valor estimado em R$.
+  // Troca no carregamento não conta como venda. Gráficos interativos com o Apache ECharts (carregado só ao abrir a aba;
+  // sem internet, o painel mostra barras simples). Quem vê: senha mestre, diretoria e "Vê o painel de Vendas" (0044).
+  var VD_COL = 'vendas-config';
+  var vdPrecos = { porProduto: {} };
+  var vdUi = { periodo: 'mes', de: '', ate: '', comparar: 'anterior', medida: 'paletes', marca: '', produto: '', busca: '', ordem: 'maior', cliente: '', comparando: [], todos: false, area: 'clientes' };
+  var VD_PERIODOS = [['mes', 'Este mês'], ['mespassado', 'Mês passado'], ['3m', 'Últimos 3 meses'], ['ano', 'Este ano'], ['12m', 'Últimos 12 meses'], ['custom', 'Escolher as datas']];
+  var VD_CORES = ['#43B02A', '#702082', '#001489', '#FF6A13', '#0E8F86', '#C2185B', '#8A6D00', '#5C6BC0'];
+  var ECHARTS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/echarts/5.6.0/echarts.min.js';
+  var vdCharts = [];
+  function subscribeVendas() {
+    if (!ehEscritorio()) return;
+    db.collection(VD_COL).onSnapshot(function(snap) {
+      var d = snap.docs.find(function(x) { return x.id === 'precos'; });
+      vdPrecos = d ? Object.assign({ porProduto: {} }, d.data()) : { porProduto: {} };
+      if (session && ui.tab === 'vendas') renderVendas();
+    }, function(err) { console.error(VD_COL, err); });
+  }
+  function loadLocalVendas() { try { vdPrecos = JSON.parse(localStorage.getItem('levissima-vendas-precos-v1') || 'null') || { porProduto: {} }; } catch (e) { vdPrecos = { porProduto: {} }; } }
+  function vdUnidSing(u) { var m = { fardos: 'fardo', 'galões': 'galão', caixas: 'caixa', unidades: 'unidade', pacotes: 'pacote' }; return m[u] || String(u || 'unidade'); }
+  function vdTemPrecos() { var p = vdPrecos.porProduto || {}; return Object.keys(p).some(function(k) { return Number(p[k]) > 0; }); }
+  function carregarECharts() {
+    if (window.echarts) return Promise.resolve(window.echarts);
+    if (!carregarECharts.p) {
+      carregarECharts.p = new Promise(function(res, rej) {
+        var s = document.createElement('script');
+        s.src = ECHARTS_URL; s.async = true;
+        var t = setTimeout(function() { carregarECharts.p = null; rej(new Error('echarts timeout')); }, 20000);
+        s.onload = function() { clearTimeout(t); if (window.echarts) res(window.echarts); else { carregarECharts.p = null; rej(new Error('echarts')); } };
+        s.onerror = function() { clearTimeout(t); carregarECharts.p = null; rej(new Error('echarts')); };
+        document.head.appendChild(s);
+      });
+    }
+    return carregarECharts.p;
+  }
+  function vdMarcaNome(slug) { var m = MARCAS_V3.find(function(x) { return x.slug === slug; }); return m ? m.marca : 'Levíssima'; }
+  function vdDiaCarga(c) { return (c.concluidoEm && isoLocal(c.concluidoEm)) || c.data || ''; }
+  function vdUltimoDiaMes(ym) { var y = Number(ym.slice(0, 4)), m = Number(ym.slice(5, 7)); return ym + '-' + pad2(new Date(y, m, 0).getDate()); }
+  function vdMesAnterior(ym, n) { var y = Number(ym.slice(0, 4)), m = Number(ym.slice(5, 7)) - (n == null ? 1 : n); while (m < 1) { m += 12; y--; } return y + '-' + pad2(m); }
+  function vdMenosAno(iso) { var y = Number(iso.slice(0, 4)) - 1, r = y + iso.slice(4); return iso.slice(5) === '02-29' ? y + '-02-28' : r; }
+  function vdDias(de, ate) { return Math.round((Date.parse(ate + 'T12:00:00') - Date.parse(de + 'T12:00:00')) / 86400000) + 1; }
+  // período escolhido e o de comparação (anterior: os mesmos dias do mês anterior para "este mês" e "mês passado";
+  // a janela logo antes para os outros; ano: o mesmo período do ano passado)
+  function vdIntervalos() {
+    var hoje = todayIso(), ym = hoje.slice(0, 7), de, ate, de2, ate2;
+    if (vdUi.periodo === 'mespassado') { var mp = vdMesAnterior(ym); de = mp + '-01'; ate = vdUltimoDiaMes(mp); }
+    else if (vdUi.periodo === '3m') { de = addDiasIso(hoje, -89); ate = hoje; }
+    else if (vdUi.periodo === 'ano') { de = hoje.slice(0, 4) + '-01-01'; ate = hoje; }
+    else if (vdUi.periodo === '12m') { de = addDiasIso(hoje, -364); ate = hoje; }
+    else if (vdUi.periodo === 'custom' && vdUi.de && vdUi.ate) { de = vdUi.de <= vdUi.ate ? vdUi.de : vdUi.ate; ate = vdUi.de <= vdUi.ate ? vdUi.ate : vdUi.de; }
+    else { de = ym + '-01'; ate = hoje; }
+    if (vdUi.comparar === 'ano' || vdUi.periodo === 'ano') { de2 = vdMenosAno(de); ate2 = vdMenosAno(ate); }
+    else if (vdUi.periodo === 'mes' || vdUi.periodo === 'mespassado') {
+      var m2 = vdMesAnterior(de.slice(0, 7)), fim2 = vdUltimoDiaMes(m2);
+      de2 = m2 + '-01'; ate2 = m2 + '-' + ate.slice(8); if (ate2 > fim2) ate2 = fim2;
+    } else { ate2 = addDiasIso(de, -1); de2 = addDiasIso(ate2, -(vdDias(de, ate) - 1)); }
+    return { de: de, ate: ate, de2: de2, ate2: ate2 };
+  }
+  // cada produto vendido de cada cliente nas cargas carregadas (a parte de troca fica de fora; os paletes, na proporção)
+  function vdLinhas() {
+    var l = [], precos = vdPrecos.porProduto || {};
+    cargas.forEach(function(c) {
+      if (c.status !== 'concluida') return;
+      var dia = vdDiaCarga(c);
+      (c.clientes || []).forEach(function(cl) {
+        var nome = String(cl.cliente || '').replace(/\s+/g, ' ').trim() || '(sem nome)', key = normNome(nome);
+        (cl.itens || []).forEach(function(it) {
+          var q = Number(it.quantidade) || 0, t = trocaQtd(it), venda = Math.max(0, q - t), p = findProduto(it.produtoId);
+          var nm = p ? p.nome : it.produtoNome || '—';
+          l.push({ dia: dia, carga: c.id, cliente: nome, key: key, pid: it.produtoId || nm, produto: nm, marca: marcaDoTexto(nm), unidade: it.unidade || '',
+            vol: venda, troca: t, pal: q ? (Number(it.paletes) || 0) * venda / q : 0, valor: venda * (Number(precos[it.produtoId]) || 0) });
+        });
+      });
+    });
+    return l;
+  }
+  function vdMedida(r) { return vdUi.medida === 'valor' ? r.valor : vdUi.medida === 'volumes' ? r.vol : r.pal; }
+  function vdFmt(v, curto) {
+    if (vdUi.medida === 'valor') return curto && Math.abs(v) >= 10000 ? 'R$ ' + (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' mil' : fmtBRL(v);
+    var n = vdUi.medida === 'paletes' ? Math.round(v * 10) / 10 : Math.round(v);
+    return n.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + (curto ? '' : vdUi.medida === 'paletes' ? (n === 1 ? ' palete' : ' paletes') : ' volumes');
+  }
+  function vdNomeMedida() { return vdUi.medida === 'valor' ? 'Valor estimado (R$)' : vdUi.medida === 'volumes' ? 'Volumes (fardos, galões e caixas)' : 'Paletes'; }
+  function vdVar(a, b) {
+    if (!b) return a ? { txt: 'novo', cls: 'sobe' } : { txt: '—', cls: '' };
+    var p = (a - b) / b * 100, r = Math.round(p);
+    return { txt: (r > 0 ? '▲ +' : r < 0 ? '▼ ' : '') + r.toLocaleString('pt-BR') + '%', cls: r > 0 ? 'sobe' : r < 0 ? 'cai' : '', p: p };
+  }
+  // agrega o período atual e o de comparação
+  function vdDados() {
+    var iv = vdIntervalos(), todas = vdLinhas();
+    var filtro = function(r) { return (!vdUi.marca || r.marca === vdUi.marca) && (!vdUi.produto || r.pid === vdUi.produto); };
+    var base = todas.filter(filtro);
+    var atual = base.filter(function(r) { return r.dia >= iv.de && r.dia <= iv.ate; }), comp = base.filter(function(r) { return r.dia >= iv.de2 && r.dia <= iv.ate2; });
+    var primeira = {}, ultima = {};
+    base.forEach(function(r) { if (r.vol <= 0) return; if (!primeira[r.key] || r.dia < primeira[r.key]) primeira[r.key] = r.dia; if (!ultima[r.key] || r.dia > ultima[r.key]) ultima[r.key] = r.dia; });
+    function porCliente(rows) {
+      var m = {};
+      rows.forEach(function(r) {
+        var x = m[r.key] = m[r.key] || { key: r.key, nomes: {}, v: 0, vol: 0, cargas: {}, prods: {}, troca: 0 };
+        x.nomes[r.cliente] = (x.nomes[r.cliente] || 0) + 1; x.v += vdMedida(r); x.vol += r.vol; x.troca += r.troca; x.cargas[r.carga] = 1;
+        x.prods[r.produto] = (x.prods[r.produto] || 0) + vdMedida(r);
+      });
+      return m;
+    }
+    var ca = porCliente(atual), cc = porCliente(comp), keys = Object.keys(ca).concat(Object.keys(cc).filter(function(k) { return !ca[k]; }));
+    function vdNomeCli(x) { return Object.keys(x.nomes).sort(function(a, b) { return x.nomes[b] - x.nomes[a]; })[0]; }
+    var clientes = keys.map(function(k) {
+      var a = ca[k], b = cc[k];
+      return { key: k, nome: vdNomeCli(a || b), atual: a ? a.v : 0, comp: b ? b.v : 0, cargas: a ? Object.keys(a.cargas).length : 0, troca: a ? a.troca : 0, prods: a ? a.prods : {}, primeira: primeira[k] || '', ultima: ultima[k] || '' };
+    });
+    var total = clientes.reduce(function(s, x) { return s + x.atual; }, 0), totalComp = clientes.reduce(function(s, x) { return s + x.comp; }, 0);
+    // curva ABC: A até 80% das vendas, B até 95%, C o resto
+    var acum = 0;
+    clientes.filter(function(x) { return x.atual > 0; }).sort(function(a, b) { return b.atual - a.atual; }).forEach(function(x) { acum += x.atual; var p = total ? acum / total : 1; x.abc = p <= 0.8 + 1e-9 || acum === x.atual ? 'A' : p <= 0.95 + 1e-9 ? 'B' : 'C'; });
+    var cargasA = {}, cargasB = {};
+    atual.forEach(function(r) { cargasA[r.carga] = 1; }); comp.forEach(function(r) { cargasB[r.carga] = 1; });
+    var prodMap = {};
+    atual.concat(comp).forEach(function(r) {
+      var x = prodMap[r.pid] = prodMap[r.pid] || { pid: r.pid, nome: r.produto, unidade: r.unidade, atual: 0, comp: 0, volA: 0 };
+      var dentro = r.dia >= iv.de && r.dia <= iv.ate;
+      if (dentro) { x.atual += vdMedida(r); x.volA += r.vol; } else x.comp += vdMedida(r);
+    });
+    return {
+      iv: iv, base: base, atual: atual, comp: comp, clientes: clientes, total: total, totalComp: totalComp,
+      nCli: clientes.filter(function(x) { return x.atual > 0; }).length, nCliComp: clientes.filter(function(x) { return x.comp > 0; }).length,
+      nCargas: Object.keys(cargasA).length, nCargasComp: Object.keys(cargasB).length,
+      trocas: atual.reduce(function(s, r) { return s + r.troca; }, 0),
+      novos: clientes.filter(function(x) { return x.atual > 0 && x.primeira >= iv.de && x.primeira <= iv.ate; }),
+      perdidos: clientes.filter(function(x) { return x.comp > 0 && !x.atual; }).sort(function(a, b) { return b.comp - a.comp; }),
+      queda: clientes.filter(function(x) { return x.comp > 0 && x.atual > 0 && x.atual < x.comp * 0.7; }).sort(function(a, b) { return (a.atual - a.comp) - (b.atual - b.comp); }),
+      parados: clientes.filter(function(x) { return x.ultima && x.ultima < addDiasIso(todayIso(), -30) && x.ultima >= addDiasIso(todayIso(), -180); }).sort(function(a, b) { return String(a.ultima).localeCompare(String(b.ultima)); }),
+      produtos: Object.keys(prodMap).map(function(k) { return prodMap[k]; }).sort(function(a, b) { return b.atual - a.atual; })
+    };
+  }
+  // períodos do gráfico: dia (até 31 dias), semana (até 120) ou mês
+  function vdBaldes(de, ate) {
+    var n = vdDias(de, ate), l = [], d;
+    if (n <= 31) { for (d = de; d <= ate; d = addDiasIso(d, 1)) l.push({ de: d, ate: d, rot: d.slice(8) + '/' + d.slice(5, 7) }); return { tipo: 'dia', l: l }; }
+    if (n <= 120) { for (d = de; d <= ate; d = addDiasIso(d, 7)) { var f = addDiasIso(d, 6); l.push({ de: d, ate: f > ate ? ate : f, rot: d.slice(8) + '/' + d.slice(5, 7) }); } return { tipo: 'semana', l: l }; }
+    var MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    for (var ym = de.slice(0, 7); ym <= ate.slice(0, 7); ym = vdMesAnterior(ym, -1)) l.push({ de: ym + '-01' < de ? de : ym + '-01', ate: vdUltimoDiaMes(ym) > ate ? ate : vdUltimoDiaMes(ym), rot: MES[Number(ym.slice(5, 7)) - 1] + '/' + ym.slice(2, 4) });
+    return { tipo: 'mês', l: l };
+  }
+  function vdSomaBaldes(rows, bs, deslocar) {
+    return bs.map(function(b) {
+      var de = deslocar ? deslocar(b.de) : b.de, ate = deslocar ? deslocar(b.ate) : b.ate;
+      return rows.reduce(function(s, r) { return r.dia >= de && r.dia <= ate ? s + vdMedida(r) : s; }, 0);
+    });
+  }
+  function vdCard(rot, val, sub, v) {
+    return '<div class="vd-kpi"><span class="vd-kpi-r">' + escapeHtml(rot) + '</span><b class="vd-kpi-v">' + escapeHtml(val) + '</b>' +
+      (v ? '<span class="vd-var ' + v.cls + '">' + escapeHtml(v.txt) + '</span>' : '') + '<span class="vd-kpi-s">' + escapeHtml(sub) + '</span></div>';
+  }
+  function vdBarra(p, cls) { return '<span class="vd-barra' + (cls ? ' ' + cls : '') + '"><i style="width:' + Math.max(0, Math.min(100, p)).toFixed(1) + '%"></i></span>'; }
+  function vdPeriodoTxt(de, ate) { return de === ate ? formatDateBR(de) : formatDateBR(de) + ' a ' + formatDateBR(ate); }
+  function renderVendas() {
+    var box = document.getElementById('vd-conteudo');
+    if (!box || !session || ui.tab !== 'vendas') return;
+    vdCharts.forEach(function(c) { try { c.dispose(); } catch (e) {} }); vdCharts = [];
+    if (!podeVerVendas()) { box.innerHTML = '<p class="empty-state">Sem acesso a esta aba.</p>'; return; }
+    if (vdUi.medida === 'valor' && !vdTemPrecos()) vdUi.medida = 'paletes';
+    var D = vdDados(), iv = D.iv, marcas = {}, prods = produtosOrdenados();
+    prods.forEach(function(p) { marcas[marcaDoTexto(p.nome)] = 1; });
+    var compTxt = vdUi.comparar === 'ano' || vdUi.periodo === 'ano' ? 'mesmo período do ano passado' : 'período anterior';
+    var h = '<p class="tagline">Vendas a partir das <b>cargas carregadas</b> (o que saiu da fábrica), com o comparativo por cliente. Troca no carregamento não conta como venda.</p>';
+    // filtros
+    h += '<div class="vd-filtros">' +
+      '<div class="est-loc-chips" role="group" aria-label="Período">' + VD_PERIODOS.map(function(p) { return '<button type="button" class="est-loc' + (vdUi.periodo === p[0] ? ' on' : '') + '" data-vd="periodo" data-p="' + p[0] + '">' + escapeHtml(p[1]) + '</button>'; }).join('') + '</div>' +
+      (vdUi.periodo === 'custom' ? '<div class="vd-datas"><label>De<input type="date" id="vd-de" value="' + escapeHtml(vdUi.de || iv.de) + '" /></label><label>Até<input type="date" id="vd-ate" value="' + escapeHtml(vdUi.ate || iv.ate) + '" /></label></div>' : '') +
+      '<div class="vd-selects">' +
+        '<label>Comparar com<select id="vd-comparar"><option value="anterior"' + (vdUi.comparar !== 'ano' ? ' selected' : '') + '>Período anterior</option><option value="ano"' + (vdUi.comparar === 'ano' ? ' selected' : '') + '>Mesmo período do ano passado</option></select></label>' +
+        '<label>Medida<select id="vd-medida"><option value="paletes"' + (vdUi.medida === 'paletes' ? ' selected' : '') + '>Paletes</option><option value="volumes"' + (vdUi.medida === 'volumes' ? ' selected' : '') + '>Volumes (fardos, galões, caixas)</option>' +
+          (vdTemPrecos() ? '<option value="valor"' + (vdUi.medida === 'valor' ? ' selected' : '') + '>Valor estimado (R$)</option>' : '') + '</select></label>' +
+        '<label>Marca<select id="vd-marca"><option value="">Todas</option>' + Object.keys(marcas).sort().map(function(m) { return '<option value="' + m + '"' + (vdUi.marca === m ? ' selected' : '') + '>' + escapeHtml(vdMarcaNome(m)) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Produto<select id="vd-produto"><option value="">Todos</option>' + prods.filter(function(p) { return !vdUi.marca || marcaDoTexto(p.nome) === vdUi.marca; }).map(function(p) { return '<option value="' + escapeHtml(p.id) + '"' + (vdUi.produto === p.id ? ' selected' : '') + '>' + escapeHtml(p.nome) + '</option>'; }).join('') + '</select></label>' +
+      '</div>' +
+      '<p class="vd-periodo">' + escapeHtml(vdPeriodoTxt(iv.de, iv.ate)) + ' <span class="driver-sub">comparado com ' + escapeHtml(compTxt + ' (' + vdPeriodoTxt(iv.de2, iv.ate2) + ')') + '</span></p>' +
+    '</div>';
+    // indicadores
+    var med = D.nCli ? D.total / D.nCli : 0, medComp = D.nCliComp ? D.totalComp / D.nCliComp : 0;
+    h += '<div class="vd-kpis">' +
+      vdCard('Vendido', vdFmt(D.total), 'antes: ' + vdFmt(D.totalComp), vdVar(D.total, D.totalComp)) +
+      vdCard('Clientes atendidos', fmtInt(D.nCli), 'antes: ' + fmtInt(D.nCliComp), vdVar(D.nCli, D.nCliComp)) +
+      vdCard('Cargas carregadas', fmtInt(D.nCargas), 'antes: ' + fmtInt(D.nCargasComp), vdVar(D.nCargas, D.nCargasComp)) +
+      vdCard('Média por cliente', vdFmt(med), 'antes: ' + vdFmt(medComp), vdVar(med, medComp)) +
+      vdCard('Clientes novos', fmtInt(D.novos.length), 'primeira compra no período') +
+      vdCard('Não compraram', fmtInt(D.perdidos.length), 'compraram no ' + (compTxt === 'período anterior' ? 'anterior' : 'ano passado') + ', não neste') +
+      (D.trocas ? vdCard('Trocas', fmtInt(D.trocas) + ' vol.', 'fora das vendas') : '') +
+    '</div>';
+    var pend = cargas.filter(function(c) { return c.status !== 'concluida'; }), pendPal = pend.reduce(function(s, c) { return s + (Number(c.totalPaletes) || 0); }, 0);
+    if (pend.length) h += '<p class="hint">Na fila (ainda não carregadas, não entram nas vendas): ' + fmtInt(pend.length) + (pend.length === 1 ? ' carga' : ' cargas') + ' · ' + fmtInt(pendPal) + palavraPaletes(pendPal) + '.</p>';
+    // evolução
+    h += '<section class="vd-sec"><div class="vd-sec-t"><h3 class="section-title">Vendas no período</h3><span class="driver-sub">' + escapeHtml(vdNomeMedida()) + '</span></div><div class="vd-graf" id="vd-graf-evolucao" role="img" aria-label="Gráfico das vendas no período comparadas com o período anterior"></div></section>';
+    // áreas
+    var AREAS = [['clientes', 'Clientes'], ['comparar', 'Comparar clientes' + (vdUi.comparando.length ? ' (' + vdUi.comparando.length + ')' : '')], ['alertas', 'Novos, em queda e parados'], ['produtos', 'Produtos']];
+    h += '<div class="est-loc-chips vd-areas" role="tablist" aria-label="Partes do painel">' + AREAS.map(function(a) { return '<button type="button" class="est-loc' + (vdUi.area === a[0] ? ' on' : '') + '" data-vd="area" data-a="' + a[0] + '">' + escapeHtml(a[1]) + '</button>'; }).join('') + '</div>';
+    if (vdUi.cliente) h += vdHtmlCliente(D);
+    else if (vdUi.area === 'comparar') h += vdHtmlComparar(D);
+    else if (vdUi.area === 'alertas') h += vdHtmlAlertas(D);
+    else if (vdUi.area === 'produtos') h += vdHtmlProdutos(D);
+    else h += vdHtmlClientes(D);
+    h += '<div class="vd-rodape"><button type="button" class="btn-text" data-vd="csv">Baixar planilha dos clientes</button>' + (podeVerVendas() ? '<button type="button" class="btn-text" data-vd="precos">Preços de referência (R$)</button>' : '') + '</div>';
+    box.innerHTML = h;
+    vdDesenharGraficos(D);
+  }
+  function vdHtmlClientes(D) {
+    var b = normNome(vdUi.busca), lista = D.clientes.filter(function(x) { return (x.atual > 0 || x.comp > 0) && (!b || normNome(x.nome).indexOf(b) >= 0); });
+    var pct = function(x) { return x.comp ? (x.atual - x.comp) / x.comp : (x.atual ? 9 : 0); };
+    var ord = { maior: function(a, c) { return c.atual - a.atual || c.comp - a.comp; }, cresceu: function(a, c) { return (c.atual - c.comp) - (a.atual - a.comp) || pct(c) - pct(a); }, caiu: function(a, c) { return (a.atual - a.comp) - (c.atual - c.comp) || pct(a) - pct(c); }, az: function(a, c) { return String(a.nome).localeCompare(String(c.nome), 'pt-BR'); } };
+    lista.sort(ord[vdUi.ordem] || ord.maior);
+    var abc = { A: 0, B: 0, C: 0 }, abcV = { A: 0, B: 0, C: 0 };
+    D.clientes.forEach(function(x) { if (x.abc) { abc[x.abc]++; abcV[x.abc] += x.atual; } });
+    var max = lista.reduce(function(m, x) { return Math.max(m, x.atual, x.comp); }, 0) || 1, lim = vdUi.todos ? lista.length : 40;
+    var h = (D.total ? '<div class="vd-abc">' + ['A', 'B', 'C'].map(function(k) { return '<span class="vd-abc-' + k + '"><b>' + k + '</b> ' + abc[k] + (abc[k] === 1 ? ' cliente' : ' clientes') + ' = ' + Math.round(D.total ? abcV[k] / D.total * 100 : 0) + '% das vendas</span>'; }).join('') + '</div>' : '') +
+      '<div class="ag-ferramentas"><input type="search" id="vd-busca" placeholder="Buscar cliente" value="' + escapeHtml(vdUi.busca) + '" autocomplete="off" aria-label="Buscar cliente" />' +
+      '<label class="sup-filtro">Ordem<select id="vd-ordem"><option value="maior"' + (vdUi.ordem === 'maior' ? ' selected' : '') + '>Quem mais comprou</option><option value="cresceu"' + (vdUi.ordem === 'cresceu' ? ' selected' : '') + '>Quem mais cresceu</option><option value="caiu"' + (vdUi.ordem === 'caiu' ? ' selected' : '') + '>Quem mais caiu</option><option value="az"' + (vdUi.ordem === 'az' ? ' selected' : '') + '>Nome (A a Z)</option></select></label></div>';
+    if (!lista.length) return h + '<p class="empty-state">Nenhuma venda neste período' + (b ? ' para esta busca' : '') + '.</p>';
+    h += '<p class="hint">Toque no cliente para ver o detalhe. Marque ☐ para comparar clientes lado a lado.</p><div class="vd-rank" role="table" aria-label="Ranking de clientes">' +
+      '<div class="vd-rank-cab" role="row"><span role="columnheader">Cliente</span><span role="columnheader">Neste período</span><span role="columnheader">Antes</span><span role="columnheader">Variação</span></div>' +
+      lista.slice(0, lim).map(function(x, i) {
+        var v = vdVar(x.atual, x.comp), on = vdUi.comparando.indexOf(x.key) >= 0;
+        return '<div class="vd-rank-l" role="row"><span class="vd-rank-n" role="cell"><label class="vd-ck" title="Comparar"><input type="checkbox" data-vd-cmp="' + escapeHtml(x.key) + '"' + (on ? ' checked' : '') + ' aria-label="Comparar ' + escapeHtml(x.nome) + '" /></label>' +
+          '<button type="button" class="vd-cli" data-vd="cliente" data-k="' + escapeHtml(x.key) + '"><span class="vd-pos">' + (i + 1) + '</span> ' + escapeHtml(x.nome) + (x.abc ? ' <span class="vd-abc-tag vd-abc-' + x.abc + '">' + x.abc + '</span>' : '') +
+          '<span class="driver-sub">' + escapeHtml((x.cargas ? x.cargas + (x.cargas === 1 ? ' carga' : ' cargas') + ' · ' : '') + (x.ultima ? 'última ' + formatDateBR(x.ultima) : '') + (D.total && x.atual ? ' · ' + (x.atual / D.total * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '% do total' : '')) + '</span></button></span>' +
+          '<span class="vd-rank-v" role="cell"><b>' + escapeHtml(vdFmt(x.atual, true)) + '</b>' + vdBarra(x.atual / max * 100) + '<small class="vd-antes-m">antes ' + escapeHtml(vdFmt(x.comp, true)) + '</small></span>' +
+          '<span class="vd-rank-v" role="cell">' + escapeHtml(vdFmt(x.comp, true)) + vdBarra(x.comp / max * 100, 'ant') + '</span>' +
+          '<span class="vd-var ' + v.cls + '" role="cell">' + escapeHtml(v.txt) + '</span></div>';
+      }).join('') + '</div>' +
+      (lista.length > lim ? '<button type="button" class="btn-text" data-vd="todos">Mostrar todos (' + lista.length + ')</button>' : '');
+    return h;
+  }
+  function vdHtmlCliente(D) {
+    var x = D.clientes.find(function(c) { return c.key === vdUi.cliente; });
+    var nome = x ? x.nome : (D.base.find(function(r) { return r.key === vdUi.cliente; }) || {}).cliente || 'Cliente';
+    var rows = D.base.filter(function(r) { return r.key === vdUi.cliente; });
+    var dias = rows.map(function(r) { return r.dia; }).filter(function(d, i, l) { return l.indexOf(d) === i; }).sort();
+    var interv = dias.length > 1 ? Math.round(vdDias(dias[0], dias[dias.length - 1]) / (dias.length - 1)) : null;
+    var ult = dias[dias.length - 1], semComprar = ult ? -diasAte(ult) : null;
+    var prodsA = x ? Object.keys(x.prods).map(function(n) { return { n: n, v: x.prods[n] }; }).sort(function(a, b) { return b.v - a.v; }) : [];
+    var tot = prodsA.reduce(function(s, p) { return s + p.v; }, 0);
+    var cargasCli = cargas.filter(function(c) { return c.status === 'concluida' && (c.clientes || []).some(function(cl) { return normNome(cl.cliente) === vdUi.cliente; }); })
+      .sort(function(a, b) { return String(vdDiaCarga(b)).localeCompare(String(vdDiaCarga(a))); }).slice(0, 8);
+    var v = x ? vdVar(x.atual, x.comp) : null;
+    return '<div class="vd-detalhe"><div class="vd-sec-t"><button type="button" class="btn-text" data-vd="voltar">← Voltar</button><h3 class="section-title">' + escapeHtml(nome) + '</h3>' +
+        (vdUi.comparando.indexOf(vdUi.cliente) < 0 ? '<button type="button" class="btn-text" data-vd="cmp-add" data-k="' + escapeHtml(vdUi.cliente) + '">+ Comparar</button>' : '') + '</div>' +
+      '<div class="vd-kpis">' +
+        vdCard('Neste período', vdFmt(x ? x.atual : 0), 'antes: ' + vdFmt(x ? x.comp : 0), v) +
+        vdCard('Cargas', fmtInt(x ? x.cargas : 0), 'no período') +
+        vdCard('Compra a cada', interv ? '~' + interv + ' dias' : '—', dias.length + (dias.length === 1 ? ' dia de compra' : ' dias de compra') + ' no histórico') +
+        vdCard('Última compra', ult ? formatDateBR(ult) : '—', semComprar !== null ? (semComprar === 0 ? 'hoje' : 'há ' + semComprar + (semComprar === 1 ? ' dia' : ' dias')) : '') +
+        (x && x.abc ? vdCard('Curva ABC', x.abc, x.abc === 'A' ? 'entre os que somam 80% das vendas' : x.abc === 'B' ? 'entre os próximos 15%' : 'entre os últimos 5%') : '') +
+      '</div>' +
+      '<section class="vd-sec"><div class="vd-sec-t"><h3 class="section-title">Últimos 12 meses</h3><span class="driver-sub">' + escapeHtml(vdNomeMedida()) + '</span></div><div class="vd-graf" id="vd-graf-cliente" role="img" aria-label="Compras do cliente nos últimos 12 meses"></div></section>' +
+      '<section class="vd-sec"><h3 class="section-title">O que comprou neste período</h3>' + (prodsA.length ? '<div class="vd-prods">' + prodsA.map(function(p) {
+        return '<div class="vd-prod-l"><span>' + escapeHtml(p.n) + '</span><span class="vd-rank-v"><b>' + escapeHtml(vdFmt(p.v, true)) + '</b>' + vdBarra(tot ? p.v / tot * 100 : 0) + '</span><span class="driver-sub">' + (tot ? Math.round(p.v / tot * 100) : 0) + '%</span></div>';
+      }).join('') + '</div>' : '<p class="empty-state">Nada neste período.</p>') + '</section>' +
+      '<section class="vd-sec"><h3 class="section-title">Últimas cargas</h3>' + (cargasCli.length ? cargasCli.map(function(c) {
+        var cl = (c.clientes || []).filter(function(y) { return normNome(y.cliente) === vdUi.cliente; });
+        return '<div class="vd-carga-l"><b>' + escapeHtml(formatDateBR(vdDiaCarga(c))) + '</b> <span class="driver-sub">' + escapeHtml(crelMotorista(c)) + '</span><div class="driver-sub">' +
+          escapeHtml(cl.map(function(y) { return (y.itens || []).map(function(it) { return (it.produtoNome || '') + ' ' + qtdUnidade(it.quantidade, it.unidade || '') + (trocaQtd(it) ? ' (troca ' + fmtInt(trocaQtd(it)) + ')' : ''); }).join(' · '); }).join(' · ')) + '</div></div>';
+      }).join('') : '<p class="empty-state">Nenhuma carga.</p>') + '</section></div>';
+  }
+  function vdHtmlComparar(D) {
+    var sel = vdUi.comparando.slice(0, 6);
+    if (sel.length < 2) {
+      var top = D.clientes.filter(function(x) { return x.atual > 0; }).sort(function(a, b) { return b.atual - a.atual; }).slice(0, 12);
+      return '<p class="hint">Escolha de 2 a 6 clientes para comparar (marque ☐ no ranking ou toque abaixo).</p><div class="vd-escolha">' + top.map(function(x) {
+        var on = sel.indexOf(x.key) >= 0;
+        return '<button type="button" class="est-loc' + (on ? ' on' : '') + '" data-vd="cmp-toggle" data-k="' + escapeHtml(x.key) + '">' + escapeHtml(x.nome) + '</button>';
+      }).join('') + '</div>';
+    }
+    var linhas = sel.map(function(k, i) {
+      var x = D.clientes.find(function(c) { return c.key === k; }) || { key: k, nome: (D.base.find(function(r) { return r.key === k; }) || {}).cliente || k, atual: 0, comp: 0, cargas: 0, prods: {} };
+      return Object.assign({ cor: VD_CORES[i % VD_CORES.length] }, x);
+    });
+    var tot = linhas.reduce(function(s, x) { return s + x.atual; }, 0) || 1;
+    return '<div class="vd-sec-t"><span class="driver-sub">' + sel.length + ' clientes</span><button type="button" class="btn-text" data-vd="cmp-limpar">Limpar a comparação</button></div>' +
+      '<section class="vd-sec"><div class="vd-sec-t"><h3 class="section-title">Mês a mês (últimos 12 meses)</h3><span class="driver-sub">' + escapeHtml(vdNomeMedida()) + '</span></div><div class="vd-graf" id="vd-graf-comparar" role="img" aria-label="Comparação mês a mês dos clientes escolhidos"></div></section>' +
+      '<div class="vd-rank vd-cmp-tab" role="table" aria-label="Comparação dos clientes"><div class="vd-rank-cab" role="row"><span role="columnheader">Cliente</span><span role="columnheader">Neste período</span><span role="columnheader">Antes</span><span role="columnheader">Variação</span></div>' +
+      linhas.map(function(x) {
+        var v = vdVar(x.atual, x.comp), p1 = Object.keys(x.prods || {}).sort(function(a, b) { return x.prods[b] - x.prods[a]; })[0];
+        return '<div class="vd-rank-l" role="row"><span class="vd-rank-n" role="cell"><i class="vd-cor" style="background:' + x.cor + '"></i><button type="button" class="vd-cli" data-vd="cliente" data-k="' + escapeHtml(x.key) + '">' + escapeHtml(x.nome) +
+          '<span class="driver-sub">' + escapeHtml(fmtInt(x.cargas) + (x.cargas === 1 ? ' carga' : ' cargas') + (p1 ? ' · mais compra: ' + p1 : '')) + '</span></button><button type="button" class="btn-text" data-vd="cmp-toggle" data-k="' + escapeHtml(x.key) + '" aria-label="Tirar da comparação">✕</button></span>' +
+          '<span class="vd-rank-v" role="cell"><b>' + escapeHtml(vdFmt(x.atual, true)) + '</b>' + vdBarra(x.atual / tot * 100) + '<small class="vd-antes-m">antes ' + escapeHtml(vdFmt(x.comp, true)) + '</small></span><span class="vd-rank-v" role="cell">' + escapeHtml(vdFmt(x.comp, true)) + '</span><span class="vd-var ' + v.cls + '" role="cell">' + escapeHtml(v.txt) + '</span></div>';
+      }).join('') + '</div>';
+  }
+  function vdListaAlerta(t, l, fn, vazio) {
+    return '<section class="vd-sec"><h3 class="section-title">' + escapeHtml(t) + ' <span class="count-chip">' + l.length + '</span></h3>' + (l.length ? l.slice(0, 15).map(fn).join('') : '<p class="empty-state">' + escapeHtml(vazio) + '</p>') + '</section>';
+  }
+  function vdLinhaAlerta(x, txt) {
+    return '<button type="button" class="vd-alerta-l" data-vd="cliente" data-k="' + escapeHtml(x.key) + '"><b>' + escapeHtml(x.nome) + '</b><span class="driver-sub">' + escapeHtml(txt) + '</span></button>';
+  }
+  function vdHtmlAlertas(D) {
+    return vdListaAlerta('Em queda (30% ou mais abaixo)', D.queda, function(x) { return vdLinhaAlerta(x, vdFmt(x.atual) + ' agora · ' + vdFmt(x.comp) + ' antes (' + vdVar(x.atual, x.comp).txt + ')'); }, 'Nenhum cliente em queda forte.') +
+      vdListaAlerta('Compraram antes e não compraram agora', D.perdidos, function(x) { return vdLinhaAlerta(x, vdFmt(x.comp) + ' antes · última compra ' + formatDateBR(x.ultima)); }, 'Todos os clientes do período anterior compraram de novo.') +
+      vdListaAlerta('Parados há mais de 30 dias', D.parados, function(x) { return vdLinhaAlerta(x, 'última compra ' + formatDateBR(x.ultima) + ' (há ' + (-diasAte(x.ultima)) + ' dias)'); }, 'Nenhum cliente parado.') +
+      vdListaAlerta('Clientes novos (primeira compra neste período)', D.novos, function(x) { return vdLinhaAlerta(x, 'primeira compra ' + formatDateBR(x.primeira) + ' · ' + vdFmt(x.atual)); }, 'Nenhum cliente novo neste período.');
+  }
+  function vdHtmlProdutos(D) {
+    var l = D.produtos.filter(function(p) { return p.atual > 0 || p.comp > 0; }), max = l.reduce(function(m, x) { return Math.max(m, x.atual, x.comp); }, 0) || 1;
+    if (!l.length) return '<p class="empty-state">Nenhuma venda neste período.</p>';
+    return '<div class="vd-rank" role="table" aria-label="Vendas por produto"><div class="vd-rank-cab" role="row"><span role="columnheader">Produto</span><span role="columnheader">Neste período</span><span role="columnheader">Antes</span><span role="columnheader">Variação</span></div>' +
+      l.map(function(p) {
+        var v = vdVar(p.atual, p.comp);
+        return '<div class="vd-rank-l" role="row"><span class="vd-rank-n" role="cell"><span class="vd-cli">' + escapeHtml(p.nome) + '<span class="driver-sub">' + escapeHtml(qtdUnidade(Math.round(p.volA), p.unidade) + (D.total ? ' · ' + Math.round(p.atual / D.total * 100) + '% do total' : '')) + '</span></span></span>' +
+          '<span class="vd-rank-v" role="cell"><b>' + escapeHtml(vdFmt(p.atual, true)) + '</b>' + vdBarra(p.atual / max * 100) + '<small class="vd-antes-m">antes ' + escapeHtml(vdFmt(p.comp, true)) + '</small></span><span class="vd-rank-v" role="cell">' + escapeHtml(vdFmt(p.comp, true)) + vdBarra(p.comp / max * 100, 'ant') + '</span><span class="vd-var ' + v.cls + '" role="cell">' + escapeHtml(v.txt) + '</span></div>';
+      }).join('') + '</div>';
+  }
+  // ----- gráficos (ECharts; sem ele, barras simples) -----
+  function vdMeses12() {
+    var ym = todayIso().slice(0, 7), l = [], MES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+    for (var i = 11; i >= 0; i--) { var m = vdMesAnterior(ym, i); l.push({ de: m + '-01', ate: vdUltimoDiaMes(m), rot: MES[Number(m.slice(5, 7)) - 1] + '/' + m.slice(2, 4) }); }
+    return l;
+  }
+  function vdDesenharGraficos(D) {
+    var specs = [], iv = D.iv, el;
+    if ((el = document.getElementById('vd-graf-evolucao'))) {
+      var bs = vdBaldes(iv.de, iv.ate), desloc = vdUi.comparar === 'ano' || vdUi.periodo === 'ano' ? vdMenosAno : (function() { var n = Math.round((Date.parse(iv.de + 'T12:00:00') - Date.parse(iv.de2 + 'T12:00:00')) / 86400000); return function(d) { return addDiasIso(d, -n); }; })();
+      specs.push({ el: el, rot: bs.l.map(function(b) { return b.rot; }), series: [
+        { nome: 'Neste período', tipo: 'bar', cor: VD_CORES[0], dados: vdSomaBaldes(D.base, bs.l) },
+        { nome: 'Antes', tipo: 'line', cor: VD_CORES[1], dados: vdSomaBaldes(D.base, bs.l, desloc) }] });
+    }
+    var meses = vdMeses12();
+    if ((el = document.getElementById('vd-graf-cliente'))) {
+      var rc = D.base.filter(function(r) { return r.key === vdUi.cliente; });
+      specs.push({ el: el, rot: meses.map(function(b) { return b.rot; }), series: [{ nome: 'Compras', tipo: 'bar', cor: VD_CORES[2], dados: vdSomaBaldes(rc, meses) }] });
+    }
+    if ((el = document.getElementById('vd-graf-comparar'))) {
+      specs.push({ el: el, rot: meses.map(function(b) { return b.rot; }), legenda: true, series: vdUi.comparando.slice(0, 6).map(function(k, i) {
+        var x = D.clientes.find(function(c) { return c.key === k; }), nome = x ? x.nome : (D.base.find(function(r) { return r.key === k; }) || {}).cliente || k;
+        return { nome: nome, tipo: 'line', cor: VD_CORES[i % VD_CORES.length], dados: vdSomaBaldes(D.base.filter(function(r) { return r.key === k; }), meses) };
+      }) });
+    }
+    if (!specs.length) return;
+    specs.forEach(function(s) { vdGraficoSimples(s); });
+    carregarECharts().then(function(ec) {
+      if (ui.tab !== 'vendas') return;
+      specs.forEach(function(s) { if (document.body.contains(s.el)) vdGraficoECharts(ec, s); });
+    }).catch(function() { /* sem internet: ficam as barras simples */ });
+  }
+  function vdGraficoSimples(s) {
+    var max = 0;
+    s.series.forEach(function(x) { x.dados.forEach(function(v) { if (v > max) max = v; }); });
+    max = max || 1;
+    var b = s.series[0];
+    s.el.innerHTML = '<div class="vd-simples">' + s.rot.map(function(r, i) {
+      return '<div class="vd-simples-c" title="' + escapeHtml(r + ': ' + s.series.map(function(x) { return x.nome + ' ' + vdFmt(x.dados[i]); }).join(' · ')) + '">' +
+        '<div class="vd-simples-b">' + s.series.map(function(x, j) { return '<i style="height:' + (x.dados[i] / max * 100).toFixed(1) + '%;background:' + x.cor + (j ? ';opacity:.45' : '') + '"></i>'; }).join('') + '</div><span>' + escapeHtml(r) + '</span></div>';
+    }).join('') + '</div><p class="driver-sub vd-legenda">' + s.series.map(function(x) { return '<i class="vd-cor" style="background:' + x.cor + '"></i>' + escapeHtml(x.nome); }).join(' ') + (b ? '' : '') + '</p>';
+  }
+  function vdGraficoECharts(ec, s) {
+    var css = getComputedStyle(document.documentElement), tinta = (css.getPropertyValue('--ink') || '#1C2A2E').trim(), linha = (css.getPropertyValue('--line') || '#D6D5DE').trim(), mudo = (css.getPropertyValue('--muted') || '#545869').trim();
+    var simples = s.el.innerHTML, ch = null;
+    s.el.innerHTML = '';
+    try { ch = ec.init(s.el, null, { renderer: 'canvas' }); } catch (e) { s.el.innerHTML = simples; return; }
+    vdCharts.push(ch);
+    var curto = function(v) { return vdUi.medida === 'valor' ? (Math.abs(v) >= 1000 ? 'R$ ' + Math.round(v / 1000).toLocaleString('pt-BR') + ' mil' : 'R$ ' + Math.round(v).toLocaleString('pt-BR')) : Math.round(v).toLocaleString('pt-BR'); };
+    try { ch.setOption({
+      animationDuration: 400,
+      color: s.series.map(function(x) { return x.cor; }),
+      grid: { left: 8, right: 12, top: s.legenda || s.series.length > 1 ? 40 : 16, bottom: 8, containLabel: true },
+      legend: s.legenda || s.series.length > 1 ? { top: 0, textStyle: { color: tinta }, type: 'scroll' } : undefined,
+      tooltip: { trigger: 'axis', valueFormatter: function(v) { return vdFmt(Number(v) || 0); } },
+      xAxis: { type: 'category', data: s.rot, axisLabel: { color: mudo, hideOverlap: true }, axisLine: { lineStyle: { color: linha } } },
+      yAxis: { type: 'value', axisLabel: { color: mudo, formatter: curto }, splitLine: { lineStyle: { color: linha } } },
+      series: s.series.map(function(x) {
+        return { name: x.nome, type: x.tipo, data: x.dados.map(function(v) { return Math.round(v * 10) / 10; }), smooth: x.tipo === 'line', symbolSize: 6, barMaxWidth: 28,
+          itemStyle: { color: x.cor, borderRadius: x.tipo === 'bar' ? [4, 4, 0, 0] : 0 }, lineStyle: x.tipo === 'line' ? { width: 3, color: x.cor } : undefined };
+      })
+    }); } catch (e) {
+      // gráfico não desenhou: volta para as barras simples
+      console.warn('echarts', e);
+      try { ch.dispose(); } catch (x) {}
+      vdCharts = vdCharts.filter(function(c) { return c !== ch; });
+      s.el.innerHTML = simples;
+    }
+  }
+  window.addEventListener('resize', function() { vdCharts.forEach(function(c) { try { c.resize(); } catch (e) {} }); });
+  function vdTileInicio() {
+    var antes = { periodo: vdUi.periodo, comparar: vdUi.comparar, marca: vdUi.marca, produto: vdUi.produto, medida: vdUi.medida };
+    Object.assign(vdUi, { periodo: 'mes', comparar: 'anterior', marca: '', produto: '', medida: 'paletes' });
+    var D = vdDados(), v = vdVar(D.total, D.totalComp);
+    Object.assign(vdUi, antes);
+    return { tab: 'vendas', t: 'Vendas', v: Math.round(D.total), u: 'paletes vendidos neste mês', s: (D.totalComp ? v.txt + ' sobre os mesmos dias do mês passado' : 'sem vendas no mês passado para comparar') + ' · ' + D.nCli + (D.nCli === 1 ? ' cliente' : ' clientes'), alerta: !!(v.p && v.p <= -15) };
+  }
+  function vdExportar() {
+    var D = vdDados(), esc = function(x) { var s = String(x == null ? '' : x); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    var num = function(v) { return (Math.round(v * 100) / 100).toString().replace('.', ','); };
+    var l = [['Cliente', 'Curva ABC', vdNomeMedida() + ' neste período', 'Antes', 'Variação (%)', 'Participação (%)', 'Cargas no período', 'Trocas (volumes)', 'Primeira compra', 'Última compra'].join(';')];
+    D.clientes.filter(function(x) { return x.atual > 0 || x.comp > 0; }).sort(function(a, b) { return b.atual - a.atual; }).forEach(function(x) {
+      var v = vdVar(x.atual, x.comp);
+      l.push([x.nome, x.abc || '', num(x.atual), num(x.comp), v.p != null ? num(v.p) : '', D.total ? num(x.atual / D.total * 100) : '', x.cargas, x.troca || '', x.primeira ? formatDateBR(x.primeira) : '', x.ultima ? formatDateBR(x.ultima) : ''].map(esc).join(';'));
+    });
+    triggerDownload(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-vendas-clientes-' + D.iv.de + '-a-' + D.iv.ate + '.csv');
+  }
+  function vdAbrirPrecos() {
+    var p = vdPrecos.porProduto || {}, prods = produtosOrdenados();
+    gerAbrir({
+      titulo: 'Preços de referência (R$)', botao: 'Salvar preços',
+      html: '<p class="hint">Preço médio de venda <b>por unidade</b> (fardo, galão ou caixa) de cada produto. Com os preços, o painel mostra o <b>valor estimado</b> das vendas (quantidade vendida × preço). Deixe em branco o que não quiser estimar. Só quem vê o painel de Vendas vê estes preços.</p>' +
+        prods.map(function(x) { return '<label class="mkt-cont"><span>' + escapeHtml(x.nome) + ' <span class="driver-sub">por ' + escapeHtml(vdUnidSing(unidadeDe(x))) + '</span></span><input type="text" class="vd-preco" data-id="' + escapeHtml(x.id) + '" inputmode="decimal" maxlength="12" placeholder="R$ 0,00" value="' + escapeHtml(Number(p[x.id]) > 0 ? ocValorTexto(p[x.id]) : '') + '" /></label>'; }).join(''),
+      salvar: function() {
+        var novo = {}, erro = '';
+        document.querySelectorAll('#ger-form-body .vd-preco').forEach(function(inp) {
+          if (!inp.value.trim() || erro) return;
+          var v = ocValor(inp.value);
+          if (v === null || v < 0 || v > 100000) { erro = 'Confira o preço de ' + (findProduto(inp.dataset.id) || {}).nome + '.'; return; }
+          if (v > 0) novo[inp.dataset.id] = Math.round(v * 100) / 100;
+        });
+        if (erro) return gerErro(erro);
+        var dados = { porProduto: novo, atualizadoEm: new Date().toISOString(), atualizadoPor: quemSessao() };
+        if (mode === 'db' && db) return db.collection(VD_COL).doc('precos').set(dados).then(function() { showToast('Preços salvos.'); });
+        vdPrecos = dados; try { localStorage.setItem('levissima-vendas-precos-v1', JSON.stringify(dados)); } catch (e) {}
+        renderVendas(); showToast('Preços salvos.');
+        return true;
+      }
+    });
+  }
+  document.getElementById('tab-vendas').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-vd]');
+    if (!b) return;
+    var a = b.dataset.vd;
+    if (a === 'periodo') { vdUi.periodo = b.dataset.p; vdUi.todos = false; renderVendas(); }
+    else if (a === 'area') { vdUi.area = b.dataset.a; vdUi.cliente = ''; renderVendas(); }
+    else if (a === 'cliente') { vdUi.cliente = b.dataset.k; renderVendas(); var t = document.getElementById('tab-vendas'); if (t && t.scrollIntoView) t.scrollIntoView({ block: 'start' }); }
+    else if (a === 'voltar') { vdUi.cliente = ''; renderVendas(); }
+    else if (a === 'todos') { vdUi.todos = true; renderVendas(); }
+    else if (a === 'cmp-add' || a === 'cmp-toggle') {
+      var i = vdUi.comparando.indexOf(b.dataset.k);
+      if (i >= 0 && a === 'cmp-toggle') vdUi.comparando.splice(i, 1);
+      else if (i < 0) { if (vdUi.comparando.length >= 6) { showToast('Compare até 6 clientes de cada vez.'); return; } vdUi.comparando.push(b.dataset.k); }
+      if (a === 'cmp-add') { vdUi.cliente = ''; vdUi.area = 'comparar'; }
+      renderVendas();
+    }
+    else if (a === 'cmp-limpar') { vdUi.comparando = []; renderVendas(); }
+    else if (a === 'csv') vdExportar();
+    else if (a === 'precos') vdAbrirPrecos();
+  });
+  document.getElementById('tab-vendas').addEventListener('change', function(e) {
+    var t = e.target;
+    if (t.dataset && t.dataset.vdCmp) {
+      var k = t.dataset.vdCmp, i = vdUi.comparando.indexOf(k);
+      if (t.checked && i < 0) { if (vdUi.comparando.length >= 6) { t.checked = false; showToast('Compare até 6 clientes de cada vez.'); return; } vdUi.comparando.push(k); }
+      if (!t.checked && i >= 0) vdUi.comparando.splice(i, 1);
+      var bt = document.querySelector('#tab-vendas [data-vd="area"][data-a="comparar"]');
+      if (bt) bt.textContent = 'Comparar clientes' + (vdUi.comparando.length ? ' (' + vdUi.comparando.length + ')' : '');
+      if (vdUi.comparando.length === 2 && t.checked) showToast('Toque em “Comparar clientes” para ver lado a lado.');
+      return;
+    }
+    if (t.id === 'vd-comparar') vdUi.comparar = t.value;
+    else if (t.id === 'vd-medida') vdUi.medida = t.value;
+    else if (t.id === 'vd-marca') { vdUi.marca = t.value; vdUi.produto = ''; }
+    else if (t.id === 'vd-produto') vdUi.produto = t.value;
+    else if (t.id === 'vd-ordem') vdUi.ordem = t.value;
+    else if (t.id === 'vd-de') vdUi.de = t.value;
+    else if (t.id === 'vd-ate') vdUi.ate = t.value;
+    else return;
+    renderVendas();
+  });
+  document.getElementById('tab-vendas').addEventListener('input', function(e) {
+    if (e.target.id !== 'vd-busca') return;
+    vdUi.busca = e.target.value; vdUi.todos = false;
+    var pos = e.target.selectionStart;
+    renderVendas();
+    var n = document.getElementById('vd-busca'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) {} }
   });
   // =====================================================================================================
   // ORGANOGRAMA DE CADA UM (pedido de 19/10/2026): a pessoa vê a própria posição — quem está acima (até a diretoria)
@@ -25910,6 +27401,8 @@
     subscribeSuprimentos();
     subscribeCompras();
     subscribeTrocas();
+    subscribeMkt();
+    subscribeVendas();
     subscribeBrindes();
     subscribeClientesNovos();
     subscribeDatas();
