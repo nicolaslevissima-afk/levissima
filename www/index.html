@@ -424,10 +424,19 @@
   .est-card-s { font-size: 0.75rem; color: var(--muted); flex: 1; }
   .est-card .btn { margin-top: 8px; align-self: flex-start; }
   .est-card .est-card-sub { align-self: flex-start; font-size: 0.75rem; padding: 2px 0; }
+  /* número e texto do cartão que filtram a lista ao tocar (Matéria-prima, 09/11/2026) */
+  .est-card-link { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; cursor: pointer; border-radius: 6px; }
+  .est-card-link .est-card-s::after { content: ' ›'; font-weight: 700; color: var(--teal); }
+  .est-card-link:hover .est-card-s, .est-card-link:focus-visible .est-card-s { text-decoration: underline; }
+  .est-card-link:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .est-card.filtro-on { box-shadow: inset 0 0 0 2px var(--teal); }
+  .est-card.filtro-on .est-card-s::after { content: ' ✓ filtrando'; }
+  .filtro-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: -4px 0 10px; font-size: 0.8125rem; color: var(--muted); }
+  .filtro-grupo-t { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 8px 0 4px; }
   @media (max-width: 559px) {
     .est-cards { grid-template-columns: 1fr; gap: 8px; }
     .est-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; padding: 10px 12px; }
-    .est-card-k, .est-card-v, .est-card-s { grid-column: 1; }
+    .est-card-k, .est-card-v, .est-card-s, .est-card-link { grid-column: 1; }
     .est-card .btn { grid-column: 2; grid-row: 1 / span 3; margin: 0; align-self: center; max-width: 150px; white-space: normal; line-height: 1.2; }
     .est-card .est-card-sub { grid-column: 1 / -1; }
   }
@@ -642,6 +651,26 @@
   .oc-passos li.agora { color: var(--ink); font-weight: 700; }
   .oc-passos li.agora span { border-color: #702082; color: #702082; }
   .oc-passos li.neg span { background: rgb(var(--danger-rgb)); border-color: rgb(var(--danger-rgb)); color: #FFFFFF; }
+  .oc-passos li { min-width: 0; overflow-wrap: anywhere; }
+  /* 9 etapas no celular: só o nome da etapa atual aparece (as outras ficam só com o número) */
+  @media (max-width: 620px) {
+    .oc-passos li:not(.agora):not(.neg) { font-size: 0; }
+    .oc-passos li.agora, .oc-passos li.neg { flex: 3; }
+  }
+  /* Cadastros › Compras: o que cada cargo faz (09/11/2026) */
+  .ocp-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 10px 0; }
+  .ocp-f { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px 12px; margin: 0; background: var(--card); min-width: 0; }
+  .ocp-f legend { padding: 0 6px; font-weight: 700; }
+  .ocp-f legend small { font-weight: 400; color: var(--muted); }
+  .ocp-ops { display: grid; gap: 4px; }
+  .ocp-op { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 0.875rem; line-height: 1.3; min-height: 32px; }
+  .ocp-op input { margin-top: 2px; flex: none; }
+  .ocp-op.mudou { color: var(--teal); font-weight: 600; }
+  .ocp-quem { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; font-size: 0.875rem; }
+  .ocp-quem li { display: grid; grid-template-columns: minmax(0, 15em) minmax(0, 1fr); gap: 2px 12px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .ocp-quem li b { font-weight: 600; }
+  .ocp-quem .ninguem { color: rgb(var(--danger-rgb)); font-weight: 600; }
+  @media (max-width: 560px) { .ocp-quem li { grid-template-columns: 1fr; } }
   .oc-itens { list-style: none; margin: 4px 0; padding: 0; font-size: 0.875rem; }
   .oc-itens li { padding: 3px 0; }
   .oc-itens small { display: block; color: var(--muted); font-size: 0.75rem; }
@@ -1580,7 +1609,7 @@
   .toast { position: fixed; left: 50%; transform: translateX(-50%); top: calc(12px + env(safe-area-inset-top, 0px)); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px; font-size: 0.875rem; font-weight: 600; z-index: 60; box-shadow: 0 4px 14px rgba(0,0,0,0.25); max-width: calc(100% - 32px); text-align: center; pointer-events: none; }
   .check { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 0.9375rem; margin-bottom: 10px; cursor: pointer; }
   form label.check { color: var(--ink); font-size: 0.9375rem; margin-bottom: 10px; display: flex; }
-  .check input { width: 18px; height: 18px; margin: 0; accent-color: var(--teal); }
+  .check input { width: 18px; height: 18px; margin: 0; accent-color: var(--teal); flex: none; }
   .func-set { border: none; padding: 0; margin: 0 0 12px; }
   .func-set legend { font-size: 0.8125rem; color: var(--muted); margin-bottom: 8px; padding: 0; }
   .func-chip { display: inline-block; font-size: 0.6875rem; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); margin-left: 8px; font-weight: 600; vertical-align: 1px; }
@@ -2363,6 +2392,10 @@
       <p class="hint">Faturamento dá o ok; conferente conclui o carregamento. Cada pessoa digita a própria senha de 4 números e o nome dela aparece sozinho.</p>
       <div id="equipe-list"></div>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-add-membro">+ Adicionar pessoa</button>
+    </section>
+    <section class="drivers-admin" id="ocperm-admin">
+      <div class="section-head"><h2 class="section-title">Compras: o que cada cargo faz</h2></div>
+      <div id="ocperm-conteudo"></div>
     </section>
     <section class="drivers-admin" id="historico-admin">
       <div class="section-head"><h2 class="section-title">Histórico e lixeira</h2></div>
@@ -4940,6 +4973,7 @@
     renderProdutosAdmin();
     renderMarcasAdmin();
     renderEquipeAdmin();
+    renderOcPermAdmin();
     var abasAgora = session ? abasPermitidas().join() : '';
     if (session && abasAgora !== abasVistas && !document.getElementById('admin-view').classList.contains('hidden')) { abasVistas = abasAgora; applyTab(); } else abasVistas = abasAgora;
     renderDatasAdmin();
@@ -7702,7 +7736,7 @@
     ui.tab = abasPermitidas().indexOf(t) >= 0 ? t : abaPadrao(abasPermitidas());
     savePref(LOCAL_TAB_KEY, ui.tab);
     applyTab();
-    if (ui.tab === 'cadastros') renderSeguranca();
+    if (ui.tab === 'cadastros') { renderSeguranca(); renderOcPermAdmin(); }
     window.scrollTo(0, 0);
   }
   ui.tab = 'inicio'; // toda vez que o app abre, começa no Início (pedido de 21/10/2026)
@@ -15582,7 +15616,18 @@
   }
 
   // ----- aba Matéria-prima -----
-  var mpUi = { area: 'producao', confirmarMov: null, confirmarInsumo: null, confirmarFech: null, todosMovs: false };
+  var mpUi = { area: 'producao', confirmarMov: null, confirmarInsumo: null, confirmarFech: null, todosMovs: false, filtro: '', movTipo: '' };
+  // ----- tocar para filtrar (pedido de 09/11/2026): os números dos cartões e os botões acima das listas filtram -----
+  function cardFiltro(attrs, v, s, on) {
+    return '<button type="button" class="est-card-link" ' + attrs + ' aria-pressed="' + (on ? 'true' : 'false') + '"><span class="est-card-v">' + v + '</span><span class="est-card-s">' + s + '</span></button>';
+  }
+  // opcoes: [valor, nome, quantidade]; attr: o data-* do botão (ex.: 'data-sup="forn-sit"'); o valor vai em data-f
+  function chipsFiltro(rotulo, opcoes, atual, attr) {
+    return '<div class="est-loc-chips" role="group" aria-label="' + escapeHtml(rotulo) + '">' + opcoes.map(function(o) {
+      var on = (atual || '') === o[0];
+      return '<button type="button" class="est-loc' + (on ? ' on' : '') + '" ' + attr + ' data-f="' + escapeHtml(o[0]) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + escapeHtml(o[1]) + (o[2] ? '<b>' + o[2] + '</b>' : '') + '</button>';
+    }).join('') + '</div>';
+  }
   function consumoMedioGarrafoes() {
     var ult = mp.fechamentos.slice().sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')); }).slice(0, 7), tot = {};
     ult.forEach(function(f) { (f.consumo || []).forEach(function(c) { tot[c.insumoId] = (tot[c.insumoId] || 0) + (Number(c.qtd) || 0); }); });
@@ -15635,15 +15680,16 @@
           '<span class="est-card-s">' + (ultimoMovTexto('entrada', area) ? 'último em ' + escapeHtml(ultimoMovTexto('entrada', area)) : 'nenhum recebimento lançado') + '</span>' +
           '<button type="button" class="btn btn-primary btn-sm" data-mp="mov" data-tipo="entrada">+ Lançar recebimento</button></div>';
     }
-    cards += '<div class="est-card c-saldo"><span class="est-card-k">Contagem</span><span class="est-card-v">' + linhas.filter(function(l) { return l.saldo !== null; }).length + '/' + linhas.length + '</span>' +
-        '<span class="est-card-s">insumos com saldo' + (ultimoMovTexto('contagem', area) ? ' · última contagem em ' + escapeHtml(ultimoMovTexto('contagem', area)) : '') + '</span>' +
+    var semCont = linhas.filter(function(l) { return l.saldo === null; }).length;
+    cards += '<div class="est-card c-saldo' + (mpUi.filtro === 'sem' ? ' filtro-on' : '') + '"><span class="est-card-k">Contagem</span>' +
+        cardFiltro('data-mp="filtro" data-f="sem"', (linhas.length - semCont) + '/' + linhas.length, 'insumos com saldo' + (ultimoMovTexto('contagem', area) ? ' · última contagem em ' + escapeHtml(ultimoMovTexto('contagem', area)) : '') + (semCont ? ' · ver os ' + semCont + ' sem contagem' : ''), mpUi.filtro === 'sem') +
         '<button type="button" class="btn btn-secondary btn-sm" data-mp="mov" data-tipo="contagem">Contagem (acertar o saldo)</button></div>';
     cards += garr
       ? '<div class="est-card c-futuro"><span class="est-card-k">Recebimento</span><span class="est-card-v">+</span>' +
           '<span class="est-card-s">' + (ultimoMovTexto('entrada', area) ? 'último em ' + escapeHtml(ultimoMovTexto('entrada', area)) : 'nenhum recebimento lançado') + '</span>' +
           '<button type="button" class="btn btn-secondary btn-sm" data-mp="mov" data-tipo="entrada">+ Lançar recebimento</button></div>'
-      : '<div class="est-card c-futuro' + (alertas.length ? ' alerta' : '') + '"><span class="est-card-k">Abaixo do mínimo</span><span class="est-card-v">' + alertas.length + '</span>' +
-          '<span class="est-card-s">' + ordensAbertas().length + (ordensAbertas().length === 1 ? ' ordem aberta reserva' : ' ordens abertas reservam') + ' matéria-prima</span>' +
+      : '<div class="est-card c-futuro' + (alertas.length ? ' alerta' : '') + (mpUi.filtro === 'baixo' ? ' filtro-on' : '') + '"><span class="est-card-k">Abaixo do mínimo</span>' +
+          cardFiltro('data-mp="filtro" data-f="baixo"', alertas.length, ordensAbertas().length + (ordensAbertas().length === 1 ? ' ordem aberta reserva' : ' ordens abertas reservam') + ' matéria-prima', mpUi.filtro === 'baixo') +
           '<button type="button" class="btn btn-secondary btn-sm" data-mp="ir-producao">Ver ordens</button></div>';
     document.getElementById('mp-cards').innerHTML = cards;
     // alertas
@@ -15662,8 +15708,15 @@
     if (!linhas.length) {
       tabela.innerHTML = '<p class="empty-state">Nenhum insumo cadastrado nesta área.' + (ehMestre() ? ' Cadastre em “Insumos cadastrados”, no fim da página.' : ' Peça à diretoria para cadastrar.') + '</p>';
     } else {
-      var grupo = null;
-      tabela.innerHTML = '<table class="resumo-table est-table"><thead><tr><th scope="col">Insumo</th><th scope="col">Saldo</th><th scope="col">' + (garr ? 'Gasto por dia' : 'Ordens abertas') + '</th><th scope="col">' + (garr ? 'Dura' : 'Disponível') + '</th></tr></thead><tbody>' +
+      var grupo = null, gruposMp = [];
+      linhas.forEach(function(l) { var g = l.i.grupo || 'Outros'; if (gruposMp.indexOf(g) < 0) gruposMp.push(g); });
+      if (mpUi.filtro.indexOf('g:') === 0 && gruposMp.indexOf(mpUi.filtro.slice(2)) < 0) mpUi.filtro = '';
+      var filtroMp = function(l) { var f = mpUi.filtro; return !f || (f === 'baixo' ? !!l.est : f === 'sem' ? l.saldo === null : (l.i.grupo || 'Outros') === f.slice(2)); };
+      var todasMp = linhas;
+      linhas = linhas.filter(filtroMp);
+      var chipsMp = chipsFiltro('Filtrar insumos', [['', 'Todos', todasMp.length], ['baixo', garr ? 'Abaixo do mínimo ou negativo' : 'Abaixo do mínimo', todasMp.filter(function(l) { return l.est; }).length], ['sem', 'Sem contagem', todasMp.filter(function(l) { return l.saldo === null; }).length]]
+        .concat(gruposMp.length > 1 ? gruposMp.map(function(g) { return ['g:' + g, g, todasMp.filter(function(l) { return (l.i.grupo || 'Outros') === g; }).length]; }) : []), mpUi.filtro, 'data-mp="filtro"');
+      tabela.innerHTML = chipsMp + (!linhas.length ? '<p class="empty-state">Nenhum insumo neste filtro.</p>' : '<table class="resumo-table est-table"><thead><tr><th scope="col">Insumo</th><th scope="col">Saldo</th><th scope="col">' + (garr ? 'Gasto por dia' : 'Ordens abertas') + '</th><th scope="col">' + (garr ? 'Dura' : 'Disponível') + '</th></tr></thead><tbody>' +
         linhas.map(function(l) {
           var g = '';
           if ((l.i.grupo || 'Outros') !== grupo) { grupo = l.i.grupo || 'Outros'; g = '<tr class="est-grupo"><td colspan="4">' + escapeHtml(grupo) + '</td></tr>'; }
@@ -15676,7 +15729,7 @@
           }
           return g + '<tr>' + nome + saldo + '<td>' + (l.reservado ? '− ' + escapeHtml(fmtMp(l.reservado, u)) : '—') + '</td>' +
             '<td' + (l.est ? ' class="' + l.est + '"' : '') + '>' + (l.disp === null ? '—' : escapeHtml(fmtMp(l.disp, u))) + '</td></tr>';
-        }).join('') + '</tbody></table>';
+        }).join('') + '</tbody></table>');
     }
     renderFechamentos(garr);
     renderMovsMp(area);
@@ -15706,9 +15759,14 @@
       .map(function(m) { return { em: m.em, m: m }; });
     if (area === 'producao') mp.ordens.forEach(function(o) { if (o.status === 'concluida' && (o.consumo || []).length) eventos.push({ em: o.concluidoEm, o: o }); });
     eventos.sort(function(a, b) { return String(b.em || '').localeCompare(String(a.em || '')); });
+    var tipoEv = function(ev) { return ev.o ? 'op' : ev.m.tipo; }, todosEv = eventos;
+    var opsTipo = [['', 'Todos', todosEv.length], ['entrada', 'Recebimentos'], ['contagem', 'Contagens'], ['perda', 'Perdas e avarias']].concat(area === 'producao' ? [['op', 'Consumo das ordens']] : [])
+      .map(function(o) { return o.length === 3 ? o : [o[0], o[1], todosEv.filter(function(ev) { return tipoEv(ev) === o[0]; }).length]; });
+    if (mpUi.movTipo && !opsTipo.some(function(o) { return o[0] === mpUi.movTipo; })) mpUi.movTipo = '';
+    if (mpUi.movTipo) eventos = eventos.filter(function(ev) { return tipoEv(ev) === mpUi.movTipo; });
     var total = eventos.length;
     if (!mpUi.todosMovs) eventos = eventos.slice(0, 30);
-    document.getElementById('mp-movs').innerHTML = (eventos.length ? eventos.map(function(ev) {
+    document.getElementById('mp-movs').innerHTML = (todosEv.length ? chipsFiltro('Filtrar lançamentos', opsTipo, mpUi.movTipo, 'data-mp="mov-tipo"') : '') + (eventos.length ? eventos.map(function(ev) {
       if (ev.o) {
         return '<div class="driver-row"><span class="driver-name">OP nº ' + escapeHtml(String(ev.o.numero)) + ' concluída<span class="driver-tel">' + escapeHtml('produção de ' + formatDateBR(dataProducaoOp(ev.o)) + ' · concluída no app em ' + formatDateTimeBR(ev.o.concluidoEm) + ' · consumo de ' + ev.o.consumo.length + ' insumos') + '</span></span>' +
           '<span class="mov-qtd">−</span></div>';
@@ -15724,7 +15782,7 @@
           ((m.detalhe || []).length ? '<span class="driver-sub">' + escapeHtml(m.detalhe.map(function(d) { return d.descricao; }).join(' · ')) + '</span>' : '') + '</span>' +
         '<span class="mov-qtd' + (m.tipo === 'entrada' ? ' figure-teal' : '') + '">' + (m.tipo === 'contagem' ? '= ' : m.tipo === 'entrada' ? '+ ' : '− ') + escapeHtml(fmtMp(m.quantidade, u)) + '</span>' +
         '<button class="btn-text danger" data-mp="mov-excluir" data-id="' + escapeHtml(m.id) + '">Excluir</button></div>';
-    }).join('') : '<p class="empty-state">Nenhum lançamento ainda. Comece pela contagem.</p>') +
+    }).join('') : '<p class="empty-state">' + (todosEv.length ? 'Nenhum lançamento deste tipo.' : 'Nenhum lançamento ainda. Comece pela contagem.') + '</p>') +
       (total > 30 ? '<button type="button" class="btn-text" data-mp="movs-todos">' + (mpUi.todosMovs ? 'Mostrar só os últimos' : 'Mostrar todos (' + total + ')') + '</button>' : '');
   }
   function insumoEmUso(id) { return mp.fichas.some(function(f) { return (f.itens || []).some(function(l) { return l.insumoId === id; }); }); }
@@ -15762,9 +15820,11 @@
   document.getElementById('tab-materia').addEventListener('click', function(e) {
     var b = e.target.closest('[data-mp], [data-area]');
     if (!b) return;
-    if (b.dataset.area) { mpUi.area = b.dataset.area; mpUi.confirmarMov = mpUi.confirmarInsumo = mpUi.confirmarFech = null; renderMateria(); return; }
+    if (b.dataset.area) { mpUi.area = b.dataset.area; mpUi.confirmarMov = mpUi.confirmarInsumo = mpUi.confirmarFech = null; mpUi.filtro = mpUi.movTipo = ''; renderMateria(); return; }
     var a = b.dataset.mp, id = b.dataset.id;
-    if (a === 'mov') abrirMovForm(b.dataset.tipo, mpUi.area);
+    if (a === 'filtro') { var nf = b.dataset.f || ''; mpUi.filtro = b.classList.contains('est-card-link') && mpUi.filtro === nf ? '' : nf; renderMateria(); if (b.classList.contains('est-card-link')) { var tb = document.getElementById('mp-tabela'); if (tb && tb.scrollIntoView) tb.scrollIntoView({ block: 'start', behavior: 'smooth' }); } }
+    else if (a === 'mov-tipo') { mpUi.movTipo = b.dataset.f || ''; renderMateria(); }
+    else if (a === 'mov') abrirMovForm(b.dataset.tipo, mpUi.area);
     else if (a === 'ir-producao') setTab(pcpAbaOp());
     else if (a === 'gf-abrir') abrirFechamento(b.dataset.data);
     else if (a === 'gf-excluir') { mpUi.confirmarFech = id; renderMateria(); }
@@ -18950,7 +19010,8 @@
   // =====================================================================================================
   // SUPRIMENTOS: fornecedores, laudos e cronograma de recebimento (aba Matéria-prima)
   var SUP_AREAS = ['recebimentos', 'fornecedores', 'laudos'];
-  var supUi = { busca: '', inativos: false, laudoForn: '', laudoHist: false, espec: {}, agHist: false, confirmar: null };
+  var supUi = { busca: '', inativos: false, laudoForn: '', laudoHist: false, espec: {}, agHist: false, confirmar: null,
+    agFiltro: '', situacao: '', linha: '', fornExtra: '', semForn: false, laudoSit: '' }; // filtros de tocar (09/11/2026)
   var LAUDO_TIPOS = [
     { id: 'migracao', nome: 'Laudo de migração (embalagem em contato com alimento)' },
     { id: 'coa', nome: 'Certificado de análise do lote', porLote: true },
@@ -19133,6 +19194,10 @@
   function supCard(cls, k, v, s, botao) {
     return '<div class="est-card ' + cls + '"><span class="est-card-k">' + k + '</span><span class="est-card-v">' + v + '</span><span class="est-card-s">' + s + '</span>' + (botao || '') + '</div>';
   }
+  // cartão cujo número e texto filtram a lista ao tocar (attrs: o data-* do filtro; on: filtro ligado)
+  function supCardF(cls, k, v, s, botao, attrs, on) {
+    return '<div class="est-card ' + cls + (on ? ' filtro-on' : '') + '"><span class="est-card-k">' + k + '</span>' + cardFiltro(attrs, v, s, on) + (botao || '') + '</div>';
+  }
   function agCardHtml(a, atuais) {
     var st = AG_STATUS[a.status] || { txt: a.status, cls: '' }, f = fornPorId(a.fornecedorId), id = escapeHtml(a.id), hoje = todayIso();
     var cls = agAtrasado(a) ? 'falta' : st.cls, avisos = [];
@@ -19185,17 +19250,22 @@
     var prox7 = ab.filter(function(a) { return a.data > hoje && a.data <= addDiasIso(hoje, 7); });
     var nec = supNecessidades(), sugs = nec.linhas.filter(function(x) { return x.sug > 0; });
     var h = '<p class="tagline">Cronograma das <b>entregas de matéria-prima</b>: agende com o fornecedor, confira a carga quando chegar e faça a <b>inspeção da Qualidade</b>; o aprovado entra no estoque de matéria-prima. A sugestão de compra vem do <b>cronograma de saída</b> (o que falta produzir) e das fichas técnicas.</p>';
+    var agF = supUi.agFiltro;
     h += '<div class="est-cards">' +
-      supCard('c-entrada', 'Entregas hoje', fmtInt(doDia.length), doDia.length ? doDia.filter(function(a) { return a.status !== 'agendado'; }).length + ' já chegaram' : 'nenhuma entrega hoje', '<button type="button" class="btn btn-primary btn-sm" data-sup="ag-novo">+ Agendar entrega</button>') +
-      supCard('c-saldo', 'Próximos 7 dias', fmtInt(prox7.length), prox7.length ? (prox7.length === 1 ? 'entrega agendada' : 'entregas agendadas') : 'nada agendado na semana') +
-      supCard('c-futuro' + (atras.length || esper.length ? ' alerta' : ''), 'Pendentes', fmtInt(atras.length + esper.length), [atras.length ? atras.length + (atras.length === 1 ? ' atrasada' : ' atrasadas') : '', esper.length ? esper.length + ' esperando conferência ou inspeção' : ''].filter(Boolean).join(' · ') || 'nada pendente') +
+      supCardF('c-entrada', 'Entregas hoje', fmtInt(doDia.length), doDia.length ? doDia.filter(function(a) { return a.status !== 'agendado'; }).length + ' já chegaram' : 'nenhuma entrega hoje', '<button type="button" class="btn btn-primary btn-sm" data-sup="ag-novo">+ Agendar entrega</button>', 'data-sup="ag-filtro" data-f="hoje"', agF === 'hoje') +
+      supCardF('c-saldo', 'Próximos 7 dias', fmtInt(prox7.length), prox7.length ? (prox7.length === 1 ? 'entrega agendada' : 'entregas agendadas') : 'nada agendado na semana', '', 'data-sup="ag-filtro" data-f="semana"', agF === 'semana') +
+      supCardF('c-futuro' + (atras.length || esper.length ? ' alerta' : ''), 'Pendentes', fmtInt(atras.length + esper.length), [atras.length ? atras.length + (atras.length === 1 ? ' atrasada' : ' atrasadas') : '', esper.length ? esper.length + ' esperando conferência ou inspeção' : ''].filter(Boolean).join(' · ') || 'nada pendente', '', 'data-sup="ag-filtro" data-f="pendentes"', agF === 'pendentes') +
       '</div>';
+    var agFiltros = { hoje: function(a) { return a.data === hoje && !agAtrasado(a); }, semana: function(a) { return a.data > hoje && a.data <= addDiasIso(hoje, 7); }, pendentes: function(a) { return agAtrasado(a) || a.status === 'chegou' || a.status === 'conferido'; }, atrasadas: agAtrasado };
+    var abTodas = ab;
+    if (agF && agFiltros[agF]) ab = ab.filter(agFiltros[agF]);
     if (sugs.length) h += '<div class="est-alertas" role="status"><p class="est-alertas-t">⚠ Programar compra</p><ul>' + sugs.slice(0, 8).map(function(x) {
       return '<li><b>' + escapeHtml(x.i.nome) + '</b> ' + escapeHtml('agendar ' + fmtMp(x.sug, x.i.unidade) + (x.forn.length ? ' com ' + x.forn[0].nome : '')) + '</li>';
     }).join('') + '</ul></div>';
     // cronograma (agrupado por dia)
-    h += '<section class="drivers-admin" aria-label="Cronograma de entregas"><div class="section-head"><h2 class="section-title">Cronograma de entregas</h2><span class="count-chip">' + (ab.length || '') + '</span></div>';
-    if (!ab.length) h += '<p class="empty-state">Nenhuma entrega agendada. Toque em “+ Agendar entrega”.</p>';
+    h += '<section class="drivers-admin" aria-label="Cronograma de entregas" id="sup-cronograma"><div class="section-head"><h2 class="section-title">Cronograma de entregas</h2><span class="count-chip">' + (ab.length || '') + '</span></div>' +
+      (abTodas.length ? chipsFiltro('Filtrar entregas', [['', 'Todas', abTodas.length], ['hoje', 'Hoje', abTodas.filter(agFiltros.hoje).length], ['semana', 'Próximos 7 dias', abTodas.filter(agFiltros.semana).length], ['pendentes', 'Pendentes', abTodas.filter(agFiltros.pendentes).length], ['atrasadas', 'Atrasadas', abTodas.filter(agFiltros.atrasadas).length]], agF, 'data-sup="ag-filtro"') : '');
+    if (!ab.length) h += '<p class="empty-state">' + (abTodas.length ? 'Nenhuma entrega neste filtro.' : 'Nenhuma entrega agendada. Toque em “+ Agendar entrega”.') + '</p>';
     var dias = [];
     ab.forEach(function(a) { var d = agAtrasado(a) ? 'atrasadas' : a.data; if (dias.indexOf(d) < 0) dias.push(d); });
     dias.sort(function(a, b) { return a === 'atrasadas' ? -1 : b === 'atrasadas' ? 1 : a.localeCompare(b); });
@@ -19235,9 +19305,12 @@
   function renderFornecedores(box) {
     var at = laudosAtuais(), todos = sup.forn.slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); });
     var ativos = todos.filter(function(f) { return f.ativo !== false; }), busca = normNome(supUi.busca);
-    var lista = (supUi.inativos ? todos : ativos).filter(function(f) {
-      if (supUi.linha && f.linha !== supUi.linha && !(f.linha === 'Descartável e retornável' && /^(Descartável|Retornável)$/.test(supUi.linha))) return false;
-      if (supUi.docPend && !(f.documentacao !== 'ok' && f.ativo !== false)) return false;
+    var base = supUi.inativos ? todos : ativos;
+    var bateSit = function(f, k) { var st = f.situacao || 'avaliacao'; return !k || (k === 'nao' ? st !== 'homologado' : st === k); };
+    var bateLinha = function(f, k) { return !k || f.linha === k || (f.linha === 'Descartável e retornável' && /^(Descartável|Retornável)$/.test(k)); };
+    var bateExtra = function(f, k) { if (!k) return true; var rl = resumoLaudosForn(f.id, at); return k === 'docpend' ? f.documentacao !== 'ok' && f.ativo !== false : k === 'laudovenc' ? rl.vencido > 0 : k === 'semlaudo' ? !rl.total : true; };
+    var lista = base.filter(function(f) {
+      if (!bateSit(f, supUi.situacao) || !bateLinha(f, supUi.linha) || !bateExtra(f, supUi.fornExtra)) return false;
       if (!busca) return true;
       var ins = (f.insumos || []).map(function(id) { var i = insumoPorId(id); return i ? i.nome : ''; }).join(' ');
       return normNome([f.nome, f.razaoSocial, f.cnpj, f.cidade, f.contato, f.telefone, f.email, f.contatoQualidade, f.linha, fornEmbalagemNome(f.embalagem), fornProdutos(f).join(' '), ins].join(' ')).indexOf(busca) >= 0;
@@ -19245,22 +19318,36 @@
     var docPend = ativos.filter(function(f) { return f.documentacao !== 'ok'; }).length;
     var homol = ativos.filter(function(f) { return f.situacao === 'homologado'; }).length;
     var comVenc = ativos.filter(function(f) { return resumoLaudosForn(f.id, at).vencido > 0; }).length;
+    var insSemForn = insumosDaArea('producao').concat(insumosDaArea('garrafoes')).filter(function(i) { return !fornDoInsumo(i.id).length; });
+    var filtrando = !!(supUi.situacao || supUi.linha || supUi.fornExtra || busca);
     var h = '<p class="tagline">Cadastro dos <b>fornecedores</b> de matéria-prima: o que cada um entrega, prazo de entrega, situação (homologado, em avaliação ou bloqueado) e os <b>laudos</b> (aba Laudos, ao lado).</p>' +
       '<div class="est-cards">' +
-      supCard('c-entrada', 'Fornecedores', fmtInt(ativos.length), homol + (homol === 1 ? ' homologado' : ' homologados'), '<button type="button" class="btn btn-primary btn-sm" data-sup="forn-novo">+ Fornecedor</button>') +
-      supCard('c-saldo', 'Insumos sem fornecedor', fmtInt(insumosDaArea('producao').concat(insumosDaArea('garrafoes')).filter(function(i) { return !fornDoInsumo(i.id).length; }).length), 'cadastre quem entrega cada insumo') +
-      supCard('c-futuro' + (comVenc ? ' alerta' : ''), 'Com laudo vencido', fmtInt(comVenc), comVenc ? 'renove na aba Laudos' : 'nenhum laudo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-sup="ir-laudos">Ver laudos</button>') +
+      supCardF('c-entrada', 'Fornecedores', fmtInt(ativos.length), homol + (homol === 1 ? ' homologado' : ' homologados'), '<button type="button" class="btn btn-primary btn-sm" data-sup="forn-novo">+ Fornecedor</button>', 'data-sup="forn-sit" data-f="homologado"', supUi.situacao === 'homologado') +
+      supCardF('c-saldo', 'Insumos sem fornecedor', fmtInt(insSemForn.length), insSemForn.length ? 'ver quais são' : 'todos têm fornecedor', '', 'data-sup="forn-semforn"', supUi.semForn) +
+      supCardF('c-futuro' + (comVenc ? ' alerta' : ''), 'Com laudo vencido', fmtInt(comVenc), comVenc ? 'ver quais são (renove na aba Laudos)' : 'nenhum laudo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-sup="ir-laudos">Ver laudos</button>', 'data-sup="forn-extra" data-f="laudovenc"', supUi.fornExtra === 'laudovenc') +
       '</div>' +
+      (supUi.semForn ? '<div class="est-alertas" role="status"><p class="est-alertas-t">' + (insSemForn.length ? 'Insumos sem fornecedor cadastrado (' + insSemForn.length + ')' : 'Todos os insumos têm fornecedor') + '</p>' + (insSemForn.length ? '<ul>' + insSemForn.map(function(i) { return '<li><b>' + escapeHtml(i.nome) + '</b> ' + escapeHtml((i.grupo ? i.grupo + ' · ' : '') + (areaDe(i) === 'garrafoes' ? 'garrafões' : 'produção')) + '</li>'; }).join('') + '</ul><p class="field-hint">Marque o insumo no cadastro do fornecedor (Editar › insumos do estoque).</p>' : '') + '</div>' : '') +
       '<div class="ag-ferramentas"><input type="search" id="sup-busca" placeholder="Buscar fornecedor, produto, contato, CNPJ ou insumo" value="' + escapeHtml(supUi.busca) + '" autocomplete="off" aria-label="Buscar fornecedor" />' +
       '<button type="button" class="btn-text" data-sup="forn-inativos">' + (supUi.inativos ? 'Esconder inativos' : 'Ver inativos') + '</button>' +
       (todos.length ? '<button type="button" class="btn-text" data-sup="forn-csv">Baixar planilha</button>' : '') + '</div>' +
-      '<div class="est-loc-chips" role="group" aria-label="Filtrar fornecedores">' +
-        [['', 'Todos'], ['Descartável', 'Descartável'], ['Retornável', 'Retornável'], ['Serviços e outros', 'Serviços e outros']].map(function(o) {
-          return '<button type="button" class="est-loc' + ((supUi.linha || '') === o[0] && !supUi.docPend ? ' on' : '') + '" data-sup="forn-linha" data-l="' + escapeHtml(o[0]) + '">' + escapeHtml(o[1]) + '</button>';
-        }).join('') +
-        '<button type="button" class="est-loc' + (supUi.docPend ? ' on' : '') + '" data-sup="forn-docpend">Documentação pendente' + (docPend ? '<b>' + docPend + '</b>' : '') + '</button>' +
-      '</div>';
-    if (!lista.length) h += '<p class="empty-state">' + (todos.length ? 'Nenhum fornecedor encontrado.' : 'Nenhum fornecedor cadastrado. Toque em “+ Fornecedor”.') + '</p>';
+      '<p class="filtro-grupo-t">Situação</p>' +
+      chipsFiltro('Filtrar pela situação', [['', 'Todas', base.length], ['homologado', 'Homologados', base.filter(function(f) { return bateSit(f, 'homologado'); }).length], ['nao', 'Não homologados', base.filter(function(f) { return bateSit(f, 'nao'); }).length],
+        ['avaliacao', 'Em avaliação', base.filter(function(f) { return bateSit(f, 'avaliacao'); }).length], ['bloqueado', 'Bloqueados', base.filter(function(f) { return bateSit(f, 'bloqueado'); }).length]], supUi.situacao, 'data-sup="forn-sit"') +
+      '<p class="filtro-grupo-t">Linha</p>' +
+      '<div class="est-loc-chips" role="group" aria-label="Filtrar pela linha">' +
+        [['', 'Todas'], ['Descartável', 'Descartável'], ['Retornável', 'Retornável'], ['Serviços e outros', 'Serviços e outros']].map(function(o) {
+          var nL = o[0] ? base.filter(function(f) { return bateLinha(f, o[0]); }).length : base.length;
+          return '<button type="button" class="est-loc' + ((supUi.linha || '') === o[0] ? ' on' : '') + '" data-sup="forn-linha" data-l="' + escapeHtml(o[0]) + '" aria-pressed="' + ((supUi.linha || '') === o[0] ? 'true' : 'false') + '">' + escapeHtml(o[1]) + (nL ? '<b>' + nL + '</b>' : '') + '</button>';
+        }).join('') + '</div>' +
+      '<p class="filtro-grupo-t">Pendências</p>' +
+      '<div class="est-loc-chips" role="group" aria-label="Filtrar pelas pendências">' +
+        '<button type="button" class="est-loc' + (supUi.fornExtra === 'docpend' ? ' on' : '') + '" data-sup="forn-docpend">Documentação pendente' + (docPend ? '<b>' + docPend + '</b>' : '') + '</button>' +
+        [['laudovenc', 'Laudo vencido'], ['semlaudo', 'Sem laudo']].map(function(o) {
+          var nE = base.filter(function(f) { return bateExtra(f, o[0]); }).length;
+          return '<button type="button" class="est-loc' + (supUi.fornExtra === o[0] ? ' on' : '') + '" data-sup="forn-extra" data-f="' + o[0] + '">' + escapeHtml(o[1]) + (nE ? '<b>' + nE + '</b>' : '') + '</button>';
+        }).join('') + '</div>' +
+      (filtrando ? '<p class="filtro-linha" id="forn-filtro-linha"><span>Mostrando <b>' + lista.length + '</b> de ' + base.length + (base.length === 1 ? ' fornecedor' : ' fornecedores') + '</span><button type="button" class="btn-text" data-sup="forn-limpar">Limpar filtros</button></p>' : '');
+    if (!lista.length) h += '<p class="empty-state">' + (todos.length ? 'Nenhum fornecedor neste filtro.' : 'Nenhum fornecedor cadastrado. Toque em “+ Fornecedor”.') + '</p>';
     h += lista.map(function(f) {
       var id = escapeHtml(f.id), rl = resumoLaudosForn(f.id, at), sit = f.situacao || 'avaliacao';
       var cls = f.ativo === false ? '' : sit === 'bloqueado' ? 'falta' : rl.vencido ? 'confirmar' : sit === 'homologado' ? 'pago' : 'apagar';
@@ -19298,15 +19385,25 @@
     atuais.sort(function(a, b) { return ordem[a.s.k] - ordem[b.s.k] || String(a.l.validade || '9').localeCompare(String(b.l.validade || '9')) || String(a.f ? a.f.nome : '').localeCompare(String(b.f ? b.f.nome : ''), 'pt-BR'); });
     var h = '<p class="tagline">Arquivo dos <b>laudos e documentos dos fornecedores</b> (PDF ou foto), com a validade de cada um. O app avisa quando falta pouco para vencer (30 dias, ou o prazo escolhido no laudo) e quando já venceu. Ao renovar, o laudo antigo vai para o histórico.</p>' +
       '<div class="est-cards">' +
-      supCard('c-futuro' + (venc.length ? ' alerta' : ''), 'Vencidos', fmtInt(venc.length), venc.length ? 'renove com o fornecedor' : 'nenhum vencido', '<button type="button" class="btn btn-primary btn-sm" data-sup="laudo-novo">+ Adicionar laudo</button>') +
-      supCard('c-saldo' + (vence.length ? ' alerta' : ''), 'Vencem em breve', fmtInt(vence.length), vence.length ? 'peça o novo laudo' : 'nenhum perto de vencer') +
-      supCard('c-entrada', 'Em dia', fmtInt(ok.length), semLaudo.length ? semLaudo.length + (semLaudo.length === 1 ? ' homologado sem laudo' : ' homologados sem laudo') : 'documentos válidos') +
+      supCardF('c-futuro' + (venc.length ? ' alerta' : ''), 'Vencidos', fmtInt(venc.length), venc.length ? 'renove com o fornecedor' : 'nenhum vencido', '<button type="button" class="btn btn-primary btn-sm" data-sup="laudo-novo">+ Adicionar laudo</button>', 'data-sup="laudo-sit" data-f="vencido"', supUi.laudoSit === 'vencido') +
+      supCardF('c-saldo' + (vence.length ? ' alerta' : ''), 'Vencem em breve', fmtInt(vence.length), vence.length ? 'peça o novo laudo' : 'nenhum perto de vencer', '', 'data-sup="laudo-sit" data-f="vence"', supUi.laudoSit === 'vence') +
+      supCardF('c-entrada', 'Em dia', fmtInt(ok.length), semLaudo.length ? semLaudo.length + (semLaudo.length === 1 ? ' homologado sem laudo' : ' homologados sem laudo') : 'documentos válidos', '', 'data-sup="laudo-sit" data-f="' + (semLaudo.length ? 'semlaudo' : 'ok') + '"', supUi.laudoSit === (semLaudo.length ? 'semlaudo' : 'ok')) +
       '</div>';
     if (venc.length || vence.length) h += '<div class="est-alertas" role="status"><p class="est-alertas-t">⚠ Laudos vencidos ou vencendo</p><ul>' + venc.concat(vence).map(function(x) {
       return '<li class="' + (x.s.k === 'vencido' ? 'neg' : '') + '"><b>' + escapeHtml(x.f ? x.f.nome : '—') + '</b> · ' + escapeHtml(laudoTipo(x.l.tipo).nome + (x.l.insumoNome ? ' (' + x.l.insumoNome + ')' : '') + ': ' + x.s.txt) + '</li>';
     }).join('') + '</ul></div>';
     h += '<div class="ag-ferramentas"><label class="sup-filtro">Fornecedor<select id="sup-laudo-forn"><option value="">Todos</option>' +
       sup.forn.slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); }).map(function(f) { return '<option value="' + escapeHtml(f.id) + '"' + (supUi.laudoForn === f.id ? ' selected' : '') + '>' + escapeHtml(f.nome) + '</option>'; }).join('') + '</select></label></div>';
+    h += chipsFiltro('Filtrar laudos', [['', 'Todos', atuais.length], ['vencido', 'Vencidos', venc.length], ['vence', 'Vencem em breve', vence.length], ['ok', 'Em dia', ok.length], ['semlaudo', 'Homologados sem laudo', semLaudo.length]], supUi.laudoSit, 'data-sup="laudo-sit"');
+    var lSit = supUi.laudoSit;
+    if (lSit === 'semlaudo') {
+      h += semLaudo.length ? semLaudo.map(function(f) {
+        return '<div class="driver-row laudo-row"><span class="driver-name">' + escapeHtml(f.nome) + '<span class="driver-sub">homologado, sem laudo arquivado</span></span><button class="btn-text" data-sup="laudo-novo" data-forn="' + escapeHtml(f.id) + '">+ Laudo</button></div>';
+      }).join('') : '<p class="empty-state">Todos os fornecedores homologados têm laudo.</p>';
+      box.innerHTML = h;
+      return;
+    }
+    if (lSit) atuais = atuais.filter(function(x) { return lSit === 'ok' ? (x.s.k === 'ok' || x.s.k === 'sem') : x.s.k === lSit; });
     function linha(x) {
       var l = x.l, id = escapeHtml(l.id), t = laudoTipo(l.tipo);
       if (supUi.confirmar === 'laudo:' + l.id) {
@@ -19320,7 +19417,7 @@
         (x.s.k !== 'hist' ? '<button class="btn-text" data-sup="laudo-renovar" data-id="' + id + '">Renovar</button>' : '') +
         (ehMestre() ? '<button class="btn-text danger" data-sup="laudo-excluir" data-id="' + id + '">Excluir</button>' : '') + '</div>';
     }
-    h += atuais.length ? atuais.map(linha).join('') : '<p class="empty-state">Nenhum laudo arquivado' + (supUi.laudoForn ? ' para este fornecedor' : '') + '. Toque em “+ Adicionar laudo”.</p>';
+    h += atuais.length ? atuais.map(linha).join('') : '<p class="empty-state">' + (lSit ? 'Nenhum laudo neste filtro.' : 'Nenhum laudo arquivado' + (supUi.laudoForn ? ' para este fornecedor' : '') + '. Toque em “+ Adicionar laudo”.') + '</p>';
     if (hist.length) h += '<button type="button" class="btn-text" data-sup="laudo-hist">' + (supUi.laudoHist ? 'Esconder histórico' : 'Histórico (' + hist.length + ' substituídos)') + '</button>' + (supUi.laudoHist ? hist.map(linha).join('') : '');
     if (!ehMestre()) h += '<p class="field-hint">Só a senha mestre exclui laudos.</p>';
     box.innerHTML = h;
@@ -19337,6 +19434,14 @@
     if (e.target.id === 'sup-laudo-forn') { supUi.laudoForn = e.target.value; renderMateria(); }
   });
   function irAreaMp(area) { mpUi.area = area; renderMateria(); var t = document.getElementById('tab-materia'); if (t && t.scrollIntoView) window.scrollTo(0, 0); }
+  // depois de tocar num cartão que filtra, desce até a lista
+  function supFiltroFoco(b, alvo) {
+    var doCartao = b.classList.contains('est-card-link');
+    renderMateria();
+    if (!doCartao) return;
+    var el = alvo ? document.getElementById(alvo) : document.querySelector('#sup-conteudo .est-loc-chips');
+    if (el && el.scrollIntoView) el.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
   document.getElementById('sup-conteudo').addEventListener('click', function(e) {
     var b = e.target.closest('[data-sup]');
     if (!b) return;
@@ -19365,8 +19470,14 @@
     else if (a === 'forn-novo') abrirFornecedorForm(null);
     else if (a === 'forn-editar' && f) abrirFornecedorForm(f);
     else if (a === 'forn-inativos') { supUi.inativos = !supUi.inativos; renderMateria(); }
-    else if (a === 'forn-linha') { supUi.linha = b.dataset.l || ''; supUi.docPend = false; renderMateria(); }
-    else if (a === 'forn-docpend') { supUi.docPend = !supUi.docPend; supUi.linha = ''; renderMateria(); }
+    else if (a === 'forn-linha') { supUi.linha = b.dataset.l || ''; renderMateria(); }
+    else if (a === 'forn-docpend') { supUi.fornExtra = supUi.fornExtra === 'docpend' ? '' : 'docpend'; renderMateria(); }
+    else if (a === 'forn-extra') { supUi.fornExtra = supUi.fornExtra === b.dataset.f ? '' : b.dataset.f; supFiltroFoco(b); }
+    else if (a === 'forn-sit') { supUi.situacao = b.classList.contains('est-card-link') && supUi.situacao === b.dataset.f ? '' : b.dataset.f || ''; supFiltroFoco(b); }
+    else if (a === 'forn-semforn') { supUi.semForn = !supUi.semForn; renderMateria(); }
+    else if (a === 'forn-limpar') { supUi.situacao = supUi.linha = supUi.fornExtra = supUi.busca = ''; renderMateria(); }
+    else if (a === 'ag-filtro') { supUi.agFiltro = b.classList.contains('est-card-link') && supUi.agFiltro === b.dataset.f ? '' : b.dataset.f || ''; supFiltroFoco(b, 'sup-cronograma'); }
+    else if (a === 'laudo-sit') { supUi.laudoSit = b.classList.contains('est-card-link') && supUi.laudoSit === b.dataset.f ? '' : b.dataset.f || ''; supFiltroFoco(b); }
     else if (a === 'forn-csv') exportarFornecedores();
     else if (a === 'forn-ativo' && f) supGravar([{ op: 'update', col: SUP_COL.forn, id: f.id, data: { ativo: f.ativo === false, atualizadoEm: new Date().toISOString() } }]).then(function() { showToast(f.ativo === false ? 'Fornecedor reativado.' : 'Fornecedor desativado.'); }).catch(falhaSup);
     else if (a === 'forn-laudos' && f) { supUi.laudoForn = f.id; irAreaMp('laudos'); }
@@ -19830,10 +19941,14 @@
   // 1. Pedido (qualquer pessoa): descrição do item, quantidade e onde vai aplicar.
   // 2. Autorização antes da cotação: coordenador, supervisor ou gerente (cargo em Cadastros › Equipe; pedido de 17/10/2026).
   // 3. Cotação (assistente de compras).
-  // 4. Aprovação da diretoria (Nicolas ou André: cargo diretor ou "Aprova compras").
-  // 5. Comprado: compras ou diretoria marca que comprou (fornecedor, valor, nº do pedido, previsão) — 20/10/2026.
-  // 6. Recebido: qualquer pessoa recebe a mercadoria, identificada pelo próprio acesso ou pela senha de 4 números.
-  // 7. Entregue: quem fez o pedido confere e confirma que recebeu.
+  // 4. Quem pediu confere se a cotação está de acordo com o que pediu; se não, volta para a cotação (09/11/2026).
+  // 5. Aprovação da diretoria (Nicolas ou André: cargo diretor ou "Aprova compras").
+  // 6. Comprado: compras ou diretoria marca que comprou (fornecedor, valor, nº do pedido, previsão) — 20/10/2026.
+  // 7. Recebido: qualquer pessoa recebe a mercadoria, identificada pelo próprio acesso ou pela senha de 4 números.
+  // 8. Conferência do que chegou (09/11/2026): libera para entregar (certo ou com diferença) ou devolve ao fornecedor.
+  // 9. Entregue: quem fez o pedido confere e confirma que recebeu.
+  // Quem assina as etapas 2, 3, 3b, 5 a 8 (e a 4 e a 9 no lugar de quem pediu) é escolhido por cargo em Cadastros ›
+  // Compras: o que cada cargo faz (09/11/2026). Sem nada escolhido, vale o padrão (o de cima).
   // Cada pessoa vê só os pedidos que fez ou em que assinou; compras e diretoria veem todos; coordenador, supervisor
   // e gerente, os do setor deles; e todos veem a lista "Para receber" (o que foi comprado e está para chegar). A mesma
   // regra vale no banco (0026). Coleção compras-ordens (só o escritório; só a senha mestre apaga). Cada etapa guarda
@@ -19841,26 +19956,36 @@
   var OC_COL = 'compras-ordens';
   var ordensCompra = [];
   var OC_ETAPAS = [
-    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coord./superv.' }, { k: 'cotacao', nome: 'Cotação' },
-    { k: 'aprovacao', nome: 'Diretoria' }, { k: 'compra', nome: 'Comprado' }, { k: 'recebimento', nome: 'Recebido' }, { k: 'fechamento', nome: 'Entregue' }
+    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coord./superv.' }, { k: 'cotacao', nome: 'Cotação' }, { k: 'revisao', nome: 'Quem pediu confere' },
+    { k: 'aprovacao', nome: 'Diretoria' }, { k: 'compra', nome: 'Comprado' }, { k: 'recebimento', nome: 'Recebido' }, { k: 'conferencia', nome: 'Conferência' }, { k: 'fechamento', nome: 'Entregue' }
   ];
   var OC_STATUS = {
     pedido: { txt: 'Aguardando coordenador ou supervisor', cls: 'confirmar', etapa: 1 }, cotacao: { txt: 'Em cotação', cls: 'apagar', etapa: 2 },
     justificativa: { txt: 'Menos de 3 cotações: aguardando o ok do Nicolas', cls: 'aprovar', etapa: 2 },
-    aprovacao: { txt: 'Aguardando diretoria', cls: 'aprovar', etapa: 3 }, compra: { txt: 'Aprovada: aguardando a compra', cls: 'apagar', etapa: 4 },
-    comprado: { txt: 'Comprado: aguardando chegar', cls: 'apagar', etapa: 5 }, recebido: { txt: 'Recebido: entregar a quem pediu', cls: 'confirmar', etapa: 6 },
-    fechada: { txt: 'Entregue', cls: 'pago', etapa: 7 }, reprovada: { txt: 'Reprovada', cls: 'falta', etapa: -1 }, cancelada: { txt: 'Cancelada', cls: '', etapa: -1 }
+    revisao: { txt: 'Cotação pronta: quem pediu confere', cls: 'confirmar', etapa: 3 },
+    aprovacao: { txt: 'Aguardando diretoria', cls: 'aprovar', etapa: 4 }, compra: { txt: 'Aprovada: aguardando a compra', cls: 'apagar', etapa: 5 },
+    comprado: { txt: 'Comprado: aguardando chegar', cls: 'apagar', etapa: 6 }, recebido: { txt: 'Recebido: aguardando a conferência', cls: 'confirmar', etapa: 7 },
+    conferido: { txt: 'Conferido: entregar a quem pediu', cls: 'confirmar', etapa: 8 },
+    fechada: { txt: 'Entregue', cls: 'pago', etapa: 9 }, reprovada: { txt: 'Reprovada', cls: 'falta', etapa: -1 }, cancelada: { txt: 'Cancelada', cls: '', etapa: -1 }
   };
   var OC_UNIDADES = ['un', 'cx', 'pct', 'kg', 'L', 'm', 'par', 'jogo', 'rolo', 'serviço'];
   var ocUi = { filtro: 'abertas', confirmar: null };
   function ocChaveLocal() { return 'levissima-compras-v1'; }
-  function loadLocalCompras() { try { ordensCompra = JSON.parse(localStorage.getItem(ocChaveLocal()) || '[]') || []; } catch (e) { ordensCompra = []; } }
+  function loadLocalCompras() {
+    try { ordensCompra = JSON.parse(localStorage.getItem(ocChaveLocal()) || '[]') || []; } catch (e) { ordensCompra = []; }
+    try { ocPermDoc = JSON.parse(localStorage.getItem('levissima-compras-permissoes-v1') || 'null'); } catch (e) { ocPermDoc = null; }
+  }
   function subscribeCompras() {
     if (!ehEscritorio()) return;
     db.collection(OC_COL).onSnapshot(function(snap) {
       ordensCompra = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
       if (session) { renderCompras(); renderTabComprasBadge(); if (ui.tab === 'inicio') renderInicio(); }
     }, function(err) { console.error(OC_COL, err); });
+    db.collection(OC_PERM_COL).onSnapshot(function(snap) {
+      var d = snap.docs.find(function(x) { return x.id === OC_PERM_ID; });
+      ocPermDoc = d ? d.data() : null;
+      if (session) { renderCompras(); renderTabComprasBadge(); renderOcPermAdmin(); }
+    }, function(err) { console.error(OC_PERM_COL, err); });
   }
   function ocGravar(id, data) {
     if (mode === 'db' && db) return id ? db.collection(OC_COL).doc(id).update(data) : db.collection(OC_COL).doc().set(data);
@@ -19872,7 +19997,63 @@
   }
   function ocPorId(id) { return ordensCompra.find(function(o) { return o.id === id; }) || null; }
   function ocProximoNumero() { return ordensCompra.reduce(function(m, o) { return Math.max(m, Number(o.numero) || 0); }, 0) + 1; }
-  function ocAbertas() { return ocVisiveis().filter(function(o) { return ['pedido', 'cotacao', 'justificativa', 'aprovacao', 'compra', 'comprado', 'recebido'].indexOf(o.status) >= 0; }); }
+  function ocAbertas() { return ocVisiveis().filter(function(o) { return ['pedido', 'cotacao', 'justificativa', 'revisao', 'aprovacao', 'compra', 'comprado', 'recebido', 'conferido'].indexOf(o.status) >= 0; }); }
+  // ----- quem faz cada etapa: o que cada cargo faz (Cadastros › Compras; pedido de 09/11/2026) -----
+  // Funções: os cargos de Cadastros › Equipe, "sem cargo" e as marcas "Autoriza compras", "Compras" e "Aprova compras"
+  // (quem tem mais de uma soma as etapas). Sem nada salvo, vale o padrão (o mesmo de antes). A mesma regra vale no banco
+  // para quem vê cada ordem (0046): quem faz a etapa em que a ordem está passa a vê-la. Só a senha mestre muda.
+  var OC_PERM_COL = 'compras-config', OC_PERM_ID = 'permissoes';
+  var ocPermDoc = null;
+  var OC_PERM_MARCAS = [['marca:coordenador', 'coordenador', 'Marca “Autoriza compras”'], ['marca:compras', 'compras', 'Marca “Compras”'], ['marca:aprovaCompra', 'aprovaCompra', 'Marca “Aprova compras”']];
+  function ocPermFuncoes() { return CARGOS.map(function(c) { return [c[0], c[1]]; }).concat([['sem-cargo', 'Sem cargo']]).concat(OC_PERM_MARCAS.map(function(x) { return [x[0], x[2]]; })); }
+  var OC_PERM_ETAPAS = [
+    { k: 'coord', nome: 'Autorizar o pedido', sub: 'antes da cotação; só dos setores marcados no cadastro da pessoa, ou de todos se estiver em branco' },
+    { k: 'cotacao', nome: 'Lançar a cotação' },
+    { k: 'justificativa', nome: 'Ok com menos de 3 cotações', sub: 'o Nicolas sempre pode' },
+    { k: 'revisao', nome: 'Conferir a cotação no lugar de quem pediu', sub: 'quem fez o pedido sempre confere o dele' },
+    { k: 'aprovacao', nome: 'Aprovar a compra (diretoria)' },
+    { k: 'compra', nome: 'Marcar como comprado' },
+    { k: 'recebimento', nome: 'Dar o recebido' },
+    { k: 'conferencia', nome: 'Conferir o que chegou' },
+    { k: 'entrega', nome: 'Confirmar a entrega no lugar de quem pediu', sub: 'quem fez o pedido sempre confirma o dele' }
+  ];
+  var OC_PERM_PADRAO = {
+    coord: ['gerente', 'coordenador', 'supervisor', 'marca:coordenador'], cotacao: ['marca:compras'], justificativa: [], revisao: [],
+    aprovacao: ['diretor', 'marca:aprovaCompra'], compra: ['diretor', 'marca:compras', 'marca:aprovaCompra'], recebimento: null, // null: todo mundo
+    conferencia: ['diretor', 'gerente', 'coordenador', 'supervisor', 'marca:compras', 'marca:aprovaCompra'], entrega: []
+  };
+  var OC_ETAPA_DO_STATUS = { pedido: 'coord', cotacao: 'cotacao', justificativa: 'justificativa', revisao: 'revisao', aprovacao: 'aprovacao', compra: 'compra', recebido: 'conferencia', conferido: 'entrega' };
+  function ocPermPadrao(etapa) { var p = OC_PERM_PADRAO[etapa]; return p === null ? ocPermFuncoes().map(function(f) { return f[0]; }) : (p || []).slice(); }
+  function ocPermLista(etapa) { var e = ocPermDoc && ocPermDoc.etapas; return e && Array.isArray(e[etapa]) ? e[etapa] : ocPermPadrao(etapa); }
+  function ocFuncoesDe(m) {
+    var c = m.cargo === 'executiva_comercial' ? 'executiva' : m.cargo;
+    return [c && cargoNome(c) ? c : 'sem-cargo'].concat(OC_PERM_MARCAS.filter(function(x) { return !!m[x[1]]; }).map(function(x) { return x[0]; }));
+  }
+  function ocPodeEtapa(m, etapa) {
+    if (!m) return false;
+    var l = ocPermLista(etapa);
+    return ocFuncoesDe(m).some(function(f) { return l.indexOf(f) >= 0; });
+  }
+  // nomes de quem faz a etapa (botões e avisos): "Rita, André ou Nicolas" (compras primeiro)
+  function ocNomesEtapa(etapa, extra) {
+    var l = [];
+    equipe.filter(function(m) { return ocPodeEtapa(m, etapa) || (extra && extra(m)); })
+      .sort(function(a, b) { return (b.compras ? 1 : 0) - (a.compras ? 1 : 0) || String(a.nome).localeCompare(String(b.nome), 'pt-BR'); })
+      .forEach(function(m) { var n = primeiroNome(m.nomeCompleto || m.nome); if (n && l.indexOf(n) < 0) l.push(n); });
+    return l.length <= 1 ? (l[0] || '') : l.slice(0, -1).join(', ') + ' ou ' + l[l.length - 1];
+  }
+  // cargos que fazem a etapa, por extenso: "gerente, coordenador ou supervisor"
+  function ocCargosEtapa(etapa) {
+    var l = ocPermLista(etapa), todos = ocPermFuncoes();
+    if (todos.every(function(f) { return l.indexOf(f[0]) >= 0; })) return 'qualquer pessoa';
+    var n = todos.filter(function(f) { return l.indexOf(f[0]) >= 0; }).map(function(f) { return f[0].indexOf('marca:') === 0 ? f[1].replace(/^Marca /, 'marcados ') : f[1].toLowerCase(); });
+    return !n.length ? 'ninguém' : n.length === 1 ? n[0] : n.slice(0, -1).join(', ') + ' ou ' + n[n.length - 1];
+  }
+  // quem faz, para os botões: os nomes (até 4) ou os cargos
+  function ocQuemFaz(etapa, extra) {
+    var nomes = ocNomesEtapa(etapa, extra), q = nomes ? nomes.split(/, | ou /).length : 0;
+    return nomes && q <= 4 ? nomes : ocCargosEtapa(etapa);
+  }
   // ----- quem vê cada ordem (a mesma regra do banco, 0026) -----
   // quem está usando, pelo próprio acesso (senha mestre, diretoria ou acesso pessoal do escritório)
   function ocEu() {
@@ -19889,7 +20070,7 @@
     return !!(e && (e.m.compras || aprovaCompraFinal(e.m)));
   }
   // edicao (quem alterou o pedido antes da cotação) e cancelamento também contam: quem fez continua vendo (0043)
-  var OC_ASSINATURAS = ['pedido', 'coord', 'cotacao', 'aprovacao', 'compra', 'recebimento', 'fechamento', 'edicao', 'cancelamento'];
+  var OC_ASSINATURAS = ['pedido', 'coord', 'cotacao', 'revisao', 'aprovacao', 'compra', 'recebimento', 'conferencia', 'fechamento', 'edicao', 'cancelamento'];
   function ocAssinei(o) {
     var r = minhaRef(), e = ocEu();
     return OC_ASSINATURAS.some(function(k) { var a = o[k]; return !!a && typeof a === 'object' && ((r && a.ref === r) || (e && a.id && a.id === e.m.id)); });
@@ -19899,10 +20080,14 @@
   function ocVeCompleta(o) {
     if (ocVeTudo() || ocAssinei(o)) return true;
     var e = ocEu();
-    if (!e || !autorizaAntesCotacao(e.m)) return false;
-    var l = String(e.m.setores || '').split(/[,;\n]+/).map(function(x) { return normNome(x); }).filter(Boolean);
-    if (l.length) return l.indexOf(normNome(o.setor)) >= 0;
-    return o.status === 'pedido' || (!!o.setor && normNome(o.setor) === normNome(e.m.area));
+    if (!e) return false;
+    if (ocPodeEtapa(e.m, 'coord')) {
+      var l = String(e.m.setores || '').split(/[,;\n]+/).map(function(x) { return normNome(x); }).filter(Boolean);
+      if (l.length ? l.indexOf(normNome(o.setor)) >= 0 : (o.status === 'pedido' || (!!o.setor && normNome(o.setor) === normNome(e.m.area)))) return true;
+    }
+    // quem faz a etapa em que a ordem está (Cadastros › Compras); a autorização segue a regra dos setores (acima)
+    var et = OC_ETAPA_DO_STATUS[o.status];
+    return !!et && et !== 'coord' && ocPodeEtapa(e.m, et);
   }
   function ocVisiveis() { return ordensCompra.filter(ocVeCompleta); }
   // Alterar o pedido (04/11/2026): só enquanto espera a autorização do coordenador ou supervisor (antes da cotação).
@@ -19912,23 +20097,20 @@
     if (!o || o.status !== 'pedido' || !session) return false;
     if (session.role === 'admin' || ocVeTudo() || ocMinha(o)) return true;
     var e = ocEu();
-    return !!(e && autorizaAntesCotacao(e.m) && coordenaSetor(e.m, o.setor));
+    return !!(e && ocPodeEtapa(e.m, 'coord') && coordenaSetor(e.m, o.setor));
   }
-  // Cancelar (com motivo): no pedido, na cotação e na aprovação da diretoria; depois de aprovada para comprar, não.
-  var OC_CANCELA = ['pedido', 'cotacao', 'justificativa', 'aprovacao'];
+  // Cancelar (com motivo): no pedido, na cotação, na conferência de quem pediu e na aprovação da diretoria; depois de
+  // aprovada para comprar, não.
+  var OC_CANCELA = ['pedido', 'cotacao', 'justificativa', 'revisao', 'aprovacao'];
   function ocPodeCancelar(o) { return !!o && OC_CANCELA.indexOf(o.status) >= 0 && ocVeCompleta(o); }
   function ocQuemSou() { var e = ocEu(); return e ? { nome: e.m.nome, id: e.m.id || '' } : { nome: quemSessao() || 'Escritório', id: '' }; }
-  function ocPodeComprar(m) { return !!m && (!!m.compras || aprovaCompraFinal(m)); }
-  // gestão: coordenador, supervisor, gerente, diretoria (ou área Gestão) — o pedido dela já sai autorizado
-  function ocDaGestao(m) { return !!m && (!!m.gestao || autorizaAntesCotacao(m) || aprovaCompraFinal(m) || normNome(m.area) === normNome('Gestão')); }
-  function ocNomesCotacao() { var l = []; equipe.forEach(function(m) { if (m.compras) { var n = primeiroNome(m.nomeCompleto || m.nome); if (n && l.indexOf(n) < 0) l.push(n); } }); return l.join(' ou '); }
-  function ocNomesCompra() {
-    var l = [];
-    equipe.filter(ocPodeComprar).sort(function(a, b) { return (b.compras ? 1 : 0) - (a.compras ? 1 : 0) || String(a.nome).localeCompare(String(b.nome), 'pt-BR'); })
-      .forEach(function(m) { var n = primeiroNome(m.nomeCompleto || m.nome); if (n && l.indexOf(n) < 0) l.push(n); });
-    if (!l.length) return 'compras ou diretoria';
-    return l.length === 1 ? l[0] : l.slice(0, -1).join(', ') + ' ou ' + l[l.length - 1];
-  }
+  function ocPodeComprar(m) { return ocPodeEtapa(m, 'compra'); }
+  // gestão: quem autoriza pedidos (Cadastros › Compras), diretoria (ou área Gestão) — o pedido dela já sai autorizado
+  function ocDaGestao(m) { return !!m && (!!m.gestao || ocPodeEtapa(m, 'coord') || aprovaCompraFinal(m) || normNome(m.area) === normNome('Gestão')); }
+  function ocNomesCotacao() { return ocNomesEtapa('cotacao'); }
+  function ocNomesCompra() { return ocNomesEtapa('compra') || 'compras ou diretoria'; }
+  function ocNomesAprovacao() { return ocNomesEtapa('aprovacao') || 'a diretoria'; }
+  function ocNomePedido(o) { return o.pedido && o.pedido.nome ? o.pedido.nome : 'quem pediu'; }
   // assinatura: nome, id da equipe, acesso usado e quando
   function ocAss(m, extra) { return Object.assign({ nome: m.nome, id: m.id || '', ref: minhaRef(), em: new Date().toISOString() }, extra || {}); }
   var BUCKET_COMPRAS = 'compras';
@@ -19976,7 +20158,7 @@
   // ----- tela -----
   function ocPassosHtml(o) {
     var st = OC_STATUS[o.status] || {}, et = st.etapa;
-    var parou = et === -1 ? (o.aprovacao && o.aprovacao.decisao === 'reprovado' ? 3 : o.coord && o.coord.decisao === 'reprovado' ? 1 : -1) : -1;
+    var parou = et === -1 ? (o.aprovacao && o.aprovacao.decisao === 'reprovado' ? 4 : o.coord && o.coord.decisao === 'reprovado' ? 1 : -1) : -1;
     return '<ol class="oc-passos">' + OC_ETAPAS.map(function(e, i) {
       var cls = parou === i ? 'neg' : (et === OC_ETAPAS.length || i < et || (et === -1 && i < parou)) ? 'feito' : i === et ? 'agora' : '';
       return '<li class="' + cls + '"><span>' + (cls === 'feito' ? '✓' : cls === 'neg' ? '✕' : (i + 1)) + '</span>' + escapeHtml(e.nome) + '</li>';
@@ -19985,14 +20167,16 @@
   function ocCardHtml(o) {
     var st = OC_STATUS[o.status] || { txt: o.status, cls: '' }, id = escapeHtml(o.id), v = ocValorEscolhido(o), hoje = todayIso();
     var acoes = [];
-    if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Autorizar ou reprovar</b> (coordenador ou supervisor)</button>');
+    if (o.status === 'pedido') acoes.push('<button class="btn-text" data-oc="coord" data-id="' + id + '"><b>Autorizar ou reprovar</b> (' + escapeHtml(ocCargosEtapa('coord')) + ')</button>');
     if (ocPodeEditar(o)) acoes.push('<button class="btn-text" data-oc="editar" data-id="' + id + '">Editar pedido</button>');
-    if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (compras)</button>');
-    if (o.status === 'justificativa') acoes.push('<button class="btn-text" data-oc="just" data-id="' + id + '"><b>Ok da justificativa</b> (Nicolas)</button>');
-    if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (diretoria: Nicolas ou André)</button>');
+    if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (' + escapeHtml(ocQuemFaz('cotacao')) + ')</button>');
+    if (o.status === 'justificativa') acoes.push('<button class="btn-text" data-oc="just" data-id="' + id + '"><b>Ok da justificativa</b> (' + escapeHtml(ocNomesEtapa('justificativa', ehNicolas) || 'Nicolas') + ')</button>');
+    if (o.status === 'revisao') acoes.push('<button class="btn-text" data-oc="revisar" data-id="' + id + '"><b>Conferir a cotação</b> (quem pediu: ' + escapeHtml(ocNomePedido(o)) + ')</button>');
+    if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (diretoria: ' + escapeHtml(ocNomesAprovacao()) + ')</button>');
     if (o.status === 'compra') acoes.push('<button class="btn-text" data-oc="comprado" data-id="' + id + '"><b>Marcar como comprado</b> (' + escapeHtml(ocNomesCompra()) + ')</button>');
-    if (o.status === 'comprado') acoes.push('<button class="btn-text" data-oc="recebido" data-id="' + id + '"><b>Dar o recebido</b> (qualquer pessoa)</button>');
-    if (o.status === 'recebido') acoes.push('<button class="btn-text" data-oc="entrega" data-id="' + id + '"><b>Confirmar entrega</b> (quem pediu' + (o.pedido && o.pedido.nome ? ': ' + escapeHtml(o.pedido.nome) : '') + ')</button>');
+    if (o.status === 'comprado') acoes.push('<button class="btn-text" data-oc="recebido" data-id="' + id + '"><b>Dar o recebido</b> (' + escapeHtml(ocCargosEtapa('recebimento')) + ')</button>');
+    if (o.status === 'recebido') acoes.push('<button class="btn-text" data-oc="conferir" data-id="' + id + '"><b>Fazer a conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ')</button>');
+    if (o.status === 'conferido') acoes.push('<button class="btn-text" data-oc="entrega" data-id="' + id + '"><b>Confirmar entrega</b> (quem pediu' + (o.pedido && o.pedido.nome ? ': ' + escapeHtml(o.pedido.nome) : '') + ')</button>');
     acoes.push('<button class="btn-text" data-oc="ver" data-id="' + id + '">Detalhes</button>');
     if (ocPodeCancelar(o)) acoes.push('<button class="btn-text danger" data-oc="cancelar" data-id="' + id + '">Cancelar</button>');
     var atraso = o.compra && o.compra.previsao && o.status === 'comprado' && o.compra.previsao < hoje;
@@ -20006,8 +20190,11 @@
       (o.edicao ? '<div class="frete-sub">Alterado por ' + escapeHtml(ocQuem(o.edicao)) + ((o.edicoes || []).length > 1 ? ' (' + o.edicoes.length + ' alterações)' : '') + ', antes da cotação</div>' : '') +
       (o.status === 'pedido' ? '<div class="frete-sub">Dá para editar até ir para a cotação.</div>' : '') +
       (v ? '<div class="frete-sub">Cotação escolhida: <b>' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + '</b> · ' + escapeHtml(v.fornecedor) + (v.prazo ? ' · entrega em ' + v.prazo + (Number(v.prazo) === 1 ? ' dia' : ' dias') : '') + '</div>' : '') +
+      (o.revisao ? '<div class="frete-sub' + (o.revisao.decisao === 'de-acordo' ? '' : ' alerta') + '">' + escapeHtml(ocRevisaoTexto(o)) + '</div>' : '') +
       (o.compra ? '<div class="frete-sub' + (atraso ? ' alerta' : '') + '">' + ocCompraTexto(o, atraso) + '</div>' : '') +
       (o.recebimento ? '<div class="frete-sub' + (o.recebimento.conforme ? '' : ' alerta') + '">' + escapeHtml(ocRecebidoTexto(o)) + '</div>' : '') +
+      (o.conferencia ? '<div class="frete-sub' + (o.conferencia.resultado === 'ok' ? '' : ' alerta') + '">' + escapeHtml(ocConferenciaTexto(o.conferencia)) + '</div>' : '') +
+      ((o.devolucoes || []).length && o.status === 'comprado' ? '<div class="frete-sub alerta">' + escapeHtml(ocDevolucaoTexto(o)) + '</div>' : '') +
       ((o.status === 'reprovada' || o.status === 'cancelada') ? '<div class="frete-sub alerta">' + escapeHtml(o.status === 'cancelada' ? ocCanceladaTexto(o) : 'Reprovada por ' + ((o.aprovacao && o.aprovacao.decisao === 'reprovado') ? o.aprovacao.nome + ': ' + (o.aprovacao.obs || '') : (o.coord ? o.coord.nome + ': ' + (o.coord.obs || '') : ''))) + '</div>' : '') +
       '<div class="frete-acoes">' + acoes.join('') + '</div></div>';
   }
@@ -20020,6 +20207,18 @@
     var r = o.recebimento || {};
     return 'Recebido por ' + (r.nome || '—') + (r.em ? ' em ' + formatDateTimeBR(r.em) : '') + (r.nf ? ' · NF ' + r.nf : '') + (r.conforme ? ' · conferido' : ' · com diferença') + (r.obs ? ': ' + r.obs : '');
   }
+  function ocRevisaoTexto(o) {
+    var r = o.revisao || {};
+    return (r.decisao === 'de-acordo' ? 'Quem pediu conferiu a cotação: de acordo' : 'Quem pediu não concordou com a cotação') + ' (' + ocQuem(r) + ')' + (r.obs ? ': ' + r.obs : '');
+  }
+  function ocConferenciaTexto(c) {
+    c = c || {};
+    return (c.resultado === 'ok' ? 'Conferência: chegou certo' : c.resultado === 'diferenca' ? 'Conferência: com diferença, liberado para entregar' : 'Conferência: devolvido ao fornecedor') + ' (' + ocQuem(c) + ')' + (c.obs ? ': ' + c.obs : '');
+  }
+  function ocDevolucaoTexto(o) {
+    var d = (o.devolucoes || []).slice(-1)[0] || {}, c = d.conferencia || {};
+    return 'Devolvido ao fornecedor na conferência por ' + (c.nome || '—') + (c.em ? ' em ' + formatDateTimeBR(c.em) : '') + (c.obs ? ': ' + c.obs : '') + ' — aguardando a nova entrega';
+  }
   // lista "Para receber" para quem não vê a ordem inteira: nº, setor, itens e fornecedor (sem valores)
   function ocCardRecebimentoHtml(o) {
     var c = o.compra || {}, hoje = todayIso(), atraso = c.previsao && c.previsao < hoje;
@@ -20027,17 +20226,20 @@
       '<div class="frete-top"><span><b>OC nº ' + escapeHtml(String(o.numero || '—')) + '</b> · ' + escapeHtml(o.setor || '—') + '</span><span class="chip-est apagar">Para receber</span></div>' +
       '<ul class="oc-itens">' + (o.itens || []).map(function(it) { return '<li><b>' + escapeHtml(fmtMp(it.quantidade, it.unidade)) + '</b> ' + escapeHtml(it.descricao) + '</li>'; }).join('') + '</ul>' +
       '<div class="frete-sub' + (atraso ? ' alerta' : '') + '">' + (c.fornecedor ? 'Fornecedor: ' + escapeHtml(c.fornecedor) : 'Fornecedor não informado') + (c.pedidoFornecedor ? ' · nº ' + escapeHtml(c.pedidoFornecedor) : '') + (c.previsao ? ' · previsão ' + escapeHtml(formatDateBR(c.previsao)) + (atraso ? ' (atrasada)' : '') : '') + '</div>' +
-      '<div class="frete-sub">Pedido por ' + escapeHtml(o.pedido && o.pedido.nome ? o.pedido.nome : '—') + ': depois do recebido, entregue a ele (ou ela).</div>' +
+      ((o.devolucoes || []).length ? '<div class="frete-sub alerta">' + escapeHtml(ocDevolucaoTexto(o)) + '</div>' : '') +
+      '<div class="frete-sub">Pedido por ' + escapeHtml(o.pedido && o.pedido.nome ? o.pedido.nome : '—') + ': depois do recebido vem a conferência; aí entregue a ele (ou ela).</div>' +
       '<div class="frete-acoes"><button class="btn-text" data-oc="recebido" data-id="' + escapeHtml(o.id) + '"><b>Dar o recebido</b></button></div></div>';
   }
   var OC_FILTROS = [
     { k: 'abertas', nome: 'Abertas', f: function(o) { return OC_STATUS[o.status] && OC_STATUS[o.status].etapa > 0 && o.status !== 'fechada'; } },
     { k: 'pedido', nome: 'Coord./superv.', f: function(o) { return o.status === 'pedido'; } },
     { k: 'cotacao', nome: 'Cotação', f: function(o) { return o.status === 'cotacao' || o.status === 'justificativa'; } },
+    { k: 'revisao', nome: 'Quem pediu confere', f: function(o) { return o.status === 'revisao'; } },
     { k: 'aprovacao', nome: 'Diretoria', f: function(o) { return o.status === 'aprovacao'; } },
     { k: 'compra', nome: 'Comprar', f: function(o) { return o.status === 'compra'; } },
     { k: 'comprado', nome: 'Para receber', f: function(o) { return o.status === 'comprado'; }, todos: true },
-    { k: 'recebido', nome: 'Entregar', f: function(o) { return o.status === 'recebido'; } },
+    { k: 'recebido', nome: 'Conferência', f: function(o) { return o.status === 'recebido'; } },
+    { k: 'conferido', nome: 'Entregar', f: function(o) { return o.status === 'conferido'; } },
     { k: 'fechada', nome: 'Entregues', f: function(o) { return o.status === 'fechada'; } },
     { k: 'outras', nome: 'Reprovadas e canceladas', f: function(o) { return o.status === 'reprovada' || o.status === 'cancelada'; } }
   ];
@@ -20052,12 +20254,12 @@
     var filtro = OC_FILTROS.find(function(f) { return f.k === ocUi.filtro; }) || OC_FILTROS[0];
     var base = filtro.todos ? ordensCompra : vis;
     var lista = base.filter(filtro.f).sort(function(a, b) { return (b.urgencia === 'urgente') - (a.urgencia === 'urgente') || (Number(b.numero) || 0) - (Number(a.numero) || 0); });
-    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · autorização do <b>coordenador ou supervisor</b> → 3 · <b>cotação</b> (compras) → 4 · aprovação da <b>diretoria (Nicolas ou André)</b> → 5 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 6 · <b>recebido</b> (qualquer pessoa, identificada) → 7 · <b>entregue</b> a quem pediu, que confirma. Até ir para a cotação, o pedido pode ser <b>editado</b>; dá para <b>cancelar</b> no pedido, na cotação ou na aprovação da diretoria.</p>' +
-      (tudo ? '' : '<p class="hint oc-so-meus">Você vê os pedidos que fez ou em que assinou' + (ocEu() && autorizaAntesCotacao(ocEu().m) ? ' e os do seu setor' : '') + '. Em <b>Para receber</b> estão as compras que vão chegar: qualquer pessoa dá o recebido.</p>') +
+    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · <b>autorização</b> (' + escapeHtml(ocCargosEtapa('coord')) + ') → 3 · <b>cotação</b> (' + escapeHtml(ocQuemFaz('cotacao')) + ') → 4 · <b>quem pediu confere</b> se a cotação está de acordo → 5 · aprovação da <b>diretoria</b> (' + escapeHtml(ocNomesAprovacao()) + ') → 6 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 7 · <b>recebido</b> (' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada) → 8 · <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') → 9 · <b>entregue</b> a quem pediu, que confirma. Até ir para a cotação, o pedido pode ser <b>editado</b>; dá para <b>cancelar</b> até a aprovação da diretoria. Quem faz cada etapa: Cadastros › Compras.</p>' +
+      (tudo ? '' : '<p class="hint oc-so-meus">Você vê os pedidos que fez ou em que assinou' + (ocEu() && ocPodeEtapa(ocEu().m, 'coord') ? ' e os do seu setor' : '') + ', e os que estão numa etapa que você assina. Em <b>Para receber</b> estão as compras que vão chegar.</p>') +
       '<div class="est-cards">' +
         supCard('c-entrada', tudo ? 'Pedido de compra' : 'Meus pedidos', fmtInt(ocAbertas().length), (ocAbertas().length === 1 ? 'ordem aberta' : 'ordens abertas') + (urg ? ' · <b>' + urg + (urg === 1 ? ' urgente' : ' urgentes') + '</b>' : ''), '<button type="button" class="btn btn-primary btn-sm" data-oc="novo">+ Novo pedido</button>') +
-        supCard('c-saldo' + (n('pedido') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('aprovacao')), n('pedido') + ' com coordenador/supervisor · ' + n('aprovacao') + ' com a diretoria') +
-        supCard('c-futuro' + (nReceber ? ' alerta' : ''), 'Compra e recebimento', fmtInt(n('compra') + nReceber + n('recebido')), n('compra') + ' para comprar · ' + nReceber + ' para receber · ' + n('recebido') + ' para entregar') +
+        supCard('c-saldo' + (n('pedido') + n('revisao') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('revisao') + n('aprovacao')), n('pedido') + ' com coordenador/supervisor · ' + n('revisao') + ' com quem pediu · ' + n('aprovacao') + ' com a diretoria') +
+        supCard('c-futuro' + (nReceber ? ' alerta' : ''), 'Compra e recebimento', fmtInt(n('compra') + nReceber + n('recebido') + n('conferido')), n('compra') + ' para comprar · ' + nReceber + ' para receber · ' + n('recebido') + ' para conferir · ' + n('conferido') + ' para entregar') +
       '</div>' +
       '<div class="est-loc-chips oc-filtros" role="group" aria-label="Filtrar ordens">' + OC_FILTROS.map(function(f) {
         var c = (f.todos ? ordensCompra : vis).filter(f.f).length;
@@ -20067,19 +20269,19 @@
         : '<p class="empty-state">' + (filtro.k === 'comprado' ? 'Nada para receber agora.' : vis.length ? 'Nenhuma ordem neste filtro.' : (tudo ? 'Nenhum pedido de compra ainda.' : 'Você ainda não fez pedidos de compra.') + ' Toque em “+ Novo pedido”.') + '</p>');
     carregarFotosCanhoto(box);
   }
-  // selo da aba: o que espera a assinatura de quem está usando (com acesso pessoal: só as etapas que ele assina;
-  // a entrega recebida espera quem pediu); acesso sem pessoa ligada: tudo o que está esperando assinatura
+  // selo da aba: o que espera a assinatura de quem está usando (com acesso pessoal: só as etapas que ele assina, pelo
+  // Cadastros › Compras; a cotação para conferir e a entrega esperam quem pediu); acesso sem pessoa ligada: tudo o que
+  // está esperando assinatura
   function ocEsperando() {
     var e = ocEu(), m = e ? e.m : null, mestre = !!session && session.ref === 'mestre', adm = !!session && session.role === 'admin';
     return ocVisiveis().filter(function(o) {
-      if (o.status === 'recebido') return ocMinha(o);
-      if (!m && !adm) return ['pedido', 'cotacao', 'justificativa', 'aprovacao', 'compra'].indexOf(o.status) >= 0;
-      if (o.status === 'pedido') return !!m && autorizaAntesCotacao(m) && coordenaSetor(m, o.setor);
-      if (o.status === 'cotacao') return !!m && !!m.compras;
-      if (o.status === 'justificativa') return mestre || ehNicolas(m);
-      if (o.status === 'aprovacao') return adm || aprovaCompraFinal(m);
-      if (o.status === 'compra') return mestre || ocPodeComprar(m);
-      return false;
+      if ((o.status === 'revisao' || o.status === 'conferido') && ocMinha(o)) return true;
+      if (!m && !adm) return ['pedido', 'cotacao', 'justificativa', 'aprovacao', 'compra', 'recebido'].indexOf(o.status) >= 0;
+      if (o.status === 'pedido') return !!m && ocPodeEtapa(m, 'coord') && coordenaSetor(m, o.setor);
+      if (o.status === 'justificativa') return mestre || ehNicolas(m) || ocPodeEtapa(m, 'justificativa');
+      if (o.status === 'aprovacao') return adm || ocPodeEtapa(m, 'aprovacao');
+      if (o.status === 'compra' || o.status === 'recebido') return mestre || ocPodeEtapa(m, OC_ETAPA_DO_STATUS[o.status]);
+      return !!OC_ETAPA_DO_STATUS[o.status] && ocPodeEtapa(m, OC_ETAPA_DO_STATUS[o.status]);
     });
   }
   function renderTabComprasBadge() {
@@ -20101,22 +20303,25 @@
     else if (a === 'cotar' && o) abrirCotacao(o);
     else if (a === 'just' && o) abrirJustificativaOc(o);
     else if (a === 'comprado' && o) abrirCompradoOc(o);
+    else if (a === 'revisar' && o) abrirRevisaoOc(o);
     else if (a === 'recebido' && o) abrirRecebidoOc(o);
+    else if (a === 'conferir' && o) abrirConferenciaOc(o);
     else if (a === 'entrega' && o) abrirEntregaOc(o);
     else if (a === 'editar' && o) abrirPedidoCompra(o);
     else if (a === 'cancelar' && o) abrirCancelarOc(o);
   });
   function ocCanceladaTexto(o) {
-    var c = o.cancelamento || {}, et = c.etapa && OC_STATUS[c.etapa] ? ' (' + ({ pedido: 'no pedido', cotacao: 'na cotação', justificativa: 'na cotação', aprovacao: 'na aprovação da diretoria' }[c.etapa] || '') + ')' : '';
+    var c = o.cancelamento || {}, et = c.etapa && OC_STATUS[c.etapa] ? ' (' + ({ pedido: 'no pedido', cotacao: 'na cotação', justificativa: 'na cotação', revisao: 'na conferência de quem pediu', aprovacao: 'na aprovação da diretoria' }[c.etapa] || '') + ')' : '';
     return 'Cancelada' + (c.nome || o.canceladaPor ? ' por ' + (c.nome || o.canceladaPor) : '') + et + (c.motivo ? ': ' + c.motivo : '');
   }
   // cancelar com motivo (04/11/2026): no pedido, na cotação ou na aprovação da diretoria
   function abrirCancelarOc(o) {
     if (!ocPodeCancelar(o)) { showToast('Esta OC já foi aprovada para comprar: não dá mais para cancelar.'); return; }
+    // (cancela no pedido, na cotação, na conferência de quem pediu ou na aprovação da diretoria)
     gerAbrir({
       titulo: 'Cancelar · OC nº ' + o.numero, botao: 'Cancelar a OC',
       html: ocResumoHtml(o) +
-        '<p class="hint">A OC sai das abertas e fica em <b>Reprovadas e canceladas</b>, com o seu nome, a data e o motivo. Dá para cancelar no pedido, na cotação ou na aprovação da diretoria.</p>' +
+        '<p class="hint">A OC sai das abertas e fica em <b>Reprovadas e canceladas</b>, com o seu nome, a data e o motivo. Dá para cancelar no pedido, na cotação, na conferência de quem pediu ou na aprovação da diretoria.</p>' +
         '<label>Motivo do cancelamento <span class="req">*</span><input type="text" id="oc-canc-motivo" maxlength="200" autocomplete="off" placeholder="Ex.: o item não é mais necessário" /></label>',
       salvar: function() {
         var motivo = gerVal('oc-canc-motivo').replace(/\s+/g, ' ');
@@ -20209,7 +20414,7 @@
             arqs.forEach(function(f, k) { envio = envio.then(function() { return enviarFotoBucket(BUCKET_COMPRAS, 'compras/' + ocId + '/' + (ix + 1) + '-' + (k + 1) + '-' + uid(), f).then(function(c) { it.fotos.push(c); }); }); });
           });
           envio.then(function() { return ocId ? db.collection(OC_COL).doc(ocId).set(dados) : ocGravar(null, dados); })
-            .then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + (gestao ? '. Pedido da gestão: autorizado na hora, agora é a cotação com compras' + (ocNomesCotacao() ? ' (' + ocNomesCotacao() + ')' : '') + '.' : '. Agora é com o coordenador ou supervisor (' + setor + ').')); })
+            .then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + (gestao ? '. Pedido da gestão: autorizado na hora, agora é a cotação com compras' + (ocNomesCotacao() ? ' (' + ocNomesCotacao() + ')' : '') + '.' : '. Agora é com quem autoriza (' + setor + ').')); })
             .catch(function(err) { btn.disabled = false; if (err && err.codigo === 'grande') gerErro('Foto grande demais (máximo 8 MB).'); else if (err && !err.codigo && !/permission|42501|row-level/i.test(String(err.message || ''))) gerErro('Não foi possível enviar as fotos ou o pedido agora. Verifique a internet e tente de novo.'); else falhaOc(err); });
         }
         if (membro) ocAssinar('nome', 'está na equipe', 'Assinar o pedido', '', function(m) { return m.id === membro.id ? null : 'Essa senha não é de ' + membro.nome + '.'; },
@@ -20324,28 +20529,28 @@
     var coord = etapa === 'coord', v = ocValorEscolhido(o);
     gerAbrir({
       titulo: (coord ? 'Autorização (coordenador ou supervisor)' : 'Aprovação da diretoria') + ' · OC nº ' + o.numero,
-      html: ocResumoHtml(o) + (!coord && o.cotacao ? ocCotacoesHtml(o) : '') +
+      html: ocResumoHtml(o) + (!coord && o.cotacao ? ocCotacoesHtml(o) : '') + (!coord && o.revisao ? '<p class="hint">' + escapeHtml(ocRevisaoTexto(o)) + '.</p>' : '') +
         '<label>Observação <span class="opt">(obrigatória para reprovar' + (coord ? '' : ' ou pedir nova cotação') + ')</span><input type="text" id="oc-dec-obs" maxlength="200" autocomplete="off" /></label>' +
         '<div class="oc-decisao"><button type="button" class="btn btn-primary" data-ger="aprovado">' + (coord ? 'Autorizar' : 'Aprovar') + (v && !coord ? ' (' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + ')' : '') + '</button>' +
         (coord ? '' : '<button type="button" class="btn btn-secondary" data-ger="recotar">Pedir nova cotação</button>') +
         '<button type="button" class="btn btn-secondary oc-reprovar" data-ger="reprovado">Reprovar</button></div>' +
         ((coord && ocPodeEditar(o)) || ocPodeCancelar(o) ? '<div class="frete-acoes oc-dec-extra">' + (coord && ocPodeEditar(o) ? '<button type="button" class="btn-text" data-ger="oc-editar">Editar o pedido antes de autorizar</button>' : '') +
           (ocPodeCancelar(o) ? '<button type="button" class="btn-text danger" data-ger="oc-cancelar">Cancelar a OC</button>' : '') + '</div>' : '') +
-        '<p class="field-hint">' + (coord ? 'Assina um coordenador, supervisor ou gerente (cargo em Cadastros › Equipe).' : 'Assina a diretoria: Nicolas ou André (cargo diretor em Cadastros › Equipe).') + '</p>',
+        '<p class="field-hint">' + (coord ? 'Assina quem autoriza pedidos (Cadastros › Compras): ' + escapeHtml(ocCargosEtapa('coord')) + '.' : 'Assina a diretoria (Cadastros › Compras): ' + escapeHtml(ocNomesAprovacao()) + '.') + '</p>',
       acao: function(dec) {
         if (dec === 'oc-editar') { abrirPedidoCompra(ocPorId(o.id) || o); return; }
         if (dec === 'oc-cancelar') { abrirCancelarOc(ocPorId(o.id) || o); return; }
         var obs = gerVal('oc-dec-obs');
         if ((dec === 'reprovado' || dec === 'recotar') && !obs) { gerErro(dec === 'recotar' ? 'Escreva o que precisa mudar na cotação.' : 'Escreva o motivo da reprovação.'); return; }
-        var onde = coord ? [autorizaAntesCotacao, 'é coordenador, supervisor ou gerente', 'Ninguém com cargo de coordenador, supervisor ou gerente (e senha) em Cadastros › Equipe.', function(m) { return coordenaSetor(m, o.setor) ? null : m.nome + ' não autoriza compras de ' + o.setor + '.'; }]
-          : [aprovaCompraFinal, 'é da diretoria (Nicolas ou André)', 'Ninguém com cargo de diretor (e senha) em Cadastros › Equipe.', null];
+        var onde = coord ? [function(m) { return ocPodeEtapa(m, 'coord'); }, 'autoriza pedidos de compra (' + ocCargosEtapa('coord') + ')', 'Ninguém com senha de 4 números autoriza pedidos (Cadastros › Compras e Cadastros › Equipe).', function(m) { return coordenaSetor(m, o.setor) ? null : m.nome + ' não autoriza compras de ' + o.setor + '.'; }]
+          : [function(m) { return ocPodeEtapa(m, 'aprovacao'); }, 'aprova compras (' + ocNomesAprovacao() + ')', 'Ninguém com senha de 4 números aprova compras (Cadastros › Compras e Cadastros › Equipe).', null];
         ocAssinar(onde[0], onde[1], (dec === 'aprovado' ? (coord ? 'Autorizar' : 'Aprovar') : dec === 'recotar' ? 'Pedir nova cotação' : 'Reprovar') + ' · OC nº ' + o.numero, onde[2], onde[3], function(m) {
           var agora = new Date().toISOString(), ass = ocAss(m, { em: agora, decisao: dec === 'recotar' ? 'recotar' : dec, obs: obs }), dados = { atualizadoEm: agora };
           if (coord) { dados.coord = ass; dados.status = dec === 'aprovado' ? 'cotacao' : 'reprovada'; }
           else { dados.aprovacao = ass; dados.status = dec === 'aprovado' ? 'compra' : dec === 'recotar' ? 'cotacao' : 'reprovada'; if (dec === 'recotar') dados.recotacoes = (o.recotacoes || []).concat([ass]); }
           ocGravar(o.id, dados).then(function() {
             gerFechar();
-            showToast(dec === 'aprovado' ? (coord ? 'Autorizado por ' + m.nome + ': agora vai para a cotação.' : 'Compra aprovada por ' + m.nome + ': aguardando a compra (' + ocNomesCompra() + ').') : dec === 'recotar' ? 'Voltou para a cotação.' : 'OC reprovada.');
+            showToast(dec === 'aprovado' ? (coord ? 'Autorizado por ' + m.nome + ': agora vai para a cotação.' : 'Compra aprovada por ' + m.nome + ': aguardando a compra (' + ocNomesCompra() + ').') : dec === 'recotar' ? 'Voltou para a cotação (depois, quem pediu confere de novo).' : 'OC reprovada.');
           }).catch(falhaOc);
         }, !coord);
       }
@@ -20373,22 +20578,22 @@
       titulo: 'Justificativa · OC nº ' + o.numero, botao: 'Salvar',
       html: ocResumoHtml(o) + ocCotacoesHtml(o) +
         '<p class="hint">Só ' + (c.cotacoes || []).length + ((c.cotacoes || []).length === 1 ? ' cotação' : ' cotações') + '. Justificativa de ' + escapeHtml(c.nome || '—') + ': <b>' + escapeHtml(c.justificativa || '—') + '</b></p>' +
-        '<label class="check"><input type="radio" name="oc-just" value="ok" checked /> Ok: seguir para a aprovação da diretoria</label>' +
+        '<label class="check"><input type="radio" name="oc-just" value="ok" checked /> Ok: seguir para quem pediu conferir (depois, a diretoria)</label>' +
         '<label class="check"><input type="radio" name="oc-just" value="recotar" /> Pedir mais cotações</label>' +
         '<label>Observação <span class="opt">(obrigatória para pedir mais cotações)</span><input type="text" id="oc-just-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Quem dá o ok é o Nicolas: a senha mestre ou a senha de 4 números dele.</p>',
+        '<p class="field-hint">Quem dá o ok é o Nicolas (a senha mestre ou a senha de 4 números dele)' + (ocNomesEtapa('justificativa') ? ' ou ' + escapeHtml(ocNomesEtapa('justificativa')) : '') + '.</p>',
       salvar: function() {
         var dec = (document.querySelector('input[name="oc-just"]:checked') || {}).value || 'ok', obs = gerVal('oc-just-obs');
         if (dec === 'recotar' && obs.length < 3) return gerErro('Escreva o que falta (ex.: “cotar também na loja X”).');
         function gravar(quem) {
           var agora = new Date().toISOString(), ass = { nome: quem.nome, id: quem.id || '', ref: minhaRef(), em: agora, obs: obs };
-          var dados = dec === 'ok' ? { status: 'aprovacao', cotacao: Object.assign({}, c, { okNicolas: ass }), atualizadoEm: agora }
+          var dados = dec === 'ok' ? { status: 'revisao', cotacao: Object.assign({}, c, { okNicolas: ass }), atualizadoEm: agora }
             : { status: 'cotacao', recotacoes: (o.recotacoes || []).concat([{ nome: quem.nome, em: agora, obs: obs }]), atualizadoEm: agora };
-          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'ok' ? 'Ok dado: a OC segue para a aprovação da diretoria.' : 'Pedido de mais cotações enviado para compras.'); }).catch(falhaOc);
+          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'ok' ? 'Ok dado: agora ' + ocNomePedido(o) + ' confere se a cotação está de acordo com o pedido.' : 'Pedido de mais cotações enviado para compras.'); }).catch(falhaOc);
         }
         if (session && session.role === 'admin' && session.ref === 'mestre') { gravar({ nome: quemSessao(), id: '' }); return false; }
         openPinDialog({
-          permite: ehNicolas, funcaoTexto: 'é o Nicolas', titulo: 'Ok do Nicolas · OC nº ' + o.numero, hint: 'Nicolas: digite a sua senha de 4 números.',
+          permite: function(m) { return ehNicolas(m) || ocPodeEtapa(m, 'justificativa'); }, funcaoTexto: ocNomesEtapa('justificativa') ? 'é o Nicolas ou ' + ocNomesEtapa('justificativa') : 'é o Nicolas', titulo: 'Ok do Nicolas · OC nº ' + o.numero, hint: ocNomesEtapa('justificativa') ? 'Digite a sua senha de 4 números.' : 'Nicolas: digite a sua senha de 4 números.',
           semCadastro: 'O Nicolas não tem senha de 4 números em Cadastros › Equipe com senha. Entre com a senha mestre para dar o ok.',
           onOk: function(m) { gravar({ nome: m.nome, id: m.id }); }
         });
@@ -20402,14 +20607,14 @@
     while (ant.length < 3) ant.push({ fornecedor: '', valor: '', prazo: '', pagamento: '', obs: '' });
     var rec = (o.recotacoes || []).slice(-1)[0];
     gerAbrir({
-      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para a diretoria', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
+      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para quem pediu conferir', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
       html: ocResumoHtml(o) + (rec ? '<p class="sup-aviso">⚠ Nova cotação pedida por ' + escapeHtml(rec.nome) + ': ' + escapeHtml(rec.obs || '') + '</p>' : '') +
-        '<p class="hint"><b>Mínimo de 3 cotações</b> (até 4). Marque a escolhida (o menor preço vem marcado). Com menos de 3, escreva a justificativa: a OC só segue para a diretoria depois do <b>ok do Nicolas</b>.</p><div id="oc-cots"></div>' +
+        '<p class="hint"><b>Mínimo de 3 cotações</b> (até 4). Marque a escolhida (o menor preço vem marcado). Com menos de 3, escreva a justificativa: a OC só segue depois do <b>ok do Nicolas</b>. Depois, <b>' + escapeHtml(ocNomePedido(o)) + '</b> (quem pediu) confere se está de acordo com o pedido, e aí vai para a diretoria.</p><div id="oc-cots"></div>' +
         '<button type="button" class="btn-text" data-ger="cot-add" id="oc-cot-add">+ outra cotação</button>' +
         '<label>Justificativa <span class="opt">(obrigatória com menos de 3 cotações)</span><input type="text" id="oc-cot-just" maxlength="240" autocomplete="off" value="' + escapeHtml((o.cotacao && o.cotacao.justificativa) || '') + '" placeholder="Ex.: só um fornecedor tem a peça original" /></label>' +
         '<datalist id="oc-forns">' + nomesFornecedoresCadastro().map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
         '<label>Observação <span class="opt">(opcional)</span><input type="text" id="oc-cot-obs" maxlength="200" autocomplete="off" value="' + escapeHtml((o.cotacao && o.cotacao.obs) || '') + '" /></label>' +
-        '<p class="field-hint">Assina quem é “Assistente de compras” em Cadastros › Equipe.</p>',
+        '<p class="field-hint">Assina quem lança cotação (Cadastros › Compras): ' + escapeHtml(ocQuemFaz('cotacao')) + '.</p>',
       depois: ocRenderCots,
       input: function(t) { if (t.closest('#oc-cots')) { ocLerCots(); if (t.classList.contains('oc-cv')) ocMarcarMenor(); } },
       change: function(t) { if (t.name === 'oc-esc') { ger.escolhida = Number(t.value); ger.escolhaManual = true; } },
@@ -20432,11 +20637,49 @@
         if (cots.length < 3 && just.length < 5) return gerErro('Com menos de 3 cotações, escreva a justificativa (o Nicolas precisa dar o ok para seguir).');
         var esc = mapa[ger.escolhida];
         if (esc === undefined) return gerErro('Marque a cotação escolhida (uma que tenha fornecedor e valor).');
-        ocAssinar('compras', 'é assistente de compras', 'Cotação · OC nº ' + o.numero, 'Ninguém marcado como “Assistente de compras” em Cadastros › Equipe.', null, function(m) {
+        ocAssinar(function(m) { return ocPodeEtapa(m, 'cotacao'); }, 'lança cotação (' + ocQuemFaz('cotacao') + ')', 'Cotação · OC nº ' + o.numero, 'Ninguém com senha de 4 números lança cotação (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
           var agora = new Date().toISOString(), poucas = cots.length < 3;
-          ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, ref: minhaRef(), em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs'), justificativa: poucas ? just : '' }, status: poucas ? 'justificativa' : 'aprovacao', atualizadoEm: agora })
-            .then(function() { gerFechar(); showToast(poucas ? 'Cotação enviada: com menos de 3, espera o ok do Nicolas na justificativa.' : 'Cotação enviada para a aprovação da diretoria (Nicolas ou André).'); }).catch(falhaOc);
+          ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, ref: minhaRef(), em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs'), justificativa: poucas ? just : '' }, status: poucas ? 'justificativa' : 'revisao', atualizadoEm: agora })
+            .then(function() { gerFechar(); showToast(poucas ? 'Cotação enviada: com menos de 3, espera o ok do Nicolas na justificativa.' : 'Cotação enviada: agora ' + ocNomePedido(o) + ' confere se está de acordo com o pedido.'); }).catch(falhaOc);
         }, false, true);
+        return false;
+      }
+    });
+  }
+  // ----- 4. quem pediu confere se a cotação está de acordo com o que pediu (pedido de 09/11/2026) -----
+  // De acordo: segue para a diretoria. Não está de acordo: volta para a cotação, com o que precisa mudar. Assina quem
+  // fez o pedido (próprio acesso ou senha de 4 números) ou quem confere no lugar dele (Cadastros › Compras).
+  function abrirRevisaoOc(o) {
+    var temId = !!(o.pedido && o.pedido.id), outros = ocNomesEtapa('revisao');
+    gerAbrir({
+      titulo: 'Conferir a cotação · OC nº ' + o.numero, botao: 'Salvar',
+      html: ocResumoHtml(o) + ocCotacoesHtml(o) +
+        '<p class="hint">Confira se a cotação escolhida é do que foi pedido (item, quantidade, especificação). Depois ela vai para a <b>diretoria</b>.</p>' +
+        '<label class="check"><input type="radio" name="oc-rev" value="de-acordo" checked /> Está de acordo com o que pedi: seguir para a diretoria</label>' +
+        '<label class="check"><input type="radio" name="oc-rev" value="nao" /> Não está de acordo: voltar para a cotação</label>' +
+        '<label>Observação <span class="opt">(obrigatória se não estiver de acordo)</span><input type="text" id="oc-rev-obs" maxlength="200" autocomplete="off" placeholder="Ex.: o rolamento precisa ser 2RS, não ZZ" /></label>' +
+        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confere: com o próprio acesso ou com a senha de 4 números' + (outros ? '. Também podem conferir no lugar dele: ' + escapeHtml(outros) : '') + '.</p>'
+          : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-rev-nome" maxlength="60" placeholder="' + escapeHtml(o.pedido ? o.pedido.nome : '') + '" autocomplete="off" /></label><p class="field-hint">O pedido foi feito por ' + escapeHtml(o.pedido ? o.pedido.nome : '—') + ': é ele (ou ela) quem confere.</p>'),
+      salvar: function() {
+        var dec = (document.querySelector('input[name="oc-rev"]:checked') || {}).value || 'de-acordo', obs = gerVal('oc-rev-obs');
+        if (dec === 'nao' && obs.length < 3) return gerErro('Escreva o que não está de acordo (o que precisa mudar na cotação).');
+        function gravar(quem) {
+          var f = ocPorId(o.id) || o;
+          if (f.status !== 'revisao') { gerErro('Esta OC já mudou de etapa.'); return; }
+          var agora = new Date().toISOString(), ass = Object.assign(quem, { ref: minhaRef(), em: agora, decisao: dec, obs: obs }), dados = { revisao: ass, atualizadoEm: agora };
+          if (dec === 'de-acordo') dados.status = 'aprovacao';
+          else { dados.status = 'cotacao'; dados.recotacoes = (f.recotacoes || []).concat([{ nome: quem.nome, em: agora, obs: 'Quem pediu: ' + obs }]); }
+          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'de-acordo' ? 'Conferido: a OC nº ' + o.numero + ' segue para a diretoria (' + ocNomesAprovacao() + ').' : 'Voltou para a cotação com o que precisa mudar.'); }).catch(falhaOc);
+        }
+        if (temId) {
+          ocAssinar(function(m) { return m.id === o.pedido.id || ocPodeEtapa(m, 'revisao'); }, 'é quem fez o pedido (' + o.pedido.nome + ')' + (outros ? ' ou ' + outros : ''), 'Conferir a cotação · OC nº ' + o.numero, '', null,
+            function(m) { gravar({ nome: m.nome, id: m.id }); }, false, true);
+        } else {
+          var nome = gerVal('oc-rev-nome');
+          if (!nome) return gerErro('Informe o seu nome.');
+          if (o.pedido && normNome(nome) !== normNome(o.pedido.nome)) return gerErro('Quem confere a cotação é quem fez o pedido: ' + o.pedido.nome + '.');
+          gravar({ nome: nome, id: '', semSenha: true });
+        }
         return false;
       }
     });
@@ -20479,12 +20722,12 @@
         '<div class="row-2"><label>Nº do pedido no fornecedor <span class="opt">(opcional)</span><input type="text" id="oc-cp-num" maxlength="30" autocomplete="off" /></label>' +
         '<label>Previsão de chegada<input type="date" id="oc-cp-prev" value="' + escapeHtml(v.prazo ? addDiasIso(todayIso(), Number(v.prazo)) : '') + '" /></label></div>' +
         '<label>Observação <span class="opt">(opcional)</span><input type="text" id="oc-cp-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Marca como comprado: ' + escapeHtml(ocNomesCompra()) + ' (compras ou diretoria). Depois, a compra aparece em “Para receber” para todos.</p>',
+        '<p class="field-hint">Marca como comprado: ' + escapeHtml(ocNomesCompra()) + ' (Cadastros › Compras). Depois, a compra aparece em “Para receber” para todos.</p>',
       salvar: function() {
         var forn = gerVal('oc-cp-forn'), valor = ocValor(gerVal('oc-cp-valor'));
         if (!forn) return gerErro('Informe o fornecedor da compra.');
         if (valor === null || valor <= 0) return gerErro('Informe o valor da compra.');
-        ocAssinar(ocPodeComprar, 'é de compras ou da diretoria (' + ocNomesCompra() + ')', 'Comprado · OC nº ' + o.numero, 'Ninguém de compras ou da diretoria com senha de 4 números em Cadastros › Equipe.', null, function(m) {
+        ocAssinar(ocPodeComprar, 'marca como comprado (' + ocNomesCompra() + ')', 'Comprado · OC nº ' + o.numero, 'Ninguém com senha de 4 números marca como comprado (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
           var agora = new Date().toISOString();
           ocGravar(o.id, { compra: ocAss(m, { fornecedor: forn, valor: Math.round(valor * 100) / 100, pedidoFornecedor: gerVal('oc-cp-num'), previsao: gerVal('oc-cp-prev'), obs: gerVal('oc-cp-obs') }), status: 'comprado', atualizadoEm: agora })
             .then(function() { gerFechar(); showToast('OC nº ' + o.numero + ' comprada: agora aparece em “Para receber”.'); }).catch(falhaOc);
@@ -20505,14 +20748,14 @@
         '<label class="check-row"><input type="checkbox" id="oc-rc-conf" /> Conferi: chegou o que foi pedido, na quantidade certa</label>' +
         '<label>Nº da nota fiscal <span class="opt">(opcional)</span><input type="text" id="oc-rc-nf" maxlength="30" inputmode="numeric" autocomplete="off" /></label>' +
         '<label>Observação <span class="opt">(obrigatória se chegou diferente)</span><input type="text" id="oc-rc-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Qualquer pessoa recebe, mas precisa se identificar: com o seu acesso ao app ou com a senha de 4 números. Depois, entregue para ' + escapeHtml(o.pedido && o.pedido.nome ? o.pedido.nome : 'quem pediu') + ', que confirma no app.</p>',
+        '<p class="field-hint">Recebe: ' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada com o próprio acesso ao app ou com a senha de 4 números. Depois vem a <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') e aí a entrega para ' + escapeHtml(ocNomePedido(o)) + ', que confirma no app.</p>',
       salvar: function() {
         var conf = document.getElementById('oc-rc-conf').checked, obs = gerVal('oc-rc-obs');
         if (!conf && !obs) return gerErro('Marque “Conferi” ou escreva o que chegou diferente.');
-        ocAssinar('nome', 'está na equipe', 'Recebido · OC nº ' + o.numero, 'Ninguém com senha de 4 números em Cadastros › Equipe.', null, function(m) {
+        ocAssinar(function(m) { return ocPodeEtapa(m, 'recebimento'); }, 'dá o recebido (' + ocCargosEtapa('recebimento') + ')', 'Recebido · OC nº ' + o.numero, 'Ninguém com senha de 4 números dá o recebido (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
           var agora = new Date().toISOString();
-          ocGravar(o.id, { recebimento: ocAss(m, { conforme: conf, nf: gerVal('oc-rc-nf'), obs: obs }), status: 'recebido', atualizadoEm: agora })
-            .then(function() { gerFechar(); showToast('Recebido por ' + m.nome + '. Entregue para ' + (o.pedido && o.pedido.nome ? o.pedido.nome : 'quem pediu') + ', que confirma no app.'); })
+          ocGravar(o.id, { recebimento: ocAss(m, { conforme: conf, nf: gerVal('oc-rc-nf'), obs: obs }), conferencia: null, status: 'recebido', atualizadoEm: agora })
+            .then(function() { gerFechar(); showToast('Recebido por ' + m.nome + '. Agora é a conferência (' + ocQuemFaz('conferencia') + '); depois, a entrega para ' + ocNomePedido(o) + '.'); })
             .catch(function(err) {
               if (err && (err.code === 'P0002' || /não existe/i.test(String(err.message || '')))) { gerErro('Esta OC já mudou de etapa: outra pessoa já deu o recebido.'); return; }
               falhaOc(err);
@@ -20522,15 +20765,46 @@
       }
     });
   }
-  // ----- 7. entregue: quem fez o pedido confere e confirma -----
+  // ----- 8. conferência do que chegou (pedido de 09/11/2026): antes de entregar a quem pediu -----
+  // Chegou certo ou com diferença aceita: libera para entregar. Com problema: devolve ao fornecedor (volta para
+  // "Para receber", guardando o recebido e a conferência em "devolucoes"). Assina quem confere (Cadastros › Compras).
+  function abrirConferenciaOc(o) {
+    var c = o.compra || {}, r = o.recebimento || {};
+    gerAbrir({
+      titulo: 'Conferência · OC nº ' + o.numero, botao: 'Salvar a conferência',
+      html: ocResumoHtml(o) +
+        '<div class="pedido-resumo"><div class="resumo-row"><span class="resumo-k">Fornecedor</span><span class="resumo-v">' + escapeHtml(c.fornecedor || '—') + (c.pedidoFornecedor ? ' · nº ' + escapeHtml(c.pedidoFornecedor) : '') + (c.valor ? ' · ' + escapeHtml(fmtBRL(Number(c.valor) || 0)) : '') + '</span></div>' +
+        '<div class="resumo-row"><span class="resumo-k">Recebido</span><span class="resumo-v">' + escapeHtml(ocRecebidoTexto(o).replace(/^Recebido /, '')) + '</span></div></div>' +
+        '<p class="hint">Confira o que chegou com o pedido e a nota: itens, quantidade, especificação e estado. Depois, entregue para <b>' + escapeHtml(ocNomePedido(o)) + '</b>, que confirma no app.</p>' +
+        '<label class="check"><input type="radio" name="oc-cf" value="ok" checked /> Conferido: chegou certo, pode entregar</label>' +
+        '<label class="check"><input type="radio" name="oc-cf" value="diferenca" /> Com diferença, mas pode entregar</label>' +
+        '<label class="check"><input type="radio" name="oc-cf" value="devolver" /> Com problema: devolver ao fornecedor (volta para “Para receber”)</label>' +
+        '<label>Observação <span class="opt">(obrigatória com diferença ou problema)</span><input type="text" id="oc-cf-obs" maxlength="200" autocomplete="off" placeholder="Ex.: veio 3 em vez de 4; uma caixa amassada" /></label>' +
+        '<p class="field-hint">Faz a conferência (Cadastros › Compras): ' + escapeHtml(ocQuemFaz('conferencia')) + '.</p>',
+      salvar: function() {
+        var res = (document.querySelector('input[name="oc-cf"]:checked') || {}).value || 'ok', obs = gerVal('oc-cf-obs');
+        if (res !== 'ok' && obs.length < 3) return gerErro(res === 'devolver' ? 'Escreva o problema (o motivo da devolução).' : 'Escreva qual é a diferença.');
+        ocAssinar(function(m) { return ocPodeEtapa(m, 'conferencia'); }, 'faz a conferência (' + ocQuemFaz('conferencia') + ')', 'Conferência · OC nº ' + o.numero, 'Ninguém com senha de 4 números faz a conferência (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
+          var f = ocPorId(o.id) || o;
+          if (f.status !== 'recebido') { gerErro('Esta OC já mudou de etapa: outra pessoa já fez a conferência.'); return; }
+          var agora = new Date().toISOString(), ass = ocAss(m, { resultado: res, obs: obs }), dados = { atualizadoEm: agora };
+          if (res === 'devolver') { dados.status = 'comprado'; dados.devolucoes = (f.devolucoes || []).concat([{ recebimento: f.recebimento || null, conferencia: ass }]).slice(-10); dados.recebimento = null; dados.conferencia = null; }
+          else { dados.status = 'conferido'; dados.conferencia = ass; }
+          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(res === 'devolver' ? 'Devolução registrada: a OC nº ' + o.numero + ' voltou para “Para receber”.' : 'Conferido por ' + m.nome + '. Entregue para ' + ocNomePedido(o) + ', que confirma no app.'); }).catch(falhaOc);
+        }, true, true);
+        return false;
+      }
+    });
+  }
+  // ----- 9. entregue: quem fez o pedido confere e confirma -----
   function abrirEntregaOc(o) {
-    var temId = !!(o.pedido && o.pedido.id);
+    var temId = !!(o.pedido && o.pedido.id), outros = ocNomesEtapa('entrega');
     gerAbrir({
       titulo: 'Entrega · OC nº ' + o.numero, botao: 'Confirmar entrega',
-      html: ocResumoHtml(o) + (o.recebimento ? '<p class="hint">' + escapeHtml(ocRecebidoTexto(o)) + '.</p>' : '') +
+      html: ocResumoHtml(o) + (o.recebimento ? '<p class="hint">' + escapeHtml(ocRecebidoTexto(o)) + '.</p>' : '') + (o.conferencia ? '<p class="hint">' + escapeHtml(ocConferenciaTexto(o.conferencia)) + '.</p>' : '') +
         '<label class="check-row"><input type="checkbox" id="oc-conf" /> Recebi e conferi: veio o que foi pedido, na quantidade certa</label>' +
         '<label>Observação <span class="opt">(obrigatória se veio diferente)</span><input type="text" id="oc-ent-obs" maxlength="200" autocomplete="off" /></label>' +
-        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confirma: com o próprio acesso ou com a senha de 4 números.</p>'
+        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confirma: com o próprio acesso ou com a senha de 4 números' + (outros ? '. Também podem confirmar no lugar dele: ' + escapeHtml(outros) : '') + '.</p>'
           : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-ent-nome" maxlength="60" value="" placeholder="' + escapeHtml(o.pedido ? o.pedido.nome : '') + '" autocomplete="off" /></label><p class="field-hint">O pedido foi feito por ' + escapeHtml(o.pedido ? o.pedido.nome : '—') + ': é ele (ou ela) quem confirma a entrega.</p>'),
       salvar: function() {
         var conf = document.getElementById('oc-conf').checked, obs = gerVal('oc-ent-obs');
@@ -20541,7 +20815,7 @@
             .then(function() { gerFechar(); showToast('Entrega confirmada: OC nº ' + o.numero + ' fechada.'); }).catch(falhaOc);
         }
         if (temId) {
-          ocAssinar('nome', 'está na equipe', 'Confirmar entrega · OC nº ' + o.numero, '', function(m) { return m.id === o.pedido.id ? null : 'Só ' + o.pedido.nome + ' (quem fez o pedido) confirma a entrega.'; },
+          ocAssinar('nome', 'está na equipe', 'Confirmar entrega · OC nº ' + o.numero, '', function(m) { return m.id === o.pedido.id || ocPodeEtapa(m, 'entrega') ? null : 'Só ' + o.pedido.nome + ' (quem fez o pedido)' + (outros ? ' ou ' + outros : '') + ' confirma a entrega.'; },
             function(m) { gravar({ nome: m.nome, id: m.id }); });
         } else {
           var nome = gerVal('oc-ent-nome');
@@ -20567,10 +20841,14 @@
         '<h3 class="q-plano-t">Assinaturas</h3><ol class="oc-tl">' +
           linha('1 · Pedido', o.pedido) + linha('2 · Coordenador/supervisor', o.coord) +
           linha('3 · Cotação', o.cotacao, v ? ' · escolhida ' + v.fornecedor + ' ' + fmtBRL(Number(v.valor) || 0) : '') +
-          linha('4 · Diretoria', o.aprovacao) +
-          linha('5 · Comprado', c, c ? [c.fornecedor ? ' · ' + c.fornecedor : '', c.valor ? ' ' + fmtBRL(Number(c.valor) || 0) : '', c.pedidoFornecedor ? ' · nº ' + c.pedidoFornecedor : '', c.previsao ? ' · previsão ' + formatDateBR(c.previsao) : ''].join('') : '') +
-          linha('6 · Recebido', r, r ? (r.nf ? ' · NF ' + r.nf : '') + (r.conforme ? ' · conferido' : ' · com diferença') : '') +
-          linha('7 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>' +
+          linha('4 · Quem pediu conferiu', o.revisao, o.revisao ? (o.revisao.decisao === 'de-acordo' ? ' · de acordo' : ' · não estava de acordo') : '') +
+          linha('5 · Diretoria', o.aprovacao) +
+          linha('6 · Comprado', c, c ? [c.fornecedor ? ' · ' + c.fornecedor : '', c.valor ? ' ' + fmtBRL(Number(c.valor) || 0) : '', c.pedidoFornecedor ? ' · nº ' + c.pedidoFornecedor : '', c.previsao ? ' · previsão ' + formatDateBR(c.previsao) : ''].join('') : '') +
+          linha('7 · Recebido', r, r ? (r.nf ? ' · NF ' + r.nf : '') + (r.conforme ? ' · conferido' : ' · com diferença') : '') +
+          linha('8 · Conferência', o.conferencia, o.conferencia ? (o.conferencia.resultado === 'ok' ? ' · chegou certo' : ' · com diferença') : '') +
+          linha('9 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>' +
+        ((o.devolucoes || []).length ? '<h3 class="q-plano-t">Devoluções ao fornecedor</h3><ol class="oc-tl">' + o.devolucoes.map(function(d) {
+          var dc = d.conferencia || {}; return '<li class="neg"><b>Devolvido</b><span>' + escapeHtml(ocQuem(dc) + (dc.obs ? ': ' + dc.obs : '') + (d.recebimento ? ' · recebido antes por ' + d.recebimento.nome : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
         ((o.edicoes || []).length ? '<h3 class="q-plano-t">Alterações antes da cotação</h3><ol class="oc-tl">' + o.edicoes.map(function(e) {
           return '<li class="ok"><b>Alterado</b><span>' + escapeHtml(ocQuem(e) + (e.antes ? ' · antes: ' + e.antes : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
         (o.status === 'cancelada' ? '<p class="sup-aviso">' + escapeHtml(ocCanceladaTexto(o) + (o.canceladaEm ? ' — ' + formatDateTimeBR(o.canceladaEm) : '')) + '</p>' : '') +
@@ -20581,6 +20859,63 @@
       }
     });
   }
+
+  // ----- Cadastros › Compras: o que cada cargo faz (pedido de 09/11/2026) -----
+  // Uma caixa por cargo (mais "sem cargo" e as marcas da Equipe) com as etapas que ele assina; cada toque grava na hora
+  // (coleção compras-config, documento "permissoes"). Embaixo, quem pode cada etapa hoje, pelos nomes da equipe, com
+  // aviso quando ninguém pode. Só a senha mestre (sem "só inclui") muda; o banco também barra os outros (0046).
+  function ocPermPodeMudar() { return !!session && session.role === 'admin' && !session.soInclui; }
+  function ocPermSalvo() { return !!(ocPermDoc && ocPermDoc.etapas && Object.keys(ocPermDoc.etapas).length); }
+  function renderOcPermAdmin() {
+    var box = document.getElementById('ocperm-conteudo');
+    if (!box || !session || ui.tab !== 'cadastros') return;
+    var pode = ocPermPodeMudar(), salvo = ocPermSalvo(), funcs = ocPermFuncoes();
+    var h = '<p class="hint">Marque o que cada cargo (de Cadastros › Equipe) pode assinar no <b>pedido de compra</b>. Quem também tem uma marca na Equipe (ex.: “Compras”) soma as etapas do cargo e da marca. Sempre valem: qualquer pessoa faz o pedido; quem fez o pedido confere a cotação e confirma a entrega do seu; o Nicolas dá o ok com menos de 3 cotações; a senha mestre aprova, marca como comprado, dá o recebido e faz a conferência.</p>' +
+      (pode ? '' : '<p class="sup-aviso">Só a senha mestre muda estas opções.</p>') +
+      '<p class="field-hint">' + (salvo ? 'Alterado por ' + escapeHtml(ocPermDoc.por || '—') + (ocPermDoc.atualizadoEm ? ' em ' + escapeHtml(formatDateTimeBR(ocPermDoc.atualizadoEm)) : '') + '. Em destaque, o que está diferente do padrão.' : 'Valendo o padrão (nada alterado ainda). Cada toque já salva.') + '</p>';
+    h += '<div class="ocp-grade">' + funcs.map(function(f) {
+      var pessoas = equipe.filter(function(m) { return ocFuncoesDe(m).indexOf(f[0]) >= 0; }).length;
+      return '<fieldset class="ocp-f"><legend>' + escapeHtml(f[1]) + ' <small>· ' + (pessoas ? pessoas + (pessoas === 1 ? ' pessoa' : ' pessoas') : 'ninguém na equipe') + '</small></legend><div class="ocp-ops">' +
+        OC_PERM_ETAPAS.map(function(e) {
+          var on = ocPermLista(e.k).indexOf(f[0]) >= 0, pad = ocPermPadrao(e.k).indexOf(f[0]) >= 0;
+          return '<label class="ocp-op' + (on !== pad ? ' mudou' : '') + '"><input type="checkbox" data-ocp-f="' + escapeHtml(f[0]) + '" data-ocp-e="' + e.k + '"' + (on ? ' checked' : '') + (pode ? '' : ' disabled') + ' /><span>' + escapeHtml(e.nome) + '</span></label>';
+        }).join('') + '</div></fieldset>';
+    }).join('') + '</div>';
+    h += '<h3 class="q-plano-t">Quem pode cada etapa hoje</h3><ul class="ocp-quem">' + OC_PERM_ETAPAS.map(function(e) {
+      var nomes = ocNomesEtapa(e.k, e.k === 'justificativa' ? ehNicolas : null), sempre = e.k === 'revisao' || e.k === 'entrega' ? 'quem fez o pedido' : '';
+      var soMestre = ['aprovacao', 'compra', 'recebimento', 'conferencia'].indexOf(e.k) >= 0;
+      return '<li data-ocp-quem="' + e.k + '"><b>' + escapeHtml(e.nome) + (e.sub ? ' <small class="opt">(' + escapeHtml(e.sub) + ')</small>' : '') + '</b><span>' +
+        (nomes ? escapeHtml(nomes) + (sempre ? ' e ' + sempre : '') : sempre ? escapeHtml(sempre) : '<span class="ninguem">⚠ ninguém da equipe' + (soMestre ? ' (só a senha mestre)' : ': os pedidos vão parar nesta etapa') + '</span>') + '</span></li>';
+    }).join('') + '</ul>';
+    if (pode && salvo) h += '<button type="button" class="btn-text" data-ocp="padrao">Voltar tudo ao padrão</button>';
+    box.innerHTML = h;
+  }
+  function ocPermGravar(etapas) {
+    var dados = { etapas: etapas, atualizadoEm: new Date().toISOString(), por: quemSessao() || 'Senha mestre' };
+    if (mode === 'db' && db) return db.collection(OC_PERM_COL).doc(OC_PERM_ID).set(dados);
+    ocPermDoc = dados;
+    try { localStorage.setItem('levissima-compras-permissoes-v1', JSON.stringify(dados)); } catch (e) {}
+    renderOcPermAdmin(); renderCompras(); renderTabComprasBadge();
+    return Promise.resolve();
+  }
+  document.getElementById('ocperm-admin').addEventListener('change', function(e) {
+    var c = e.target.closest('[data-ocp-f]');
+    if (!c) return;
+    if (!ocPermPodeMudar()) { c.checked = !c.checked; showToast('Só a senha mestre muda estas opções.'); return; }
+    var etapas = {};
+    OC_PERM_ETAPAS.forEach(function(x) { etapas[x.k] = ocPermLista(x.k).slice(); });
+    var l = etapas[c.dataset.ocpE], f = c.dataset.ocpF, i = l.indexOf(f);
+    if (c.checked && i < 0) l.push(f); else if (!c.checked && i >= 0) l.splice(i, 1);
+    var et = OC_PERM_ETAPAS.find(function(x) { return x.k === c.dataset.ocpE; }), fn = ocPermFuncoes().find(function(x) { return x[0] === f; });
+    ocPermGravar(etapas).then(function() { showToast(fn[1] + (c.checked ? ' pode: ' : ' não pode mais: ') + et.nome.charAt(0).toLowerCase() + et.nome.slice(1) + '.'); })
+      .catch(function(err) { console.error('compras-config', err); c.checked = !c.checked; showToast('Não foi possível salvar agora. Tente novamente.'); });
+  });
+  document.getElementById('ocperm-admin').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-ocp="padrao"]');
+    if (!b || !ocPermPodeMudar()) return;
+    if (b.dataset.ok !== '1') { b.dataset.ok = '1'; b.textContent = 'Tocar de novo para voltar tudo ao padrão'; return; }
+    ocPermGravar({}).then(function() { showToast('Voltou ao padrão.'); }).catch(function(err) { console.error('compras-config', err); showToast('Não foi possível salvar agora. Tente novamente.'); });
+  });
 
   // ---------- criar a própria senha de 4 números com foto do documento e do rosto (opção B, 16/10/2026) ----------
   // A pessoa informa nome, matrícula e CPF, tira foto do RG (ou CNH) e uma selfie, aceita o uso das fotos e cria a senha.
@@ -21617,13 +21952,13 @@
       try { motoristas.forEach(function(m) { var rf = resumoFretesMotorista(m); fa += rf.nApagar; fv += rf.apagar; fap += rf.nAprovar || 0; fc += rf.nConfirmar; }); } catch (e) {}
       tiles.push({ tab: 'fretes', t: 'Fretes', v: fap, u: fap === 1 ? 'aguardando a sua aprovação' : 'aguardando a sua aprovação', s: fa + (fa === 1 ? ' a pagar' : ' a pagar') + ' (' + fmtBRL(fv) + ')' + (fc ? ' · ' + fc + ' a confirmar' : ''), alerta: fap > 0 });
     }
-    var ocEsp = 0, ocAprov = 0, ocComprar = 0, ocReceber = 0, ocEntregar = 0;
+    var ocEsp = 0, ocAprov = 0, ocComprar = 0, ocReceber = 0, ocConferir = 0, ocEntregar = 0;
     try {
       ocEsp = ocEsperando().length;
-      ocVisiveis().forEach(function(o) { if (o.status === 'pedido' || o.status === 'aprovacao' || o.status === 'justificativa') ocAprov++; else if (o.status === 'compra') ocComprar++; else if (o.status === 'recebido') ocEntregar++; });
+      ocVisiveis().forEach(function(o) { if (o.status === 'pedido' || o.status === 'revisao' || o.status === 'aprovacao' || o.status === 'justificativa') ocAprov++; else if (o.status === 'compra') ocComprar++; else if (o.status === 'recebido') ocConferir++; else if (o.status === 'conferido') ocEntregar++; });
       ocReceber = ordensCompra.filter(function(o) { return o.status === 'comprado'; }).length;
     } catch (e) {}
-    tiles.push({ tab: 'compras', t: 'Compras', v: ocEsp, u: ocEsp === 1 ? 'ordem esperando assinatura' : 'ordens esperando assinatura', s: ocAprov + ' para aprovar · ' + ocComprar + ' para comprar · ' + ocReceber + ' para receber · ' + ocEntregar + ' para entregar', alerta: ocAprov > 0 });
+    tiles.push({ tab: 'compras', t: 'Compras', v: ocEsp, u: ocEsp === 1 ? 'ordem esperando assinatura' : 'ordens esperando assinatura', s: ocAprov + ' para aprovar · ' + ocComprar + ' para comprar · ' + ocReceber + ' para receber · ' + ocConferir + ' para conferir · ' + ocEntregar + ' para entregar', alerta: ocAprov > 0 });
     var ag = 0; try { ag = agEntradasDoDia(hoje).length; } catch (e) {}
     tiles.push({ tab: 'agenda', t: 'Agendamento retornáveis', v: ag, u: ag === 1 ? 'agendamento hoje' : 'agendamentos hoje', s: 'linha dos garrafões 10 L e 20 L' });
     if (comunicacaoLigada()) {
@@ -26141,9 +26476,9 @@
       ordensCompra.forEach(function(o) {
         if (!ocMinha(o) || !vistas[o.id] || vistas[o.id] === o.status) return;
         var st = OC_STATUS[o.status] || { txt: o.status };
-        l.push({ ico: '🛒', txt: 'Seu pedido de compra OC nº ' + o.numero + ' — ' + st.txt + (o.status === 'recebido' ? ' (confirme a entrega)' : ''), ir: 'compras', filtro: o.status === 'recebido' ? 'recebido' : 'abertas' });
+        l.push({ ico: '🛒', txt: 'Seu pedido de compra OC nº ' + o.numero + ' — ' + st.txt + (o.status === 'conferido' ? ' (confirme a entrega)' : o.status === 'revisao' ? ' (confira se está de acordo)' : ''), ir: 'compras', filtro: o.status === 'conferido' || o.status === 'revisao' ? o.status : 'abertas' });
       });
-      var esp = ocEsperando().filter(function(o) { return !(o.status === 'recebido' && ocMinha(o) && vistas[o.id] !== o.status); });
+      var esp = ocEsperando().filter(function(o) { return !((o.status === 'conferido' || o.status === 'revisao') && ocMinha(o) && vistas[o.id] !== o.status); });
       if (esp.length) l.push({ ico: '✍️', txt: esp.length + (esp.length === 1 ? ' pedido de compra espera a sua assinatura' : ' pedidos de compra esperam a sua assinatura') + ' (OC nº ' + esp.slice(0, 4).map(function(o) { return o.numero; }).join(', ') + (esp.length > 4 ? '…' : '') + ')', ir: 'compras', filtro: 'abertas' });
     }
     if (tem('brindes') && eu === 'mestre') {
