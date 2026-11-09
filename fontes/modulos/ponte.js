@@ -26,10 +26,18 @@
   var RAIZ = (script && script.getAttribute('data-raiz')) || '../';
   var NOME_MODULO = NOMES[MODULO] || 'Módulo';
 
+  // Dentro do app (pedido de 09/11/2026): o escritório abre o módulo como uma aba do LEVÍSSIMA (num quadro dentro do
+  // app). Aí o "‹ LEVÍSSIMA" e o "– Minimizar" só escondem o módulo (ele continua aberto por trás, com tudo como
+  // estava), o "✕ Fechar" encerra, e a senha e o tempo sem uso ficam por conta do app (o uso aqui conta como uso do app).
+  var APP = null;
+  try { if (window.parent && window.parent !== window && window.parent.LEV_EMBUTIR) APP = window.parent.LEV_EMBUTIR; } catch (e) { APP = null; }
+  // no app do celular, o quadro usa os recursos do app (salvar e compartilhar planilhas e PDFs)
+  if (APP && !window.Capacitor) { try { if (window.parent.Capacitor) window.Capacitor = window.parent.Capacitor; } catch (e) {} }
   // o endereço com # (ex.: o QR de uma máquina: #equip=<id>) volta depois da senha (pedido de 21/10/2026)
   var VOLTA_HASH = 'levissima-volta-' + MODULO;
   function irParaLogin() {
     try { if (location.hash && location.hash.length > 1) sessionStorage.setItem(VOLTA_HASH, location.hash); } catch (e) {}
+    if (APP) { try { APP.login(MODULO); return; } catch (e) {} }
     location.replace(RAIZ + 'index.html#ir=' + encodeURIComponent(MODULO));
   }
   (function voltarComHash() {
@@ -38,7 +46,7 @@
       try { history.replaceState(null, '', location.pathname + location.search + h); } catch (e) {}
     }
   })();
-  function voltarAoInicio() { location.href = RAIZ + 'index.html'; }
+  function voltarAoInicio() { if (APP) { try { APP.minimizar(MODULO); return; } catch (e) {} } location.href = RAIZ + 'index.html'; }
 
   // ---------- quem está logado (vem do token do login) ----------
   function lerToken(t) {
@@ -71,7 +79,7 @@
   var usoGravadoEm = 0, saindo = false, canalSessao = null;
   function ultimoUso() { try { return Number(localStorage.getItem(SESSAO_USO)) || 0; } catch (e) { return 0; } }
   // no app (Android/iOS) minimizar não pede a senha (23/10/2026): os 30 min sem uso valem só no navegador
-  function sessaoParada() { if (appNativo()) return false; var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
+  function sessaoParada() { if (appNativo() || APP) return false; var u = ultimoUso(); return !!u && Date.now() - u > SESSAO_LIMITE_MS; }
   function gravarUso(forcar) {
     var agora = Date.now();
     if (!forcar && agora - usoGravadoEm < 2000) return; // no máximo uma gravação a cada 2 s
@@ -97,6 +105,7 @@
     });
   }
   function conferirSessaoAoAbrir() {
+    if (APP) return Promise.resolve(''); // dentro do app: quem confere a sessão é o app
     var parada = sessaoParada();
     if (estavaAberto()) return Promise.resolve(parada ? 'tempo' : '');
     return outraAbaAberta().then(function (sim) { return !sim ? 'fechado' : parada ? 'tempo' : ''; });
@@ -111,7 +120,7 @@
   // O tempo vem do app principal (Cadastros › Segurança), guardado neste aparelho ao entrar.
   var travaAberta = false;
   function travaMin() { var n = 0; try { n = Number(localStorage.getItem('levissima-trava-min')) || 0; } catch (e) {} return n || 30; }
-  function travaParada() { if (!appNativo() || !ident || saindo || travaAberta) return false; var u = ultimoUso(); return !!u && Date.now() - u > travaMin() * 60000; }
+  function travaParada() { if (APP || !appNativo() || !ident || saindo || travaAberta) return false; var u = ultimoUso(); return !!u && Date.now() - u > travaMin() * 60000; }
   function travaAbrir() {
     if (travaAberta) return;
     travaAberta = true;
@@ -360,6 +369,9 @@
     '#lev-barra .lb-esp{flex:1}' +
     '#lev-barra .lb-quem{color:var(--lb-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:30vw}' +
     '#lev-barra .lb-sair{color:var(--lb-muted);font-weight:600}' +
+    '#lev-barra .lb-min,#lev-barra .lb-fechar{font-weight:700;border:1px solid var(--lb-line)}' +
+    '#lev-barra .lb-min{color:#702082}' +
+    '@media (max-width:560px){#lev-barra .lb-fechar span{display:none}#lev-barra .lb-min,#lev-barra .lb-fechar{padding:6px 10px}}' +
     '@media (max-width:560px){#lev-barra .lb-quem{display:none}#lev-barra .lb-logo{height:20px}}' +
     '@media (prefers-color-scheme:dark){#lev-barra{--lb-bg:#0f1720;--lb-ink:#e3ebf5;--lb-muted:#93a4b8;--lb-line:#23303d;--lb-hover:#1a2531}' +
     '#lev-barra .lb-logo-cla{display:none}#lev-barra .lb-logo-esc{display:block}}' +
@@ -392,6 +404,24 @@
       var esp = document.createElement('span'); esp.className = 'lb-esp';
       var quem = document.createElement('span'); quem.className = 'lb-quem';
       quem.textContent = ident && ident.nome ? ident.nome : '';
+      if (APP) {
+        // dentro do app: voltar e minimizar só escondem o módulo; fechar encerra; sair fica no app
+        a.title = 'Voltar ao LEVÍSSIMA (o módulo continua aberto)';
+        a.addEventListener('click', function (e) { e.preventDefault(); voltarAoInicio(); });
+        var min = document.createElement('button'); min.type = 'button'; min.className = 'lb-min';
+        min.title = 'Minimizar: vai para o resto do app e volta depois com tudo como estava';
+        min.innerHTML = '– <span>Minimizar</span>';
+        min.setAttribute('aria-label', 'Minimizar ' + NOME_MODULO);
+        min.addEventListener('click', function () { voltarAoInicio(); });
+        var fechar = document.createElement('button'); fechar.type = 'button'; fechar.className = 'lb-fechar';
+        fechar.title = 'Fechar o módulo';
+        fechar.innerHTML = '✕ <span>Fechar</span>';
+        fechar.setAttribute('aria-label', 'Fechar ' + NOME_MODULO);
+        fechar.addEventListener('click', function () { try { APP.fechar(MODULO); } catch (e) {} });
+        b.appendChild(a); b.appendChild(sep); b.appendChild(mod); b.appendChild(esp); b.appendChild(quem); b.appendChild(min); b.appendChild(fechar);
+        document.body.insertBefore(b, document.body.firstChild);
+        return;
+      }
       var sair = document.createElement('button'); sair.type = 'button'; sair.className = 'lb-sair'; sair.textContent = 'Sair';
       sair.addEventListener('click', function () {
         sair.disabled = true;
@@ -422,6 +452,7 @@
       av.innerHTML = '';
       var p = document.createElement('p'); p.style.margin = '0'; p.textContent = texto;
       var a = document.createElement('a'); a.href = RAIZ + 'index.html'; a.textContent = 'Voltar ao LEVÍSSIMA';
+      if (APP) a.addEventListener('click', function (e) { e.preventDefault(); try { APP.fechar(MODULO); } catch (x) {} });
       av.appendChild(p); av.appendChild(a);
       av.style.display = '';
     });

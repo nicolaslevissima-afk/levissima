@@ -257,6 +257,15 @@
   .pt-grp-i { font-size: 0.75rem; opacity: 0.85; }
   .pt-row .btn-text { color: inherit; text-decoration: underline; }
   #admin-tabs .mod-tab { text-decoration: none; color: inherit; }
+  /* módulo da fábrica aberto dentro do app (09/11/2026) */
+  #admin-tabs .mod-tab.mod-aberto .tab-ico { position: relative; }
+  #admin-tabs .mod-tab.mod-aberto .tab-ico::after { content: ""; position: absolute; top: -2px; right: -4px; width: 9px; height: 9px; border-radius: 50%; background: var(--verde); border: 2px solid var(--paper); }
+  .mod-painel { padding: 0 !important; margin: 0; }
+  .mod-painel #mod-frames { height: 100%; }
+  .mod-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; border-radius: 0; }
+  .mod-frame.hidden { display: none; }
+  body.com-modulo .fab, body.com-modulo #nivel-aviso { display: none !important; }
+  .telas-pausadas .tp-chip.tp-mod { border-left: 4px solid var(--verde); }
   #tab-producao.pr-leitura [data-mp="op-nova"], #tab-producao.pr-leitura [data-mp="op-editar"], #tab-producao.pr-leitura [data-mp="op-concluir"], #tab-producao.pr-leitura [data-mp="op-excluir"], #tab-producao.pr-leitura [data-mp="ir-materia"], #tab-producao.pr-leitura [data-mp="op-desfazer"] { display: none; }
   .pr-ltm select { display: block; width: 100%; min-width: 120px; margin: 2px 0 !important; }
   .aceite-chip { margin: 6px 0 2px; padding: 4px 9px; border-radius: 8px; font-size: 0.8125rem; font-weight: 600; border: 1px solid var(--line); border-left-width: 4px; }
@@ -2171,6 +2180,9 @@
   </div>
   <div class="tab-panel hidden" id="tab-vendas">
     <div id="vd-conteudo"></div>
+  </div>
+  <div class="tab-panel mod-painel hidden" id="tab-modulo" aria-label="Módulo da fábrica">
+    <div id="mod-frames"></div>
   </div>
   <div class="tab-panel hidden" id="tab-producaohora">
     <div id="ph-conteudo"></div>
@@ -5877,7 +5889,8 @@
     tabs.insertAdjacentHTML('beforeend', mods.map(function(m) {
       var selo = m.id === 'empilhadeiras' && oleoEmp && oleoEmp.length
         ? '<span class="tab-alerta" title="' + escapeHtml(oleoEmpTexto()) + '">' + oleoEmp.length + '</span>' : '';
-      return '<a class="seg-btn mod-tab" href="' + linkModulo(m.id) + '" data-mod="' + m.id + '"><span class="tab-ico" aria-hidden="true">' + iconeMod(m.id) + '</span><span class="tab-txt">' + escapeHtml(m.curto) + '</span>' + selo + '</a>';
+      var on = ui.modulo === m.id, aberto = !!modAbertos[m.id];
+      return '<a class="seg-btn mod-tab' + (on ? ' active' : '') + (aberto && !on ? ' mod-aberto' : '') + '" href="' + linkModulo(m.id) + '" data-mod="' + m.id + '"' + (on ? ' aria-current="page"' : '') + ' title="' + escapeHtml(m.nome + (aberto && !on ? ' (aberto: toque para voltar)' : '')) + '"><span class="tab-ico" aria-hidden="true">' + iconeMod(m.id) + '</span><span class="tab-txt">' + escapeHtml(m.curto) + '</span>' + selo + '</a>';
     }).join(''));
   }
   // Troca de óleo e filtro das empilhadeiras (mesma regra do módulo: 250 h nas a combustão, ou o intervalo da
@@ -5934,9 +5947,74 @@
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
     var ok = modulosDaSessao().some(function(m) { return m.id === pedido; });
     if (!ok) { if (session && session.role !== 'motorista') showToast('A sua senha não abre esse módulo.'); return false; }
+    if (modEmbutir()) { modAbrirDepois = pedido; return false; } // escritório: abre o módulo dentro do app
     location.replace(linkModulo(pedido));
     return true;
   }
+  // =====================================================================================================
+  // MÓDULOS DA FÁBRICA DENTRO DO APP (pedido de 09/11/2026)
+  // Para o escritório (senha mestre, diretoria e equipe), Manutenção, Empilhadeiras, Uniformes e EPI e Garrafões
+  // abrem dentro do app, como as abas: ir para qualquer outra aba (ou tocar em "– Minimizar" / "‹ LEVÍSSIMA" no alto
+  // do módulo) minimiza o módulo, que continua aberto por trás com tudo como estava (o que estava sendo digitado
+  // não se perde). A barra "Pausadas" e o menu (com um ponto) mostram os módulos minimizados; tocar volta. "✕ Fechar"
+  // encerra. A senha de setor e o QR das máquinas continuam abrindo o módulo na página dele.
+  var modAbertos = {}, modAbrirDepois = '';
+  ui.modulo = '';
+  function modEmbutir() { return mode === 'db' && !!session && (session.role === 'admin' || session.role === 'equipe'); }
+  function modNome(id) { var m = MODULOS_FABRICA.find(function(x) { return x.id === id; }); return m ? m.nome : id; }
+  window.LEV_EMBUTIR = {
+    minimizar: function(id) { modMinimizar(id, true); },
+    fechar: function(id) { modFechar(id); },
+    // o login do módulo acabou: volta à senha do app e, depois dela, ao módulo
+    login: function(id) { try { history.replaceState(null, '', location.pathname + location.search + '#ir=' + encodeURIComponent(id)); } catch (e) {} location.reload(); }
+  };
+  function modMostrar(id) {
+    if (!modEmbutir() || !modulosDaSessao().some(function(m) { return m.id === id; })) { location.href = linkModulo(id); return; }
+    if (!modAbertos[id]) {
+      var fr = document.createElement('iframe');
+      fr.className = 'mod-frame'; fr.title = modNome(id); fr.setAttribute('data-mod', id);
+      fr.setAttribute('allow', 'camera; microphone; geolocation; clipboard-write; fullscreen');
+      fr.src = linkModulo(id);
+      document.getElementById('mod-frames').appendChild(fr);
+      modAbertos[id] = { fr: fr, em: Date.now() };
+    }
+    if (ui.tab === 'pesquisas') bloquearPesquisas();
+    if (ui.tab === 'chat' || ui.tab === 'solicitacoes') guardarRascunho();
+    ui.modulo = id;
+    applyTab();
+    window.scrollTo(0, 0);
+    renderTelasPausadas();
+    setTimeout(function() { try { modAbertos[id].fr.contentWindow.focus(); } catch (e) {} }, 50);
+  }
+  function modMinimizar(id, aviso) {
+    if (ui.modulo !== id) return;
+    ui.modulo = '';
+    applyTab();
+    renderTelasPausadas();
+    if (aviso) showToast(modNome(id) + ' minimizado: continua aberto. Volte pela barra Pausadas ou pelo menu.');
+  }
+  function modFechar(id) {
+    var a = modAbertos[id];
+    if (a && a.fr.parentNode) a.fr.parentNode.removeChild(a.fr);
+    delete modAbertos[id];
+    if (ui.modulo === id) ui.modulo = '';
+    applyTab();
+    renderTelasPausadas();
+  }
+  function modFecharTodos() {
+    Object.keys(modAbertos).forEach(function(id) { var a = modAbertos[id]; if (a.fr.parentNode) a.fr.parentNode.removeChild(a.fr); });
+    modAbertos = {}; ui.modulo = '';
+  }
+  function modMinimizados() { return Object.keys(modAbertos).filter(function(id) { return id !== ui.modulo; }); }
+  // o quadro do módulo ocupa a tela abaixo do menu (e acima da barra Pausadas)
+  function modAjustarAltura() {
+    var box = document.getElementById('tab-modulo');
+    if (!box || !ui.modulo || box.classList.contains('hidden')) return;
+    var dock = document.getElementById('telas-pausadas'), baixo = dock && !dock.classList.contains('hidden') ? dock.offsetHeight : 0;
+    var topo = box.getBoundingClientRect().top + (window.scrollY || 0);
+    box.style.height = Math.max(380, window.innerHeight - topo - baixo) + 'px';
+  }
+  window.addEventListener('resize', modAjustarAltura);
   document.getElementById('btn-logout-setor').addEventListener('click', function() { logout(); });
 
   // ---------- produtos cadastrados (admin) ----------
@@ -7522,18 +7600,25 @@
   function applyTab() {
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = abaPadrao(permitidas);
+    if (ui.modulo && !modAbertos[ui.modulo]) ui.modulo = '';
+    if (modAbrirDepois && modEmbutir()) { var mp = modAbrirDepois; modAbrirDepois = ''; setTimeout(function() { modMostrar(mp); }, 0); }
     document.querySelectorAll('#admin-tabs .seg-btn[data-tab]').forEach(function(b) { b.classList.toggle('hidden', permitidas.indexOf(b.dataset.tab) < 0); });
     document.getElementById('admin-tabs').classList.toggle('tabs-3', permitidas.length === 3);
     document.getElementById('admin-tabs').classList.toggle('tabs-grade', permitidas.length > 6);
-    TABS.forEach(function(t) { document.getElementById('tab-' + t).classList.toggle('hidden', ui.tab !== t); });
+    TABS.forEach(function(t) { document.getElementById('tab-' + t).classList.toggle('hidden', ui.tab !== t || !!ui.modulo); });
+    document.getElementById('tab-modulo').classList.toggle('hidden', !ui.modulo);
+    Object.keys(modAbertos).forEach(function(id) { modAbertos[id].fr.classList.toggle('hidden', id !== ui.modulo); });
     document.querySelectorAll('#admin-tabs .seg-btn').forEach(function(b) {
-      var on = b.dataset.tab === ui.tab;
+      var on = b.dataset.mod ? b.dataset.mod === ui.modulo : !ui.modulo && b.dataset.tab === ui.tab;
       b.classList.toggle('active', on);
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (b.dataset.mod) { b.classList.toggle('mod-aberto', !!modAbertos[b.dataset.mod] && !on); if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }
+      else b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
-    document.getElementById('btn-new').classList.toggle('hidden', ui.tab !== 'paletes');
-    document.getElementById('btn-new-carga').classList.toggle('hidden', ui.tab !== 'cargas');
-    document.getElementById('btn-new-entrada').classList.toggle('hidden', ui.tab !== 'estoque');
+    document.body.classList.toggle('com-modulo', !!ui.modulo);
+    document.getElementById('btn-new').classList.toggle('hidden', ui.tab !== 'paletes' || !!ui.modulo);
+    document.getElementById('btn-new-carga').classList.toggle('hidden', ui.tab !== 'cargas' || !!ui.modulo);
+    document.getElementById('btn-new-entrada').classList.toggle('hidden', ui.tab !== 'estoque' || !!ui.modulo);
+    if (ui.modulo) setTimeout(modAjustarAltura, 0);
     if (ui.tab === 'pesquisas') renderPesquisasTab();
     if (ui.tab === 'rh' && !rhDados.carregado && !rhDados.carregando) rhCarregar();
     if (ui.tab === 'salas') { salasUi.rolou = null; renderSalas(); }
@@ -7566,6 +7651,7 @@
     }, 0);
   }
   function setTab(t) {
+    ui.modulo = ''; // módulo aberto fica minimizado (continua aberto por trás)
     if (ui.tab === 'pesquisas' && t !== 'pesquisas') bloquearPesquisas(); // saiu da aba: fecha as respostas
     if ((ui.tab === 'chat' || ui.tab === 'solicitacoes') && t !== ui.tab) guardarRascunho();
     ui.tab = abasPermitidas().indexOf(t) >= 0 ? t : abaPadrao(abasPermitidas());
@@ -7576,8 +7662,10 @@
   }
   ui.tab = 'inicio'; // toda vez que o app abre, começa no Início (pedido de 21/10/2026)
   document.getElementById('admin-tabs').addEventListener('click', function(e) {
+    var md = e.target.closest('a.mod-tab');
+    if (md && modEmbutir() && !e.ctrlKey && !e.metaKey && !e.shiftKey) { e.preventDefault(); modMostrar(md.dataset.mod); renderTelasPausadas(); return; }
     var b = e.target.closest('[data-tab]');
-    if (b) setTab(b.dataset.tab);
+    if (b) { setTab(b.dataset.tab); renderTelasPausadas(); }
   });
 
   document.getElementById('produtos-list').addEventListener('click', function(e) {
@@ -27597,6 +27685,13 @@
     if (!quieto) showToast('Tela pausada: ' + item.titulo + '. Para voltar, toque nela na barra de baixo.');
     return true;
   }
+  // pausa a tela (folha) que estiver aberta; false se ela está salvando e não pode sair agora
+  function telaPausarAberta() {
+    return !Object.keys(TELA_PAUSA).some(function(k) {
+      var o2 = document.getElementById(k);
+      return o2 && !o2.classList.contains('hidden') && !o2.classList.contains('tela-min') && !telaPausar(k, true);
+    });
+  }
   function telaVoltar(id) {
     var item = telasPausadas.find(function(t) { return t.id === id; });
     if (!item) return;
@@ -27633,6 +27728,7 @@
     return true;
   }
   function telasPausadasLimpar() {
+    if (typeof modFecharTodos === 'function') modFecharTodos();
     telasPausadas.forEach(function(t) { if (!t.guardado) { var ov = document.getElementById(t.ov); if (ov) ov.classList.remove('tela-min'); } });
     telasPausadas = [];
     renderTelasPausadas();
@@ -27640,12 +27736,16 @@
   function renderTelasPausadas() {
     var el = document.getElementById('telas-pausadas');
     if (!el) return;
-    var n = telasPausadas.length;
+    var mods = typeof modMinimizados === 'function' && session ? modMinimizados() : [];
+    var n = telasPausadas.length + mods.length;
     el.classList.toggle('hidden', !n);
     document.body.classList.toggle('com-pausadas', n > 0);
-    el.innerHTML = n ? '<span class="tp-t">⏸ ' + (n === 1 ? 'Pausada' : n + ' pausadas') + '</span>' + telasPausadas.map(function(t) {
+    el.innerHTML = n ? '<span class="tp-t">⏸ ' + (n === 1 ? 'Pausada' : n + ' pausadas') + '</span>' + mods.map(function(id) {
+      return '<button type="button" class="tp-chip tp-mod" data-mod-voltar="' + escapeHtml(id) + '" aria-label="Voltar para ' + escapeHtml(modNome(id)) + '"><span>' + escapeHtml(modNome(id)) + '</span><small>módulo aberto</small></button>';
+    }).join('') + telasPausadas.map(function(t) {
       return '<button type="button" class="tp-chip" data-tela-voltar="' + escapeHtml(t.id) + '" aria-label="Voltar para ' + escapeHtml(t.titulo) + '"><span>' + escapeHtml(t.titulo) + '</span><small>pausada às ' + escapeHtml(horaDe(new Date(t.em).toISOString())) + '</small></button>';
     }).join('') : '';
+    if (typeof modAjustarAltura === 'function') setTimeout(modAjustarAltura, 0);
   }
   Object.keys(TELA_PAUSA).forEach(function(id) {
     var ov = document.getElementById(id), h = ov && ov.querySelector('.sheet-header');
@@ -27667,7 +27767,9 @@
     var p = e.target.closest('[data-tela-pausar]');
     if (p) { telaPausar(p.getAttribute('data-tela-pausar')); return; }
     var v = e.target.closest('[data-tela-voltar]');
-    if (v) telaVoltar(v.getAttribute('data-tela-voltar'));
+    if (v) { telaVoltar(v.getAttribute('data-tela-voltar')); return; }
+    var mv = e.target.closest('[data-mod-voltar]');
+    if (mv) { if (!telaPausarAberta()) { showToast('Espere terminar de salvar a tela aberta.'); return; } modMostrar(mv.getAttribute('data-mod-voltar')); }
   });
 
   // ---------- voltar na mesma tela (pedido de 23/10/2026) ----------
