@@ -1689,6 +1689,34 @@
   .mod-card b { font-size: 1.0625rem; }
   .mod-card span { color: var(--muted); font-size: 0.8125rem; }
   .mod-card .mod-nivel-tag { align-self: flex-start; margin-top: 4px; font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--teal); }
+  /* chamados para a TI e a manutenção predial (09/11/2026) */
+  .sol-chip.and { background: rgba(var(--teal-rgb), 0.14); color: var(--teal); }
+  .ch-topo { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 4px 0 14px; }
+  .ch-sub { margin-top: 6px; }
+  .ch-card.ch-aberto, .ch-card.ch-aguardando { border-left-color: var(--laranja); }
+  .ch-card.ch-atendimento { border-left-color: var(--teal); }
+  .ch-card.ch-cancelado { border-left-color: var(--line); opacity: 0.75; }
+  .ch-card.ch-p-urgente.ch-aberto, .ch-card.ch-p-urgente.ch-atendimento, .ch-card.ch-p-urgente.ch-aguardando { border-left-color: var(--danger); }
+  .ch-prior { display: inline-block; font-size: 0.6875rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .ch-prior-urgente { background: rgba(var(--danger-rgb), 0.14); color: var(--danger); }
+  .ch-prior-alta { background: rgba(255, 106, 19, 0.16); color: var(--laranja-texto); }
+  .ch-prior-baixa { background: rgba(var(--wood-rgb), 0.1); color: var(--muted); }
+  .ch-desc { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 0.875rem; }
+  .ch-hist summary { cursor: pointer; color: var(--teal); font-weight: 600; font-size: 0.8125rem; }
+  .ch-hist ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; font-size: 0.8125rem; overflow-wrap: anywhere; }
+  .ch-prior-esc { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+  @media (min-width: 620px) { .ch-prior-esc { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .ch-prior-op { position: relative; display: block; margin: 0; }
+  .ch-prior-op input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .ch-prior-op span { display: flex; flex-direction: column; gap: 2px; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); cursor: pointer; }
+  .ch-prior-op small { color: var(--muted); font-size: 0.75rem; font-weight: 400; }
+  .ch-prior-op input:checked + span { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); background: rgba(var(--teal-rgb), 0.06); }
+  .ch-prior-op input:focus-visible + span { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .ch-setor-bts { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 10px 0 16px; }
+  .ch-setor-bt { text-align: left; font: inherit; cursor: pointer; }
+  .ch-setor-bt.on { border-color: var(--teal); box-shadow: inset 0 0 0 1px var(--teal); }
+  .ch-setor-bt .ch-setor-ico { font-size: 1.5rem; line-height: 1; color: inherit; }
+  .ch-setor-conteudo { margin-bottom: 28px; }
   .mod-niveis { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px 4px; margin: 0 0 14px; }
   .mod-niveis legend { font-weight: 600; font-size: 0.875rem; padding: 0 4px; }
   .mod-nivel { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--line); }
@@ -1888,6 +1916,8 @@
       <button type="button" class="seg-btn" data-tab="minhaagenda"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15" r="2"/></svg></span><span class="tab-txt">Minha agenda</span></button>
       <button type="button" class="seg-btn" data-tab="chat"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8M8 13h5"/></svg></span><span class="tab-txt">Chat</span></button>
       <button type="button" class="seg-btn" data-tab="solicitacoes"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0 0 12 3z"/></svg></span><span class="tab-txt">Solicitações</span></button>
+      <button type="button" class="seg-btn" data-tab="ti"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></span><span class="tab-txt">TI</span></button>
+      <button type="button" class="seg-btn" data-tab="predial"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.3 5.1l-5.6 5.6a1.6 1.6 0 0 0 2.2 2.2l5.6-5.6a4 4 0 0 0 5.1-5.3l-2.4 2.4-2.2-.4-.4-2.2z"/></svg></span><span class="tab-txt">Manutenção predial</span></button>
       <button type="button" class="seg-btn" data-tab="organograma"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/></svg></span><span class="tab-txt">Organograma</span></button>
       <button type="button" class="seg-btn" data-tab="cadastros"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></span><span class="tab-txt">Cadastros</span></button>
       <button type="button" class="seg-btn" data-tab="rh"><span class="tab-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .2 5.5 2.6 5.5 5.8"/></svg></span><span class="tab-txt">RH</span></button>
@@ -2181,6 +2211,12 @@
   <div class="tab-panel hidden" id="tab-vendas">
     <div id="vd-conteudo"></div>
   </div>
+  <div class="tab-panel hidden" id="tab-ti">
+    <div id="ch-conteudo-ti"></div>
+  </div>
+  <div class="tab-panel hidden" id="tab-predial">
+    <div id="ch-conteudo-predial"></div>
+  </div>
   <div class="tab-panel mod-painel hidden" id="tab-modulo" aria-label="Módulo da fábrica">
     <div id="mod-frames"></div>
   </div>
@@ -2359,6 +2395,7 @@
     <h2 class="section-title" id="setor-titulo" style="font-size:1.25rem;margin-top:18px">Olá</h2>
     <p class="tagline" style="margin-top:4px">Escolha o que você vai usar agora.</p>
     <div class="mod-cards" id="setor-modulos"></div>
+    <div id="setor-chamados"></div>
     <button type="button" class="btn btn-secondary cp-setor-btn" id="btn-cp-setor">Criar a minha senha de 4 números</button>
     <div id="setor-metas" class="hidden"></div>
   </div>
@@ -2378,6 +2415,7 @@
     <div id="driver-pending-list"></div>
     <div class="section-head"><h2 class="section-title">Concluídas</h2></div>
     <div id="driver-done-list"></div>
+    <div id="driver-chamados"></div>
   </div>
 </div>
 
@@ -3181,6 +3219,8 @@
       <label class="check"><input type="checkbox" id="f-equipe-brindes" /> Vê a aba <b>Brindes e presentes</b> <span class="opt">(ideias e aprovação de brindes)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-mkt" /> Vê a aba <b>Material de marketing</b> <span class="opt">(para quem tem o acesso com abas escolhidas; a senha da equipe já vê)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-vendas" /> Vê o painel de <b>Vendas</b> <span class="opt">(vendas por cliente e produto, comparativos e preços de referência)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-atende-ti" /> <b>Atende os chamados de TI</b> <span class="opt">(vê a fila da aba TI, assume e resolve)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-atende-predial" /> <b>Atende a manutenção predial</b> <span class="opt">(vê a fila da aba Manutenção predial; quem gerencia o módulo Manutenção também atende)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-alerta-est" /> Recebe o <b>alerta de falta de estoque</b> no Início <span class="opt">(cargas dos próximos 2 dias que o estoque não cobre)</span></label>
       <div class="homen-set" role="group" aria-label="Homenagens">
         <span class="field-hint">Recebe as mensagens de:</span>
@@ -3780,7 +3820,7 @@
     loadLocalQualidade();
     loadLocalSup();
     loadLocalCompras(); loadLocalBrindes();
-    loadLocalTrocas(); loadLocalMkt(); loadLocalVendas();
+    loadLocalTrocas(); loadLocalMkt(); loadLocalVendas(); loadLocalChamados();
     loadLocalDatas();
     loadLocalTransportadoras();
     loadLocalAgOnline();
@@ -4896,6 +4936,7 @@
     renderStorageNote();
     renderCargasSection();
     if (ui.tab === 'vendas' && session) renderVendas();
+    if (session && session.role !== 'motorista' && session.role !== 'setor') renderTabChamadosBadge();
     renderProdutosAdmin();
     renderMarcasAdmin();
     renderEquipeAdmin();
@@ -5935,6 +5976,7 @@
         (m.nivel === 'gerir' ? '<span class="mod-nivel-tag">Você gerencia</span>' : '') + '</a>';
     }).join('') : '<p class="empty-state">A sua senha ainda não abre nenhum módulo. Peça à diretoria.</p>';
     setTimeout(mtLigarSetor, 0); // metas do mês e apontamento de turno (liberado para os setores em 17/10/2026)
+    setTimeout(chLigarPedir, 0); // chamados para a TI e a manutenção predial (09/11/2026)
   }
   // depois do login: se a pessoa veio de um módulo (ou do QR de uma máquina), volta para lá
   function moduloPedido() {
@@ -7550,8 +7592,9 @@
   }, 60000);
 
   // ---------- abas do escritório ----------
-  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'pcp', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'vendas', 'compras', 'trocas', 'marketing', 'producaohora', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
+  var TABS = ['inicio', 'cargas', 'paletes', 'estoque', 'pcp', 'producao', 'materia', 'agenda', 'salas', 'qualidade', 'metas', 'vendas', 'compras', 'trocas', 'marketing', 'producaohora', 'brindes', 'canhotos', 'minhaagenda', 'chat', 'solicitacoes', 'ti', 'predial', 'organograma', 'cadastros', 'rh', 'fretes', 'pesquisas'];
   var ABAS_COMUNICACAO = ['minhaagenda', 'chat', 'solicitacoes']; // todo mundo do escritório tem (19 e 20/10/2026)
+  var ABAS_CHAMADOS = ['ti', 'predial']; // chamados para a TI e a manutenção predial: todo mundo abre (09/11/2026)
   // Organograma (20/10/2026): escondido de todos; a senha mestre marca em Cadastros › Equipe com senha quem vê a aba
   function podeVerOrganograma() { if (!session) return false; if (session.ref === 'mestre' || (session.role === 'admin' && !session.soInclui && !session.ref)) return true; var m = meuMembro(); return !!(m && m.veOrganograma); }
   function ehEscritorio() { return !!session && (session.role === 'admin' || session.role === 'equipe'); }
@@ -7584,12 +7627,12 @@
     return session.soInclui ? 'inclui' : 'edita';
   }
   function abasPermitidas() {
-    if (ehLiderProducao()) return ['inicio', 'producao']; // liderança: só o Início e a Produção (lançar, ordens, indicadores e metas)
+    if (ehLiderProducao()) return ['inicio', 'producao'].concat(ABAS_CHAMADOS); // liderança: o Início, a Produção (lançar, ordens, indicadores e metas) e os chamados
     if (session && session.role === 'equipe') {
       var escolhidas = (session.modulos || []).indexOf('abas') >= 0;
       // PCP (03/11/2026): quem tem a aba Produção (as ordens) vê também o PCP, logo antes dela
       return pcpComAba(['inicio'].concat(ABAS_EQUIPE.filter(function(a) { return !escolhidas || temPermissao('aba:' + a[0]); }).map(function(a) { return a[0]; }))
-        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : []).concat(podeVerMarketing() ? ['marketing'] : []).concat(podeVerVendas() ? ['vendas'] : [])
+        .concat(podeVerCanhotos() ? ['canhotos'] : []).concat(mode === 'db' ? ABAS_COMUNICACAO : []).concat(ABAS_CHAMADOS).concat(podeVerOrganograma() ? ['organograma'] : []).concat(podeVerBrindes() ? ['brindes'] : []).concat(podeVerMarketing() ? ['marketing'] : []).concat(podeVerVendas() ? ['vendas'] : [])
         .concat(escolhidas && !temPermissao('aba:producao') && podeVerLancProducao() ? ['producao'] : [])
         .concat(ABAS_OPCIONAIS.filter(function(a) { return veAbaOpcional(a[0]); }).map(function(a) { return a[0]; })));
     }
@@ -7630,6 +7673,8 @@
     if (ui.tab === 'trocas') renderTrocas();
     if (ui.tab === 'marketing') renderMkt();
     if (ui.tab === 'vendas') renderVendas();
+    if (ui.tab === 'ti') renderChamados('ti', 'ch-conteudo-ti');
+    if (ui.tab === 'predial') renderChamados('predial', 'ch-conteudo-predial');
     if (ui.tab === 'brindes') renderBrindes();
     if (ui.tab === 'producaohora') renderProducaoHora();
     if (ui.tab !== 'chat' && ui.tab !== 'solicitacoes') chat.montada = '';
@@ -11352,6 +11397,7 @@
     esconderRepView();
     document.getElementById('driver-view').classList.remove('hidden');
     render();
+    chLigarPedir(); // chamados para a TI e a manutenção predial (09/11/2026)
   }
   function logout() {
     hideToast();
@@ -21532,6 +21578,8 @@
     { tab: 'qualidade', txt: 'Inspeção de recebimento', fn: function() { abrirQRec(); } },
     { tab: 'salas', txt: 'Reservar sala', fn: function() { abrirSalaNova('ph8', null, todayIso()); } },
     { tab: 'compras', txt: 'Pedido de compra', fn: function() { abrirPedidoCompra(); } },
+    { tab: 'ti', txt: 'Chamado para a TI', fn: function() { chAbrirNovo('ti'); } },
+    { tab: 'predial', txt: 'Manutenção predial', fn: function() { chAbrirNovo('predial'); } },
     { tab: 'inicio', txt: 'Criar a minha senha', fn: function() { abrirCadastroSenha(); } }
   ];
   function renderInicio() {
@@ -21592,6 +21640,8 @@
       tiles.push({ tab: 'marketing', t: 'Material de marketing', v: mkC, u: mkC === 1 ? 'material para comprar' : 'materiais para comprar', s: mkC ? mktParaComprar().slice(0, 2).map(function(x) { return x.m.nome; }).join(', ') + (mkC > 2 ? '…' : '') : 'saldo em dia', alerta: mkC > 0 });
     }
     if (perm.indexOf('vendas') >= 0) tiles.push(vdTileInicio());
+    // chamados: quem atende (marcado na Equipe) vê sempre; os outros, quando têm chamado em andamento ou para confirmar
+    ABAS_CHAMADOS.forEach(function(k) { if (perm.indexOf(k) < 0) return; var tc = chTileInicio(k); if (tc.v || tc.alerta || (chAtende(k) && session.role !== 'admin')) tiles.push(tc); });
     if (comunicacaoLigada()) {
       var nCh = naoLidas('chat'), nSo = naoLidas('sol'), souM = minhaRef() === 'mestre';
       var espS = souM ? (function() { var ult = {}; chat.msgs.forEach(function(m) { if (m.tipo === 'sol') ult[m.conversa] = m; }); return Object.keys(ult).filter(function(k) { return ult[k].de !== 'mestre'; }).length; })() : 0;
@@ -21788,6 +21838,8 @@
       if (m.veBrindes) chips += '<span class="func-chip">vê Brindes</span>';
       if (m.veMarketing) chips += '<span class="func-chip">vê Marketing</span>';
       if (m.veVendas) chips += '<span class="func-chip">vê Vendas</span>';
+      if (m.atendeTi) chips += '<span class="func-chip">atende a TI</span>';
+      if (m.atendePredial) chips += '<span class="func-chip">atende a manutenção predial</span>';
       if (m.veLancProducao) chips += '<span class="func-chip">corrige lançamentos da produção</span>';
       if (m.confirmaProducao) chips += '<span class="func-chip">confirma a produção (PCP)</span>';
       if (m.editaOpConcluida) chips += '<span class="func-chip">edita OP concluída</span>';
@@ -21833,6 +21885,8 @@
     document.getElementById('f-equipe-brindes').checked = !!(m && m.veBrindes);
     document.getElementById('f-equipe-mkt').checked = !!(m && m.veMarketing);
     document.getElementById('f-equipe-vendas').checked = !!(m && m.veVendas);
+    document.getElementById('f-equipe-atende-ti').checked = !!(m && m.atendeTi);
+    document.getElementById('f-equipe-atende-predial').checked = !!(m && m.atendePredial);
     document.getElementById('f-equipe-lanc-prod').checked = !!(m && m.veLancProducao);
     document.getElementById('f-equipe-conf-prod').checked = !!(m && m.confirmaProducao);
     document.getElementById('f-equipe-op-concl').checked = !!(m && m.editaOpConcluida);
@@ -21953,7 +22007,7 @@
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
         superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
-        veBrindes: document.getElementById('f-equipe-brindes').checked, veMarketing: document.getElementById('f-equipe-mkt').checked, veVendas: document.getElementById('f-equipe-vendas').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked, confirmaProducao: document.getElementById('f-equipe-conf-prod').checked, editaOpConcluida: document.getElementById('f-equipe-op-concl').checked,
+        veBrindes: document.getElementById('f-equipe-brindes').checked, veMarketing: document.getElementById('f-equipe-mkt').checked, veVendas: document.getElementById('f-equipe-vendas').checked, atendeTi: document.getElementById('f-equipe-atende-ti').checked, atendePredial: document.getElementById('f-equipe-atende-predial').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked, confirmaProducao: document.getElementById('f-equipe-conf-prod').checked, editaOpConcluida: document.getElementById('f-equipe-op-concl').checked,
         aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, gestorDocumentos: document.getElementById('f-equipe-gestor-docs').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
@@ -25627,6 +25681,344 @@
     var n = document.getElementById('vd-busca'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) {} }
   });
   // =====================================================================================================
+  // CHAMADOS: TI E MANUTENÇÃO PREDIAL (pedido de 09/11/2026)
+  // Abas "TI" e "Manutenção predial": todos os usuários abrem chamado (escritório nas abas; senhas de setor da
+  // fábrica na tela delas) e acompanham os seus; quem atende vê a fila da área, assume, muda a situação, comenta e
+  // resolve; quem abriu confirma (ou reabre). Atende: senha mestre e diretoria; TI = "Atende chamados de TI" em
+  // Cadastros › Equipe; predial = "Atende a manutenção predial" ou quem gerencia o módulo Manutenção. Coleção
+  // "chamados" (migração 0045: o banco dá o número, grava quem abriu e só deixa quem abriu comentar, cancelar,
+  // confirmar ou reabrir); fotos no bucket "chamados".
+  var CH_COL = 'chamados', CH_BUCKET = 'chamados';
+  var chamados = [], chLigado = false;
+  var CH_AREAS = {
+    ti: { nome: 'TI', titulo: 'Chamados para a TI', icone: '💻', flag: 'atendeTi', equipe: 'equipe de TI',
+      texto: 'Peça ajuda à <b>equipe de TI</b>: computador, impressora, internet, acesso a sistemas, <b>infraestrutura nova</b> (ponto de rede, equipamento, instalação), <b>manutenção de servidor</b> e o que mais precisar.',
+      exemplo: 'Ex.: impressora do faturamento não imprime',
+      categorias: ['Computador ou notebook', 'Impressora', 'Internet, rede ou Wi-Fi', 'E-mail', 'Acesso, senha ou sistema', 'App LEVÍSSIMA', 'Telefone ou celular', 'Câmeras (CFTV)', 'Servidor (manutenção)', 'Infraestrutura nova', 'Outro'] },
+    predial: { nome: 'Manutenção predial', titulo: 'Manutenção predial', icone: '🔧', flag: 'atendePredial', equipe: 'manutenção predial',
+      texto: 'Peça conserto no prédio: <b>troca de lâmpada</b>, tomada e elétrica, vazamento, ar-condicionado, portas e fechaduras, pintura, telhado e calhas, móveis e <b>consertos em geral</b>.',
+      exemplo: 'Ex.: lâmpada queimada no corredor do escritório',
+      categorias: ['Lâmpada ou iluminação', 'Elétrica e tomadas', 'Hidráulica e vazamento', 'Ar-condicionado e ventilação', 'Portas, fechaduras e janelas', 'Pintura e paredes', 'Telhado, calhas e goteira', 'Banheiros e copa', 'Móveis', 'Limpeza e jardinagem', 'Outro'] }
+  };
+  var CH_PRIOR = [['baixa', 'Baixa', 'pode esperar'], ['normal', 'Normal', 'no dia a dia'], ['alta', 'Alta', 'atrapalha o trabalho'], ['urgente', 'Urgente', 'parou o trabalho ou há risco']];
+  var CH_STATUS = { aberto: 'Na fila', atendimento: 'Em atendimento', aguardando: 'Aguardando peça ou terceiro', resolvido: 'Resolvido: falta confirmar', fechado: 'Concluído', cancelado: 'Cancelado' };
+  var CH_STATUS_CLS = { aberto: 'esp', atendimento: 'and', aguardando: 'esp', resolvido: 'ok', fechado: 'ok', cancelado: '' };
+  var chUi = { ti: { filtro: 'fila', busca: '', todos: false }, predial: { filtro: 'fila', busca: '', todos: false }, setor: '' };
+  function chPriorNome(k) { var p = CH_PRIOR.find(function(x) { return x[0] === k; }); return p ? p[1] : 'Normal'; }
+  function chPriorPeso(k) { return { urgente: 0, alta: 1, normal: 2, baixa: 3 }[k] != null ? { urgente: 0, alta: 1, normal: 2, baixa: 3 }[k] : 2; }
+  function chMeuRef() { return session ? (session.ref || (session.role === 'admin' ? 'mestre' : '')) : ''; }
+  function chAtende(area) {
+    if (!session) return false;
+    if (session.role === 'admin') return true;
+    if (area === 'predial' && (session.modulos || []).indexOf('manutencao:gerir') >= 0) return true;
+    var m = session.role === 'equipe' ? meuMembro() : null;
+    return !!(m && CH_AREAS[area] && m[CH_AREAS[area].flag]);
+  }
+  function chMeu(c) { var r = chMeuRef(); return !!r && c.solicitante && c.solicitante.ref === r; }
+  function chDaArea(area) { return chamados.filter(function(c) { return c.area === area; }); }
+  function chAberto(c) { return c.status === 'aberto' || c.status === 'atendimento' || c.status === 'aguardando'; }
+  function loadLocalChamados() { try { chamados = JSON.parse(localStorage.getItem('levissima-chamados-v1') || '[]') || []; } catch (e) { chamados = []; } }
+  function subscribeChamados() {
+    if (chLigado || mode !== 'db' || !db || !session) return;
+    if (['admin', 'equipe', 'setor', 'motorista'].indexOf(session.role) < 0) return;
+    chLigado = true;
+    db.collection(CH_COL).onSnapshot(function(snap) {
+      chamados = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      chRenderTudo();
+    }, function(err) { console.error(CH_COL, err); });
+  }
+  function chRenderTudo() {
+    if (!session) return;
+    if (ui.tab === 'ti') renderChamados('ti', 'ch-conteudo-ti');
+    if (ui.tab === 'predial') renderChamados('predial', 'ch-conteudo-predial');
+    if (session.role === 'setor' || session.role === 'motorista') renderChamadosPedir();
+    renderTabChamadosBadge();
+    if (ui.tab === 'inicio' && session.role !== 'setor') renderInicio();
+  }
+  function chGravar(id, dados, novo) {
+    if (mode === 'db' && db) return novo ? db.collection(CH_COL).doc(id).set(dados) : db.collection(CH_COL).doc(id).update(dados);
+    var i = chamados.findIndex(function(c) { return c.id === id; });
+    if (novo) {
+      dados = Object.assign({}, dados, { numero: chamados.filter(function(c) { return c.area === dados.area; }).reduce(function(n, c) { return Math.max(n, Number(c.numero) || 0); }, 0) + 1, status: 'aberto' });
+      dados.solicitante = Object.assign({}, dados.solicitante, { ref: chMeuRef() });
+      chamados.push(Object.assign({ id: id }, dados));
+    } else if (i >= 0) chamados[i] = Object.assign({}, chamados[i], dados);
+    try { localStorage.setItem('levissima-chamados-v1', JSON.stringify(chamados)); } catch (e) {}
+    chRenderTudo();
+    return Promise.resolve();
+  }
+  function chErro(e) {
+    console.error('chamado', e);
+    var m = String((e && (e.message || e.codigo)) || '');
+    return e && e.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : /travado|permiss/.test(m) ? 'Este chamado não pode ser mudado assim (só quem atende muda a situação).' : 'Não foi possível salvar agora. Verifique a internet e tente de novo.';
+  }
+  function chEvento(c, tipo, texto, extra) {
+    return (c.eventos || []).concat([Object.assign({ em: new Date().toISOString(), por: quemSessao(), tipo: tipo, texto: texto || '' }, extra || {})]).slice(-80);
+  }
+  // ----- tela -----
+  function chCardHtml(c, atende) {
+    var A = CH_AREAS[c.area] || CH_AREAS.ti, id = escapeHtml(c.id), meu = chMeu(c), ev = c.eventos || [];
+    var prior = c.prioridade || 'normal';
+    var h = '<article class="troca-card ch-card ch-' + escapeHtml(c.status || 'aberto') + ' ch-p-' + escapeHtml(prior) + '"><div class="troca-cab"><b>Nº ' + escapeHtml(String(c.numero || '…')) + '</b>' +
+      '<span class="sol-chip ' + (CH_STATUS_CLS[c.status] || '') + '">' + escapeHtml(CH_STATUS[c.status] || 'Na fila') + '</span>' +
+      (prior !== 'normal' ? '<span class="ch-prior ch-prior-' + escapeHtml(prior) + '">' + escapeHtml(chPriorNome(prior)) + '</span>' : '') + '</div>' +
+      '<p class="troca-cli"><b>' + escapeHtml(c.titulo || '—') + '</b></p>' +
+      '<p class="driver-sub">' + escapeHtml([c.categoria, c.local].filter(Boolean).join(' · ')) + '</p>' +
+      (c.descricao ? '<p class="ch-desc">' + escapeHtml(c.descricao) + '</p>' : '') +
+      ((c.fotos || []).length ? '<span class="oc-fotos">' + c.fotos.map(function(f, k) { return '<img data-cn-foto="' + escapeHtml(f) + '" data-cn-bucket="' + CH_BUCKET + '" alt="Foto ' + (k + 1) + ' do chamado" />'; }).join('') + '</span>' : '') +
+      '<p class="driver-sub">Aberto por <b>' + escapeHtml((c.solicitante && c.solicitante.nome) || '—') + '</b>' + (c.solicitante && c.solicitante.contato ? ' (' + escapeHtml(c.solicitante.contato) + ')' : '') + ' · ' + escapeHtml(c.criadoEm ? formatDateTimeBR(c.criadoEm) + ' (' + haQuanto(c.criadoEm) + ')' : '') + '</p>' +
+      (c.responsavel && c.responsavel.nome ? '<p class="driver-sub">Responsável: <b>' + escapeHtml(c.responsavel.nome) + '</b>' + (c.previsao ? ' · previsão ' + escapeHtml(formatDateBR(c.previsao)) : '') + '</p>' : c.previsao ? '<p class="driver-sub">Previsão: ' + escapeHtml(formatDateBR(c.previsao)) + '</p>' : '') +
+      (c.solucao ? '<p class="troca-destino"><b>Solução:</b> ' + escapeHtml(c.solucao) + '</p>' : '') +
+      (c.cancelamento && c.status === 'cancelado' ? '<p class="troca-destino oc-cancelada">Cancelado' + (c.cancelamento.motivo ? ': ' + escapeHtml(c.cancelamento.motivo) : '') + '</p>' : '');
+    if (ev.length) h += '<details class="ch-hist"><summary>Andamento (' + ev.length + ')</summary><ul>' + ev.slice().reverse().map(function(e) {
+      return '<li><span class="driver-sub">' + escapeHtml(formatDateTimeBR(e.em) + ' · ' + (e.por || '')) + '</span> ' + escapeHtml(e.texto || '') + '</li>';
+    }).join('') + '</ul></details>';
+    var ac = '', st = c.status || 'aberto';
+    if (atende && chAberto(c)) {
+      if (!c.responsavel || !c.responsavel.nome) ac += '<button type="button" class="btn btn-primary btn-sm" data-ch="assumir" data-id="' + id + '">Assumir</button>';
+      ac += '<button type="button" class="btn btn-secondary btn-sm" data-ch="atualizar" data-id="' + id + '">Atualizar</button>';
+      ac += '<button type="button" class="btn btn-secondary btn-sm" data-ch="resolver" data-id="' + id + '">✓ Resolvido</button>';
+    }
+    if (meu && st === 'resolvido') ac += '<button type="button" class="btn btn-primary btn-sm" data-ch="confirmar" data-id="' + id + '">Confirmar que resolveu</button><button type="button" class="btn-text danger" data-ch="reabrir" data-id="' + id + '">Não resolveu</button>';
+    if ((meu || atende) && st !== 'fechado' && st !== 'cancelado') ac += '<button type="button" class="btn-text" data-ch="comentar" data-id="' + id + '">Comentar</button>';
+    if (meu && st === 'aberto') ac += '<button type="button" class="btn-text danger" data-ch="cancelar" data-id="' + id + '">Cancelar</button>';
+    if (atende && st === 'resolvido' && !meu) ac += '<span class="driver-sub">aguardando quem abriu confirmar</span>';
+    if (ac) h += '<div class="troca-acoes">' + ac + '</div>';
+    return h + '</article>';
+  }
+  var CH_FILTROS = [
+    { k: 'fila', nome: 'Na fila', f: function(c) { return c.status === 'aberto'; } },
+    { k: 'andamento', nome: 'Em atendimento', f: function(c) { return c.status === 'atendimento' || c.status === 'aguardando'; } },
+    { k: 'resolvidos', nome: 'Resolvidos', f: function(c) { return c.status === 'resolvido' || c.status === 'fechado'; } },
+    { k: 'meus', nome: 'Abertos por mim', f: function(c) { return chMeu(c); } },
+    { k: 'todos', nome: 'Todos', f: function() { return true; } }
+  ];
+  // em andamento (e o resolvido que espera a minha confirmação) primeiro, pela urgência e pela data; depois os fechados
+  function chOrdena(a, b) {
+    var aa = chAberto(a) || (a.status === 'resolvido' && chMeu(a)) ? 0 : 1, ba = chAberto(b) || (b.status === 'resolvido' && chMeu(b)) ? 0 : 1;
+    if (aa !== ba) return aa - ba;
+    if (aa === 0) return chPriorPeso(a.prioridade) - chPriorPeso(b.prioridade) || String(a.criadoEm || '').localeCompare(String(b.criadoEm || ''));
+    return String(b.atualizadoEm || b.criadoEm || '').localeCompare(String(a.atualizadoEm || a.criadoEm || ''));
+  }
+  function renderChamados(area, boxId) {
+    var box = document.getElementById(boxId);
+    if (!box || !session) return;
+    var A = CH_AREAS[area], u = chUi[area], atende = chAtende(area), todos = chDaArea(area), b = normNome(u.busca);
+    var h = '<p class="tagline">' + A.texto + '</p>' +
+      '<div class="ch-topo"><button type="button" class="btn btn-primary" data-ch="novo" data-area="' + area + '">+ Abrir chamado</button>' +
+      (atende ? '<span class="driver-sub">Você atende a ' + escapeHtml(A.equipe) + ': veja a fila e assuma os chamados.</span>' : '<span class="driver-sub">Acompanhe aqui os chamados que você abriu.</span>') + '</div>';
+    var lista;
+    if (atende) {
+      var f = CH_FILTROS.find(function(x) { return x.k === u.filtro; }) || CH_FILTROS[0];
+      var urg = todos.filter(function(c) { return chAberto(c) && c.prioridade === 'urgente'; }).length;
+      h += '<div class="est-cards">' +
+        supCard('c-futuro' + (todos.some(function(c) { return c.status === 'aberto'; }) ? ' alerta' : ''), 'Na fila', fmtInt(todos.filter(function(c) { return c.status === 'aberto'; }).length), urg ? urg + (urg === 1 ? ' urgente' : ' urgentes') : 'esperando alguém assumir', '') +
+        supCard('c-saldo', 'Em atendimento', fmtInt(todos.filter(function(c) { return c.status === 'atendimento' || c.status === 'aguardando'; }).length), todos.filter(function(c) { return c.status === 'aguardando'; }).length + ' aguardando peça ou terceiro', '') +
+        supCard('c-entrada', 'Resolvidos', fmtInt(todos.filter(function(c) { return (c.status === 'resolvido' || c.status === 'fechado') && String(c.resolvidoEm || '').slice(0, 7) === todayIso().slice(0, 7); }).length), 'neste mês', '') +
+      '</div>' +
+      '<div class="est-loc-chips" role="group" aria-label="Filtrar chamados">' + CH_FILTROS.map(function(x) {
+        var n = todos.filter(x.f).length;
+        return '<button type="button" class="est-loc' + (x.k === f.k ? ' on' : '') + '" data-ch="filtro" data-area="' + area + '" data-f="' + x.k + '">' + escapeHtml(x.nome) + (n && x.k !== 'todos' ? '<b>' + n + '</b>' : '') + '</button>';
+      }).join('') + '</div>' +
+      '<div class="ag-ferramentas"><input type="search" class="ch-busca" data-area="' + area + '" placeholder="Buscar nº, assunto, local ou quem abriu" value="' + escapeHtml(u.busca) + '" autocomplete="off" aria-label="Buscar chamado" />' +
+        (todos.length ? '<button type="button" class="btn-text" data-ch="csv" data-area="' + area + '">Baixar planilha</button>' : '') + '</div>';
+      lista = todos.filter(b ? function() { return true; } : f.f);
+    } else {
+      lista = todos.filter(chMeu);
+      if (lista.length) h += '<p class="section-title ch-sub">Meus chamados</p>';
+    }
+    if (b) lista = lista.filter(function(c) { return normNome(['n' + c.numero, c.numero, c.titulo, c.categoria, c.local, c.descricao, c.solicitante && c.solicitante.nome, c.responsavel && c.responsavel.nome, c.solucao].join(' ')).indexOf(b) >= 0; });
+    lista.sort(chOrdena);
+    var max = u.todos ? 300 : 40;
+    h += lista.length ? '<div class="troca-grade">' + lista.slice(0, max).map(function(c) { return chCardHtml(c, atende); }).join('') + '</div>' +
+      (lista.length > max ? '<button type="button" class="btn-text" data-ch="mais" data-area="' + area + '">Mostrar mais (' + (lista.length - max) + ')</button>' : '')
+      : '<p class="empty-state">' + (atende ? (todos.length ? 'Nenhum chamado aqui.' : 'Nenhum chamado ainda.') : 'Você ainda não abriu chamado. Toque em “+ Abrir chamado”.') + '</p>';
+    box.innerHTML = h;
+    if (box.querySelector('img[data-cn-foto]') && mode === 'db' && sbCliente) carregarFotosCanhoto(box);
+  }
+  // senhas de setor da fábrica e motoristas (sem abas): dois botões no fim da tela deles
+  function chBoxPedir() { return !session ? null : document.getElementById(session.role === 'setor' ? 'setor-chamados' : session.role === 'motorista' ? 'driver-chamados' : ''); }
+  function chLigarPedir() {
+    if (!session || (session.role !== 'setor' && session.role !== 'motorista')) return;
+    if (mode === 'db') subscribeChamados(); else loadLocalChamados();
+    renderChamadosPedir();
+  }
+  function renderChamadosPedir() {
+    var box = chBoxPedir();
+    if (!box) return;
+    var area = chUi.setor;
+    box.innerHTML = '<p class="section-title" style="margin-top:' + (session.role === 'setor' ? '0' : '22px') + '">Pedir ajuda</p>' +
+      '<div class="ch-setor-bts">' + ['ti', 'predial'].map(function(k) {
+        var A = CH_AREAS[k], meus = chDaArea(k).filter(function(c) { return chMeu(c) && chAberto(c); }).length, fila = chAtende(k) ? chDaArea(k).filter(function(c) { return c.status === 'aberto'; }).length : 0;
+        return '<button type="button" class="mod-card ch-setor-bt' + (area === k ? ' on' : '') + '" data-ch-setor="' + k + '"><span class="ch-setor-ico" aria-hidden="true">' + A.icone + '</span><b>' + escapeHtml(k === 'ti' ? 'Chamado para a TI' : 'Manutenção predial') + '</b>' +
+          '<span>' + escapeHtml(chAtende(k) ? fila + ' na fila para atender' : meus ? meus + (meus === 1 ? ' chamado seu em andamento' : ' chamados seus em andamento') : k === 'ti' ? 'computador, impressora, rede, sistemas' : 'lâmpada, elétrica, vazamento, consertos') + '</span></button>';
+      }).join('') + '</div>' + (area ? '<div id="ch-setor-conteudo" class="ch-setor-conteudo"></div>' : '');
+    if (area) renderChamados(area, 'ch-setor-conteudo');
+  }
+  function renderTabChamadosBadge() {
+    ['ti', 'predial'].forEach(function(k) {
+      var b = document.querySelector('#admin-tabs .seg-btn[data-tab="' + k + '"]');
+      if (!b) return;
+      var l = chDaArea(k), n = chAtende(k) ? l.filter(function(c) { return c.status === 'aberto'; }).length : l.filter(function(c) { return chMeu(c) && c.status === 'resolvido'; }).length;
+      seloAba(b, n, chAtende(k) ? n + (n === 1 ? ' chamado na fila' : ' chamados na fila') : n + ' para confirmar');
+    });
+  }
+  function chTileInicio(k) {
+    var l = chDaArea(k), A = CH_AREAS[k];
+    if (chAtende(k)) {
+      var fila = l.filter(function(c) { return c.status === 'aberto'; }), urg = fila.filter(function(c) { return c.prioridade === 'urgente'; }).length;
+      return { tab: k, t: A.nome, v: fila.length, u: fila.length === 1 ? 'chamado na fila' : 'chamados na fila', s: urg ? urg + (urg === 1 ? ' urgente' : ' urgentes') : l.filter(function(c) { return c.status === 'atendimento' || c.status === 'aguardando'; }).length + ' em atendimento', alerta: fila.length > 0 };
+    }
+    var meus = l.filter(function(c) { return chMeu(c) && chAberto(c); }).length, conf = l.filter(function(c) { return chMeu(c) && c.status === 'resolvido'; }).length;
+    return { tab: k, t: A.nome, v: meus, u: meus === 1 ? 'chamado seu em andamento' : 'chamados seus em andamento', s: conf ? conf + ' resolvido(s): confirme' : 'abrir chamado para a ' + A.equipe, alerta: conf > 0 };
+  }
+  // ----- formulários -----
+  function chAbrirNovo(area) {
+    var A = CH_AREAS[area], fotosCampo = null;
+    var locais = SETORES_SALA.concat(chamados.map(function(c) { return c.local; })).filter(function(n, i, l) { return n && l.indexOf(n) === i; });
+    gerAbrir({
+      titulo: A.icone + ' Abrir chamado · ' + A.nome, botao: 'Abrir chamado',
+      html: '<label>O que precisa? <span class="req">*</span><input type="text" id="ch-titulo" maxlength="100" autocomplete="off" placeholder="' + escapeHtml(A.exemplo) + '" /></label>' +
+        '<div class="row-2"><label>Tipo <span class="req">*</span><select id="ch-cat"><option value="">— escolha —</option>' + A.categorias.map(function(c) { return '<option>' + escapeHtml(c) + '</option>'; }).join('') + '</select></label>' +
+          '<label>Onde <span class="req">*</span><input type="text" id="ch-local" maxlength="80" list="ch-locais" autocomplete="off" placeholder="Setor, sala ou máquina" value="' + escapeHtml(session && session.role === 'setor' ? session.nome || '' : '') + '" /></label></div>' +
+        '<datalist id="ch-locais">' + locais.map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>' +
+        '<p class="field-label">Urgência</p><div class="ch-prior-esc" role="radiogroup" aria-label="Urgência">' + CH_PRIOR.map(function(p) {
+          return '<label class="ch-prior-op"><input type="radio" name="ch-prior" value="' + p[0] + '"' + (p[0] === 'normal' ? ' checked' : '') + ' /><span><b>' + escapeHtml(p[1]) + '</b><small>' + escapeHtml(p[2]) + '</small></span></label>';
+        }).join('') + '</div>' +
+        '<label>Detalhes <span class="opt">(o que acontece, desde quando, o que já tentou)</span><textarea id="ch-desc" rows="4" maxlength="1500"></textarea></label>' +
+        '<label>Contato <span class="opt">(ramal ou celular, opcional)</span><input type="text" id="ch-contato" maxlength="40" autocomplete="off" /></label>' +
+        '<p class="acesso-titulo">Fotos <span class="opt">(opcional, até 3)</span></p>' +
+        (mode === 'db' && sbCliente ? '<div class="foto-campo" id="ch-fotos"></div>' : '<p class="field-hint">As fotos precisam do banco on-line.</p>'),
+      depois: function() { var fc = document.getElementById('ch-fotos'); fotosCampo = fc ? campoFotos(fc, { max: 3, rotulo: 'Foto' }) : null; },
+      salvar: function() {
+        var titulo = gerVal('ch-titulo').replace(/\s+/g, ' '), cat = document.getElementById('ch-cat').value, local = gerVal('ch-local').replace(/\s+/g, ' ');
+        var pr = document.querySelector('#ger-form-body input[name="ch-prior"]:checked');
+        if (titulo.length < 4) return gerErro('Escreva o que precisa.');
+        if (!cat) return gerErro('Escolha o tipo do chamado.');
+        if (!local) return gerErro('Informe onde é (setor, sala ou máquina).');
+        var id = (mode === 'db' && db) ? db.collection(CH_COL).doc().id : 'local-' + uid(), agora = new Date().toISOString();
+        var arqs = fotosCampo ? fotosCampo.arquivos() : [];
+        var envio = arqs.reduce(function(p, a, i) {
+          return p.then(function(l) { return enviarFotoBucket(CH_BUCKET, area + '/' + id + '/' + (i + 1) + '-' + uid(), a.file).then(function(c) { return l.concat([c]); }); });
+        }, Promise.resolve([]));
+        return envio.then(function(fotos) {
+          var dados = { area: area, titulo: titulo, categoria: cat, local: local, prioridade: pr ? pr.value : 'normal', descricao: gerVal('ch-desc'), fotos: fotos,
+            solicitante: { nome: quemSessao(), contato: gerVal('ch-contato') }, status: 'aberto', criadoEm: agora, atualizadoEm: agora,
+            eventos: [{ em: agora, por: quemSessao(), tipo: 'aberto', texto: 'Chamado aberto' }] };
+          return chGravar(id, dados, true).then(function() {
+            showToast('Chamado aberto. A ' + A.equipe + ' já vê na fila.');
+            if (chAtende(area)) chUi[area].filtro = 'meus';
+          });
+        }).catch(function(e) {
+          gerErro(e && e.codigo === 'grande' ? 'Foto grande demais (máximo 8 MB).' : chErro(e));
+          return false;
+        });
+      }
+    });
+  }
+  function chAchar(id) { return chamados.find(function(c) { return c.id === id; }); }
+  function chAssumir(c) {
+    var agora = new Date().toISOString(), nome = quemSessao();
+    return chGravar(c.id, { status: 'atendimento', responsavel: { nome: nome, ref: chMeuRef(), em: agora }, atualizadoEm: agora, eventos: chEvento(c, 'status', nome + ' assumiu o chamado') }, false)
+      .then(function() { showToast('Chamado nº ' + c.numero + ' é seu.'); }).catch(function(e) { showToast(chErro(e)); });
+  }
+  function chAbrirAtualizar(c, resolver) {
+    gerAbrir({
+      titulo: (resolver ? '✓ Resolver' : 'Atualizar') + ' chamado nº ' + (c.numero || ''), botao: resolver ? 'Marcar como resolvido' : 'Salvar',
+      html: '<p class="hint"><b>' + escapeHtml(c.titulo || '') + '</b> · ' + escapeHtml([c.local, c.solicitante && c.solicitante.nome].filter(Boolean).join(' · ')) + '</p>' +
+        (resolver ? '<label>O que foi feito <span class="req">*</span><textarea id="cha-sol" rows="4" maxlength="800" placeholder="Ex.: trocada a lâmpada por LED 18 W">' + escapeHtml(c.solucao || '') + '</textarea></label>' +
+            '<p class="field-hint">Quem abriu recebe para confirmar que resolveu (ou reabrir).</p>'
+          : '<div class="row-2"><label>Situação<select id="cha-st">' + ['aberto', 'atendimento', 'aguardando'].map(function(k) { return '<option value="' + k + '"' + (c.status === k ? ' selected' : '') + '>' + escapeHtml(CH_STATUS[k]) + '</option>'; }).join('') + '</select></label>' +
+            '<label>Previsão <span class="opt">(opcional)</span><input type="date" id="cha-prev" value="' + escapeHtml(c.previsao || '') + '" /></label></div>' +
+            '<div class="row-2"><label>Responsável<input type="text" id="cha-resp" maxlength="60" value="' + escapeHtml(c.responsavel && c.responsavel.nome || quemSessao()) + '" /></label>' +
+            '<label>Urgência<select id="cha-prior">' + CH_PRIOR.map(function(p) { return '<option value="' + p[0] + '"' + ((c.prioridade || 'normal') === p[0] ? ' selected' : '') + '>' + escapeHtml(p[1]) + '</option>'; }).join('') + '</select></label></div>' +
+            '<label>Recado para quem abriu <span class="opt">(opcional)</span><textarea id="cha-txt" rows="3" maxlength="600" placeholder="Ex.: a peça chega quinta-feira"></textarea></label>'),
+      salvar: function() {
+        var agora = new Date().toISOString(), d;
+        if (resolver) {
+          var sol = gerVal('cha-sol');
+          if (sol.length < 3) return gerErro('Escreva o que foi feito.');
+          d = { status: 'resolvido', solucao: sol, resolvidoEm: agora, atualizadoEm: agora, eventos: chEvento(c, 'status', 'Resolvido: ' + sol) };
+          if (!c.responsavel || !c.responsavel.nome) d.responsavel = { nome: quemSessao(), ref: chMeuRef(), em: agora };
+        } else {
+          var st = document.getElementById('cha-st').value, prev = gerVal('cha-prev'), resp = gerVal('cha-resp'), pr = document.getElementById('cha-prior').value, txt = gerVal('cha-txt'), mud = [];
+          if (st !== c.status) mud.push(CH_STATUS[st]);
+          if (prev !== (c.previsao || '')) mud.push(prev ? 'previsão ' + formatDateBR(prev) : 'sem previsão');
+          if (resp && resp !== (c.responsavel && c.responsavel.nome || '')) mud.push('responsável ' + resp);
+          if (pr !== (c.prioridade || 'normal')) mud.push('urgência ' + chPriorNome(pr));
+          if (!mud.length && !txt) return gerErro('Nada mudou.');
+          d = { status: st, previsao: prev, prioridade: pr, atualizadoEm: agora, eventos: chEvento(c, txt ? 'comentario' : 'status', [mud.join(', '), txt].filter(Boolean).join(' — ')) };
+          if (resp) d.responsavel = { nome: resp, ref: c.responsavel && c.responsavel.nome === resp ? c.responsavel.ref || '' : resp === quemSessao() ? chMeuRef() : '', em: agora };
+        }
+        return chGravar(c.id, d, false).then(function() { showToast(resolver ? 'Chamado nº ' + c.numero + ' resolvido.' : 'Chamado atualizado.'); }).catch(function(e) { gerErro(chErro(e)); return false; });
+      }
+    });
+  }
+  function chAbrirTexto(c, tipo) {
+    var cfg = {
+      comentar: { t: 'Comentar · nº ', b: 'Enviar', r: 'Comentário', ok: 'Comentário enviado.' },
+      cancelar: { t: 'Cancelar chamado nº ', b: 'Cancelar o chamado', r: 'Motivo', ok: 'Chamado cancelado.' },
+      reabrir: { t: 'Não resolveu · nº ', b: 'Reabrir', r: 'O que ainda falta', ok: 'Chamado reaberto: volta para a fila.' }
+    }[tipo];
+    gerAbrir({
+      titulo: cfg.t + (c.numero || ''), botao: cfg.b,
+      html: '<p class="hint"><b>' + escapeHtml(c.titulo || '') + '</b></p><label>' + cfg.r + ' <span class="req">*</span><textarea id="chx-txt" rows="3" maxlength="600"></textarea></label>',
+      salvar: function() {
+        var txt = gerVal('chx-txt'), agora = new Date().toISOString(), d;
+        if (txt.length < 2) return gerErro('Escreva o ' + cfg.r.toLowerCase() + '.');
+        if (tipo === 'comentar') d = { atualizadoEm: agora, eventos: chEvento(c, 'comentario', txt) };
+        else if (tipo === 'cancelar') d = { status: 'cancelado', atualizadoEm: agora, cancelamento: { em: agora, motivo: txt, por: quemSessao() }, eventos: chEvento(c, 'status', 'Cancelado: ' + txt) };
+        else d = { status: 'aberto', atualizadoEm: agora, reabertura: { em: agora, motivo: txt, por: quemSessao() }, eventos: chEvento(c, 'status', 'Reaberto (não resolveu): ' + txt) };
+        return chGravar(c.id, d, false).then(function() { showToast(cfg.ok); }).catch(function(e) { gerErro(chErro(e)); return false; });
+      }
+    });
+  }
+  function chConfirmar(c) {
+    var agora = new Date().toISOString();
+    chGravar(c.id, { status: 'fechado', atualizadoEm: agora, confirmacao: { em: agora, por: quemSessao() }, eventos: chEvento(c, 'status', 'Confirmado por quem abriu: resolvido') }, false)
+      .then(function() { showToast('Obrigado! Chamado nº ' + c.numero + ' concluído.'); }).catch(function(e) { showToast(chErro(e)); });
+  }
+  function chExportar(area) {
+    var esc = function(v) { var x = String(v == null ? '' : v); return /[;"\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+    var l = [['Nº', 'Aberto em', 'Assunto', 'Tipo', 'Onde', 'Urgência', 'Situação', 'Aberto por', 'Contato', 'Responsável', 'Previsão', 'Solução', 'Resolvido em', 'Confirmado em', 'Detalhes'].join(';')];
+    chDaArea(area).slice().sort(function(a, b) { return (Number(a.numero) || 0) - (Number(b.numero) || 0); }).forEach(function(c) {
+      l.push([c.numero || '', c.criadoEm ? formatDateTimeBR(c.criadoEm) : '', c.titulo, c.categoria, c.local, chPriorNome(c.prioridade), CH_STATUS[c.status] || '', c.solicitante && c.solicitante.nome, c.solicitante && c.solicitante.contato,
+        c.responsavel && c.responsavel.nome, c.previsao ? formatDateBR(c.previsao) : '', c.solucao, c.resolvidoEm ? formatDateTimeBR(c.resolvidoEm) : '', c.confirmacao ? formatDateTimeBR(c.confirmacao.em) : '', c.descricao].map(esc).join(';'));
+    });
+    triggerDownload(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-chamados-' + area + '-' + todayIso() + '.csv');
+  }
+  // ----- eventos (nas abas e na tela das senhas de setor) -----
+  function chClique(e) {
+    var s = e.target.closest('[data-ch-setor]');
+    if (s) { chUi.setor = chUi.setor === s.dataset.chSetor ? '' : s.dataset.chSetor; renderChamadosPedir(); return; }
+    var b = e.target.closest('[data-ch]');
+    if (!b) return;
+    var a = b.dataset.ch, c = b.dataset.id ? chAchar(b.dataset.id) : null, area = b.dataset.area;
+    if (a === 'novo') chAbrirNovo(area);
+    else if (a === 'filtro') { chUi[area].filtro = b.dataset.f; chUi[area].todos = false; chRenderTudo(); }
+    else if (a === 'mais') { chUi[area].todos = true; chRenderTudo(); }
+    else if (a === 'csv') chExportar(area);
+    else if (!c) return;
+    else if (a === 'assumir') chAssumir(c);
+    else if (a === 'atualizar') chAbrirAtualizar(c, false);
+    else if (a === 'resolver') chAbrirAtualizar(c, true);
+    else if (a === 'confirmar') chConfirmar(c);
+    else if (a === 'comentar' || a === 'cancelar' || a === 'reabrir') chAbrirTexto(c, a);
+  }
+  function chBusca(e) {
+    var t = e.target;
+    if (!t.classList || !t.classList.contains('ch-busca')) return;
+    chUi[t.dataset.area].busca = t.value;
+    var pos = t.selectionStart, area = t.dataset.area;
+    chRenderTudo();
+    var n = document.querySelector('.ch-busca[data-area="' + area + '"]'); if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (x) {} }
+  }
+  ['tab-ti', 'tab-predial', 'setor-chamados', 'driver-chamados'].forEach(function(id) {
+    var el = document.getElementById(id);
+    el.addEventListener('click', chClique);
+    el.addEventListener('input', chBusca);
+  });
+  // =====================================================================================================
   // ORGANOGRAMA DE CADA UM (pedido de 19/10/2026): a pessoa vê a própria posição — quem está acima (até a diretoria)
   // e quem está abaixo, com nomes e funções. Vem de Cadastros › Equipe com senha: "Responde a" (quando marcado) ou,
   // sem isso, o cargo mais próximo acima na mesma área (sem ninguém acima na área, a diretoria).
@@ -27499,6 +27891,7 @@
     subscribeAgOnline();
     subscribeMetas();
     subscribeCanhotos();
+    subscribeChamados();
   }
   // ---------- sessão: pede a senha de novo depois de 30 min sem uso e sempre que o app é aberto de novo (pedido de 20/10/2026) ----------
   // Uso = tocar, digitar ou rolar a tela; o horário do último uso fica no aparelho (vale também nos módulos da fábrica,
