@@ -1208,6 +1208,65 @@
   .pxa-uso summary { cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: var(--teal); padding: 4px 0; }
   .pxa-ins { align-items: flex-end; flex-wrap: wrap; }
   .pxa-ins .check { flex: 0 0 auto; }
+  /* Qualidade › Laboratório (11/11/2026) */
+  .lab-topo-bts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .lab-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .lab-cards .est-card.qc-laranja { border-top-color: var(--laranja); }
+  .lab-cards .est-card.qc-azul { border-top-color: var(--azul); }
+  .lab-pend ul { list-style: none; padding: 0; }
+  .lab-pend li .btn-text { padding: 0; min-height: 0; text-align: left; font-weight: 700; }
+  .lab-confirmar { margin: 0 0 14px; font-size: 0.8125rem; color: var(--laranja-texto); }
+  .lab-confirmar .btn-text { padding: 0; min-height: 0; }
+  .lab-grupos { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 0 0 14px; }
+  .lab-plano-sec .driver-row { flex-wrap: wrap; row-gap: 4px; }
+  .lab-plano-sec .driver-row .driver-name { flex: 1 1 240px; min-width: 0; }
+  .lab-plano-sec .driver-row > .btn-text { margin-left: auto; }
+  .lab-cards .est-card-k { text-align: left; }
+  .lab-grupo { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-left: 4px solid var(--teal); border-radius: 10px; background: var(--card); cursor: pointer; min-height: 56px; }
+  .lab-grupo b { font-size: 0.875rem; }
+  .lab-grupo small { font-size: 0.75rem; color: var(--muted); }
+  .lab-grupo.on { box-shadow: inset 0 0 0 2px var(--teal); }
+  .lab-grupo.futuro { border-left-color: var(--line); opacity: 0.75; }
+  .lab-grupo:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .lab-item { align-items: flex-start; }
+  .lab-item.lab-s-nao { border-left: 4px solid var(--danger); }
+  .lab-nc { color: var(--danger) !important; font-weight: 600; }
+  .lab-chips { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .lab-rots { display: grid; gap: 6px; margin: 0 0 6px; }
+  .lab-rot { all: unset; box-sizing: border-box; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); cursor: pointer; min-height: 48px; }
+  .lab-rot b { font-size: 0.875rem; }
+  .lab-rot small { font-size: 0.75rem; color: var(--muted); }
+  .lab-rot:hover { border-color: var(--teal); }
+  .lab-rot:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .lab-secoes { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0; }
+  .lab-p { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 0.875rem; }
+  .lab-p-n small { display: block; color: var(--muted); font-size: 0.75rem; }
+  .lab-p-in { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .lab-p-in input { width: 104px; margin: 0; text-align: right; font-family: var(--font-mono); }
+  .lab-seg { margin: 0; }
+  .lab-seg .seg-btn { padding: 6px 10px; font-size: 0.8125rem; min-height: 36px; }
+  .lab-p-s { min-width: 64px; font-size: 0.6875rem; font-weight: 700; text-align: center; border-radius: 999px; padding: 2px 6px; }
+  .lab-p-s.s-conforme { background: rgba(67, 176, 42, 0.16); color: var(--verde-texto); }
+  .lab-p-s.s-nao { background: rgba(var(--danger-rgb), 0.14); color: var(--danger); }
+  .lab-p-s.s-avaliar { background: rgba(255, 106, 19, 0.16); color: var(--laranja-texto); }
+  .lab-ver-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+  .lab-tab tr.lab-r-nao td { color: var(--danger); }
+  .lab-tab td { white-space: normal; }
+  .lab-texto { white-space: pre-wrap; font-size: 0.875rem; margin: 0 0 10px; }
+  .lab-fq-l { display: grid; grid-template-columns: minmax(0, 1fr) 76px 76px 76px auto; gap: 6px; align-items: center; padding: 4px 0; font-size: 0.8125rem; }
+  .lab-fq-l input { margin: 0; padding: 6px; text-align: right; }
+  .lab-conf.ok .driver-sub { color: var(--verde-texto); }
+  .lab-antigos { margin: 16px 0 0; }
+  .lab-antigos summary { cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: var(--muted); padding: 6px 0; }
+  .lab-ponto-l { align-items: flex-end; }
+  @media (max-width: 559px) {
+    .est-cards.lab-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .est-cards.lab-cards .est-card { display: flex; padding: 10px; }
+    .lab-p { grid-template-columns: 1fr; }
+    .lab-p-in { justify-content: flex-start; }
+    .lab-fq-l { grid-template-columns: 1fr 1fr 1fr; }
+    .lab-fq-l span { grid-column: 1 / -1; }
+  }
   @media (max-width: 559px) {
     .est-cards.px-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .est-cards.px-cards .est-card { display: flex; padding: 10px; }
@@ -2299,7 +2358,7 @@
       <button type="button" class="seg-btn" data-qarea="hoje">Hoje</button>
       <button type="button" class="seg-btn" data-qarea="rec">Recebimento</button>
       <button type="button" class="seg-btn" data-qarea="linha">Linha</button>
-      <button type="button" class="seg-btn" data-qarea="ana">Análises</button>
+      <button type="button" class="seg-btn" data-qarea="ana">Laboratório</button>
       <button type="button" class="seg-btn" data-qarea="nc">NCs</button>
       <button type="button" class="seg-btn" data-qarea="plano">Plano</button>
       <button type="button" class="seg-btn" data-qarea="doc">Documentos</button>
@@ -3367,6 +3426,9 @@
         <label class="check"><input type="checkbox" id="f-equipe-log" /> Programa a logística dos caminhões (ok da logística)</label>
         <label class="check"><input type="checkbox" id="f-equipe-gestao" /> Diretoria / gestão (reserva a sala Levíssima Protein)</label>
         <label class="check"><input type="checkbox" id="f-equipe-qual" /> Qualidade (assina inspeções, checklists de linha e análises)</label>
+        <label class="check"><input type="checkbox" id="f-equipe-lab-valida" /> Laboratório: <b>valida resultados</b> <span class="opt">(não valida o que ela mesma lançou ou corrigiu)</span></label>
+        <label class="check"><input type="checkbox" id="f-equipe-lab-gerencia" /> <b>Gerência da Qualidade</b> no laboratório <span class="opt">(valida, altera o plano e decide o lote)</span></label>
+        <label class="check"><input type="checkbox" id="f-equipe-lab-rt" /> <b>Responsável Técnica</b> <span class="opt">(valida, altera o plano e decide o lote)</span></label>
         <label class="check"><input type="checkbox" id="f-equipe-aprovafrete" /> Aprova frete com valor editado (Nicolas)</label>
         <label class="check"><input type="checkbox" id="f-equipe-coord" /> Autoriza pedidos de compra antes da cotação <span class="opt">(coordenador, supervisor e gerente já autorizam pelo cargo)</span></label>
         <label class="sub-campo">Setores que autoriza <span class="opt">(separe com vírgula; em branco = todos)</span><input type="text" id="f-equipe-setores" maxlength="120" placeholder="Ex.: Produção, Manutenção" autocomplete="off" /></label>
@@ -3948,7 +4010,7 @@
     loadLocalMp();
     loadLocalMarcas();
     loadLocalSalas();
-    loadLocalQualidade();
+    loadLocalQualidade(); loadLocalLab();
     loadLocalSup();
     loadLocalCompras(); loadLocalBrindes();
     loadLocalTrocas(); loadLocalMkt(); loadLocalVendas(); loadLocalChamados(); loadLocalAntecip(); loadLocalProdExt();
@@ -17486,7 +17548,7 @@
   }
   function qNcsAbertas() { return qual.nc.filter(function(n) { return n.status !== 'encerrada'; }); }
   function qPendencias() {
-    var an = qSituacaoAnalises().filter(function(x) { return x.vencida; }).length;
+    var an = labVencidasQtd();
     var ncv = qNcsAbertas().filter(function(n) { return n.prazo && n.prazo < todayIso(); }).length;
     var lin = qSituacaoLinhas().filter(function(x) { return x.atrasada; }).length;
     return { analises: an, ncsVencidas: ncv, linhas: lin, total: an + ncv + lin };
@@ -17503,23 +17565,25 @@
     var el = document.getElementById('q-conteudo');
     if (!el || !session || !ehEscritorio()) return;
     document.querySelectorAll('#q-areas .seg-btn').forEach(function(b) { var on = b.dataset.qarea === qUi.area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
-    var f = { hoje: qHtmlHoje, rec: qHtmlRec, linha: qHtmlLinha, ana: qHtmlAna, nc: qHtmlNc, plano: qHtmlPlano, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
+    var f = { hoje: qHtmlHoje, rec: qHtmlRec, linha: qHtmlLinha, ana: labHtml, nc: qHtmlNc, plano: qHtmlPlano, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
     el.innerHTML = f();
+    if (qUi.area === 'ana' && labUi.vista !== 'plano') labRenderLista();
   }
   function qCard(cor, titulo, num, sub, botao) {
     return '<div class="est-card qc-' + cor + '"><span class="est-card-k">' + titulo + '</span><span class="est-card-v">' + num + '</span><span class="est-card-s">' + sub + '</span>' + (botao || '') + '</div>';
   }
   function qHtmlHoje() {
-    var pend = qPendencias(), linhas = qSituacaoLinhas(), an = qSituacaoAnalises(), ncs = qNcsAbertas();
+    var pend = qPendencias(), linhas = qSituacaoLinhas(), an = labSituacaoGeral(), ncs = qNcsAbertas();
     var rec7 = qual.rec.filter(function(r) { return qDiasDesde(r.data) <= 7; });
     var alertas = [];
     linhas.filter(function(x) { return x.atrasada; }).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.l.nome) + '</b>: verificação de processo atrasada (última há ' + fmtDuracao(x.minDesde) + ').'); });
-    an.filter(function(x) { return x.vencida; }).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.a.nome) + '</b>: análise vencida desde ' + escapeHtml(formatDateBR(x.prox)) + '.'); });
+    an.pend.filter(function(x) { return x.vencida; }).slice(0, 6).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.rotulo) + '</b>: ' + (x.ult ? 'análise vencida desde ' + escapeHtml(formatDateBR(x.prox)) : 'nenhuma análise lançada') + '.'); });
+    if (an.decisao.length) alertas.push('<b>Laboratório</b>: ' + an.decisao.length + (an.decisao.length === 1 ? ' lote não conforme sem decisão registrada.' : ' lotes não conformes sem decisão registrada.'));
     ncs.filter(function(n) { return n.prazo && n.prazo < todayIso(); }).forEach(function(n) { alertas.push('<b>NC nº ' + n.numero + '</b> (' + escapeHtml(n.descricao || '') + '): prazo vencido em ' + escapeHtml(formatDateBR(n.prazo)) + '.'); });
     var html = '<div class="est-cards">' +
       qCard('verde', 'Checklists de hoje', fmtInt(qual.chk.filter(function(c) { return c.data === todayIso(); }).length), linhas.filter(function(x) { return x.emProducao; }).length + ' de ' + Q_LINHAS.length + ' linhas com pré-operacional', '<button type="button" class="btn btn-primary btn-sm" data-q="novo-chk">+ Checklist de linha</button>') +
       qCard('azul', 'Recebimentos (7 dias)', fmtInt(rec7.length), rec7.filter(function(r) { return r.resultado === 'reprovado'; }).length + ' reprovados · ' + rec7.filter(function(r) { return r.resultado === 'restricao'; }).length + ' com restrição', '<button type="button" class="btn btn-secondary btn-sm" data-q="novo-rec">+ Inspeção de recebimento</button>') +
-      qCard(pend.analises ? 'laranja' : 'roxo', 'Análises', pend.analises ? pend.analises + ' vencida' + (pend.analises > 1 ? 's' : '') : 'em dia', an.filter(function(x) { return x.hoje; }).length + ' para hoje', '<button type="button" class="btn btn-secondary btn-sm" data-q="nova-ana">+ Lançar análise</button>') +
+      qCard(pend.analises ? 'laranja' : 'roxo', 'Laboratório', pend.analises ? pend.analises + ' vencida' + (pend.analises > 1 ? 's' : '') : 'em dia', an.pend.filter(function(x) { return x.hoje; }).length + ' para hoje · ' + an.validar.length + ' para validar · ' + an.aguardando.length + ' aguardando resultado', '<button type="button" class="btn btn-secondary btn-sm" data-lab="novo">+ Lançar análise</button>') +
       qCard(ncs.length ? 'laranja' : 'verde', 'Não conformidades', fmtInt(ncs.length) + (ncs.length === 1 ? ' aberta' : ' abertas'), pend.ncsVencidas ? pend.ncsVencidas + ' com prazo vencido' : 'nenhuma com prazo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-q="nova-nc">+ Abrir NC</button>') +
       '</div>';
     html += alertas.length ? '<div class="est-alertas"><p class="est-alertas-t">⚠ Pendências da qualidade</p><ul>' + alertas.map(function(a) { return '<li>' + a + '</li>'; }).join('') + '</ul></div>' : '<div class="est-alertas ok">✓ Sem pendências da qualidade agora.</div>';
@@ -17530,12 +17594,11 @@
         '<span class="driver-sub">' + escapeHtml(pre) + (proc ? ' · ' + escapeHtml(proc) : '') + (x.ncs ? ' · ' + x.ncs + ' com não conformidade' : '') + '</span></span>' +
         '<button type="button" class="btn-text" data-q="novo-chk" data-linha="' + x.l.id + '" data-tipo="' + (x.l.id === 'retornavel' ? 'garrafoes' : x.emProducao ? 'processo' : 'preop') + '">' + (x.l.id === 'retornavel' ? 'Checklist' : x.emProducao ? 'Verificar agora' : 'Pré-operacional') + '</button></div>';
     }).join('') + '</section>';
-    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Plano de análises</h2></div>' + an.map(function(x) {
-      return '<div class="driver-row' + (x.vencida ? ' q-vencida' : '') + '"><span class="driver-name">' + escapeHtml(x.a.nome) +
-        '<span class="driver-sub">a cada ' + x.a.dias + (x.a.dias === 1 ? ' dia' : ' dias') + ' · ' + (x.ult ? 'última em ' + escapeHtml(formatDateBR(x.ult.data)) + (x.ult.conforme === false ? ' (não conforme)' : '') : 'nenhuma lançada') +
-        ' · ' + (x.vencida ? '<b class="alerta">vencida</b>' : 'próxima ' + escapeHtml(formatDateBR(x.prox))) + '</span></span>' +
-        '<button type="button" class="btn-text" data-q="nova-ana" data-plano="' + x.a.id + '">Lançar</button></div>';
-    }).join('') + '</section>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Laboratório · plano de amostragem</h2></div>' + (an.pend.length ? an.pend.slice(0, 8).map(function(x) {
+      return '<div class="driver-row' + (x.vencida ? ' q-vencida' : '') + '"><span class="driver-name">' + escapeHtml(x.rotulo) +
+        '<span class="driver-sub">' + (x.ult ? 'última em ' + escapeHtml(formatDateBR(x.ult.coletaData)) + ' · ' + (x.vencida ? '<b class="alerta">vencida</b>' : 'vence hoje') : 'nenhuma lançada ainda') + '</span></span>' +
+        '<button type="button" class="btn-text" data-lab="novo-rot" data-rot="' + x.rot.id + '"' + (x.pontoId ? ' data-ponto="' + escapeHtml(x.pontoId) + '"' : '') + (x.tipoExterno ? ' data-ext="' + escapeHtml(x.tipoExterno) + '"' : '') + (x.colaborador ? ' data-colab="' + escapeHtml(x.colaborador) + '"' : '') + '>Lançar</button></div>';
+    }).join('') + (an.pend.length > 8 ? '<button type="button" class="btn-text" data-q="ir-lab">Ver todas no Laboratório (' + an.pend.length + ')</button>' : '') : '<p class="empty-state">Plano de amostragem em dia.</p>') + '</section>';
     return html;
   }
   function qResultadoChip(r) {
@@ -17601,16 +17664,1022 @@
     html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Recebimento de insumos</h2></div>' + sec('rec:comum', 'Todos os insumos') +
       Object.keys(Q_ITENS).filter(function(k) { return k.indexOf('rec:') === 0 && k !== 'rec:comum'; }).map(function(k) { return sec(k, k.slice(4)); }).join('') + '</section>';
     html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Checklist de linha</h2></div>' + sec('preop', Q_CHECK_TIPOS.preop.nome) + sec('processo', Q_CHECK_TIPOS.processo.nome) + sec('garrafoes', Q_CHECK_TIPOS.garrafoes.nome) + '</section>';
-    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Análises</h2></div>' + qAnalises(true).map(function(a) {
-      return '<div class="driver-row q-plano-item' + (a.ativo ? '' : ' desativado') + '"><span class="driver-name">' + escapeHtml(a.nome) + '<span class="driver-sub">a cada ' + a.dias + (a.dias === 1 ? ' dia' : ' dias') + (a.ativo ? '' : ' · desativada') + '</span></span>' +
-        (mestre ? '<button type="button" class="btn-text" data-q="plano-freq" data-plano="' + a.id + '">Frequência</button><button type="button" class="btn-text' + (a.ativo ? ' danger' : '') + '" data-q="plano-ana-ativo" data-plano="' + a.id + '">' + (a.ativo ? 'Desativar' : 'Ativar') + '</button>' : '') + '</div>';
-    }).join('') +
-      '<div class="q-plano-sec"><h3 class="q-plano-t">Faixa físico-química da sua água</h3>' + Q_FQ.map(function(p) {
-        var l = qLimiteFq(p.id), fx = qFaixaTexto(l.min, l.max, p.unidade);
-        return '<div class="driver-row q-plano-item"><span class="driver-name">' + escapeHtml(p.nome) + '<span class="driver-sub">' + (fx ? escapeHtml(fx) : 'sem faixa definida') + '</span></span>' + (mestre ? '<button type="button" class="btn-text" data-q="plano-fq" data-param="' + p.id + '">Faixa</button>' : '') + '</div>';
-      }).join('') + '</div></section>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Análises de laboratório</h2></div><p class="hint">Parâmetros, limites de cada fonte, frequências e pontos de coleta ficam no <b>Plano do laboratório</b> (POP 013).</p><button type="button" class="btn btn-secondary btn-sm" data-q="ir-lab-plano">Abrir o plano do laboratório</button></section>';
     return html;
   }
+
+  // ---------- Qualidade › Laboratório (pedido de 11/11/2026 · etapa 1: estrutura, plano, lançamento, validação e consulta) ----------
+  // Base: POP 013 – Plano de Amostragem, rev. 02 (maio/2026). Os valores de referência, critérios, volumes, n/c/m/M,
+  // frequências e métodos vêm do POP e ficam configuráveis no "Plano do laboratório" (só Gerência da Qualidade,
+  // Responsável Técnica ou senha mestre alteram, e cada alteração fica no histórico do plano). O que o POP deixa em
+  // dúvida fica em "Pontos a confirmar" e não vira regra automática.
+  // Registro (coleção lab-registros): rotina, identificação (produto + data de produção + linha = lote; ou ponto,
+  // colaborador, cabeçote), coleta, motivo (rotina ou extraordinária), resultados por parâmetro com o critério usado
+  // gravado junto (mudar o plano depois não muda a avaliação antiga), situação, lançamento e validação. Quem lança
+  // não valida (outra pessoa com "Laboratório: valida", Gerência ou RT, pela senha de 4 números). Resultado já
+  // lançado só muda com o motivo, fica no histórico (valor antigo e novo) e volta a pedir validação; o banco recusa
+  // alteração sem histórico (migração 0049). Resultado fora do critério não bloqueia lote sozinho: no produto, o
+  // parâmetro legal fora indica a retenção prevista no POP (item IV) e a decisão formal fica registrada no lote.
+  var LAB_COL = { reg: 'lab-registros', cfg: 'lab-config' }, BUCKET_LAB = 'laboratorio';
+  var lab = { reg: [], cfg: [] };
+  var labUi = { vista: 'lista', periodo: '30', grupo: '', situacao: '', busca: '', todos: false };
+  var LAB_GRUPOS = [
+    { id: 'produto', nome: 'Produto acabado', desc: 'Lote: físico-química, microbiológica e sensorial no mesmo registro' },
+    { id: 'fq', nome: 'Físico-química das fontes', desc: 'Temperatura, pH a 25 °C e condutividade, com o limite de cada fonte' },
+    { id: 'micro', nome: 'Microbiológica de fontes e reservatórios', desc: 'Captações e reservatórios 1 a 4' },
+    { id: 'embalagem', nome: 'Embalagens', desc: 'Tampas, garrafas e garrafões descartáveis, garrafão retornável 20 L' },
+    { id: 'ambiente', nome: 'Ambiente e superfícies', desc: 'Ar das salas de envase e antessala; superfícies após a limpeza' },
+    { id: 'maos', nome: 'Manipuladores', desc: 'Mãos dos colaboradores do envase e de quem coleta' },
+    { id: 'aguas', nome: 'Bebedouros, torneiras e água destilada', desc: 'Pontos de água de consumo e água destilada autoclavada' },
+    { id: 'sensorial', nome: 'Sensorial', desc: 'Odor, sabor e cor na captação (no produto, vai no registro do lote)' },
+    { id: 'processo', nome: 'Volume, torque e CO₂', desc: 'Controles de processo com conformidade interna própria' },
+    { id: 'externo', nome: 'Laboratórios externos', desc: 'Análises feitas por terceiros, com o laudo anexado' },
+    { id: 'investigacao', nome: 'Investigações e ações corretivas', desc: 'Contraprovas, repetições, coletas extras e tratativas (etapa 2)', etapa: 2 }
+  ];
+  // parâmetros (POP 013, item Características microbiológicas e físico-químicas; Tabelas 4 a 6)
+  var LAB_PARAMS_PADRAO = {
+    ct: { nome: 'Coliformes totais', tipo: 'micro', crit: 'ausencia', volume: '250 mL', legal: true, n: 5, c: 0, m: 'Ausência', M: '' },
+    ecoli: { nome: 'Escherichia coli', tipo: 'micro', crit: 'ausencia', volume: '250 mL', legal: true, n: 5, c: 0, m: 'Ausência', M: '' },
+    entero: { nome: 'Enterococos', tipo: 'micro', crit: 'ausencia', volume: '250 mL', legal: true, n: 5, c: 0, m: 'Ausência', M: '' },
+    pseudo: { nome: 'Pseudomonas aeruginosa', tipo: 'micro', crit: 'ausencia', volume: '250 mL', legal: true, n: 5, c: 0, m: 'Ausência', M: '' },
+    clost: { nome: 'Esporos de clostrídios sulfito redutores', tipo: 'micro', crit: 'ausencia', volume: '50 mL', legal: true, n: 5, c: 0, m: 'Ausência', M: '' },
+    perf: { nome: 'Esporos de Clostridium perfringens', tipo: 'micro', crit: 'ausencia', volume: '50 mL', legal: true, n: 5, c: 0, m: 'Ausência', M: '' },
+    het: { nome: 'Bactérias heterotróficas', tipo: 'micro', crit: 'max', max: 100, unidade: 'UFC/mL', volume: '1 mL', legal: false, n: 5, c: 5, m: 'Ausência', M: '< 100 UFC' },
+    temp: { nome: 'Temperatura da água', tipo: 'fq', crit: 'faixa', unidade: '°C', legal: false, porFonte: true },
+    ph: { nome: 'pH a 25 °C', tipo: 'fq', crit: 'faixa', unidade: '', legal: false, porFonte: true },
+    cond: { nome: 'Condutividade elétrica', tipo: 'fq', crit: 'faixa', unidade: 'µS/cm', legal: false, porFonte: true },
+    odor: { nome: 'Odor', tipo: 'sensorial', crit: 'conforme', legal: false },
+    sabor: { nome: 'Sabor', tipo: 'sensorial', crit: 'conforme', legal: false },
+    cor: { nome: 'Cor', tipo: 'sensorial', crit: 'conforme', legal: false },
+    volume: { nome: 'Volume', tipo: 'processo', crit: 'rotulo', unidade: 'mL', legal: true },
+    torque: { nome: 'Torque', tipo: 'processo', crit: 'faixa', unidade: '', legal: false },
+    co2: { nome: 'CO₂ dissolvido', tipo: 'processo', crit: 'faixa', min: 3.6, max: 4.1, unidade: '', legal: false }
+  };
+  // frequência em dias (0 = sem prazo fixo: por lote, por turno, após a limpeza)
+  var LAB_ROTINAS_PADRAO = [
+    { id: 'produto', grupo: 'produto', nome: 'Produto acabado (lote)', alvo: 'lote', dias: 0, freqTxt: 'por lote',
+      secoes: [{ id: 'fq', nome: 'Físico-química', params: ['temp', 'ph', 'cond'], freqTxt: 'diária' }, { id: 'micro', nome: 'Microbiológica', params: ['ct', 'ecoli', 'entero', 'clost', 'pseudo', 'het'], opcionais: ['perf'], freqTxt: 'por lote' }, { id: 'sensorial', nome: 'Sensorial', params: ['odor', 'sabor', 'cor'], freqTxt: 'diária' }],
+      pendencias: ['freq-produto', 'perfringens'] },
+    { id: 'fq-fonte', grupo: 'fq', nome: 'Físico-química da fonte', alvo: 'ponto', pontos: ['fonte'], params: ['temp', 'ph', 'cond'], dias: 1, freqTxt: 'diária' },
+    { id: 'micro-fonte', grupo: 'micro', nome: 'Microbiológica da fonte', alvo: 'ponto', pontos: ['fonte'], params: ['ct', 'ecoli', 'pseudo', 'het'], dias: 7, freqTxt: 'semanal', pendencias: ['micro-fontes'] },
+    { id: 'micro-reserv', grupo: 'micro', nome: 'Microbiológica do reservatório', alvo: 'ponto', pontos: ['reservatorio'], params: ['ct', 'ecoli', 'pseudo', 'het'], dias: 7, freqTxt: 'semanal' },
+    { id: 'emb-tampa', grupo: 'embalagem', nome: 'Tampas', alvo: 'avulso', params: ['ct', 'het'], dias: 92, freqTxt: 'trimestral', amostra: 'Lote composto por 4 unidades', metodo: 'Membrana filtrante · coleta na calha' },
+    { id: 'emb-garrafa', grupo: 'embalagem', nome: 'Garrafas e garrafões descartáveis', alvo: 'avulso', params: ['ct', 'het'], dias: 92, freqTxt: 'trimestral', amostra: 'Lote composto por 4 unidades', metodo: 'Membrana filtrante · coleta após o rinser' },
+    { id: 'emb-retornavel', grupo: 'embalagem', nome: 'Garrafões retornáveis 20 L', alvo: 'avulso', params: ['ct', 'het'], dias: 92, freqTxt: 'trimestral', amostra: '1 unidade', metodo: 'Membrana filtrante · coleta após a lavadora' },
+    { id: 'ar', grupo: 'ambiente', nome: 'Ar ambiente', alvo: 'ponto', pontos: ['sala'], params: ['het'], dias: 31, freqTxt: 'mensal', amostra: '1 amostra por sala de envase e antessala', metodo: 'Exposição de placas por 15 minutos', crit: { het: { unidade: 'UFC' } } },
+    { id: 'superficie', grupo: 'ambiente', nome: 'Superfície', alvo: 'ponto', pontos: ['superficie'], params: ['ct', 'het'], dias: 0, freqTxt: 'após a limpeza, para validação', amostra: '1 amostra em cada ponto das salas de envase', metodo: 'Swab', crit: { ct: { crit: 'menor', max: 1, unidade: 'UFC' }, het: { unidade: 'UFC' } } },
+    { id: 'maos', grupo: 'maos', nome: 'Mãos do colaborador', alvo: 'pessoa', params: ['ct', 'ecoli'], dias: 31, freqTxt: 'mensal', amostra: '1 amostra por colaborador do envase e de quem coleta (Qualidade)', metodo: 'Swab' },
+    { id: 'bebedouro', grupo: 'aguas', nome: 'Bebedouro', alvo: 'ponto', pontos: ['bebedouro'], params: ['ct', 'ecoli', 'pseudo', 'het'], dias: 62, freqTxt: 'bimestral', amostra: '1 amostra por bebedouro', metodo: 'Membrana filtrante · coleta direto no bebedouro', crit: { pseudo: { crit: 'menor', max: 1, unidade: 'UFC' } } },
+    { id: 'torneira', grupo: 'aguas', nome: 'Torneira', alvo: 'ponto', pontos: ['torneira'], params: ['ct', 'ecoli', 'pseudo', 'het'], dias: 62, freqTxt: 'bimestral', amostra: '1 amostra por torneira', metodo: 'Membrana filtrante · coleta direto da torneira', crit: { pseudo: { crit: 'menor', max: 1, unidade: 'UFC' } } },
+    { id: 'agua-destilada', grupo: 'aguas', nome: 'Água destilada autoclavada', alvo: 'avulso', params: ['het'], dias: 31, freqTxt: 'mensal', amostra: '1 amostra pronta para uso', metodo: 'Membrana filtrante' },
+    { id: 'sensorial-capt', grupo: 'sensorial', nome: 'Sensorial da captação', alvo: 'ponto', pontos: ['fonte'], params: ['odor', 'sabor', 'cor'], dias: 1, freqTxt: 'diária', metodo: 'Degustação / visual' },
+    { id: 'volume', grupo: 'processo', nome: 'Volume (nível de enchimento)', alvo: 'produto', params: ['volume'], dias: 7, freqTxt: 'semanal', amostra: '1 amostra para cada produto final', metodo: 'Balança calibrada e béquer ou proveta', pendencias: ['freq-volume'] },
+    { id: 'torque', grupo: 'processo', nome: 'Torque e integridade', alvo: 'cabecote', params: ['torque'], dias: 0, freqTxt: 'ao iniciar + 1 vez por turno', amostra: '1 amostra por cabeçote do arrolhador', metodo: 'Torquímetro e avaliação manual', pendencias: ['torque'] },
+    { id: 'co2', grupo: 'processo', nome: 'CO₂ dissolvido', alvo: 'medicao', params: ['co2'], dias: 0, freqTxt: 'ao iniciar + 1 vez por turno', amostra: '1 amostra por medição', metodo: 'Manômetro e termômetro', pendencias: ['co2-unidade'] },
+    { id: 'externo', grupo: 'externo', nome: 'Análise em laboratório externo', alvo: 'externo', dias: 0, freqTxt: 'conforme o tipo' }
+  ];
+  var LAB_EXTERNOS = [
+    { id: 'quimica', nome: 'Contaminantes químicos (RDC 717/2022, Anexo I)', dias: 366, freqTxt: 'anual' },
+    { id: 'micro-capt', nome: 'Microbiológica das captações', dias: 92, freqTxt: 'trimestral' },
+    { id: 'oficial', nome: 'Análise oficial completa', dias: 1096, freqTxt: 'a cada 3 anos' },
+    { id: 'outra', nome: 'Outra análise externa', dias: 0, freqTxt: 'quando necessário' }
+  ];
+  var LAB_PONTOS_TIPOS = [['fonte', 'Fontes (captação)'], ['reservatorio', 'Reservatórios'], ['sala', 'Salas (ar ambiente)'], ['superficie', 'Pontos de superfície'], ['bebedouro', 'Bebedouros'], ['torneira', 'Torneiras'], ['cabecote', 'Cabeçotes do arrolhador'], ['colaborador', 'Colaboradores (mãos)']];
+  var LAB_PONTOS_PADRAO = {
+    fonte: [{ id: 'priscilla', nome: 'Fonte Priscilla' }, { id: 'katia', nome: 'Fonte Kátia' }, { id: 'clementina', nome: 'Fonte Clementina' }],
+    reservatorio: [{ id: 'r1', nome: 'Reservatório 1' }, { id: 'r2', nome: 'Reservatório 2' }, { id: 'r3', nome: 'Reservatório 3' }, { id: 'r4', nome: 'Reservatório 4' }],
+    sala: [], superficie: [], bebedouro: [], torneira: [], cabecote: [], colaborador: []
+  };
+  // valores de referência LAMIN 2019 e limites de aceitação (10% de variação), POP 013
+  var LAB_FQ_PADRAO = {
+    priscilla: { temp: { ref: 24.8, min: 22.32, max: 27.28 }, ph: { ref: 8.46, min: 7.61, max: 9.30 }, cond: { ref: 179.9, min: 161.91, max: 197.89 } },
+    katia: { temp: { ref: 24.9, min: 22.41, max: 27.39 }, ph: { ref: 7.80, min: 7.02, max: 8.58 }, cond: { ref: 225.0, min: 202.5, max: 247.5 } },
+    clementina: { temp: { ref: 24.6, min: 22.14, max: 27.06 }, ph: { ref: 8.34, min: 7.50, max: 9.17 }, cond: { ref: 311.0, min: 279.9, max: 342.1 } }
+  };
+  var LAB_PENDENCIAS_PADRAO = [
+    { id: 'freq-produto', txt: 'Frequência microbiológica do produto acabado: “uma amostra de cada linha de produção diariamente” (Amostragem) × “por lote” (Tabela 3).' },
+    { id: 'micro-fontes', txt: 'A Tabela 3 não deixa explícitos os microrganismos das fontes Kátia e Clementina. Até confirmar, o app usa os mesmos da Fonte Priscilla (coliformes totais, E. coli, P. aeruginosa e heterotróficas).' },
+    { id: 'perfringens', txt: 'Esporos de Clostridium perfringens estão nos critérios gerais, mas não na lista do produto acabado (Tabela 3). No registro do lote o parâmetro fica opcional.' },
+    { id: 'freq-volume', txt: 'Volume: semanal na Tabela 6 × “amostras diariamente” em Pesos e medidas.' },
+    { id: 'torque', txt: 'Torque: o critério depende da especificação do fornecedor e do valor da planilha por tipo de produto e cabeçote, que ainda não estão no app. Sem limite cadastrado, quem mede registra a avaliação (conforme ou não).' },
+    { id: 'co2-unidade', txt: 'CO₂: a Tabela 6 traz a faixa 3,6 a 4,1 sem a unidade de medida.' },
+    { id: 'het-plano', txt: 'Bactérias heterotróficas: na amostra representativa o POP traz n = 5, c = 5, m = ausência e M = < 100 UFC (c igual a n).' }
+  ];
+  var LAB_MOTIVOS = [['rotina', 'Rotina (plano de amostragem)'], ['cliente', 'Solicitação de cliente'], ['reclamacao', 'Reclamação de cliente'], ['dta', 'Suspeita de DTA'], ['investigacao', 'Investigação interna'], ['legislacao', 'Exigência da legislação'], ['outro', 'Outro']];
+  var LAB_SIT = { aguardando: ['Aguardando resultado', 'aviso'], avaliar: ['Avaliação técnica', 'aviso'], nao: ['Não conforme', 'falta'], conforme: ['Conforme', 'ok'] };
+
+  // ----- dados -----
+  function loadLocalLab() { Object.keys(LAB_COL).forEach(function(k) { try { lab[k] = JSON.parse(localStorage.getItem('levissima-lab-' + k + '-v1') || '[]') || []; } catch (e) { lab[k] = []; } }); }
+  function subscribeLab() {
+    if (!ehEscritorio()) return;
+    Object.keys(LAB_COL).forEach(function(k) {
+      db.collection(LAB_COL[k]).onSnapshot(function(snap) {
+        lab[k] = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+        if (session) { if (ui.tab === 'qualidade') renderQualidade(); renderTabQualidadeBadge(); }
+      }, function(err) { console.error(LAB_COL[k], err); });
+    });
+  }
+  function labGravar(k, id, dados) {
+    if (mode === 'db' && db) return db.collection(LAB_COL[k]).doc(id).set(dados);
+    var i = lab[k].findIndex(function(x) { return x.id === id; }), novo = Object.assign({ id: id }, dados);
+    if (i >= 0) lab[k][i] = novo; else lab[k].push(novo);
+    try { localStorage.setItem('levissima-lab-' + k + '-v1', JSON.stringify(lab[k])); } catch (e) {}
+    renderQualidade(); renderTabQualidadeBadge();
+    return Promise.resolve();
+  }
+  function labSemId(x) { var d = JSON.parse(JSON.stringify(x)); delete d.id; return d; }
+  function labRegPorId(id) { for (var i = 0; i < lab.reg.length; i++) if (lab.reg[i].id === id) return lab.reg[i]; return null; }
+  // plano: o padrão do POP com o que foi salvo por cima
+  function labCfg() {
+    var c = lab.cfg.find(function(x) { return x.id === 'plano'; }) || {};
+    var params = {};
+    Object.keys(LAB_PARAMS_PADRAO).forEach(function(k) { params[k] = Object.assign({ id: k }, LAB_PARAMS_PADRAO[k], (c.params || {})[k] || {}); });
+    var pontos = {};
+    LAB_PONTOS_TIPOS.forEach(function(t) { pontos[t[0]] = (c.pontos && c.pontos[t[0]]) || LAB_PONTOS_PADRAO[t[0]] || []; });
+    var fq = {};
+    pontos.fonte.forEach(function(f) { fq[f.id] = Object.assign({}, LAB_FQ_PADRAO[f.id] || {}, (c.limitesFq || {})[f.id] || {}); });
+    return { params: params, pontos: pontos, fq: fq, linhas: c.linhas && c.linhas.length ? c.linhas : ['L1', 'L2', 'L3'], rotinas: c.rotinas || {}, pendencias: c.pendencias || {}, alteracoes: c.alteracoes || [], torque: c.torque || {}, salvo: !!c.id };
+  }
+  function labRotina(id) {
+    var base = LAB_ROTINAS_PADRAO.find(function(r) { return r.id === id; });
+    if (!base) return null;
+    var o = labCfg().rotinas[id] || {};
+    return Object.assign({}, base, { dias: o.dias != null ? Number(o.dias) : base.dias, ativo: o.ativo !== false, metodo: o.metodo != null ? o.metodo : base.metodo, amostra: o.amostra != null ? o.amostra : base.amostra });
+  }
+  function labRotinas(todas) { return LAB_ROTINAS_PADRAO.map(function(r) { return labRotina(r.id); }).filter(function(r) { return todas || r.ativo; }); }
+  function labPontos(tipo, todos) { return (labCfg().pontos[tipo] || []).filter(function(p) { return todos || p.ativo !== false; }); }
+  function labPontoNome(id) { var c = labCfg(), n = ''; LAB_PONTOS_TIPOS.forEach(function(t) { (c.pontos[t[0]] || []).forEach(function(p) { if (p.id === id) n = p.nome; }); }); return n; }
+  function labGrupo(id) { return LAB_GRUPOS.find(function(g) { return g.id === id; }) || { id: id, nome: id }; }
+  function labNum(v) { return v == null || v === '' ? '' : fmtNumQ(v); }
+  // critério do parâmetro no contexto (rotina, fonte, valor do rótulo, produto)
+  function labDef(pid, rot, ctx) {
+    var c = labCfg(), d = Object.assign({}, c.params[pid] || { id: pid, nome: pid, crit: '' }, (rot && rot.crit && rot.crit[pid]) || {});
+    ctx = ctx || {};
+    if (d.porFonte) {
+      var l = ctx.fonteId ? (c.fq[ctx.fonteId] || {})[pid] : null;
+      d.min = l && l.min != null && l.min !== '' ? Number(l.min) : null; d.max = l && l.max != null && l.max !== '' ? Number(l.max) : null; d.ref = l && l.ref != null && l.ref !== '' ? Number(l.ref) : null;
+      d.semFonte = !ctx.fonteId;
+    }
+    if (pid === 'volume') { d.crit = 'min'; d.min = ctx.declarado != null && ctx.declarado !== '' ? Number(ctx.declarado) : null; d.rotulo = true; }
+    if (pid === 'torque' && ctx.produtoId && c.torque[ctx.produtoId]) { var tq = c.torque[ctx.produtoId]; if (tq.min != null && tq.min !== '') d.min = Number(tq.min); if (tq.max != null && tq.max !== '') d.max = Number(tq.max); }
+    if (ctx.unidade && (pid === 'torque' || pid === 'co2')) d.unidade = ctx.unidade;
+    return d;
+  }
+  function labSemCriterio(d) {
+    if (d.crit === 'ausencia' || d.crit === 'conforme') return false;
+    if (d.crit === 'faixa') return d.min == null && d.max == null;
+    if (d.crit === 'min') return d.min == null;
+    return d.max == null;
+  }
+  function labCritTexto(d) {
+    var u = d.unidade ? ' ' + d.unidade : '';
+    if (d.crit === 'ausencia') return 'ausência' + (d.volume ? ' em ' + d.volume : '');
+    if (d.crit === 'conforme') return 'sem alteração';
+    if (labSemCriterio(d)) return d.semFonte ? 'escolha a fonte para ver o limite' : d.rotulo ? 'informe o volume do rótulo' : 'sem critério cadastrado';
+    if (d.crit === 'max') return '≤ ' + fmtNumQ(d.max) + u + (d.volume ? ' (' + d.volume + ')' : '');
+    if (d.crit === 'menor') return '< ' + fmtNumQ(d.max) + u;
+    if (d.crit === 'min') return '≥ ' + fmtNumQ(d.min) + u + (d.rotulo ? ' (rótulo)' : '');
+    return (d.min != null && d.max != null ? fmtNumQ(d.min) + ' a ' + fmtNumQ(d.max) : d.min != null ? 'mínimo ' + fmtNumQ(d.min) : 'máximo ' + fmtNumQ(d.max)) + u + (d.ref != null ? ' (ref. ' + fmtNumQ(d.ref) + ')' : '');
+  }
+  // situação de um parâmetro: pendente (sem resultado), conforme, nao ou avaliar (sem critério e sem avaliação)
+  function labAvaliar(d, val) {
+    if (!val || (val.v == null && !val.t)) return 'pendente';
+    if (d.crit === 'ausencia') return val.t === 'ausente' ? 'conforme' : val.t === 'presente' ? 'nao' : 'pendente';
+    if (d.crit === 'conforme') return val.t === 'conforme' ? 'conforme' : val.t === 'nao' ? 'nao' : 'pendente';
+    if (val.v == null) return 'pendente';
+    var v = Number(val.v);
+    if (labSemCriterio(d)) return val.a === 'conforme' ? 'conforme' : val.a === 'nao' ? 'nao' : 'avaliar';
+    if (d.crit === 'max') return v <= d.max ? 'conforme' : 'nao';
+    if (d.crit === 'menor') return v < d.max ? 'conforme' : 'nao';
+    if (d.crit === 'min') return v >= d.min ? 'conforme' : 'nao';
+    return (d.min == null || v >= d.min) && (d.max == null || v <= d.max) ? 'conforme' : 'nao';
+  }
+  function labResultadoTexto(p) {
+    if (!p) return '—';
+    if (p.t === 'ausente') return 'Ausente';
+    if (p.t === 'presente') return 'Presente' + (p.v != null ? ' (' + fmtNumQ(p.v) + ')' : '');
+    if (p.t === 'conforme') return 'Sem alteração';
+    if (p.t === 'nao') return 'Alterado';
+    return p.v == null ? '—' : fmtNumQ(p.v) + (p.un ? ' ' + p.un : '');
+  }
+  function labSitReg(r) {
+    var ps = Object.keys(r.resultados || {}).map(function(k) { return r.resultados[k].s; });
+    if (!ps.length || ps.indexOf('pendente') >= 0) return 'aguardando';
+    if (ps.indexOf('nao') >= 0) return 'nao';
+    if (ps.indexOf('avaliar') >= 0) return 'avaliar';
+    return 'conforme';
+  }
+  function labPedeLinha(nome) { return /(^|[^0-9])510\s*ml|1[,.]5\s*l\b|1500\s*ml/i.test(String(nome || '')); }
+  function labVolumeRotulo(nome) {
+    var s = String(nome || '').toLowerCase().replace(',', '.'), m = /(\d+(?:\.\d+)?)\s*ml/.exec(s);
+    if (m) return Number(m[1]);
+    m = /(\d+(?:\.\d+)?)\s*l\b/.exec(s);
+    return m ? Math.round(Number(m[1]) * 1000) : null;
+  }
+  function labLoteTexto(r) { return r.dataProducao ? formatDateBR(r.dataProducao) + (r.linha ? ' ' + r.linha : '') : ''; }
+  function labTitulo(r) {
+    var rot = labRotina(r.rotina) || { nome: r.rotina };
+    if (r.rotina === 'produto') return (r.produtoNome || 'Produto') + (r.dataProducao ? ' · lote ' + labLoteTexto(r) : '');
+    if (r.rotina === 'externo') return (LAB_EXTERNOS.find(function(x) { return x.id === r.tipoExterno; }) || { nome: 'Análise externa' }).nome;
+    return rot.nome + (r.pontoNome ? ' · ' + r.pontoNome : r.colaborador ? ' · ' + r.colaborador : r.cabecote ? ' · ' + r.cabecote : r.produtoNome ? ' · ' + r.produtoNome : '');
+  }
+  function labQuemLancou(r) { return (r.lancadoPor || []).slice(); }
+  function labPodeValidarM(m) { return !!(m && (m.labValida || m.labGerencia || m.labRT)); }
+  function labGestorM(m) { return !!(m && (m.labGerencia || m.labRT)); }
+  function labEu() { return session && session.role === 'equipe' ? meuMembro() : null; }
+  function labQuemRef(quem) { return quem.id || (session && session.role === 'admin' ? 'mestre' : 'equipe'); }
+  function labHist(d, txt, antes) { d.historico = (d.historico || []).concat([Object.assign({ em: new Date().toISOString(), por: d._por || '', txt: txt }, antes ? { antes: antes } : {})]); delete d._por; }
+  // assinatura da Gerência / RT (ou senha mestre) para mudar o plano e decidir o lote
+  function labAssinarGestor(titulo, feito) {
+    if (session && session.role === 'admin') { feito({ nome: quemSessao() || 'Senha mestre', id: '' }); return; }
+    var eu = labEu();
+    openPinDialog({ permite: labGestorM, funcaoTexto: 'é da Gerência da Qualidade ou Responsável Técnica', titulo: titulo, hint: 'Gerência da Qualidade ou Responsável Técnica: assine com a senha de 4 números.',
+      semCadastro: 'Ninguém marcado como Gerência da Qualidade ou Responsável Técnica em Cadastros › Equipe.', eu: labGestorM(eu) ? eu : null, onOk: function(m) { feito({ nome: m.nome, id: m.id }); } });
+  }
+
+  // ----- pendências do plano de amostragem -----
+  function labUltimo(filtro) {
+    var u = null;
+    lab.reg.forEach(function(r) { if (r.cancelado || !filtro(r)) return; if (!u || String(r.coletaData || '') > String(u.coletaData || '')) u = r; });
+    return u;
+  }
+  function labPendencias() {
+    var hoje = todayIso(), out = [];
+    var item = function(rot, rotulo, ult, dias, extra) {
+      // nunca lançada: aparece na lista, mas só conta como vencida depois do primeiro lançamento (não enche o selo no começo)
+      var prox = ult ? addDiasIso(ult.coletaData, dias) : null, venc = !!ult && prox < hoje, ehHoje = !!ult && prox === hoje;
+      if (venc || ehHoje || !ult) out.push(Object.assign({ rot: rot, rotulo: rotulo, ult: ult, prox: prox, vencida: venc, hoje: ehHoje, nunca: !ult }, extra || {}));
+    };
+    labRotinas().forEach(function(rot) {
+      if (rot.alvo === 'externo') {
+        LAB_EXTERNOS.forEach(function(t) { if (!t.dias) return; item(rot, t.nome + ' (' + t.freqTxt + ')', labUltimo(function(r) { return r.rotina === 'externo' && r.tipoExterno === t.id; }), t.dias, { tipoExterno: t.id }); });
+        return;
+      }
+      if (!rot.dias) return;
+      if (rot.alvo === 'ponto') {
+        var pts = []; (rot.pontos || []).forEach(function(t) { pts = pts.concat(labPontos(t)); });
+        pts.forEach(function(p) { item(rot, rot.nome + ' · ' + p.nome, labUltimo(function(r) { return r.rotina === rot.id && r.pontoId === p.id; }), rot.dias, { pontoId: p.id }); });
+      } else if (rot.alvo === 'pessoa' && labPontos('colaborador').length) {
+        labPontos('colaborador').forEach(function(p) { item(rot, rot.nome + ' · ' + p.nome, labUltimo(function(r) { return r.rotina === rot.id && normTexto(r.colaborador).trim() === normTexto(p.nome).trim(); }), rot.dias, { colaborador: p.nome }); });
+      } else item(rot, rot.nome + ' (' + rot.freqTxt + ')', labUltimo(function(r) { return r.rotina === rot.id; }), rot.dias);
+    });
+    return out.sort(function(a, b) { return (b.vencida - a.vencida) || (b.hoje - a.hoje) || String(a.prox || '').localeCompare(String(b.prox || '')); });
+  }
+  function labSituacaoGeral() {
+    var ativos = lab.reg.filter(function(r) { return !r.cancelado; });
+    return {
+      pend: labPendencias(),
+      aguardando: ativos.filter(function(r) { return labSitReg(r) === 'aguardando'; }),
+      validar: ativos.filter(function(r) { return labSitReg(r) !== 'aguardando' && !r.validacao; }),
+      decisao: ativos.filter(function(r) { return r.rotina === 'produto' && labSitReg(r) === 'nao' && !r.decisaoLote; }),
+      confirmar: LAB_PENDENCIAS_PADRAO.filter(function(p) { return !(labCfg().pendencias[p.id] || {}).confirmado; })
+    };
+  }
+  function labVencidasQtd() { return labPendencias().filter(function(x) { return x.vencida; }).length; }
+
+  // ----- tela -----
+  function labHtml() {
+    return labUi.vista === 'plano' ? labHtmlPlano() : labHtmlLista();
+  }
+  function labChip(sit) { var s = LAB_SIT[sit] || [sit, '']; return '<span class="q-chip ' + s[1] + '">' + escapeHtml(s[0]) + '</span>'; }
+  function labHtmlLista() {
+    var g = labSituacaoGeral(), venc = g.pend.filter(function(x) { return x.vencida; }), hoje = g.pend.filter(function(x) { return x.hoje; }), nunca = g.pend.filter(function(x) { return x.nunca; });
+    var h = '<div class="q-topo"><button type="button" class="btn btn-primary" data-lab="novo">+ Lançar análise</button><span class="lab-topo-bts"><button type="button" class="btn btn-secondary btn-sm" data-lab="plano">Plano do laboratório</button><button type="button" class="btn btn-secondary btn-sm" data-lab="csv">Baixar planilha</button></span></div>';
+    h += '<p class="hint">Rotina do POP 013 (Plano de Amostragem, rev. 02): cada análise com o critério do plano, quem lançou e quem validou. Resultado fora do critério não bloqueia lote sozinho; a decisão fica registrada.</p>';
+    h += '<div class="est-cards lab-cards">' +
+      supCardF(venc.length ? 'qc-laranja' : 'qc-verde', 'Plano de amostragem', venc.length ? venc.length + (venc.length === 1 ? ' vencida' : ' vencidas') : 'em dia', hoje.length + ' para hoje' + (nunca.length ? ' · ' + nunca.length + ' sem nenhum lançamento' : ''), '', 'data-lab="ver-pend"', false) +
+      supCardF(g.aguardando.length ? 'qc-azul' : 'qc-verde', 'Aguardando resultado', fmtInt(g.aguardando.length), 'coletas com análise em andamento', '', 'data-lab="sit" data-f="aguardando"', labUi.situacao === 'aguardando') +
+      supCardF(g.validar.length ? 'qc-laranja' : 'qc-verde', 'Para validar', fmtInt(g.validar.length), 'outra pessoa confere e valida', '', 'data-lab="sit" data-f="validar"', labUi.situacao === 'validar') +
+      supCardF(g.decisao.length ? 'qc-laranja' : 'qc-verde', 'Não conformes', fmtInt(lab.reg.filter(function(r) { return !r.cancelado && labSitReg(r) === 'nao'; }).length), g.decisao.length ? g.decisao.length + (g.decisao.length === 1 ? ' lote sem decisão' : ' lotes sem decisão') : 'nenhum lote esperando decisão', '', 'data-lab="sit" data-f="nao"', labUi.situacao === 'nao') +
+      '</div>';
+    if (g.pend.length) {
+      h += '<div class="est-alertas lab-pend" id="lab-pend"><p class="est-alertas-t">Plano de amostragem: ' + (venc.length ? venc.length + ' vencida' + (venc.length > 1 ? 's' : '') : 'nada vencido') + (hoje.length ? ' · ' + hoje.length + ' para hoje' : '') + (nunca.length ? ' · ' + nunca.length + ' ainda sem lançamento' : '') + '</p><ul>' + g.pend.slice(0, labUi.todasPend ? 200 : 8).map(function(x) {
+        return '<li' + (x.vencida ? ' class="neg"' : '') + '><button type="button" class="btn-text" data-lab="novo-rot" data-rot="' + x.rot.id + '"' + (x.pontoId ? ' data-ponto="' + escapeHtml(x.pontoId) + '"' : '') + (x.tipoExterno ? ' data-ext="' + escapeHtml(x.tipoExterno) + '"' : '') + (x.colaborador ? ' data-colab="' + escapeHtml(x.colaborador) + '"' : '') + '>' + escapeHtml(x.rotulo) + '</button> · ' +
+          escapeHtml(x.ult ? 'última em ' + formatDateBR(x.ult.coletaData) + (x.vencida ? ', venceu ' + formatDateBR(x.prox) : ', vence hoje') : 'nenhuma lançada') + '</li>';
+      }).join('') + '</ul>' + (g.pend.length > 8 ? '<button type="button" class="btn-text" data-lab="todas-pend">' + (labUi.todasPend ? 'Mostrar menos' : 'Ver todas (' + g.pend.length + ')') + '</button>' : '') + '</div>';
+    } else h += '<div class="est-alertas ok">✓ Plano de amostragem em dia.</div>';
+    if (g.confirmar.length) h += '<p class="lab-confirmar">⚑ ' + g.confirmar.length + (g.confirmar.length === 1 ? ' ponto do POP 013 a confirmar' : ' pontos do POP 013 a confirmar') + ' pela Gerência da Qualidade e Responsável Técnica · <button type="button" class="btn-text" data-lab="plano">ver no plano</button></p>';
+    // grupos
+    var desde = labUi.periodo === 'tudo' ? '' : labUi.periodo === 'ano' ? todayIso().slice(0, 4) + '-01-01' : addDiasIso(todayIso(), -Number(labUi.periodo || 30));
+    var noPer = lab.reg.filter(function(r) { return !r.cancelado && (!desde || String(r.coletaData || '') >= desde); });
+    h += '<h3 class="q-plano-t">Grupos de controle</h3><div class="lab-grupos">' + LAB_GRUPOS.map(function(gr) {
+      var n = noPer.filter(function(r) { return labNoGrupo(r, gr.id); }), nc = n.filter(function(r) { return labSitReg(r) === 'nao'; }).length, on = labUi.grupo === gr.id;
+      return '<button type="button" class="lab-grupo' + (on ? ' on' : '') + (gr.etapa ? ' futuro' : '') + '" data-lab="grupo" data-f="' + gr.id + '" aria-pressed="' + (on ? 'true' : 'false') + '"><b>' + escapeHtml(gr.nome) + '</b><small>' + escapeHtml(gr.etapa ? gr.desc : n.length + (n.length === 1 ? ' registro' : ' registros') + (nc ? ' · ' + nc + ' não conforme' + (nc > 1 ? 's' : '') : '')) + '</small></button>';
+    }).join('') + '</div>';
+    // consulta
+    h += '<h3 class="q-plano-t">Consulta</h3>' +
+      chipsFiltro('Período', [['7', '7 dias'], ['30', '30 dias'], ['90', '90 dias'], ['ano', 'Este ano'], ['tudo', 'Tudo']], labUi.periodo, 'data-lab="periodo"') +
+      chipsFiltro('Situação', [['', 'Todas'], ['aguardando', 'Aguardando resultado'], ['validar', 'Para validar'], ['nao', 'Não conformes'], ['conforme', 'Conformes'], ['extra', 'Extraordinárias']], labUi.situacao, 'data-lab="sit"') +
+      '<div class="ag-ferramentas"><input type="search" id="lab-busca" placeholder="Buscar lote, produto, ponto, pessoa ou parâmetro" aria-label="Buscar no laboratório" value="' + escapeHtml(labUi.busca) + '" autocomplete="off" />' + (labUi.grupo ? '<button type="button" class="btn-text" data-lab="grupo" data-f="">Todos os grupos</button>' : '') + '</div>' +
+      '<div id="lab-lista"></div>';
+    var antigos = qual.ana.length;
+    if (antigos) h += '<details class="lab-antigos"><summary>Análises lançadas no modelo anterior (' + antigos + ')</summary>' + qual.ana.slice().sort(function(a, b) { return String(b.data || '').localeCompare(String(a.data || '')); }).map(function(a) {
+      var p = qAnalises(true).find(function(x) { return x.id === a.planoId; });
+      return '<button type="button" class="driver-row q-item" data-q="ver" data-k="ana" data-id="' + escapeHtml(a.id) + '"><span class="driver-name">' + escapeHtml(p ? p.nome : a.planoId) + '<span class="driver-sub">' + escapeHtml([formatDateBR(a.data), a.lote ? 'lote ' + a.lote : '', a.laboratorio, a.por].filter(Boolean).join(' · ')) + '</span></span>' + qResultadoChip(a.conforme === false ? 'nc' : 'conforme') + '</button>';
+    }).join('') + '</details>';
+    return h;
+  }
+  function labNoGrupo(r, gid) {
+    var rot = labRotina(r.rotina);
+    if (rot && rot.grupo === gid) return true;
+    if (r.rotina === 'produto' && (gid === 'fq' || gid === 'micro' || gid === 'sensorial')) return (r.secoes || []).indexOf(gid) >= 0;
+    if (gid === 'investigacao') return r.motivo === 'investigacao';
+    return false;
+  }
+  function labFiltrados() {
+    var desde = labUi.periodo === 'tudo' ? '' : labUi.periodo === 'ano' ? todayIso().slice(0, 4) + '-01-01' : addDiasIso(todayIso(), -Number(labUi.periodo || 30));
+    var q = normTexto(labUi.busca).trim();
+    return lab.reg.filter(function(r) {
+      if (r.cancelado) return false;
+      if (desde && String(r.coletaData || '') < desde) return false;
+      if (labUi.grupo && !labNoGrupo(r, labUi.grupo)) return false;
+      var s = labSitReg(r);
+      if (labUi.situacao === 'aguardando' && s !== 'aguardando') return false;
+      if (labUi.situacao === 'validar' && (s === 'aguardando' || r.validacao)) return false;
+      if (labUi.situacao === 'nao' && s !== 'nao') return false;
+      if (labUi.situacao === 'conforme' && s !== 'conforme') return false;
+      if (labUi.situacao === 'extra' && (!r.motivo || r.motivo === 'rotina')) return false;
+      if (q) {
+        var txt = normTexto([labTitulo(r), r.lote, r.linha, r.produtoNome, r.pontoNome, r.colaborador, r.cabecote, r.coletadoPor, r.analisadoPor, (r.lancamento || {}).por, (r.validacao || {}).por, r.laboratorio, r.obs].concat(Object.keys(r.resultados || {}).map(function(k) { return r.resultados[k].nome; })).join(' '));
+        if (txt.indexOf(q) < 0) return false;
+      }
+      return true;
+    }).sort(function(a, b) { return String(b.coletaData + (b.coletaHora || '')).localeCompare(String(a.coletaData + (a.coletaHora || ''))) || String(b.em || '').localeCompare(String(a.em || '')); });
+  }
+  function labRenderLista() {
+    var el = document.getElementById('lab-lista');
+    if (!el) return;
+    var l = labFiltrados(), mostrar = labUi.todos ? l : l.slice(0, 40);
+    el.innerHTML = (mostrar.length ? mostrar.map(function(r) {
+      var s = labSitReg(r), rot = labRotina(r.rotina) || { nome: r.rotina, grupo: '' };
+      var nc = Object.keys(r.resultados || {}).filter(function(k) { return r.resultados[k].s === 'nao'; }).map(function(k) { return r.resultados[k].nome; });
+      return '<button type="button" class="driver-row q-item lab-item lab-s-' + s + '" data-lab="ver" data-id="' + escapeHtml(r.id) + '"><span class="driver-name">' + escapeHtml(labTitulo(r)) +
+        '<span class="driver-sub">' + escapeHtml([labGrupo(rot.grupo).nome, formatDateBR(r.coletaData) + (r.coletaHora ? ' ' + r.coletaHora : ''), r.motivo && r.motivo !== 'rotina' ? (LAB_MOTIVOS.find(function(m) { return m[0] === r.motivo; }) || [, r.motivo])[1] : '', r.terceiros ? 'laboratório externo' + (r.laboratorio ? ': ' + r.laboratorio : '') : '', (r.lancamento || {}).por ? 'lançado por ' + r.lancamento.por : ''].filter(Boolean).join(' · ')) + '</span>' +
+        (nc.length ? '<span class="driver-sub lab-nc">fora: ' + escapeHtml(nc.join(', ')) + '</span>' : '') + '</span>' +
+        '<span class="lab-chips">' + labChip(s) + (s === 'aguardando' ? '' : r.validacao ? '<span class="q-chip ok">Validado</span>' : '<span class="q-chip">A validar</span>') + (r.decisaoLote ? '<span class="q-chip ' + (r.decisaoLote.decisao === 'liberado' ? 'ok' : 'falta') + '">' + escapeHtml(labDecisaoNome(r.decisaoLote.decisao)) + '</span>' : '') + '</span></button>';
+    }).join('') : '<p class="empty-state">' + (lab.reg.length ? 'Nenhum registro com esses filtros.' : 'Nenhuma análise lançada no laboratório ainda. Toque em “+ Lançar análise”.') + '</p>') +
+      (l.length > 40 ? '<button type="button" class="btn-text" data-lab="todos">' + (labUi.todos ? 'Mostrar só os 40 mais recentes' : 'Mostrar todos (' + l.length + ')') + '</button>' : '');
+  }
+  function labDecisaoNome(d) { return { liberado: 'Lote liberado', retido: 'Lote retido', destruido: 'Lote segregado e destruído' }[d] || d; }
+
+  // ----- lançar -----
+  function labEscolherRotina() {
+    gerAbrir({
+      titulo: 'Lançar análise',
+      html: '<p class="hint">Escolha o controle. Cada um traz os parâmetros, o critério e o método do POP 013.</p>' + LAB_GRUPOS.filter(function(g) { return !g.etapa; }).map(function(g) {
+        var rs = labRotinas().filter(function(r) { return r.grupo === g.id; });
+        if (!rs.length) return '';
+        return '<h3 class="q-plano-t">' + escapeHtml(g.nome) + '</h3><div class="lab-rots">' + rs.map(function(r) {
+          return '<button type="button" class="lab-rot" data-ger="rot" data-rot="' + r.id + '"><b>' + escapeHtml(r.nome) + '</b><small>' + escapeHtml([r.freqTxt, r.metodo].filter(Boolean).join(' · ')) + '</small></button>';
+        }).join('') + '</div>';
+      }).join(''),
+      acao: function(k, b) { if (k === 'rot') labAbrirForm(b.dataset.rot, null, {}); }
+    });
+  }
+  function labOpcoesProdutos(sel) {
+    return '<option value="">— escolha —</option>' + produtosOrdenados().map(function(p) { return '<option value="' + escapeHtml(p.id) + '"' + (p.id === sel ? ' selected' : '') + '>' + escapeHtml(p.nome) + '</option>'; }).join('');
+  }
+  function labOpcoesPontos(tipos, sel) {
+    var h = '<option value="">— escolha —</option>';
+    tipos.forEach(function(t) { labPontos(t).forEach(function(p) { h += '<option value="' + escapeHtml(p.id) + '"' + (p.id === sel ? ' selected' : '') + '>' + escapeHtml(p.nome) + '</option>'; }); });
+    return h;
+  }
+  // linha de resultado de um parâmetro (com o critério e a situação ao vivo)
+  function labParamHtml(pid, d, val) {
+    val = val || {};
+    var corpo;
+    var seg = function(op, rot) { return '<button type="button" class="seg-btn' + (val.t === op ? ' active' : '') + '" data-ger="lab-t" data-p="' + pid + '" data-v="' + op + '" aria-pressed="' + (val.t === op ? 'true' : 'false') + '">' + rot + '</button>'; };
+    if (d.crit === 'ausencia') corpo = '<div class="segmented lab-seg">' + seg('ausente', 'Ausente') + seg('presente', 'Presente') + '</div>';
+    else if (d.crit === 'conforme') corpo = '<div class="segmented lab-seg">' + seg('conforme', 'Sem alteração') + seg('nao', 'Alterado') + '</div>';
+    else {
+      corpo = '<input type="number" class="lab-v" data-p="' + pid + '" step="any" inputmode="decimal" value="' + escapeHtml(val.v == null ? '' : String(val.v)) + '" aria-label="' + escapeHtml(d.nome) + '" />';
+      if (labSemCriterio(d) && !d.semFonte && !d.rotulo) corpo += '<div class="segmented lab-seg lab-aval">' + ['conforme', 'nao'].map(function(op) { return '<button type="button" class="seg-btn' + (val.a === op ? ' active' : '') + '" data-ger="lab-a" data-p="' + pid + '" data-v="' + op + '" aria-pressed="' + (val.a === op ? 'true' : 'false') + '">' + (op === 'conforme' ? 'Conforme' : 'Não conforme') + '</button>'; }).join('') + '</div>';
+    }
+    return '<div class="lab-p" data-p="' + pid + '"><span class="lab-p-n">' + escapeHtml(d.nome) + (d.unidade && d.crit !== 'ausencia' ? ' (' + escapeHtml(d.unidade) + ')' : '') + '<small>' + escapeHtml(labCritTexto(d)) + (d.legal ? ' · legal' : ' · interno') + '</small></span><span class="lab-p-in">' + corpo + '<span class="lab-p-s" data-s="' + pid + '"></span></span></div>';
+  }
+  function labCtxDoForm() {
+    if (ger && ger.labCtx) return ger.labCtx;
+    var g = function(id) { var e = document.getElementById(id); return e ? e.value : ''; };
+    var prodId = g('lab-prod'), prod = prodId ? produtosOrdenados().find(function(p) { return p.id === prodId; }) : null;
+    return { fonteId: g('lab-fonte') || (ger && ger.rot && ger.rot.pontos && ger.rot.pontos[0] === 'fonte' ? g('lab-ponto') : ''), declarado: numCampo(g('lab-declarado')), produtoId: prodId, produtoNome: prod ? prod.nome : '', unidade: g('lab-unidade') };
+  }
+  // critério no formulário: o gravado no registro (correção) ou o do plano agora (novo)
+  function labDefForm(pid) {
+    var r = ger && ger.labReg, p = r && r.resultados ? r.resultados[pid] : null;
+    return p && p.def ? Object.assign({ nome: p.nome }, p.def) : labDef(pid, ger.rot, labCtxDoForm());
+  }
+  function labParamsAtivos(rot, st) {
+    if (rot.secoes) {
+      var l = [];
+      rot.secoes.forEach(function(s) { if (!st.secoes[s.id]) return; l = l.concat(s.params); (s.opcionais || []).forEach(function(o) { if (st.opc[o]) l.push(o); }); });
+      return l;
+    }
+    return rot.params || [];
+  }
+  function labRenderParams() {
+    if (!ger || !ger.lab) return;
+    var st = ger.lab, rot = ger.rot, ctx = labCtxDoForm(), box = document.getElementById('lab-params');
+    if (!box) return;
+    labLerValores();
+    var h = '';
+    if (rot.secoes) rot.secoes.forEach(function(s) {
+      if (!st.secoes[s.id]) return;
+      h += '<h3 class="q-plano-t">' + escapeHtml(s.nome) + ' <span class="opt">(' + escapeHtml(s.freqTxt) + ')</span></h3>' + s.params.concat((s.opcionais || []).filter(function(o) { return st.opc[o]; })).map(function(pid) { return labParamHtml(pid, labDefForm(pid), st.val[pid]); }).join('');
+    });
+    else h = '<h3 class="q-plano-t">Resultados</h3>' + rot.params.map(function(pid) { return labParamHtml(pid, labDefForm(pid), st.val[pid]); }).join('');
+    box.innerHTML = h;
+    labAtualizarSit();
+  }
+  function labLerValores() {
+    if (!ger || !ger.lab) return;
+    document.querySelectorAll('#lab-params .lab-v').forEach(function(inp) { var p = inp.dataset.p, v = numCampo(inp.value); ger.lab.val[p] = Object.assign({}, ger.lab.val[p] || {}, { v: v }); });
+  }
+  function labAtualizarSit() {
+    if (!ger || !ger.lab) return;
+    labLerValores();
+    var ctx = labCtxDoForm();
+    document.querySelectorAll('#lab-params .lab-p-s').forEach(function(el) {
+      var p = el.dataset.s, s = labAvaliar(labDefForm(p), ger.lab.val[p]);
+      el.className = 'lab-p-s s-' + s; el.textContent = s === 'pendente' ? '' : s === 'conforme' ? 'conforme' : s === 'nao' ? 'fora' : 'avaliar';
+    });
+  }
+  function labIdentHtml(rot, r, pre) {
+    r = r || {}; pre = pre || {};
+    var h = '';
+    if (rot.alvo === 'lote') {
+      h += '<label>Produto <span class="req">*</span><select id="lab-prod">' + labOpcoesProdutos(r.produtoId) + '</select></label>' +
+        '<div class="row-2"><label>Data de produção <span class="req">*</span><input type="date" id="lab-dprod" value="' + escapeHtml(r.dataProducao || todayIso()) + '" /></label>' +
+        '<label>Linha <span id="lab-linha-req" class="opt">(se houver)</span><select id="lab-linha"><option value="">—</option>' + labCfg().linhas.map(function(l) { return '<option' + (l === r.linha ? ' selected' : '') + '>' + escapeHtml(l) + '</option>'; }).join('') + '</select></label></div>' +
+        '<p class="field-hint" id="lab-lote-txt"></p>' +
+        '<label>Fonte utilizada <span class="opt">(referência da físico-química)</span><select id="lab-fonte">' + labOpcoesPontos(['fonte'], r.fonteId) + '</select></label>';
+    } else if (rot.alvo === 'ponto') {
+      var tem = (rot.pontos || []).some(function(t) { return labPontos(t).length; });
+      h += tem ? '<label>Ponto de coleta <span class="req">*</span><select id="lab-ponto">' + labOpcoesPontos(rot.pontos, r.pontoId || pre.pontoId) + '</select></label>' :
+        '<label>Ponto de coleta <span class="req">*</span><input type="text" id="lab-ponto-txt" maxlength="80" autocomplete="off" value="' + escapeHtml(r.pontoNome || '') + '" /></label><p class="field-hint">Cadastre os pontos em Plano do laboratório para escolher da lista e acompanhar a frequência de cada um.</p>';
+    } else if (rot.alvo === 'pessoa') {
+      var nomes = labPontos('colaborador').map(function(p) { return p.nome; }).concat(equipe.map(function(m) { return m.nomeCompleto || m.nome; })).filter(function(x, i, a) { return x && a.indexOf(x) === i; });
+      h += '<label>Colaborador <span class="req">*</span><input type="text" id="lab-colab" maxlength="80" list="lab-colabs" autocomplete="off" value="' + escapeHtml(r.colaborador || pre.colaborador || '') + '" /></label><datalist id="lab-colabs">' + nomes.map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>';
+    } else if (rot.alvo === 'cabecote') {
+      var cabs = labPontos('cabecote');
+      h += (cabs.length ? '<label>Cabeçote <span class="req">*</span><select id="lab-cab"><option value="">— escolha —</option>' + cabs.map(function(c) { return '<option value="' + escapeHtml(c.nome) + '"' + (c.nome === r.cabecote ? ' selected' : '') + '>' + escapeHtml(c.nome) + '</option>'; }).join('') + '</select></label>' :
+        '<label>Cabeçote <span class="req">*</span><input type="text" id="lab-cab" maxlength="40" autocomplete="off" value="' + escapeHtml(r.cabecote || '') + '" /></label>') +
+        '<label>Produto <span class="req">*</span><select id="lab-prod">' + labOpcoesProdutos(r.produtoId) + '</select></label>' +
+        '<div class="row-2"><label>Turno<select id="lab-turno"><option value="">—</option>' + Q_TURNOS.map(function(t) { return '<option' + (t === r.turno ? ' selected' : '') + '>' + escapeHtml(t) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Unidade do torque<input type="text" id="lab-unidade" maxlength="16" autocomplete="off" value="' + escapeHtml(r.unidade || labCfg().params.torque.unidade || '') + '" /></label></div>';
+    } else if (rot.alvo === 'medicao') {
+      h += '<label>Produto <span class="opt">(opcional)</span><select id="lab-prod">' + labOpcoesProdutos(r.produtoId) + '</select></label>' +
+        '<div class="row-3"><label>Turno<select id="lab-turno"><option value="">—</option>' + Q_TURNOS.map(function(t) { return '<option' + (t === r.turno ? ' selected' : '') + '>' + escapeHtml(t) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Temperatura (°C)<input type="number" id="lab-temp" step="any" inputmode="decimal" value="' + escapeHtml(r.temperatura == null ? '' : String(r.temperatura)) + '" /></label>' +
+        '<label>Unidade<input type="text" id="lab-unidade" maxlength="16" autocomplete="off" value="' + escapeHtml(r.unidade || labCfg().params.co2.unidade || '') + '" /></label></div>';
+    } else if (rot.alvo === 'produto') {
+      h += '<label>Produto <span class="req">*</span><select id="lab-prod">' + labOpcoesProdutos(r.produtoId) + '</select></label>' +
+        '<label>Volume declarado no rótulo (mL) <span class="req">*</span><input type="number" id="lab-declarado" step="any" inputmode="decimal" value="' + escapeHtml(r.declarado == null ? '' : String(r.declarado)) + '" /></label>';
+    } else if (rot.alvo === 'avulso') {
+      h += '<label>Lote ou identificação da amostra <span class="opt">(opcional)</span><input type="text" id="lab-ident" maxlength="80" autocomplete="off" value="' + escapeHtml(r.identificacao || '') + '" /></label>';
+    }
+    if (rot.amostra || rot.metodo) h += '<p class="field-hint">' + escapeHtml([rot.amostra, rot.metodo].filter(Boolean).join(' · ')) + '</p>';
+    return h;
+  }
+  function labComumHtml(r, editando) {
+    r = r || {};
+    return '<div class="row-2"><label>Data da coleta <span class="req">*</span><input type="date" id="lab-dcol" value="' + escapeHtml(r.coletaData || todayIso()) + '" /></label><label>Hora<input type="time" id="lab-hcol" value="' + escapeHtml(r.coletaHora || (editando ? '' : qHoraAgora())) + '" /></label></div>' +
+      '<div class="row-2"><label>Coletado por<input type="text" id="lab-colpor" maxlength="60" autocomplete="off" value="' + escapeHtml(r.coletadoPor || '') + '" /></label><label>Analisado por<input type="text" id="lab-anapor" maxlength="60" autocomplete="off" value="' + escapeHtml(r.analisadoPor || '') + '" /></label></div>' +
+      '<div class="row-2"><label>Motivo<select id="lab-motivo">' + LAB_MOTIVOS.map(function(m) { return '<option value="' + m[0] + '"' + ((r.motivo || 'rotina') === m[0] ? ' selected' : '') + '>' + escapeHtml(m[1]) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Conclusão da análise<input type="date" id="lab-concl" value="' + escapeHtml(r.conclusao || '') + '" /></label></div>' +
+      '<label id="lab-motivo-txt-l"' + ((r.motivo || 'rotina') === 'rotina' ? ' class="hidden"' : '') + '>Detalhe da análise extraordinária<input type="text" id="lab-motivo-txt" maxlength="160" autocomplete="off" value="' + escapeHtml(r.motivoTexto || '') + '" placeholder="Cliente, nº da reclamação, o que se investiga" /></label>';
+  }
+  // formulário de lançamento (novo) ou de resultados (completar ou corrigir um registro)
+  function labAbrirForm(rid, reg, pre) {
+    var rot = labRotina(rid);
+    if (!rot) return;
+    if (rot.alvo === 'externo') return labAbrirExterno(reg, pre);
+    pre = pre || {};
+    var st = { secoes: {}, opc: {}, val: reg ? JSON.parse(JSON.stringify(reg.resultados || {})) : {} };
+    if (rot.secoes) rot.secoes.forEach(function(s) { st.secoes[s.id] = reg ? (reg.secoes || []).indexOf(s.id) >= 0 : true; (s.opcionais || []).forEach(function(o) { st.opc[o] = !!(reg && reg.resultados && reg.resultados[o]); }); });
+    var temSenha = qPorSenha() || (session && session.role === 'admin');
+    var html = (reg ? '<p class="hint"><b>' + escapeHtml(labTitulo(reg)) + '</b> · coleta em ' + escapeHtml(formatDateBR(reg.coletaData)) + '. Resultado que já estava lançado só muda com o motivo (fica no histórico e volta a pedir validação).</p>' :
+        '<p class="hint">' + escapeHtml(labGrupo(rot.grupo).nome + ' · ' + rot.nome + ' · ' + rot.freqTxt) + '. Pode salvar só a coleta e lançar os resultados depois.</p>') +
+      (reg ? '' : labIdentHtml(rot, null, pre) + labComumHtml(null, false)) +
+      (rot.secoes ? '<div class="lab-secoes" role="group" aria-label="O que foi analisado">' + rot.secoes.map(function(s) { return '<label class="check"><input type="checkbox" class="lab-sec" data-sec="' + s.id + '"' + (st.secoes[s.id] ? ' checked' : '') + (reg ? ' disabled' : '') + ' /> ' + escapeHtml(s.nome) + '</label>'; }).join('') +
+        rot.secoes.map(function(s) { return (s.opcionais || []).map(function(o) { return '<label class="check"><input type="checkbox" class="lab-opc" data-opc="' + o + '"' + (st.opc[o] ? ' checked' : '') + (reg && reg.resultados && reg.resultados[o] ? ' disabled' : '') + ' /> Incluir ' + escapeHtml(labCfg().params[o].nome) + '</label>'; }).join(''); }).join('') + '</div>' : '') +
+      '<div id="lab-params"></div>' +
+      (reg ? '<label>Data da conclusão<input type="date" id="lab-concl" value="' + escapeHtml(reg.conclusao || '') + '" /></label><label id="lab-corr-l">Motivo da correção <span class="opt">(obrigatório se mudar resultado já lançado)</span><input type="text" id="lab-corr" maxlength="200" autocomplete="off" /></label>' :
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="lab-obs" maxlength="300" autocomplete="off" /></label>' +
+        '<label>Documento ou evidência <span class="opt">(opcional: PDF ou foto)</span><input type="file" id="lab-arq" accept="application/pdf,image/*" /></label>') +
+      (!temSenha ? '<label>Responsável pelo lançamento <span class="req">*</span><input type="text" id="lab-resp" maxlength="60" autocomplete="off" /></label>' : '<p class="hint">Ao salvar, assine com a sua senha de 4 números (Qualidade).</p>');
+    gerAbrir({
+      titulo: reg ? 'Resultados · ' + rot.nome : rot.nome,
+      botao: 'Salvar',
+      html: html,
+      depois: function() { if (pre.pontoId && document.getElementById('lab-ponto')) document.getElementById('lab-ponto').value = pre.pontoId; labAtualizarLote(); labRenderParams(); },
+      input: function(t) { if (t.classList.contains('lab-v')) labAtualizarSit(); },
+      change: function(t) {
+        if (t.classList.contains('lab-sec')) { labLerValores(); st.secoes[t.dataset.sec] = t.checked; labRenderParams(); }
+        else if (t.classList.contains('lab-opc')) { labLerValores(); st.opc[t.dataset.opc] = t.checked; labRenderParams(); }
+        else if (t.id === 'lab-prod') { var ctx = labCtxDoForm(), dc = document.getElementById('lab-declarado'); if (dc && !dc.value) { var vr = labVolumeRotulo(ctx.produtoNome); if (vr) dc.value = vr; } labAtualizarLote(); labRenderParams(); }
+        else if (t.id === 'lab-fonte' || t.id === 'lab-ponto' || t.id === 'lab-declarado' || t.id === 'lab-unidade') labRenderParams();
+        else if (t.id === 'lab-dprod' || t.id === 'lab-linha') labAtualizarLote();
+        else if (t.id === 'lab-motivo') document.getElementById('lab-motivo-txt-l').classList.toggle('hidden', t.value === 'rotina');
+      },
+      acao: function(k, b) {
+        if (k !== 'lab-t' && k !== 'lab-a') return;
+        labLerValores();
+        var p = b.dataset.p, cur = st.val[p] || {}, campo = k === 'lab-t' ? 't' : 'a', novo = cur[campo] === b.dataset.v ? null : b.dataset.v;
+        st.val[p] = Object.assign({}, cur); st.val[p][campo] = novo;
+        b.parentNode.querySelectorAll('.seg-btn').forEach(function(x) { var on = x.dataset.v === novo; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+        labAtualizarSit();
+      },
+      salvar: function() { return labSalvar(rot, reg, st); }
+    });
+    ger.lab = st; ger.rot = rot;
+    if (reg) { ger.labReg = reg; ger.labCtx = { fonteId: reg.fonteId, declarado: reg.declarado, produtoId: reg.produtoId, unidade: reg.unidade }; }
+    labAtualizarLote(); labRenderParams();
+  }
+  function labAtualizarLote() {
+    var el = document.getElementById('lab-lote-txt');
+    if (!el) return;
+    var ctx = labCtxDoForm(), pede = labPedeLinha(ctx.produtoNome), d = (document.getElementById('lab-dprod') || {}).value, l = (document.getElementById('lab-linha') || {}).value;
+    var req = document.getElementById('lab-linha-req'); if (req) { req.className = pede ? 'req' : 'opt'; req.textContent = pede ? '*' : '(se houver)'; }
+    el.textContent = ctx.produtoNome ? 'Lote: ' + (d ? formatDateBR(d) : '—') + (pede ? (l ? ' ' + l : ' + linha') : '') + (pede ? ' (510 ml e 1,5 L: data de produção e linha)' : ' (data de produção' + (l ? '; linha ' + l + ' em campo separado' : '') + ')') : '';
+  }
+  function labSalvar(rot, reg, st) {
+    labLerValores();
+    var ctx = labCtxDoForm(), dados, erro = '';
+    if (!reg) {
+      dados = { rotina: rot.id, grupo: rot.grupo, coletaData: gerVal('lab-dcol'), coletaHora: gerVal('lab-hcol'), coletadoPor: gerVal('lab-colpor'), analisadoPor: gerVal('lab-anapor'),
+        motivo: gerVal('lab-motivo') || 'rotina', motivoTexto: gerVal('lab-motivo-txt'), conclusao: gerVal('lab-concl'), obs: gerVal('lab-obs') };
+      if (!dados.coletaData) return gerErro('Informe a data da coleta.');
+      if (dados.coletaData > todayIso()) return gerErro('A data da coleta ficou no futuro.');
+      if (dados.motivo !== 'rotina' && !dados.motivoTexto) return gerErro('Descreva a análise extraordinária (cliente, reclamação, investigação).');
+      if (rot.alvo === 'lote') {
+        if (!ctx.produtoId) return gerErro('Escolha o produto.');
+        dados.produtoId = ctx.produtoId; dados.produtoNome = ctx.produtoNome; dados.dataProducao = gerVal('lab-dprod'); dados.linha = gerVal('lab-linha'); dados.fonteId = gerVal('lab-fonte');
+        if (!dados.dataProducao) return gerErro('Informe a data de produção (lote).');
+        if (labPedeLinha(ctx.produtoNome) && !dados.linha) return gerErro('510 ml e 1,5 L: informe a linha de envase (o lote é data + linha).');
+        if (st.secoes.fq && !dados.fonteId) return gerErro('Escolha a fonte utilizada (referência da físico-química).');
+        dados.fonteNome = dados.fonteId ? labPontoNome(dados.fonteId) : '';
+        dados.lote = labLoteTexto(dados);
+        dados.secoes = rot.secoes.filter(function(s) { return st.secoes[s.id]; }).map(function(s) { return s.id; });
+        if (!dados.secoes.length) return gerErro('Marque ao menos um grupo de análise.');
+      } else if (rot.alvo === 'ponto') {
+        var sel = document.getElementById('lab-ponto');
+        if (sel) { if (!sel.value) return gerErro('Escolha o ponto de coleta.'); dados.pontoId = sel.value; dados.pontoNome = labPontoNome(sel.value); }
+        else { dados.pontoNome = gerVal('lab-ponto-txt'); if (!dados.pontoNome) return gerErro('Informe o ponto de coleta.'); dados.pontoId = ''; }
+        if (rot.pontos && rot.pontos[0] === 'fonte') dados.fonteId = dados.pontoId;
+      } else if (rot.alvo === 'pessoa') {
+        dados.colaborador = gerVal('lab-colab'); if (!dados.colaborador) return gerErro('Informe o colaborador.');
+      } else if (rot.alvo === 'cabecote') {
+        dados.cabecote = gerVal('lab-cab'); if (!dados.cabecote) return gerErro('Informe o cabeçote.');
+        if (!ctx.produtoId) return gerErro('Escolha o produto.');
+        dados.produtoId = ctx.produtoId; dados.produtoNome = ctx.produtoNome; dados.turno = gerVal('lab-turno'); dados.unidade = gerVal('lab-unidade');
+      } else if (rot.alvo === 'medicao') {
+        dados.produtoId = ctx.produtoId; dados.produtoNome = ctx.produtoNome; dados.turno = gerVal('lab-turno'); dados.temperatura = numCampo(gerVal('lab-temp')); dados.unidade = gerVal('lab-unidade');
+      } else if (rot.alvo === 'produto') {
+        if (!ctx.produtoId) return gerErro('Escolha o produto.');
+        dados.produtoId = ctx.produtoId; dados.produtoNome = ctx.produtoNome; dados.declarado = ctx.declarado;
+        if (!(dados.declarado > 0)) return gerErro('Informe o volume declarado no rótulo.');
+      } else if (rot.alvo === 'avulso') dados.identificacao = gerVal('lab-ident');
+    } else {
+      dados = labSemId(reg);
+      dados.conclusao = gerVal('lab-concl') || dados.conclusao || '';
+      ctx = { fonteId: reg.fonteId, declarado: reg.declarado, produtoId: reg.produtoId, unidade: reg.unidade };
+    }
+    // resultados com o critério usado (o de agora para o que é novo; o gravado para o que já estava)
+    var params = reg ? Object.keys(reg.resultados || {}).concat(labParamsAtivos(rot, st).filter(function(p) { return !(reg.resultados || {})[p]; })) : labParamsAtivos(rot, st);
+    var res = {}, mudou = [], antes = {};
+    params.forEach(function(pid) {
+      var v = st.val[pid] || {}, velho = reg && reg.resultados ? reg.resultados[pid] : null;
+      var d = velho && velho.def ? velho.def : labDef(pid, rot, ctx);
+      var nv = v.v == null || v.v === '' ? null : Number(v.v), nt = v.t || null, na = v.a || null;
+      if (velho && (velho.v != null || velho.t) && ((velho.v == null ? null : Number(velho.v)) !== nv || (velho.t || null) !== nt || (velho.a || null) !== na)) { mudou.push(d.nome); antes[pid] = { v: velho.v == null ? null : velho.v, t: velho.t || null, a: velho.a || null }; }
+      var defGrav = { nome: d.nome, crit: d.crit, min: d.min == null ? null : d.min, max: d.max == null ? null : d.max, ref: d.ref == null ? null : d.ref, unidade: d.unidade || '', volume: d.volume || '', legal: !!d.legal, rotulo: !!d.rotulo };
+      var p = { nome: d.nome, v: nv, t: nt, a: na, un: d.unidade || '', crit: labCritTexto(d), legal: !!d.legal, def: defGrav };
+      p.s = labAvaliar(defGrav, p);
+      res[pid] = p;
+    });
+    if (reg && mudou.length && !gerVal('lab-corr')) return gerErro('Você mudou resultado já lançado (' + mudou.join(', ') + '). Informe o motivo da correção.');
+    if (reg && !mudou.length && params.every(function(pid) { var a = (reg.resultados || {})[pid] || {}, b = res[pid]; return (a.v == null ? null : Number(a.v)) === b.v && (a.t || null) === b.t && (a.a || null) === b.a; }) && (reg.conclusao || '') === dados.conclusao) return gerErro('Nada mudou.');
+    dados.resultados = res;
+    var sit = labSitReg(dados);
+    if (sit !== 'aguardando' && !dados.conclusao) dados.conclusao = todayIso();
+    var resp = gerVal('lab-resp');
+    if (document.getElementById('lab-resp') && !resp) return gerErro('Informe o responsável.');
+    var file = !reg && document.getElementById('lab-arq') ? (document.getElementById('lab-arq').files || [])[0] : null;
+    return new Promise(function(resolve) {
+      qAssinar(resp, reg ? 'resultados do laboratório' : 'lançamento do laboratório', function(quem) {
+        var ref = labQuemRef(quem), agora = new Date().toISOString(), id = reg ? reg.id : 'lab' + uid();
+        dados.lancadoPor = (dados.lancadoPor || []).concat(dados.lancadoPor && dados.lancadoPor.indexOf(ref) >= 0 ? [] : [ref]);
+        dados._por = quem.nome;
+        if (!reg) { dados.lancamento = { por: quem.nome, porId: quem.id || '', em: agora }; dados.em = agora; labHist(dados, 'lançou' + (sit === 'aguardando' ? ' a coleta' : ' os resultados')); }
+        else {
+          if (mudou.length) { delete dados.validacao; labHist(dados, 'corrigiu ' + mudou.join(', ') + ': ' + gerVal('lab-corr'), antes); }
+          else labHist(dados, 'lançou resultados');
+        }
+        var p = file ? labAnexar(id, dados, file) : labGravar('reg', id, dados);
+        p.then(function() { gerFechar(); showToast(sit === 'aguardando' ? 'Coleta salva: faltam resultados.' : sit === 'nao' ? 'Salvo: há resultado fora do critério.' : 'Salvo: falta a validação por outra pessoa.'); resolve(false); })
+          .catch(function(err) { console.error('laboratório', err); gerErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo 15 MB).' : 'Não foi possível salvar agora. Tente novamente.'); resolve(false); });
+      });
+      // se a assinatura for cancelada, o formulário continua aberto
+      resolve(false);
+    });
+  }
+  function labAnexar(id, dados, file) {
+    if (!file || mode !== 'db' || !sbCliente) return labGravar('reg', id, dados);
+    return prepararArquivo(file).then(function(arq) {
+      if (arq.blob.size > 15 * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; throw e; }
+      var caminho = 'registros/' + id + '/' + Date.now().toString(36) + '.' + arq.ext;
+      return sbCliente.storage.from(BUCKET_LAB).upload(caminho, arq.blob, { contentType: arq.mime || undefined, upsert: false }).then(function(r) {
+        if (r.error) throw r.error;
+        var d = Object.assign({}, dados);
+        d.anexos = (d.anexos || []).concat([{ caminho: caminho, nome: arq.nome, mime: arq.mime, tamanho: arq.blob.size, em: new Date().toISOString() }]);
+        return labGravar('reg', id, d);
+      });
+    });
+  }
+  // análise externa: tipo, laboratório, ponto, datas, resultados (texto), avaliação e laudo
+  function labAbrirExterno(reg, pre) {
+    pre = pre || {};
+    var temSenha = qPorSenha() || (session && session.role === 'admin');
+    var labs = lab.reg.map(function(r) { return r.laboratorio; }).filter(function(x, i, a) { return x && a.indexOf(x) === i; });
+    gerAbrir({
+      titulo: 'Análise em laboratório externo', botao: 'Salvar',
+      html: '<p class="hint">Fica identificada como análise feita por terceiros. Anexe o laudo.</p>' +
+        '<label>Tipo de análise <span class="req">*</span><select id="labx-tipo">' + LAB_EXTERNOS.map(function(t) { return '<option value="' + t.id + '"' + ((pre.tipoExterno || 'quimica') === t.id ? ' selected' : '') + '>' + escapeHtml(t.nome + ' · ' + t.freqTxt) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Laboratório responsável <span class="req">*</span><input type="text" id="labx-lab" maxlength="80" list="labx-labs" autocomplete="off" /></label><datalist id="labx-labs">' + labs.map(function(n) { return '<option value="' + escapeHtml(n) + '"></option>'; }).join('') + '</datalist>' +
+        '<label>Ponto de coleta<select id="lab-ponto">' + labOpcoesPontos(['fonte', 'reservatorio'], '') + '<option value="__outro">Outro (escrever)</option></select></label><input type="text" id="labx-ponto-txt" class="hidden" maxlength="80" placeholder="Ponto de coleta" autocomplete="off" />' +
+        '<div class="row-2"><label>Data da coleta <span class="req">*</span><input type="date" id="lab-dcol" value="' + todayIso() + '" /></label><label>Emissão do laudo<input type="date" id="labx-emissao" /></label></div>' +
+        '<label>Nº do laudo<input type="text" id="labx-laudo" maxlength="40" autocomplete="off" /></label>' +
+        '<label>Resultados <span class="opt">(o que o laudo traz; se estiver pendente, deixe em branco)</span><textarea id="labx-res" rows="3" maxlength="2000"></textarea></label>' +
+        '<div class="segmented q-conf" role="radiogroup" aria-label="Avaliação"><button type="button" class="seg-btn active" data-ger="labx-c" data-v="" aria-pressed="true">Aguardando laudo</button><button type="button" class="seg-btn" data-ger="labx-c" data-v="conforme" aria-pressed="false">Conforme</button><button type="button" class="seg-btn" data-ger="labx-c" data-v="nao" aria-pressed="false">Não conforme</button></div>' +
+        '<label>Responsável pela avaliação<input type="text" id="labx-aval" maxlength="60" autocomplete="off" /></label>' +
+        '<label>Observações e tratativas<input type="text" id="lab-obs" maxlength="300" autocomplete="off" /></label>' +
+        '<label>Laudo (PDF ou foto)<input type="file" id="lab-arq" accept="application/pdf,image/*" /></label>' +
+        (!temSenha ? '<label>Responsável pelo lançamento <span class="req">*</span><input type="text" id="lab-resp" maxlength="60" autocomplete="off" /></label>' : '<p class="hint">Ao salvar, assine com a sua senha de 4 números (Qualidade).</p>'),
+      change: function(t) { if (t.id === 'lab-ponto') document.getElementById('labx-ponto-txt').classList.toggle('hidden', t.value !== '__outro'); },
+      acao: function(k, b) { if (k !== 'labx-c') return; document.querySelectorAll('#ger-form-body [data-ger="labx-c"]').forEach(function(x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); },
+      salvar: function() {
+        var conc = (document.querySelector('#ger-form-body [data-ger="labx-c"][aria-pressed="true"]') || {}).dataset || {}, c = conc.v || '';
+        var pv = gerVal('lab-ponto'), dados = { rotina: 'externo', grupo: 'externo', terceiros: true, tipoExterno: gerVal('labx-tipo'), laboratorio: gerVal('labx-lab'), coletaData: gerVal('lab-dcol'), emissaoLaudo: gerVal('labx-emissao'), laudo: gerVal('labx-laudo'),
+          resultadoTexto: gerVal('labx-res'), avaliadoPor: gerVal('labx-aval'), obs: gerVal('lab-obs'), pontoId: pv && pv !== '__outro' ? pv : '', pontoNome: pv === '__outro' ? gerVal('labx-ponto-txt') : pv ? labPontoNome(pv) : '', motivo: 'rotina' };
+        if (!dados.laboratorio) return gerErro('Informe o laboratório responsável.');
+        if (!dados.coletaData) return gerErro('Informe a data da coleta.');
+        if (c && !dados.resultadoTexto) return gerErro('Escreva os resultados do laudo antes de avaliar.');
+        if (c && !dados.avaliadoPor) return gerErro('Informe quem avaliou o laudo.');
+        dados.resultados = { laudo: { nome: 'Avaliação do laudo', v: null, t: c || null, un: '', crit: 'conforme o laudo e a legislação', legal: true, def: { nome: 'Avaliação do laudo', crit: 'conforme' }, s: c === 'conforme' ? 'conforme' : c === 'nao' ? 'nao' : 'pendente' } };
+        if (c) dados.conclusao = dados.emissaoLaudo || todayIso();
+        var resp = gerVal('lab-resp');
+        if (document.getElementById('lab-resp') && !resp) return gerErro('Informe o responsável.');
+        var file = (document.getElementById('lab-arq').files || [])[0];
+        return new Promise(function(resolve) {
+          qAssinar(resp, 'análise externa', function(quem) {
+            var id = 'lab' + uid(), agora = new Date().toISOString();
+            dados.lancadoPor = [labQuemRef(quem)]; dados.lancamento = { por: quem.nome, porId: quem.id || '', em: agora }; dados.em = agora; dados._por = quem.nome; labHist(dados, 'lançou a análise externa');
+            var p = file ? labAnexar(id, dados, file) : labGravar('reg', id, dados);
+            p.then(function() { gerFechar(); showToast('Análise externa lançada.'); resolve(false); }).catch(function(err) { console.error('laboratório', err); gerErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo 15 MB).' : 'Não foi possível salvar agora.'); resolve(false); });
+          });
+          resolve(false);
+        });
+      }
+    });
+  }
+  function labAbrirExternoAvaliar(r) {
+    var dados = labSemId(r);
+    gerAbrir({
+      titulo: 'Avaliar o laudo', botao: 'Salvar',
+      html: '<label>Resultados<textarea id="labx-res" rows="3" maxlength="2000">' + escapeHtml(r.resultadoTexto || '') + '</textarea></label>' +
+        '<div class="segmented q-conf"><button type="button" class="seg-btn" data-ger="labx-c" data-v="conforme" aria-pressed="false">Conforme</button><button type="button" class="seg-btn" data-ger="labx-c" data-v="nao" aria-pressed="false">Não conforme</button></div>' +
+        '<div class="row-2"><label>Emissão do laudo<input type="date" id="labx-emissao" value="' + escapeHtml(r.emissaoLaudo || '') + '" /></label><label>Responsável pela avaliação<input type="text" id="labx-aval" maxlength="60" value="' + escapeHtml(r.avaliadoPor || '') + '" /></label></div>' +
+        '<label>Laudo (PDF ou foto)<input type="file" id="lab-arq" accept="application/pdf,image/*" /></label>',
+      acao: function(k, b) { if (k !== 'labx-c') return; document.querySelectorAll('#ger-form-body [data-ger="labx-c"]').forEach(function(x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); },
+      salvar: function() {
+        var c = ((document.querySelector('#ger-form-body [data-ger="labx-c"][aria-pressed="true"]') || {}).dataset || {}).v || '';
+        if (!c) return gerErro('Marque conforme ou não conforme.');
+        dados.resultadoTexto = gerVal('labx-res'); dados.avaliadoPor = gerVal('labx-aval'); dados.emissaoLaudo = gerVal('labx-emissao');
+        if (!dados.resultadoTexto || !dados.avaliadoPor) return gerErro('Preencha os resultados e quem avaliou.');
+        dados.resultados.laudo = Object.assign({}, dados.resultados.laudo, { t: c, s: c === 'conforme' ? 'conforme' : 'nao' });
+        dados.conclusao = dados.emissaoLaudo || todayIso();
+        var file = (document.getElementById('lab-arq').files || [])[0];
+        return new Promise(function(resolve) {
+          qAssinar('', 'avaliação do laudo', function(quem) {
+            var ref = labQuemRef(quem);
+            if (dados.lancadoPor.indexOf(ref) < 0) dados.lancadoPor.push(ref);
+            dados._por = quem.nome; labHist(dados, 'avaliou o laudo: ' + (c === 'conforme' ? 'conforme' : 'não conforme'));
+            (file ? labAnexar(r.id, dados, file) : labGravar('reg', r.id, dados)).then(function() { gerFechar(); showToast('Avaliação salva.'); resolve(false); }).catch(function(err) { console.error('laboratório', err); gerErro('Não foi possível salvar agora.'); resolve(false); });
+          });
+          resolve(false);
+        });
+      }
+    });
+  }
+
+  // ----- detalhes, validação e decisão do lote -----
+  function labAbrirVer(r) {
+    var rot = labRotina(r.rotina) || { nome: r.rotina, grupo: '' }, s = labSitReg(r);
+    var lin = function(k, v) { return v ? '<div class="an-lin"><span>' + k + '</span><b>' + escapeHtml(v) + '</b></div>' : ''; };
+    var mot = LAB_MOTIVOS.find(function(m) { return m[0] === r.motivo; });
+    var html = '<div class="lab-ver-chips">' + labChip(s) + (s === 'aguardando' ? '' : r.validacao ? '<span class="q-chip ok">Validado</span>' : '<span class="q-chip">A validar</span>') + (r.terceiros ? '<span class="q-chip">Laboratório externo</span>' : '') + '</div>' +
+      lin('Grupo', labGrupo(rot.grupo).nome) + lin('Controle', rot.nome) + lin('Produto', r.produtoNome) + lin('Lote', r.lote) + lin('Linha', r.linha) + lin('Fonte utilizada', r.rotina === 'produto' ? r.fonteNome : '') +
+      lin('Ponto de coleta', r.pontoNome) + lin('Colaborador', r.colaborador) + lin('Cabeçote', r.cabecote) + lin('Turno', r.turno) + lin('Temperatura', r.temperatura != null ? fmtNumQ(r.temperatura) + ' °C' : '') + lin('Volume do rótulo', r.declarado ? fmtNumQ(r.declarado) + ' mL' : '') + lin('Amostra', r.identificacao) +
+      lin('Tipo', r.terceiros ? (LAB_EXTERNOS.find(function(x) { return x.id === r.tipoExterno; }) || {}).nome : '') + lin('Laboratório', r.laboratorio) + lin('Nº do laudo', r.laudo) + lin('Emissão do laudo', r.emissaoLaudo ? formatDateBR(r.emissaoLaudo) : '') +
+      lin('Coleta', formatDateBR(r.coletaData) + (r.coletaHora ? ' às ' + r.coletaHora : '')) + lin('Coletado por', r.coletadoPor) + lin('Analisado por', r.analisadoPor) + lin('Avaliado por', r.avaliadoPor) + lin('Conclusão', r.conclusao ? formatDateBR(r.conclusao) : '') +
+      lin('Motivo', mot && r.motivo !== 'rotina' ? mot[1] + (r.motivoTexto ? ': ' + r.motivoTexto : '') : 'Rotina') + lin('Observações', r.obs);
+    if (r.terceiros) html += '<h3 class="q-plano-t">Resultados do laudo</h3><p class="lab-texto">' + escapeHtml(r.resultadoTexto || 'Aguardando o laudo.') + '</p>';
+    else html += '<h3 class="q-plano-t">Resultados</h3><div class="px-tab-wrap"><table class="px-tab lab-tab"><thead><tr><th>Parâmetro</th><th>Resultado</th><th>Critério</th><th>Situação</th></tr></thead><tbody>' + Object.keys(r.resultados || {}).map(function(k) {
+      var p = r.resultados[k];
+      return '<tr class="lab-r-' + p.s + '"><td>' + escapeHtml(p.nome) + '<small class="an-sub">' + (p.legal ? 'legal' : 'interno') + '</small></td><td>' + escapeHtml(labResultadoTexto(p)) + (p.a ? '<small class="an-sub">avaliação: ' + (p.a === 'conforme' ? 'conforme' : 'não conforme') + '</small>' : '') + '</td><td>' + escapeHtml(p.crit || '') + '</td><td>' + ({ pendente: 'aguardando', conforme: 'conforme', nao: '<b>fora</b>', avaliar: 'avaliar' }[p.s] || p.s) + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
+    var legalNc = Object.keys(r.resultados || {}).some(function(k) { return r.resultados[k].s === 'nao' && r.resultados[k].legal; }), intNc = Object.keys(r.resultados || {}).some(function(k) { return r.resultados[k].s === 'nao' && !r.resultados[k].legal; });
+    if (r.rotina === 'produto' && (legalNc || intNc)) {
+      html += '<div class="est-alertas"><p class="est-alertas-t">Situação do lote</p><ul>' + (legalNc ? '<li class="neg">Parâmetro legal fora do critério: o POP 013 (item IV) prevê condenar o lote. A decisão é da Gerência da Qualidade / Responsável Técnica.</li>' : '') +
+        (intNc ? '<li>Controle interno fora (heterotróficas, físico-química ou sensorial): investigar as causas, refazer a higienização da linha e recoletar (POP 013, item V e ações corretivas). Não significa, sozinho, lote impróprio.</li>' : '') + '</ul></div>';
+    }
+    if (r.decisaoLote) html += lin('Decisão do lote', labDecisaoNome(r.decisaoLote.decisao) + ' · ' + r.decisaoLote.por + ' em ' + anQuando(r.decisaoLote.em) + (r.decisaoLote.justificativa ? ' · ' + r.decisaoLote.justificativa : ''));
+    html += lin('Lançado por', (r.lancamento || {}).por ? r.lancamento.por + ' em ' + anQuando(r.lancamento.em) : '') + lin('Validado por', r.validacao ? r.validacao.por + ' em ' + anQuando(r.validacao.em) : '');
+    if (r.ncId) { var nc = qual.nc.find(function(n) { return n.id === r.ncId; }); html += lin('Não conformidade', nc ? 'NC nº ' + nc.numero + ' · ' + (Q_STATUS_NC[nc.status] || nc.status) : 'aberta'); }
+    if ((r.anexos || []).length) html += '<h3 class="q-plano-t">Documentos</h3>' + r.anexos.map(function(a, i) { return '<button type="button" class="btn-text" data-ger="lab-anexo" data-i="' + i + '">📎 ' + escapeHtml(a.nome || 'arquivo') + '</button>'; }).join(' ');
+    var hist = (r.historico || []).slice().reverse();
+    if (hist.length) html += '<h3 class="q-plano-t">Histórico</h3><ul class="an-hist">' + hist.map(function(x) {
+      var ant = x.antes ? Object.keys(x.antes).map(function(k) { var p = (r.resultados || {})[k] || { nome: k }; return p.nome + ': antes ' + labResultadoTexto(Object.assign({ un: p.un }, x.antes[k])); }).join('; ') : '';
+      return '<li>' + escapeHtml(anQuando(x.em)) + ' · <b>' + escapeHtml(x.por || '—') + '</b> ' + escapeHtml(x.txt) + (ant ? '<small class="an-sub">' + escapeHtml(ant) + '</small>' : '') + '</li>';
+    }).join('') + '</ul>';
+    var bts = [], verSo = nivelDaAba('qualidade') === 'ver';
+    if (!verSo) {
+      if (r.terceiros && s === 'aguardando') bts.push('<button type="button" class="btn btn-primary btn-sm" data-ger="labx-avaliar">Avaliar o laudo</button>');
+      else if (!r.terceiros) bts.push('<button type="button" class="btn ' + (s === 'aguardando' ? 'btn-primary' : 'btn-secondary') + ' btn-sm" data-ger="lab-res">' + (s === 'aguardando' ? 'Lançar resultados' : 'Corrigir resultado') + '</button>');
+      if (s !== 'aguardando' && !r.validacao) bts.push('<button type="button" class="btn btn-primary btn-sm" data-ger="lab-validar">Validar</button>');
+      if (r.rotina === 'produto' && s === 'nao') bts.push('<button type="button" class="btn btn-secondary btn-sm" data-ger="lab-decisao">' + (r.decisaoLote ? 'Mudar a decisão do lote' : 'Registrar decisão do lote') + '</button>');
+      if (s === 'nao' && !r.ncId) bts.push('<button type="button" class="btn-text" data-ger="lab-nc">Abrir não conformidade</button>');
+      bts.push('<button type="button" class="btn-text" data-ger="lab-anexar">Anexar documento</button>');
+    }
+    html += bts.length ? '<div class="frete-acoes an-bts">' + bts.join('') + '</div>' : '';
+    gerAbrir({
+      titulo: labTitulo(r),
+      html: html,
+      depois: function() {
+        var inp = document.getElementById('lab-anexar-arq');
+        if (inp) inp.addEventListener('change', function() { var f = inp.files && inp.files[0]; if (f) labAnexarDepois(r, f); });
+      },
+      acao: function(k, b) {
+        var atual = labRegPorId(r.id) || r;
+        if (k === 'lab-res') labAbrirForm(atual.rotina, atual, {});
+        else if (k === 'labx-avaliar') labAbrirExternoAvaliar(atual);
+        else if (k === 'lab-validar') labValidar(atual);
+        else if (k === 'lab-decisao') labDecidirLote(atual);
+        else if (k === 'lab-nc') labAbrirNc(atual);
+        else if (k === 'lab-anexo') { var a = (atual.anexos || [])[Number(b.dataset.i)]; if (a) abrirArquivoBucket(BUCKET_LAB, a.caminho, a.nome || 'documento', labTitulo(atual)); }
+        else if (k === 'lab-anexar') {
+          var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/pdf,image/*';
+          inp.addEventListener('change', function() { var f = inp.files && inp.files[0]; if (f) labAnexarDepois(atual, f); });
+          inp.click();
+        }
+      }
+    });
+  }
+  function labAnexarDepois(r, file) {
+    qAssinar('', 'anexo do laboratório', function(quem) {
+      var d = labSemId(r); d._por = quem.nome; labHist(d, 'anexou ' + (file.name || 'um documento'));
+      labAnexar(r.id, d, file).then(function() { showToast('Documento anexado.'); var at = labRegPorId(r.id); if (at && ger) labAbrirVer(at); })
+        .catch(function(err) { console.error('anexo laboratório', err); showToast(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo 15 MB).' : 'Não foi possível anexar agora.'); });
+    });
+  }
+  function labValidar(r) {
+    var excl = labQuemLancou(r), permite = function(m) { return labPodeValidarM(m) && excl.indexOf(m.id) < 0; }, eu = labEu();
+    if (!equipe.some(function(m) { return permite(m) && membroTemPin(m); }) && !(eu && permite(eu))) {
+      gerErro(equipe.some(labPodeValidarM) ? 'Quem lançou ou corrigiu este resultado não pode validá-lo, e não há outra pessoa que valide com senha cadastrada.' : 'Ninguém marcado para validar em Cadastros › Equipe (Laboratório: valida, Gerência da Qualidade ou Responsável Técnica).');
+      return;
+    }
+    openPinDialog({ permite: permite, funcaoTexto: 'valida resultados do laboratório (e não lançou este)', titulo: 'Validar · ' + labTitulo(r), hint: 'Quem valida confere os resultados e assina com a senha de 4 números. Quem lançou não valida.',
+      semCadastro: 'Ninguém que possa validar este registro.', eu: eu && permite(eu) ? eu : null,
+      onOk: function(m) {
+        var d = labSemId(r); d.validacao = { por: m.nome, porId: m.id, em: new Date().toISOString() }; d._por = m.nome; labHist(d, 'validou');
+        labGravar('reg', r.id, d).then(function() { showToast('Resultado validado.'); gerFechar(); }).catch(function(err) { console.error('validar', err); showToast('Não foi possível validar agora.'); });
+      } });
+  }
+  function labDecidirLote(r) {
+    gerAbrir({
+      titulo: 'Decisão do lote · ' + (r.lote || ''), botao: 'Assinar a decisão',
+      html: '<p class="hint">Decisão formal sobre o lote ' + escapeHtml(r.lote || '') + ' de ' + escapeHtml(r.produtoNome || '') + ', considerando o parâmetro, o critério e a avaliação técnica. Só a Gerência da Qualidade, a Responsável Técnica ou a senha mestre assinam.</p>' +
+        '<div class="segmented q-conf" role="radiogroup" aria-label="Decisão">' + [['retido', 'Reter'], ['liberado', 'Liberar'], ['destruido', 'Segregar e destruir']].map(function(o, i) { return '<button type="button" class="seg-btn' + (i === 0 ? ' active' : '') + '" data-ger="lab-dec" data-v="' + o[0] + '" aria-pressed="' + (i === 0 ? 'true' : 'false') + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+        '<label>Justificativa <span class="req">*</span><textarea id="lab-dec-just" rows="3" maxlength="500"></textarea></label>',
+      acao: function(k, b) { if (k !== 'lab-dec') return; document.querySelectorAll('#ger-form-body [data-ger="lab-dec"]').forEach(function(x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); },
+      salvar: function() {
+        var dec = ((document.querySelector('#ger-form-body [data-ger="lab-dec"][aria-pressed="true"]') || {}).dataset || {}).v, just = gerVal('lab-dec-just');
+        if (!just) return gerErro('Escreva a justificativa da decisão.');
+        return new Promise(function(resolve) {
+          labAssinarGestor('Decisão do lote', function(quem) {
+            var d = labSemId(r); d.decisaoLote = { decisao: dec, justificativa: just, por: quem.nome, porId: quem.id || '', em: new Date().toISOString() }; d._por = quem.nome; labHist(d, 'registrou a decisão do lote: ' + labDecisaoNome(dec) + ' (' + just + ')');
+            labGravar('reg', r.id, d).then(function() { gerFechar(); showToast('Decisão do lote registrada.'); resolve(false); }).catch(function(err) { console.error('decisão lote', err); gerErro('Não foi possível salvar agora.'); resolve(false); });
+          });
+          resolve(false);
+        });
+      }
+    });
+  }
+  function labAbrirNc(r) {
+    var nc = Object.keys(r.resultados || {}).filter(function(k) { return r.resultados[k].s === 'nao'; }).map(function(k) { return r.resultados[k]; });
+    var legal = nc.some(function(p) { return p.legal; });
+    qAssinar('', 'não conformidade do laboratório', function(quem) {
+      var ncId = qNovoId(), agora = new Date().toISOString();
+      qGravar([{ op: 'set', k: 'nc', id: ncId, data: { numero: qProximaNc(), origem: 'analise', ref: r.id, data: r.coletaData, status: 'aberta', gravidade: legal ? 'alta' : 'media',
+        descricao: labTitulo(r) + ': fora do critério — ' + nc.map(function(p) { return p.nome + ' ' + labResultadoTexto(p) + ' (critério ' + p.crit + ')'; }).join('; '), produto: r.produtoNome || '', lote: r.lote || '',
+        contencao: legal ? (r.rotina === 'produto' ? 'Segregar o lote e aguardar a decisão (POP 013, item IV)' : 'Avaliar o ponto e a gravidade; aplicar a ação corretiva') : 'Investigar a causa, refazer a higienização e recoletar (POP 013, item V)',
+        causa: '', acaoCorretiva: '', responsavel: '', prazo: addDiasIso(todayIso(), legal ? 2 : 5), criadoEm: agora, por: quem.nome } }]).then(function() {
+        var d = labSemId(labRegPorId(r.id) || r); d.ncId = ncId; d._por = quem.nome; labHist(d, 'abriu a não conformidade');
+        return labGravar('reg', r.id, d);
+      }).then(function() { gerFechar(); showToast('Não conformidade aberta (Qualidade › NCs).'); }).catch(function(err) { console.error('nc laboratório', err); showToast('Não foi possível abrir a NC agora.'); });
+    });
+  }
+
+  // ----- plano do laboratório -----
+  function labHtmlPlano() {
+    var c = labCfg(), gestor = (session && session.role === 'admin') || equipe.some(labGestorM);
+    var ed = function(acao, extra) { return nivelDaAba('qualidade') === 'ver' ? '' : '<button type="button" class="btn-text" data-lab="' + acao + '"' + (extra || '') + '>Editar</button>'; };
+    var h = '<div class="q-topo"><button type="button" class="btn btn-secondary btn-sm" data-lab="lista">← Voltar ao laboratório</button></div>' +
+      '<p class="hint">Plano do laboratório pelo POP 013 (Plano de Amostragem, rev. 02, maio/2026). Valores, critérios e frequências são configuráveis; só a Gerência da Qualidade, a Responsável Técnica ou a senha mestre alteram, e cada alteração fica registrada.' + (gestor ? '' : ' <b>Marque em Cadastros › Equipe quem é Gerência da Qualidade e Responsável Técnica.</b>') + '</p>';
+    var conf = LAB_PENDENCIAS_PADRAO.map(function(p) { var x = c.pendencias[p.id] || {}; return { p: p, x: x }; });
+    h += '<section class="drivers-admin lab-plano-sec"><div class="section-head"><h2 class="section-title">Pontos a confirmar</h2></div><p class="hint">Divergências ou informações incompletas do POP 013. Ficam configuráveis e não viram regra automática até a confirmação.</p>' + conf.map(function(o) {
+      return '<div class="driver-row lab-conf' + (o.x.confirmado ? ' ok' : '') + '"><span class="driver-name">' + escapeHtml(o.p.txt) + '<span class="driver-sub">' + (o.x.confirmado ? '✓ confirmado por ' + escapeHtml(o.x.por || '') + (o.x.em ? ' em ' + escapeHtml(anQuando(o.x.em)) : '') + (o.x.obs ? ': ' + escapeHtml(o.x.obs) : '') : 'pendente de confirmação') + '</span></span>' +
+        (nivelDaAba('qualidade') === 'ver' ? '' : '<button type="button" class="btn-text" data-lab="conf" data-id="' + o.p.id + '">' + (o.x.confirmado ? 'Reabrir' : 'Registrar a confirmação') + '</button>') + '</div>';
+    }).join('') + '</section>';
+    h += '<section class="drivers-admin lab-plano-sec"><div class="section-head"><h2 class="section-title">Limites físico-químicos por fonte</h2>' + ed('ed-fq') + '</div><p class="hint">Valores de referência LAMIN 2019 com 10% de variação (POP 013). No produto acabado vale a fonte utilizada.</p>' +
+      '<div class="px-tab-wrap"><table class="px-tab"><thead><tr><th>Fonte</th><th>Temperatura (°C)</th><th>pH a 25 °C</th><th>Condutividade (µS/cm)</th></tr></thead><tbody>' + labPontos('fonte', true).map(function(f) {
+        var l = c.fq[f.id] || {}, cel = function(k) { var x = l[k] || {}; return x.min != null || x.max != null ? labNum(x.min) + ' a ' + labNum(x.max) + (x.ref != null ? '<small class="an-sub">ref. ' + labNum(x.ref) + '</small>' : '') : '—'; };
+        return '<tr><td>' + escapeHtml(f.nome) + '</td><td>' + cel('temp') + '</td><td>' + cel('ph') + '</td><td>' + cel('cond') + '</td></tr>';
+      }).join('') + '</tbody></table></div></section>';
+    h += '<section class="drivers-admin lab-plano-sec"><div class="section-head"><h2 class="section-title">Parâmetros e critérios</h2></div><div class="px-tab-wrap"><table class="px-tab lab-tab"><thead><tr><th>Parâmetro</th><th>Volume</th><th>Critério</th><th>n</th><th>c</th><th>m</th><th>M</th><th></th></tr></thead><tbody>' + Object.keys(c.params).map(function(k) {
+      var p = c.params[k], ct = p.porFonte ? 'por fonte (tabela acima)' : k === 'volume' ? 'mínimo do rótulo' : labCritTexto(p);
+      return '<tr><td>' + escapeHtml(p.nome) + '<small class="an-sub">' + (p.legal ? 'legal' : 'interno') + '</small></td><td>' + escapeHtml(p.volume || '') + '</td><td>' + escapeHtml(ct) + '</td><td>' + escapeHtml(p.n == null ? '' : String(p.n)) + '</td><td>' + escapeHtml(p.c == null ? '' : String(p.c)) + '</td><td>' + escapeHtml(p.m || '') + '</td><td>' + escapeHtml(p.M || '') + '</td><td>' + (nivelDaAba('qualidade') === 'ver' ? '' : '<button type="button" class="btn-text" data-lab="ed-param" data-id="' + k + '">Editar</button>') + '</td></tr>';
+    }).join('') + '</tbody></table></div></section>';
+    h += '<section class="drivers-admin lab-plano-sec"><div class="section-head"><h2 class="section-title">Controles e frequências</h2></div>' + labRotinas(true).map(function(r) {
+      var ps = r.secoes ? r.secoes.map(function(s) { return s.nome + ': ' + s.params.map(function(p) { return c.params[p].nome; }).join(', '); }).join(' · ') : r.alvo === 'externo' ? LAB_EXTERNOS.map(function(t) { return t.nome + ' (' + t.freqTxt + ')'; }).join(' · ') : (r.params || []).map(function(p) { return c.params[p].nome; }).join(', ');
+      return '<div class="driver-row q-plano-item' + (r.ativo ? '' : ' desativado') + '"><span class="driver-name">' + escapeHtml(labGrupo(r.grupo).nome + ' · ' + r.nome) + '<span class="driver-sub">' + escapeHtml([r.dias ? 'a cada ' + r.dias + (r.dias === 1 ? ' dia' : ' dias') + ' (' + r.freqTxt + ')' : r.freqTxt, r.amostra, r.metodo, ps, r.ativo ? '' : 'desativado'].filter(Boolean).join(' · ')) + '</span></span>' +
+        (nivelDaAba('qualidade') === 'ver' ? '' : '<button type="button" class="btn-text" data-lab="ed-rot" data-id="' + r.id + '">Editar</button>') + '</div>';
+    }).join('') + '</section>';
+    h += '<section class="drivers-admin lab-plano-sec"><div class="section-head"><h2 class="section-title">Pontos de coleta</h2></div><p class="hint">A frequência é acompanhada para cada ponto cadastrado.</p>' + LAB_PONTOS_TIPOS.map(function(t) {
+      var l = labPontos(t[0], true);
+      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(t[1]) + '<span class="driver-sub">' + (l.length ? escapeHtml(l.map(function(p) { return p.nome + (p.ativo === false ? ' (fora de uso)' : ''); }).join(', ')) : 'nenhum cadastrado') + '</span></span>' + (nivelDaAba('qualidade') === 'ver' ? '' : '<button type="button" class="btn-text" data-lab="ed-pontos" data-tipo="' + t[0] + '">Editar</button>') + '</div>';
+    }).join('') + '<div class="driver-row"><span class="driver-name">Linhas de envase<span class="driver-sub">' + escapeHtml(c.linhas.join(', ')) + ' · 510 ml e 1,5 L: lote = data de produção + linha; demais produtos: data de produção</span></span>' + ed('ed-linhas') + '</div></section>';
+    var alt = c.alteracoes.slice().reverse();
+    h += '<section class="drivers-admin lab-plano-sec"><div class="section-head"><h2 class="section-title">Histórico do plano</h2></div>' + (alt.length ? '<ul class="an-hist">' + alt.slice(0, 60).map(function(x) { return '<li>' + escapeHtml(anQuando(x.em)) + ' · <b>' + escapeHtml(x.por || '—') + '</b> ' + escapeHtml(x.txt) + '</li>'; }).join('') + '</ul>' : '<p class="empty-state">Nenhuma alteração: vale o POP 013 como está.</p>') + '</section>';
+    return h;
+  }
+  // grava uma mudança no plano (com quem assinou e o que mudou)
+  function labSalvarPlano(muda, txt) {
+    return new Promise(function(resolve) {
+      labAssinarGestor('Plano do laboratório', function(quem) {
+        var atual = lab.cfg.find(function(x) { return x.id === 'plano'; }), d = atual ? labSemId(atual) : {};
+        muda(d, quem);
+        d.alteracoes = (d.alteracoes || []).concat([{ em: new Date().toISOString(), por: quem.nome, porId: quem.id || '', txt: txt }]).slice(-300);
+        labGravar('cfg', 'plano', d).then(function() { gerFechar(); showToast('Plano do laboratório atualizado.'); resolve(false); }).catch(function(err) { console.error('plano laboratório', err); gerErro('Não foi possível salvar agora.'); resolve(false); });
+      });
+      resolve(false);
+    });
+  }
+  function labEditarFq() {
+    var c = labCfg(), fontes = labPontos('fonte', true), PS = [['temp', 'Temperatura (°C)'], ['ph', 'pH a 25 °C'], ['cond', 'Condutividade (µS/cm)']];
+    gerAbrir({
+      titulo: 'Limites físico-químicos', botao: 'Salvar',
+      html: '<p class="hint">Referência e limites de cada fonte. “±10%” calcula os limites pela referência (a variação do POP).</p>' + fontes.map(function(f) {
+        return '<h3 class="q-plano-t">' + escapeHtml(f.nome) + '</h3>' + PS.map(function(p) {
+          var l = (c.fq[f.id] || {})[p[0]] || {};
+          return '<div class="lab-fq-l"><span>' + p[1] + '</span><input type="number" step="any" class="lab-fq" data-f="' + escapeHtml(f.id) + '" data-p="' + p[0] + '" data-k="ref" value="' + escapeHtml(l.ref == null ? '' : String(l.ref)) + '" aria-label="Referência" placeholder="ref." />' +
+            '<input type="number" step="any" class="lab-fq" data-f="' + escapeHtml(f.id) + '" data-p="' + p[0] + '" data-k="min" value="' + escapeHtml(l.min == null ? '' : String(l.min)) + '" aria-label="Mínimo" placeholder="mín." />' +
+            '<input type="number" step="any" class="lab-fq" data-f="' + escapeHtml(f.id) + '" data-p="' + p[0] + '" data-k="max" value="' + escapeHtml(l.max == null ? '' : String(l.max)) + '" aria-label="Máximo" placeholder="máx." />' +
+            '<button type="button" class="btn-text" data-ger="fq10" data-f="' + escapeHtml(f.id) + '" data-p="' + p[0] + '">±10%</button></div>';
+        }).join('');
+      }).join(''),
+      acao: function(k, b) {
+        if (k !== 'fq10') return;
+        var q = function(kk) { return document.querySelector('#ger-form-body .lab-fq[data-f="' + b.dataset.f + '"][data-p="' + b.dataset.p + '"][data-k="' + kk + '"]'); }, ref = numCampo(q('ref').value);
+        if (ref === null) { gerErro('Informe a referência para calcular.'); return; }
+        q('min').value = Math.round(ref * 0.9 * 1000) / 1000; q('max').value = Math.round(ref * 1.1 * 1000) / 1000;
+      },
+      salvar: function() {
+        var novo = {}, erro = '';
+        document.querySelectorAll('#ger-form-body .lab-fq').forEach(function(inp) { var f = inp.dataset.f, p = inp.dataset.p; novo[f] = novo[f] || {}; novo[f][p] = novo[f][p] || {}; novo[f][p][inp.dataset.k] = numCampo(inp.value); });
+        Object.keys(novo).forEach(function(f) { Object.keys(novo[f]).forEach(function(p) { var l = novo[f][p]; if (l.min != null && l.max != null && l.min > l.max) erro = 'Mínimo maior que o máximo em ' + labPontoNome(f) + '.'; }); });
+        if (erro) return gerErro(erro);
+        return labSalvarPlano(function(d) { d.limitesFq = novo; }, 'alterou os limites físico-químicos das fontes');
+      }
+    });
+  }
+  function labEditarParam(k) {
+    var p = labCfg().params[k];
+    var numerico = !p.porFonte && k !== 'volume' && p.crit !== 'ausencia' && p.crit !== 'conforme';
+    gerAbrir({
+      titulo: 'Parâmetro · ' + p.nome, botao: 'Salvar',
+      html: '<div class="row-2"><label>Unidade<input type="text" id="labp-un" maxlength="16" value="' + escapeHtml(p.unidade || '') + '" /></label><label>Volume da amostra<input type="text" id="labp-vol" maxlength="20" value="' + escapeHtml(p.volume || '') + '" /></label></div>' +
+        (numerico ? '<div class="row-2"><label>Mínimo<input type="number" step="any" id="labp-min" value="' + escapeHtml(p.min == null ? '' : String(p.min)) + '" /></label><label>Máximo<input type="number" step="any" id="labp-max" value="' + escapeHtml(p.max == null ? '' : String(p.max)) + '" /></label></div>' : '<p class="field-hint">' + (p.porFonte ? 'O limite é o de cada fonte (Limites físico-químicos).' : k === 'volume' ? 'O mínimo é o volume declarado no rótulo do produto.' : 'Critério: ' + escapeHtml(labCritTexto(p)) + '.') + '</p>') +
+        '<div class="row-3"><label>n<input type="number" min="0" step="1" id="labp-n" value="' + escapeHtml(p.n == null ? '' : String(p.n)) + '" /></label><label>c<input type="number" min="0" step="1" id="labp-c" value="' + escapeHtml(p.c == null ? '' : String(p.c)) + '" /></label><label>m<input type="text" id="labp-m" maxlength="20" value="' + escapeHtml(p.m || '') + '" /></label></div>' +
+        '<label>M<input type="text" id="labp-M" maxlength="20" value="' + escapeHtml(p.M || '') + '" /></label>' +
+        '<label class="check"><input type="checkbox" id="labp-legal"' + (p.legal ? ' checked' : '') + ' /> Controle legal (desmarcado: controle interno)</label>',
+      salvar: function() {
+        var o = { unidade: gerVal('labp-un'), volume: gerVal('labp-vol'), n: numCampo(gerVal('labp-n')), c: numCampo(gerVal('labp-c')), m: gerVal('labp-m'), M: gerVal('labp-M'), legal: document.getElementById('labp-legal').checked };
+        if (numerico) { o.min = numCampo(gerVal('labp-min')); o.max = numCampo(gerVal('labp-max')); if (o.min != null && o.max != null && o.min > o.max) return gerErro('Mínimo maior que o máximo.'); }
+        return labSalvarPlano(function(d) { d.params = d.params || {}; d.params[k] = Object.assign({}, d.params[k] || {}, o); }, 'alterou o parâmetro ' + p.nome);
+      }
+    });
+  }
+  function labEditarRotina(id) {
+    var r = labRotina(id);
+    gerAbrir({
+      titulo: 'Controle · ' + r.nome, botao: 'Salvar',
+      html: '<label>Frequência (a cada quantos dias; 0 = sem prazo fixo)<input type="number" min="0" step="1" id="labr-dias" value="' + r.dias + '" /></label><p class="field-hint">No POP: ' + escapeHtml(r.freqTxt) + '.</p>' +
+        '<label>Amostra<input type="text" id="labr-amostra" maxlength="120" value="' + escapeHtml(r.amostra || '') + '" /></label>' +
+        '<label>Método<input type="text" id="labr-metodo" maxlength="120" value="' + escapeHtml(r.metodo || '') + '" /></label>' +
+        '<label class="check"><input type="checkbox" id="labr-ativo"' + (r.ativo ? ' checked' : '') + ' /> Em uso</label>',
+      salvar: function() {
+        var dias = Math.max(0, Math.round(Number(gerVal('labr-dias')) || 0));
+        return labSalvarPlano(function(d) { d.rotinas = d.rotinas || {}; d.rotinas[id] = { dias: dias, amostra: gerVal('labr-amostra'), metodo: gerVal('labr-metodo'), ativo: document.getElementById('labr-ativo').checked }; }, 'alterou o controle ' + r.nome + ' (a cada ' + dias + ' dias)');
+      }
+    });
+  }
+  function labEditarPontos(tipo) {
+    var nomeT = (LAB_PONTOS_TIPOS.find(function(t) { return t[0] === tipo; }) || [, tipo])[1], st = labPontos(tipo, true).map(function(p) { return Object.assign({}, p); });
+    var corpo = function() {
+      return st.map(function(p, i) { return '<div class="row-2 lab-ponto-l"><label>Nome<input type="text" class="labpt-n" data-i="' + i + '" maxlength="80" value="' + escapeHtml(p.nome) + '" /></label><label class="check"><input type="checkbox" class="labpt-a" data-i="' + i + '"' + (p.ativo === false ? '' : ' checked') + ' /> Em uso</label></div>'; }).join('') +
+        '<button type="button" class="btn-text" data-ger="labpt-add">+ Acrescentar</button>';
+    };
+    var ler = function() {
+      document.querySelectorAll('#ger-form-body .labpt-n').forEach(function(el) { st[Number(el.dataset.i)].nome = el.value; });
+      document.querySelectorAll('#ger-form-body .labpt-a').forEach(function(el) { st[Number(el.dataset.i)].ativo = el.checked; });
+    };
+    gerAbrir({
+      titulo: nomeT, botao: 'Salvar',
+      html: '<p class="hint">' + (tipo === 'colaborador' ? 'Colaboradores do envase e quem coleta (mãos: 1 amostra por pessoa, mensal).' : 'Um por linha. O que já teve análise não some: desmarque “Em uso”.') + '</p><div id="labpt-corpo">' + corpo() + '</div>',
+      acao: function(k) { if (k !== 'labpt-add') return; ler(); st.push({ id: tipo.slice(0, 3) + uid(), nome: '' }); document.getElementById('labpt-corpo').innerHTML = corpo(); },
+      salvar: function() {
+        ler();
+        var l = st.filter(function(p) { return String(p.nome || '').trim(); }).map(function(p) { return { id: p.id, nome: String(p.nome).trim(), ativo: p.ativo !== false }; });
+        return labSalvarPlano(function(d) { var c = labCfg(); d.pontos = d.pontos || {}; LAB_PONTOS_TIPOS.forEach(function(t) { if (!d.pontos[t[0]]) d.pontos[t[0]] = c.pontos[t[0]]; }); d.pontos[tipo] = l; }, 'alterou ' + nomeT.toLowerCase() + ' (' + l.length + ')');
+      }
+    });
+  }
+  function labEditarLinhas() {
+    gerAbrir({
+      titulo: 'Linhas de envase', botao: 'Salvar',
+      html: '<label>Linhas (separe com vírgula)<input type="text" id="lab-linhas" maxlength="80" value="' + escapeHtml(labCfg().linhas.join(', ')) + '" /></label>',
+      salvar: function() {
+        var l = gerVal('lab-linhas').split(',').map(function(x) { return x.trim(); }).filter(Boolean);
+        if (!l.length) return gerErro('Informe ao menos uma linha.');
+        return labSalvarPlano(function(d) { d.linhas = l; }, 'alterou as linhas de envase para ' + l.join(', '));
+      }
+    });
+  }
+  function labConfirmarPonto(id) {
+    var p = LAB_PENDENCIAS_PADRAO.find(function(x) { return x.id === id; }), x = labCfg().pendencias[id] || {};
+    gerAbrir({
+      titulo: x.confirmado ? 'Reabrir o ponto' : 'Confirmar o ponto do POP', botao: x.confirmado ? 'Reabrir' : 'Registrar a confirmação',
+      html: '<p class="hint">' + escapeHtml(p.txt) + '</p>' + (x.confirmado ? '' : '<label>O que ficou decidido <span class="req">*</span><textarea id="lab-conf-obs" rows="3" maxlength="500" placeholder="Ex.: vale uma amostra por linha por dia; o POP será revisado"></textarea></label><p class="field-hint">Ajuste no plano o que a decisão mudar (frequência, parâmetros, limites).</p>'),
+      salvar: function() {
+        var obs = gerVal('lab-conf-obs');
+        if (!x.confirmado && !obs) return gerErro('Escreva o que ficou decidido.');
+        return labSalvarPlano(function(d, quem) { d.pendencias = d.pendencias || {}; d.pendencias[id] = x.confirmado ? { confirmado: false } : { confirmado: true, obs: obs, por: quem.nome, em: new Date().toISOString() }; },
+          x.confirmado ? 'reabriu o ponto a confirmar: ' + p.txt.slice(0, 60) : 'confirmou o ponto do POP: ' + p.txt.slice(0, 60) + '… → ' + obs);
+      }
+    });
+  }
+  function labCsv() {
+    var cab = ['data da coleta', 'hora', 'grupo', 'controle', 'produto', 'lote', 'linha', 'fonte', 'ponto', 'colaborador', 'cabeçote', 'turno', 'parâmetro', 'resultado', 'unidade', 'critério', 'situação', 'legal/interno', 'motivo', 'coletado por', 'analisado por', 'lançado por', 'validado por', 'decisão do lote', 'laboratório'];
+    var linhas = [];
+    lab.reg.filter(function(r) { return !r.cancelado; }).sort(function(a, b) { return String(a.coletaData || '').localeCompare(String(b.coletaData || '')); }).forEach(function(r) {
+      var rot = labRotina(r.rotina) || { nome: r.rotina, grupo: '' }, mot = LAB_MOTIVOS.find(function(m) { return m[0] === r.motivo; });
+      Object.keys(r.resultados || {}).forEach(function(k) {
+        var p = r.resultados[k];
+        linhas.push([formatDateBR(r.coletaData), r.coletaHora || '', labGrupo(rot.grupo).nome, rot.nome, r.produtoNome || '', r.lote || '', r.linha || '', r.fonteNome || '', r.pontoNome || '', r.colaborador || '', r.cabecote || '', r.turno || '', p.nome,
+          r.terceiros ? (r.resultadoTexto || '') : labResultadoTexto(Object.assign({}, p, { un: '' })), p.un || '', p.crit || '', { pendente: 'aguardando', conforme: 'conforme', nao: 'não conforme', avaliar: 'avaliação técnica' }[p.s] || p.s, p.legal ? 'legal' : 'interno',
+          mot ? mot[1] + (r.motivoTexto ? ': ' + r.motivoTexto : '') : '', r.coletadoPor || '', r.analisadoPor || '', (r.lancamento || {}).por || '', (r.validacao || {}).por || '', r.decisaoLote ? labDecisaoNome(r.decisaoLote.decisao) : '', r.laboratorio || '']);
+      });
+    });
+    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(csvEscape).join(';'); }).join('\n');
+    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'laboratorio-' + todayIso() + '.csv');
+  }
+  // eventos do laboratório (na aba e nas folhas abertas por ela)
+  document.getElementById('tab-qualidade').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-lab]');
+    if (!b) return;
+    var a = b.dataset.lab;
+    if (a === 'novo') labEscolherRotina();
+    else if (a === 'novo-rot') { if (b.dataset.rot === 'externo') labAbrirExterno(null, { tipoExterno: b.dataset.ext }); else labAbrirForm(b.dataset.rot, null, { pontoId: b.dataset.ponto, colaborador: b.dataset.colab }); }
+    else if (a === 'ver') { var r = labRegPorId(b.dataset.id); if (r) labAbrirVer(r); }
+    else if (a === 'plano') { labUi.vista = 'plano'; renderQualidade(); window.scrollTo(0, 0); }
+    else if (a === 'lista') { labUi.vista = 'lista'; renderQualidade(); }
+    else if (a === 'csv') labCsv();
+    else if (a === 'periodo') { labUi.periodo = b.dataset.f; renderQualidade(); }
+    else if (a === 'sit') { labUi.situacao = labUi.situacao === b.dataset.f && b.dataset.f ? '' : b.dataset.f; renderQualidade(); }
+    else if (a === 'grupo') { labUi.grupo = labUi.grupo === b.dataset.f ? '' : b.dataset.f; renderQualidade(); }
+    else if (a === 'todos') { labUi.todos = !labUi.todos; labRenderLista(); }
+    else if (a === 'todas-pend') { labUi.todasPend = !labUi.todasPend; renderQualidade(); }
+    else if (a === 'ver-pend') { var el = document.getElementById('lab-pend'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    else if (nivelDaAba('qualidade') === 'ver') return;
+    else if (a === 'ed-fq') labEditarFq();
+    else if (a === 'ed-param') labEditarParam(b.dataset.id);
+    else if (a === 'ed-rot') labEditarRotina(b.dataset.id);
+    else if (a === 'ed-pontos') labEditarPontos(b.dataset.tipo);
+    else if (a === 'ed-linhas') labEditarLinhas();
+    else if (a === 'conf') labConfirmarPonto(b.dataset.id);
+  });
+  document.getElementById('q-conteudo').addEventListener('input', function(e) { if (e.target.id === 'lab-busca') { labUi.busca = e.target.value; labRenderLista(); } });
 
   // ---------- Qualidade › Documentos: gestão de documentos (pedido de 26/10/2026) ----------
   // Referências: ISO 9001:2015 7.5 (informação documentada: identificação, análise crítica e aprovação, controle de
@@ -18655,7 +19724,9 @@
     var a = b.dataset.q, mestre = !!session && session.role === 'admin';
     if (a === 'novo-rec') abrirQRec();
     else if (a === 'novo-chk') abrirQChk(b.dataset.linha, b.dataset.tipo);
-    else if (a === 'nova-ana') abrirQAna(b.dataset.plano);
+    else if (a === 'nova-ana') labEscolherRotina();
+    else if (a === 'ir-lab') { qUi.area = 'ana'; labUi.vista = 'lista'; renderQualidade(); }
+    else if (a === 'ir-lab-plano') { qUi.area = 'ana'; labUi.vista = 'plano'; renderQualidade(); }
     else if (a === 'nova-nc') abrirQNc(null);
     else if (a === 'ver') abrirQVer(b.dataset.k, b.dataset.id);
     else if (a === 'ver-nc') abrirQNc(b.dataset.id);
@@ -22830,7 +23901,7 @@
       var chips = (m.cargo ? '<span class="func-chip cargo">' + escapeHtml(cargoNome(m.cargo) + (m.area ? ' · ' + m.area : '')) + '</span>' : '') + (!membroTemPin(m) ? '<span class="func-chip">sem senha</span>' : m.pinTrocar ? '<span class="func-chip warn" title="A senha antiga ficou exposta: defina uma senha nova">⚠ senha exposta: trocar</span>' : '') +
         (m.faturamento ? '<span class="func-chip">Faturamento</span>' : '') + (m.conferente ? '<span class="func-chip">Conferente</span>' : '') +
         (m.financeiro ? '<span class="func-chip">Financeiro</span>' : '') + (m.logistica ? '<span class="func-chip">Logística</span>' : '') +
-        (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '') +
+        (m.gestao ? '<span class="func-chip">Diretoria/gestão</span>' : '') + (m.qualidade ? '<span class="func-chip">Qualidade</span>' : '') + (m.labValida ? '<span class="func-chip">valida o laboratório</span>' : '') + (m.labGerencia ? '<span class="func-chip">Gerência da Qualidade</span>' : '') + (m.labRT ? '<span class="func-chip">Responsável Técnica</span>' : '') + (m.aprovaFrete ? '<span class="func-chip">Aprova frete</span>' : '') +
         (m.coordenador ? '<span class="func-chip">Autoriza compras' + (m.setores ? ' (' + escapeHtml(m.setores) + ')' : '') + '</span>' : '') + (m.compras ? '<span class="func-chip">Compras</span>' : '') + (m.aprovaCompra ? '<span class="func-chip">Aprova compras</span>' : '');
       if (gereAcessos() && acessoInfo && !acessoInfo.erro) {
         var ax = acessoDoMembro(m);
@@ -22909,6 +23980,9 @@
     document.getElementById('f-equipe-log').checked = m ? !!m.logistica : false;
     document.getElementById('f-equipe-gestao').checked = m ? !!m.gestao : false;
     document.getElementById('f-equipe-qual').checked = m ? !!m.qualidade : false;
+    document.getElementById('f-equipe-lab-valida').checked = !!(m && m.labValida);
+    document.getElementById('f-equipe-lab-gerencia').checked = !!(m && m.labGerencia);
+    document.getElementById('f-equipe-lab-rt').checked = !!(m && m.labRT);
     document.getElementById('f-equipe-aprovafrete').checked = m ? !!m.aprovaFrete : false;
     document.getElementById('f-equipe-coord').checked = m ? !!m.coordenador : false;
     document.getElementById('f-equipe-setores').value = m && m.setores ? m.setores : '';
@@ -23017,7 +24091,7 @@
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
         superiorId: superiorId, aniversario: anivD ? anivM + '-' + anivD : '', homenagens: homen, veOrganograma: document.getElementById('f-equipe-org').checked,
         veBrindes: document.getElementById('f-equipe-brindes').checked, veMarketing: document.getElementById('f-equipe-mkt').checked, veVendas: document.getElementById('f-equipe-vendas').checked, veAntecipacoes: document.getElementById('f-equipe-antecip').checked, veProdExternas: document.getElementById('f-equipe-prodext').checked, atendeTi: document.getElementById('f-equipe-atende-ti').checked, atendePredial: document.getElementById('f-equipe-atende-predial').checked, veLancProducao: document.getElementById('f-equipe-lanc-prod').checked, confirmaProducao: document.getElementById('f-equipe-conf-prod').checked, editaOpConcluida: document.getElementById('f-equipe-op-concl').checked,
-        aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, gestorDocumentos: document.getElementById('f-equipe-gestor-docs').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
+        aprovaCliente: document.getElementById('f-equipe-aprova-cli').checked, gestorDocumentos: document.getElementById('f-equipe-gestor-docs').checked, labValida: document.getElementById('f-equipe-lab-valida').checked, labGerencia: document.getElementById('f-equipe-lab-gerencia').checked, labRT: document.getElementById('f-equipe-lab-rt').checked, linhaProducao: document.getElementById('f-equipe-linha-prod').value, turnoProducao: document.getElementById('f-equipe-turno-prod').value, alertaEstoque: document.getElementById('f-equipe-alerta-est').checked };
       if (editingMembroId && membroAtual && nome !== (membroAtual.nomeCompleto || membroAtual.nome)) patch.nome = nome;
       return (editingMembroId
         ? saveMembro(editingMembroId, patch).then(function() { return editingMembroId; })
@@ -29878,6 +30952,7 @@
     subscribeMarcas();
     subscribeSalas();
     subscribeQualidade();
+    subscribeLab();
     subscribeSuprimentos();
     subscribeCompras();
     subscribeTrocas();
