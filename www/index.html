@@ -918,8 +918,22 @@
   .pr-ord { border: 0; background: none; padding: 0; font: inherit; font-weight: 700; color: inherit; cursor: pointer; }
   .pr-ord.on { color: var(--teal); }
   .pr-filtros select, .pr-filtros input[type="search"] { width: auto; flex: 1 1 150px; margin: 0; min-height: 38px; }
+  .pr-filtros select { min-width: 0; max-width: 100%; }
   .pr-per { display: inline-flex; }
   .sol-anexar, .sol-anexos-pend, .sol-gravando { flex-basis: 100%; }
+  .qd-fs { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px 10px; margin: 10px 0; }
+  .qd-fs legend { font-weight: 700; font-size: 0.875rem; padding: 0 4px; }
+  .qd-fs details { margin: 6px 0; }
+  .qd-fs summary { cursor: pointer; font-weight: 600; }
+  .qd-checks { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 4px 0; }
+  .qd-checks .check { margin: 0; font-size: 0.875rem; }
+  .qd-checks .check small { color: var(--muted); }
+  .qd-presenca { flex-direction: column; gap: 6px; }
+  .qd-impr, .qd-recicl { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 10px 0; background: var(--card); }
+  .qd-impr .frete-acoes { margin: 4px 0; }
+  .qd-leit-tab td small, .qd-regs td small { color: var(--muted); }
+  .qd-matriz td, .qd-matriz th { white-space: nowrap; }
+  .qd-setor-lista { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
   .qd-subs { margin: 0 0 10px; }
   .qd-item .driver-name b.mono { margin-right: 4px; }
   .qd-chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 46%; }
@@ -2583,6 +2597,7 @@
     <h2 class="section-title" id="setor-titulo" style="font-size:1.25rem;margin-top:18px">Olá</h2>
     <p class="tagline" style="margin-top:4px">Escolha o que você vai usar agora.</p>
     <div class="mod-cards" id="setor-modulos"></div>
+    <div id="setor-docs"></div>
     <div id="setor-chamados"></div>
     <button type="button" class="btn btn-secondary cp-setor-btn" id="btn-cp-setor">Criar a minha senha de 4 números</button>
     <div id="setor-metas" class="hidden"></div>
@@ -3398,7 +3413,7 @@
       </div>
       <label class="check"><input type="checkbox" id="f-equipe-org" /> Vê a aba <b>Organograma</b> <span class="opt">(onde está na empresa: quem está acima e abaixo)</span></label>
       <label class="check"><input type="checkbox" id="f-equipe-aprova-cli" /> <b>Aprova cliente novo</b> da força de vendas <span class="opt">(análise junto com o financeiro)</span></label>
-      <label class="check"><input type="checkbox" id="f-equipe-gestor-docs" /> <b>Gerente da qualidade (documentos)</b>: elabora, revisa e aprova os documentos da Qualidade <span class="opt">(POPs, Manual de BPF, licenças)</span></label>
+      <label class="check"><input type="checkbox" id="f-equipe-gestor-docs" /> <b>Revisa e aprova documentos da qualidade</b> <span class="opt">(POPs, Manual de BPF, licenças; nunca a versão que ela mesma elaborou. Quem tem a aba Qualidade elabora)</span></label>
       <div class="row-2"><label>Líder de produção da linha <span class="opt">(opcional)</span><select id="f-equipe-linha-prod"><option value="">—</option></select></label>
         <label>Turno <span class="opt">(opcional)</span><select id="f-equipe-turno-prod"><option value="">—</option></select></label></div>
       <label class="check"><input type="checkbox" id="f-equipe-lanc-prod" /> Vê e corrige os <b>lançamentos da produção</b> <span class="opt">(Produção › Lançamentos)</span></label>
@@ -6344,6 +6359,7 @@
     }).join('') : '<p class="empty-state">A sua senha ainda não abre nenhum módulo. Peça à diretoria.</p>';
     setTimeout(mtLigarSetor, 0); // metas do mês e apontamento de turno (liberado para os setores em 17/10/2026)
     setTimeout(chLigarPedir, 0); // chamados para a TI e a manutenção predial (09/11/2026)
+    setTimeout(qdSetorLigar, 0); // documentos da qualidade do local de uso (11/11/2026)
   }
   // depois do login: se a pessoa veio de um módulo (ou do QR de uma máquina), volta para lá
   function moduloPedido() {
@@ -14715,7 +14731,8 @@
         var s = x.s, txt = s.estado === 'pendente' ? 'pendente (sem registro)' : s.estado === 'vencido' ? 'vencida em ' + formatDateBR(s.venc) : s.estado === 'vencendo' ? 'vence em ' + formatDateBR(s.venc) : 'ok' + (s.data ? ', feito em ' + formatDateBR(s.data) : '') + (s.venc ? ', vale até ' + formatDateBR(s.venc) : '');
         return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.t.codigo + ' · ' + x.t.nome) + '<span class="driver-sub ' + (s.estado === 'ok' ? '' : 'alerta') + '">' + escapeHtml(txt) + '</span></span></div>';
       }).join('') : '<p class="field-hint">Nenhuma NR exigida para a função e nenhum treinamento registrado.</p>');
-    if (!rhPodeEditar()) { box.innerHTML = h + '<p class="hint">Você só visualiza o RH.</p>'; return; }
+    h += '<div id="rh-qd-recicl" data-func="' + escapeHtml(f.id) + '"></div>'; // reciclagem dos POPs da Qualidade (11/11/2026)
+    if (!rhPodeEditar()) { box.innerHTML = h + '<p class="hint">Você só visualiza o RH.</p>'; qdRhPreencher(f.id); return; }
     h += '<div class="inline-form rh-treino"><select id="f-rh-nr"><option value="">Registrar treinamento…</option>' + rhDados.nrTipos.filter(function(t) { return t.ativo !== false; })
         .sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); })
         .map(function(t) { return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.codigo + ' · ' + t.nome) + '</option>'; }).join('') + '</select>' +
@@ -14727,6 +14744,7 @@
         : rhUi.confirmar === 'desligar' ? '<span>Desligar em</span><input type="date" id="f-rh-deslig" value="' + hoje + '" /><button type="button" class="btn-text danger" data-rhs="desligar-ok">Confirmar desligamento</button><button type="button" class="btn-text" data-rhs="desligar-nao">Cancelar</button>'
         : '<button type="button" class="btn-text danger" data-rhs="desligar">Desligar</button>') + '</div>';
     box.innerHTML = h;
+    qdRhPreencher(f.id);
   }
   function fecharRhSheet() { document.getElementById('rh-sheet-overlay').classList.add('hidden'); rhUi.editando = null; }
   document.getElementById('btn-close-rh-sheet').addEventListener('click', fecharRhSheet);
@@ -17322,8 +17340,8 @@
   // (doc "plano": itens desativados, itens a mais, limites, frequência das análises). Nada é apagado: a NC é encerrada.
   // Quem assina: com pessoas marcadas como "Qualidade" em Cadastros › Equipe, a senha de 4 números de uma delas;
   // sem ninguém cadastrado (ou com a senha mestre), o nome do responsável.
-  var Q_COL = { rec: 'qualidade-recebimentos', chk: 'qualidade-checklists', ana: 'qualidade-analises', nc: 'qualidade-ncs', cfg: 'qualidade-config', doc: 'qualidade-documentos', lei: 'qualidade-doc-leituras' };
-  var qual = { rec: [], chk: [], ana: [], nc: [], cfg: [], doc: [], lei: [] };
+  var Q_COL = { rec: 'qualidade-recebimentos', chk: 'qualidade-checklists', ana: 'qualidade-analises', nc: 'qualidade-ncs', cfg: 'qualidade-config', doc: 'qualidade-documentos', lei: 'qualidade-doc-leituras', dcf: 'qualidade-doc-config', dtr: 'qualidade-doc-treinamentos' };
+  var qual = { rec: [], chk: [], ana: [], nc: [], cfg: [], doc: [], lei: [], dcf: [], dtr: [] };
   var qUi = { area: 'hoje', sheet: null, todos: false };
   var Q_LINHAS = [
     { id: 'pet', nome: 'Linha PET (350 ml, 510 ml e 1,5 L)' },
@@ -18681,25 +18699,35 @@
   });
   document.getElementById('q-conteudo').addEventListener('input', function(e) { if (e.target.id === 'lab-busca') { labUi.busca = e.target.value; labRenderLista(); } });
 
-  // ---------- Qualidade › Documentos: gestão de documentos (pedido de 26/10/2026) ----------
-  // Referências: ISO 9001:2015 7.5 (informação documentada: identificação, análise crítica e aprovação, controle de
-  // versões, distribuição, retenção e disposição), RDC 275/2002 (POP aprovado, datado e assinado; frequência,
-  // responsáveis, materiais, EPI, monitoramento e ação corretiva), RDC 173/2006 4.12 (Manual de Boas Práticas e POPs
-  // acessíveis; registros por 1 ano) e RE 193/2024 ANM (registros por 2 anos).
-  // Coleções: qualidade-documentos (um por documento, com a versão vigente, a revisão em andamento, o histórico de
-  // versões e as cópias controladas) e qualidade-doc-leituras (quem leu cada versão). Arquivos no balde privado
-  // qualidade-docs. Só quem tem a aba Qualidade lê (0033). Quem elabora, revisa e aprova: a gerente da qualidade
-  // (marca "Gerente da qualidade (documentos)" em Cadastros › Equipe) ou a senha mestre. Nada é apagado: a versão
-  // antiga vira histórico (só consulta) e o documento cancelado fica obsoleto.
+  // ---------- Qualidade › Documentos: gestão de documentos (pedido de 26/10/2026; fase 1 da gestão documental do SGSA em 11/11/2026) ----------
+  // Referências: ISO 22000:2018 e ISO 9001:2015 7.5 (informação documentada: identificação, análise crítica e
+  // aprovação, controle de versões, distribuição, retenção e disposição), FSSC 22000, RDC 275/2002 (POP aprovado,
+  // datado e assinado; frequência, responsáveis, materiais, EPI, monitoramento e ação corretiva), RDC 173/2006 4.12
+  // (Manual de Boas Práticas e POPs acessíveis; registros por 1 ano) e RE 193/2024 ANM (registros por 2 anos).
+  // Coleções: qualidade-documentos (um por documento: dados, classificação, requisitos, distribuição, versão vigente,
+  // revisão em andamento, histórico de versões e cópias controladas), qualidade-doc-leituras (quem leu cada versão),
+  // qualidade-doc-config (a lista de requisitos normativos) e qualidade-doc-treinamentos (lista de presença da
+  // reciclagem das funções no RH). Arquivos no balde privado qualidade-docs. Só quem tem a aba Qualidade lê (0033); o
+  // confidencial, só quem revisa e aprova documentos e a senha mestre (0051). Fluxo (0051): quem tem a aba Qualidade
+  // elabora; quem está marcado "Revisa e aprova documentos da qualidade" em Cadastros › Equipe revisa e aprova (pode
+  // ser a mesma pessoa nas duas etapas), nunca a versão que elaborou. Nada é apagado: a versão antiga vira histórico
+  // (só quem aprova abre) e o documento cancelado fica obsoleto. Leitura e impressão saem em PDF com marca d'água
+  // (cópia não controlada ou cópia controlada numerada). Tablets de setor veem pelo servidor só os vigentes de uso
+  // geral marcados para o local (QR Code no ponto de uso) e confirmam a leitura com a senha de 4 números (0051).
   var QD_BALDE = 'qualidade-docs', QD_MAX_MB = 30;
   var QD_TIPOS = [
     ['pop', 'POP (Procedimento Operacional Padronizado)', 'POP', 'interno'], ['manual', 'Manual de Boas Práticas de Fabricação', 'MBP', 'interno'],
     ['procedimento', 'Procedimento ou instrução de trabalho', 'IT', 'interno'], ['politica', 'Política, plano ou programa', 'PL', 'interno'],
-    ['registro', 'Registro ou formulário (modelo)', 'REG', 'interno'], ['licenca', 'Licença, alvará ou certificado', 'LIC', 'licenca'],
+    ['registro', 'Registro (modelo de registro)', 'REG', 'interno'], ['formulario', 'Formulário (modelo em branco)', 'FOR', 'interno'],
+    ['appcc', 'Plano APPCC e análise de perigos', 'APPCC', 'interno'], ['especificacao', 'Especificação (produto, matéria-prima ou embalagem)', 'ESP', 'interno'],
+    ['licenca', 'Licença, alvará ou certificado', 'LIC', 'licenca'],
     ['legislacao', 'Legislação ou norma', 'LEG', 'externo'], ['ft', 'Ficha técnica', 'FT', 'externo'], ['fds', 'Ficha de dados de segurança (FDS/FISPQ)', 'FDS', 'externo'],
     ['bula', 'Bula de meio de cultura', 'BUL', 'externo'], ['laudo', 'Laudo de análise externa', 'LAU', 'externo'], ['outro', 'Outro documento externo', 'EXT', 'externo']
   ];
   var QD_AREAS = ['Geral', 'Produção', 'Qualidade', 'Manutenção', 'Expedição', 'Almoxarifado', 'Garrafões', 'Administrativo'];
+  var QD_AREAS_EQUIPE = ['Diretoria', 'Gestão', 'Comercial', 'Faturamento', 'Financeiro', 'Logística', 'Expedição', 'Produção', 'Qualidade', 'Manutenção', 'RH', 'Compras', 'Administrativo', 'Força de vendas'];
+  var QD_CLASSES = [['geral', 'Uso geral', 'Qualidade e tablets do local de uso'], ['restrito', 'Restrito', 'só quem tem a aba Qualidade'], ['confidencial', 'Confidencial', 'só quem revisa e aprova documentos e a senha mestre']];
+  var QD_NORMAS_PADRAO = ['ISO 22000:2018', 'FSSC 22000', 'ISO 9001:2015', 'RDC 173/2006 (água mineral)', 'RDC 275/2002 (POP)', 'RE 193/2024 ANM'];
   var QD_SECOES = [
     ['objetivo', 'Objetivo', true], ['aplicacao', 'Onde se aplica (abrangência)'], ['responsaveis', 'Responsáveis pela execução (nome, cargo ou função)', true],
     ['frequencia', 'Frequência das operações', true], ['materiais', 'Materiais necessários'], ['epis', 'Equipamentos de proteção individual (EPI)'],
@@ -18707,19 +18735,24 @@
     ['acoes', 'Ações corretivas em caso de desvio (destino do produto, restauração das condições, reavaliação do POP)', true],
     ['verificacao', 'Verificação da efetividade'], ['registros', 'Registros e formulários relacionados'], ['referencias', 'Referências']
   ];
-  var QD_SUBS = [['painel', 'Painel'], ['mestra', 'Lista mestra'], ['licencas', 'Licenças e vencimentos'], ['externos', 'Externos'], ['obsoletos', 'Histórico e obsoletos']];
-  var qdUi = { sub: 'painel', busca: '', fTipo: '', fArea: '' };
+  var QD_SUBS = [['painel', 'Painel'], ['mestra', 'Lista mestra'], ['leitura', 'Distribuição e leitura'], ['registros', 'Registros'], ['licencas', 'Licenças e vencimentos'], ['externos', 'Externos'], ['obsoletos', 'Histórico e obsoletos']];
+  var qdUi = { sub: 'painel', busca: '', fTipo: '', fArea: '', fNorma: '', setores: null, funcoes: null, matrizFuncao: '', matrizLista: null };
   function qdTipo(k) { return QD_TIPOS.find(function(t) { return t[0] === k; }) || QD_TIPOS[QD_TIPOS.length - 1]; }
   function qdCategoria(d) { return qdTipo(d.tipo)[3]; }
   function qdInterno(d) { return qdCategoria(d) === 'interno'; }
   function qdTemConteudo(tipo) { return tipo === 'pop' || tipo === 'procedimento' || tipo === 'manual' || tipo === 'politica'; }
+  function qdEhRegistro(tipo) { return tipo === 'registro' || tipo === 'formulario'; }
   function qdDocs() { return qual.doc || []; }
   function qdPorId(id) { return qdDocs().find(function(d) { return d.id === id; }) || null; }
+  function qdPorCodigo(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); }
   function addMesesIso(iso, n) {
     var p = String(iso || todayIso()).slice(0, 10).split('-').map(Number), d = new Date(p[0], p[1] - 1 + n, p[2]);
     if (d.getDate() !== p[2]) d = new Date(p[0], p[1] + n, 0); // fim do mês
     return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
   }
+  function qdClasse(d) { var k = d && d.classificacao; return QD_CLASSES.find(function(c) { return c[0] === k; }) || QD_CLASSES[0]; }
+  function qdCfg() { return (qual.dcf || []).find(function(c) { return c.id === 'config'; }) || {}; }
+  function qdNormas() { var n = qdCfg().normas; return Array.isArray(n) && n.length ? n : QD_NORMAS_PADRAO; }
   // situação: elaboracao | aprovacao | vigente | obsoleto (com revisão em andamento quando há rascunho e vigente)
   function qdSituacao(d) { if (d.obsoleto) return 'obsoleto'; if (d.vigente) return 'vigente'; return (d.rascunho && d.rascunho.etapa) || 'elaboracao'; }
   var QD_SIT = { elaboracao: ['aviso', 'Em elaboração'], aprovacao: ['aprovar', 'Aguardando aprovação'], vigente: ['ok', 'Vigente'], obsoleto: ['', 'Obsoleto'] };
@@ -18728,25 +18761,60 @@
   function qdVencido(d) { var v = qdValidade(d); return !!v && v < todayIso(); }
   function qdVencendo(d, dias) { var v = qdValidade(d); return !!v && v >= todayIso() && v <= addDiasIso(todayIso(), dias || 60); }
   function qdDiasAte(iso) { return Math.round((Date.parse(iso + 'T12:00:00') - Date.parse(todayIso() + 'T12:00:00')) / 86400000); }
-  // quem pode elaborar, revisar e aprovar: a gerente da qualidade ou a senha mestre
+  // ----- assinaturas -----
+  // chave de quem assinou: a pessoa da equipe (eq-<id>) ou o acesso (r-<ref>); o servidor confere igual (0051)
+  function qdChave(p) { return !p ? '' : p.id ? 'eq-' + p.id : 'r-' + String(p.ref || p.nome || ''); }
+  function qdElaboradores(v) {
+    var l = (v && Array.isArray(v.elaboradores) ? v.elaboradores : []).slice(), k = qdChave(v && v.elaborado);
+    if (k && l.indexOf(k) < 0) l.push(k);
+    return l;
+  }
+  function qdMinhaChave() { var e = ocEu(); if (e) return 'eq-' + e.m.id; return session && session.role === 'admin' ? 'r-' + minhaRef() : ''; }
   function qdGerentes() { return equipe.filter(function(m) { return !!m.gestorDocumentos; }); }
+  // quem revisa e aprova: marcado "Revisa e aprova documentos da qualidade" em Cadastros › Equipe (ou a senha mestre)
   function qdPodeGerir() {
     if (!session) return false;
     if (session.role === 'admin') return true;
     if (nivelDaAba('qualidade') === 'ver') return false;
     var e = ocEu();
     if (e) return !!e.m.gestorDocumentos;
-    return qdGerentes().length > 0; // senha da equipe: assina com a senha de 4 números da gerente
+    return qdGerentes().length > 0; // senha da equipe: assina com a senha de 4 números de quem aprova
   }
-  function qdAssinar(titulo, feito) {
-    var e = ocEu();
-    if (session && session.role === 'admin' && !e) { feito({ nome: quemSessao(), id: '', ref: minhaRef(), em: new Date().toISOString() }); return; }
-    if (e && (e.m.gestorDocumentos || session.role === 'admin')) { feito({ nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef(), em: new Date().toISOString() }); return; }
-    openPinDialog({
-      funcao: 'gestorDocumentos', funcaoTexto: 'é a gerente da qualidade (documentos)', titulo: titulo,
-      hint: 'Assine com a senha de 4 números da gerente da qualidade.', semCadastro: 'Ninguém marcado como “Gerente da qualidade (documentos)” em Cadastros › Equipe.',
-      onOk: function(m) { feito({ nome: m.nomeCompleto || m.nome, id: m.id, ref: minhaRef(), em: new Date().toISOString() }); }
-    });
+  // quem elabora: quem tem a aba Qualidade e não só visualiza
+  function qdPodeElaborar() { if (!session) return false; if (session.role === 'admin') return true; return nivelDaAba('qualidade') !== 'ver'; }
+  function qdAssDe(m) { return { nome: m.nomeCompleto || m.nome, id: m.id, ref: minhaRef(), em: new Date().toISOString() }; }
+  // assinatura de quem revisa e aprova; "excluir" = chaves de quem elaborou a versão (não podem assinar)
+  function qdAssinar(titulo, feito, excluir) {
+    excluir = excluir || [];
+    var e = ocEu(), agora = new Date().toISOString();
+    var pin = function(hint) {
+      openPinDialog({
+        permite: function(m) { return !!m.gestorDocumentos && excluir.indexOf('eq-' + m.id) < 0; }, funcaoTexto: excluir.length ? 'revisa e aprova documentos e não elaborou esta versão' : 'revisa e aprova documentos da qualidade', titulo: titulo,
+        hint: hint || 'Assine com a senha de 4 números de quem revisa e aprova documentos.',
+        semCadastro: 'Ninguém marcado como “Revisa e aprova documentos da qualidade” em Cadastros › Equipe' + (excluir.length ? ' além de quem elaborou esta versão.' : '.'),
+        onOk: function(m) { feito(qdAssDe(m)); }
+      });
+    };
+    var outra = 'Você elaborou esta versão: quem revisa e aprova precisa ser outra pessoa (a senha de 4 números dela).';
+    if (session && session.role === 'admin' && !e) {
+      var pa = { nome: quemSessao(), id: '', ref: minhaRef(), em: agora };
+      if (excluir.indexOf(qdChave(pa)) < 0) feito(pa); else pin(outra);
+      return;
+    }
+    if (e && (e.m.gestorDocumentos || session.role === 'admin')) {
+      var pe = { nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef(), em: agora };
+      if (excluir.indexOf(qdChave(pe)) < 0) feito(pe); else pin(outra);
+      return;
+    }
+    pin();
+  }
+  // assinatura de quem elabora (qualquer pessoa da equipe; quem entrou com o próprio acesso assina com um toque)
+  function qdAssinarElaborador(titulo, feito) {
+    var e = ocEu(), agora = new Date().toISOString();
+    if (e) { feito({ nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef(), em: agora }); return; }
+    if (session && session.role === 'admin') { feito({ nome: quemSessao(), id: '', ref: minhaRef(), em: agora }); return; }
+    openPinDialog({ permite: function() { return true; }, funcaoTexto: 'está na equipe', titulo: titulo, hint: 'Quem assina: digite a sua senha de 4 números.',
+      semCadastro: 'Ninguém com senha de 4 números em Cadastros › Equipe.', onOk: function(m) { feito(qdAssDe(m)); } });
   }
   // leitura: quem leu, pelo próprio acesso (um toque) ou pela senha de 4 números de quem leu
   function qdAssinarLeitura(feito) {
@@ -18756,63 +18824,123 @@
     openPinDialog({ permite: function() { return true; }, funcaoTexto: 'está na equipe', titulo: 'Li e entendi', hint: 'Quem leu: digite a sua senha de 4 números.',
       semCadastro: 'Ninguém com senha de 4 números em Cadastros › Equipe.', onOk: function(m) { feito({ nome: m.nomeCompleto || m.nome, id: m.id, ref: minhaRef() }); } });
   }
+  // ----- distribuição e leitura -----
   function qdChaveLeitor(p) { return p.id ? 'eq-' + p.id : 'r-' + String(p.ref || p.nome || '').replace(/[^A-Za-z0-9_-]/g, '_'); }
   function qdLeituras(d, versao) { return (qual.lei || []).filter(function(l) { return l.docId === d.id && Number(l.versao) === Number(versao); }); }
+  function qdNomeMembro(m) { return m.nomeCompleto || m.nome || ''; }
+  // quem precisa ler (áreas e pessoas da equipe); null = todos com a aba Qualidade (sem lista)
+  function qdEsperados(d) {
+    if (!d || !d.leituraObrigatoria) return null;
+    var l = d.leitores || {}, areas = l.areas || [], pes = (l.pessoas || []).map(function(p) { return p.id; });
+    if (!areas.length && !pes.length) return null;
+    return equipe.filter(function(m) { return pes.indexOf(m.id) >= 0 || (!!m.area && areas.indexOf(m.area) >= 0); })
+      .sort(function(a, b) { return qdNomeMembro(a).localeCompare(qdNomeMembro(b), 'pt-BR'); });
+  }
+  function qdLeuMembro(d, versao, m) { return qdLeituras(d, versao).some(function(l) { return l.pessoaId === m.id; }); }
+  function qdSituacaoLeitura(d) {
+    var v = d.vigente;
+    if (!v || !d.leituraObrigatoria) return null;
+    var lei = qdLeituras(d, v.versao), esp = qdEsperados(d);
+    if (!esp) return { lista: false, leram: lei, faltam: [], lidos: [] };
+    return { lista: true, esperados: esp, leram: lei, faltam: esp.filter(function(m) { return !qdLeuMembro(d, v.versao, m); }), lidos: esp.filter(function(m) { return qdLeuMembro(d, v.versao, m); }) };
+  }
   function qdLiEu(d) {
     if (!d.vigente) return true;
     var e = ocEu();
     if (!e) return false;
     return qdLeituras(d, d.vigente.versao).some(function(l) { return l.pessoaId === e.m.id || l.ref === minhaRef(); });
   }
-  function qdParaLer() { return ocEu() ? qdDocs().filter(function(d) { return qdSituacao(d) === 'vigente' && d.leituraObrigatoria && !qdLiEu(d); }) : []; }
+  function qdDevoLer(d) {
+    if (qdSituacao(d) !== 'vigente' || !d.leituraObrigatoria) return false;
+    var e = ocEu();
+    if (!e) return false;
+    var esp = qdEsperados(d);
+    if (esp && !esp.some(function(m) { return m.id === e.m.id; })) return false;
+    return !qdLiEu(d);
+  }
+  function qdParaLer() { return ocEu() ? qdDocs().filter(qdDevoLer) : []; }
+  // ----- registros: guarda do registro preenchido -----
+  function qdRegMeses(d) { return Math.max(1, Math.round(Number(d.registro && d.registro.meses) || 24)); }
+  function qdRegCorte(d) { return addMesesIso(todayIso(), -qdRegMeses(d)); }
+  function qdRegDescartar(d) { var r = d.registro || {}; return qdEhRegistro(d.tipo) && qdSituacao(d) === 'vigente' && !!r.desde && r.desde < qdRegCorte(d); }
   function qdPendencias() {
     var l = qdDocs();
     return {
       aprovar: l.filter(function(d) { return d.rascunho && d.rascunho.etapa === 'aprovacao' && !d.obsoleto; }),
       elaboracao: l.filter(function(d) { return d.rascunho && d.rascunho.etapa === 'elaboracao' && !d.obsoleto; }),
+      revisar: l.filter(function(d) { return d.rascunho && d.rascunho.etapa === 'elaboracao' && d.rascunho.pronto && !d.obsoleto; }),
       revisao: l.filter(qdRevisaoVencida),
       vencidos: l.filter(qdVencido),
       vencendo: l.filter(function(d) { return qdVencendo(d, 60); }),
-      recolher: l.filter(function(d) { return (d.copias || []).some(function(c) { return !c.recolhidaEm && d.vigente && Number(c.versao) !== Number(d.vigente.versao); }); })
+      recolher: l.filter(function(d) { return (d.copias || []).some(function(c) { return !c.recolhidaEm && d.vigente && Number(c.versao) !== Number(d.vigente.versao); }); }),
+      descartar: l.filter(qdRegDescartar)
     };
   }
+  function qdCodigos(l) { return l.slice(0, 3).map(function(d) { return d.codigo; }).join(', '); }
   function qdNovidades() {
     var l = [], p = qdPendencias(), ger = qdPodeGerir() && (!!ocEu() || (session && session.role === 'admin'));
     if (ger) {
-      if (p.aprovar.length) l.push({ ico: '📝', txt: p.aprovar.length + (p.aprovar.length === 1 ? ' documento da qualidade aguardando aprovação' : ' documentos da qualidade aguardando aprovação') + ' (' + p.aprovar.slice(0, 3).map(function(d) { return d.codigo; }).join(', ') + ')', ir: 'qualidade', qarea: 'doc' });
-      if (p.revisao.length) l.push({ ico: '🔁', txt: p.revisao.length + (p.revisao.length === 1 ? ' documento com a revisão vencida' : ' documentos com a revisão vencida') + ' (' + p.revisao.slice(0, 3).map(function(d) { return d.codigo; }).join(', ') + ')', ir: 'qualidade', qarea: 'doc', qdsub: 'mestra' });
+      if (p.revisar.length) l.push({ ico: '🔎', txt: p.revisar.length + (p.revisar.length === 1 ? ' documento da qualidade aguardando a revisão' : ' documentos da qualidade aguardando a revisão') + ' (' + qdCodigos(p.revisar) + ')', ir: 'qualidade', qarea: 'doc' });
+      if (p.aprovar.length) l.push({ ico: '📝', txt: p.aprovar.length + (p.aprovar.length === 1 ? ' documento da qualidade aguardando aprovação' : ' documentos da qualidade aguardando aprovação') + ' (' + qdCodigos(p.aprovar) + ')', ir: 'qualidade', qarea: 'doc' });
+      if (p.revisao.length) l.push({ ico: '🔁', txt: p.revisao.length + (p.revisao.length === 1 ? ' documento com a revisão vencida' : ' documentos com a revisão vencida') + ' (' + qdCodigos(p.revisao) + ')', ir: 'qualidade', qarea: 'doc', qdsub: 'mestra' });
       if (p.vencidos.length || p.vencendo.length) l.push({ ico: '📅', txt: (p.vencidos.length ? p.vencidos.length + ' vencido' + (p.vencidos.length > 1 ? 's' : '') : '') + (p.vencidos.length && p.vencendo.length ? ' e ' : '') + (p.vencendo.length ? p.vencendo.length + ' vencendo em até 60 dias' : '') + ' (licenças e documentos com validade)', ir: 'qualidade', qarea: 'doc', qdsub: 'licencas' });
+      if (p.descartar.length) l.push({ ico: '🗃️', txt: p.descartar.length + (p.descartar.length === 1 ? ' tipo de registro com o prazo de guarda vencido' : ' tipos de registro com o prazo de guarda vencido') + ' (' + qdCodigos(p.descartar) + ')', ir: 'qualidade', qarea: 'doc', qdsub: 'registros' });
     }
     var ler = qdParaLer();
-    if (ler.length) l.push({ ico: '📖', txt: ler.length + (ler.length === 1 ? ' documento da qualidade para você ler e confirmar' : ' documentos da qualidade para você ler e confirmar') + ' (' + ler.slice(0, 3).map(function(d) { return d.codigo; }).join(', ') + ')', ir: 'qualidade', qarea: 'doc' });
+    if (ler.length) l.push({ ico: '📖', txt: ler.length + (ler.length === 1 ? ' documento da qualidade para você ler e confirmar' : ' documentos da qualidade para você ler e confirmar') + ' (' + qdCodigos(ler) + ')', ir: 'qualidade', qarea: 'doc' });
     return l;
   }
-  function qdSeloQtd() { var p = qdPendencias(); return (qdPodeGerir() ? p.aprovar.length + p.revisao.length + p.vencidos.length : 0) + qdParaLer().length; }
+  function qdSeloQtd() { var p = qdPendencias(); return (qdPodeGerir() ? p.aprovar.length + p.revisar.length + p.revisao.length + p.vencidos.length + p.descartar.length : 0) + qdParaLer().length; }
   function qdProximoCodigo(tipo) {
     var pre = qdTipo(tipo)[2], n = 0;
     qdDocs().forEach(function(d) { var m = new RegExp('^' + pre + '-(\\d+)$').exec(String(d.codigo || '')); if (m) n = Math.max(n, Number(m[1])); });
     return pre + '-' + String(n + 1).padStart(3, '0');
   }
   function qdChip(d) {
-    var s = QD_SIT[qdSituacao(d)], extra = '';
+    var sit = qdSituacao(d), s = QD_SIT[sit], extra = '';
+    if (sit === 'elaboracao' && d.rascunho && d.rascunho.pronto) s = ['aprovar', 'Aguardando revisão'];
     if (qdVencido(d)) extra = '<span class="q-chip falta">Vencido</span>';
     else if (qdVencendo(d, 30)) extra = '<span class="q-chip aviso">Vence em ' + qdDiasAte(qdValidade(d)) + ' dias</span>';
     if (qdRevisaoVencida(d)) extra += '<span class="q-chip falta">Revisão vencida</span>';
-    if (d.vigente && d.rascunho && !d.obsoleto) extra += '<span class="q-chip aviso">Revisão ' + escapeHtml(String(d.rascunho.versao)) + ' em ' + (d.rascunho.etapa === 'aprovacao' ? 'aprovação' : 'elaboração') + '</span>';
+    if (d.vigente && d.rascunho && !d.obsoleto) extra += '<span class="q-chip aviso">Revisão ' + escapeHtml(String(d.rascunho.versao)) + ' em ' + (d.rascunho.etapa === 'aprovacao' ? 'aprovação' : d.rascunho.pronto ? 'revisão' : 'elaboração') + '</span>';
+    if (d.classificacao === 'restrito' || d.classificacao === 'confidencial') extra += '<span class="q-chip">' + escapeHtml(qdClasse(d)[1]) + '</span>';
     return '<span class="q-chip ' + s[0] + '">' + s[1] + '</span>' + extra;
   }
   function qdVersaoTxt(v) { return v ? 'versão ' + v.versao : ''; }
   function qdQuem(a) { return a ? a.nome + ' em ' + formatDateTimeBR(a.em) : ''; }
+  // ----- listas do servidor: tablets de setor e funções do RH (0051) -----
+  function qdCarregarListas() {
+    if (mode !== 'db' || !db) { qdUi.setores = qdUi.setores || []; qdUi.funcoes = qdUi.funcoes || []; return Promise.resolve(); }
+    var ps = [];
+    if (!qdUi.setores) ps.push(db.rpc('qd_setores_0051').then(function(l) { qdUi.setores = Array.isArray(l) ? l : []; }).catch(function(e) { console.warn('tablets de setor', e); qdUi.setores = []; }));
+    if (!qdUi.funcoes) ps.push(db.rpc('qd_rh_funcoes_0051').then(function(l) { qdUi.funcoes = Array.isArray(l) ? l : []; }).catch(function(e) { console.warn('funções do RH', e); qdUi.funcoes = []; }));
+    return Promise.all(ps);
+  }
+  var qdFuncCache = {};
+  function qdCarregarFuncionarios(funcoes) {
+    funcoes = (funcoes || []).filter(Boolean);
+    var k = funcoes.slice().sort().join('|');
+    if (!funcoes.length) return Promise.resolve([]);
+    if (qdFuncCache[k] && Date.now() - qdFuncCache[k].em < 120000) return Promise.resolve(qdFuncCache[k].l);
+    if (mode !== 'db' || !db) return Promise.resolve([]);
+    return db.rpc('qd_rh_funcionarios_0051', { p_funcoes: funcoes }).then(function(l) { l = Array.isArray(l) ? l : []; qdFuncCache[k] = { l: l, em: Date.now() }; return l; });
+  }
+  function qdTreinos(d, versao) { return (qual.dtr || []).filter(function(t) { return t.docId === d.id && (versao == null || Number(t.versao) === Number(versao)); }); }
+  function qdNorm(s) { return normNome(String(s || '')).trim(); }
 
   // ----- telas -----
   function qHtmlDoc() {
     var subs = '<nav class="segmented q-areas qd-subs" aria-label="Documentos">' + QD_SUBS.map(function(s) { return '<button type="button" class="seg-btn' + (qdUi.sub === s[0] ? ' active' : '') + '" data-qd="sub" data-sub="' + s[0] + '" aria-pressed="' + (qdUi.sub === s[0]) + '">' + s[1] + '</button>'; }).join('') + '</nav>';
-    var novo = qdPodeGerir() ? '<button type="button" class="btn btn-primary" data-qd="novo">+ Novo documento</button>' : '';
-    var f = { painel: qdHtmlPainel, mestra: qdHtmlMestra, licencas: qdHtmlLicencas, externos: qdHtmlExternos, obsoletos: qdHtmlObsoletos }[qdUi.sub] || qdHtmlPainel;
-    return subs + '<div class="q-topo">' + novo + (qdUi.sub === 'mestra' ? '<button type="button" class="btn btn-secondary btn-sm" data-qd="csv">Baixar a lista mestra (CSV)</button>' : '') + '</div>' + f();
+    var novo = qdPodeElaborar() ? '<button type="button" class="btn btn-primary" data-qd="novo">+ Novo documento</button>' : '';
+    var f = { painel: qdHtmlPainel, mestra: qdHtmlMestra, leitura: qdHtmlLeitura, registros: qdHtmlRegistros, licencas: qdHtmlLicencas, externos: qdHtmlExternos, obsoletos: qdHtmlObsoletos }[qdUi.sub] || qdHtmlPainel;
+    var extra = '';
+    if (qdUi.sub === 'mestra') extra = '<button type="button" class="btn btn-secondary btn-sm" data-qd="mestra-pdf">Lista mestra em PDF</button><button type="button" class="btn btn-secondary btn-sm" data-qd="mestra-xlsx">Lista mestra em Excel</button><button type="button" class="btn btn-secondary btn-sm" data-qd="csv">Baixar a lista mestra (CSV)</button>' +
+      (qdPodeGerir() ? '<button type="button" class="btn-text" data-qd="normas">Requisitos normativos</button>' : '');
+    if (qdUi.sub === 'leitura') extra = '<button type="button" class="btn btn-secondary btn-sm" data-qd="leitura-csv">Relatório de leitura (CSV)</button>';
+    return subs + '<div class="q-topo">' + novo + extra + '</div>' + f();
   }
   function qdLinha(d) {
-    var v = d.vigente, r = d.rascunho, sub = [qdTipo(d.tipo)[2], d.area, v ? qdVersaoTxt(v) + (v.aprovado ? ' · aprovada em ' + formatDateBR(String(v.aprovado.em).slice(0, 10)) : v.registrado ? ' · de ' + formatDateBR(String(v.registrado.em).slice(0, 10)) : '') : r ? 'versão ' + r.versao + ' em ' + (r.etapa === 'aprovacao' ? 'aprovação' : 'elaboração') : '',
+    var v = d.vigente, r = d.rascunho, sub = [qdTipo(d.tipo)[2], d.area, v ? qdVersaoTxt(v) + (v.aprovado ? ' · aprovada em ' + formatDateBR(String(v.aprovado.em).slice(0, 10)) : v.registrado ? ' · de ' + formatDateBR(String(v.registrado.em).slice(0, 10)) : '') : r ? 'versão ' + r.versao + ' em ' + (r.etapa === 'aprovacao' ? 'aprovação' : r.pronto ? 'revisão' : 'elaboração') : '',
       qdValidade(d) ? 'validade ' + formatDateBR(qdValidade(d)) : '', qdInterno(d) && d.revisarEm && v ? 'revisar até ' + formatDateBR(d.revisarEm) : ''].filter(Boolean).join(' · ');
     return '<button type="button" class="driver-row q-item qd-item" data-qd="abrir" data-id="' + escapeHtml(d.id) + '"><span class="driver-name"><b class="mono">' + escapeHtml(d.codigo || '') + '</b> ' + escapeHtml(d.titulo || '—') +
       '<span class="driver-sub">' + escapeHtml(sub) + '</span></span><span class="qd-chips">' + qdChip(d) + '</span></button>';
@@ -18821,25 +18949,27 @@
     var l = qdDocs(), p = qdPendencias(), vig = l.filter(function(d) { return qdSituacao(d) === 'vigente'; }), ler = qdParaLer(), ger = qdPodeGerir();
     var html = '<div class="est-cards">' +
       qCard('verde', 'Documentos vigentes', fmtInt(vig.length), vig.filter(qdInterno).length + ' internos · ' + vig.filter(function(d) { return !qdInterno(d); }).length + ' externos e licenças') +
-      qCard(p.aprovar.length ? 'laranja' : 'roxo', 'Pendentes', fmtInt(p.aprovar.length + p.elaboracao.length), p.aprovar.length + ' aguardando aprovação · ' + p.elaboracao.length + ' em elaboração') +
+      qCard(p.aprovar.length || p.revisar.length ? 'laranja' : 'roxo', 'Pendentes', fmtInt(p.aprovar.length + p.elaboracao.length), p.aprovar.length + ' aguardando aprovação · ' + p.revisar.length + ' aguardando revisão · ' + (p.elaboracao.length - p.revisar.length) + ' em elaboração') +
       qCard(p.revisao.length ? 'laranja' : 'azul', 'Revisão vencida', fmtInt(p.revisao.length), 'documentos internos com a revisão periódica vencida') +
       qCard(p.vencidos.length ? 'laranja' : p.vencendo.length ? 'azul' : 'verde', 'Vencimentos', p.vencidos.length ? p.vencidos.length + ' vencido' + (p.vencidos.length > 1 ? 's' : '') : 'nenhum vencido', p.vencendo.length + ' vencendo em até 60 dias') +
       '</div>';
     var al = [];
+    if (ger) p.revisar.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': versão ' + d.rascunho.versao + ' pronta, aguardando a revisão'); });
     if (ger) p.aprovar.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': versão ' + d.rascunho.versao + ' aguardando a sua aprovação'); });
     p.revisao.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': revisão vencida desde ' + escapeHtml(formatDateBR(d.revisarEm))); });
     p.vencidos.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': venceu em ' + escapeHtml(formatDateBR(qdValidade(d)))); });
-    p.recolher.forEach(function(d) { var n = (d.copias || []).filter(function(c) { return !c.recolhidaEm && Number(c.versao) !== Number(d.vigente.versao); }).length; al.push('<b>' + escapeHtml(d.codigo) + '</b>: ' + n + (n === 1 ? ' cópia impressa' : ' cópias impressas') + ' da versão anterior para recolher'); });
+    p.recolher.forEach(function(d) { var n = (d.copias || []).filter(function(c) { return !c.recolhidaEm && Number(c.versao) !== Number(d.vigente.versao); }).reduce(function(s, c) { return s + (Number(c.qtd) || 1); }, 0); al.push('<b>' + escapeHtml(d.codigo) + '</b>: ' + n + (n === 1 ? ' cópia impressa' : ' cópias impressas') + ' da versão anterior para recolher'); });
+    p.descartar.forEach(function(d) { al.push('<b>' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + ': registros anteriores a ' + escapeHtml(formatDateBR(qdRegCorte(d))) + ' já passaram do prazo de guarda (podem ser descartados)'); });
     html += al.length ? '<div class="est-alertas"><p class="est-alertas-t">⚠ Atenção nos documentos</p><ul>' + al.map(function(a) { return '<li>' + a + '</li>'; }).join('') + '</ul>' +
       '</div>' : '<div class="est-alertas ok">✓ Documentos em dia: nada vencido nem aguardando aprovação.</div>';
     if (ler.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Para você ler e confirmar</h2></div>' + ler.map(qdLinha).join('') + '</section>';
     var pend = p.aprovar.concat(p.elaboracao.filter(function(d) { return p.aprovar.indexOf(d) < 0; }));
-    if (pend.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Em elaboração e aprovação</h2></div>' + pend.map(qdLinha).join('') + '</section>';
+    if (pend.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Em elaboração, revisão e aprovação</h2></div>' + pend.map(qdLinha).join('') + '</section>';
     var prox = l.filter(function(d) { return qdVencendo(d, 60) || qdVencido(d) || qdRevisaoVencida(d) || (qdSituacao(d) === 'vigente' && qdInterno(d) && d.revisarEm && d.revisarEm <= addDiasIso(todayIso(), 30)); })
       .sort(function(a, b) { return String(qdValidade(a) || a.revisarEm || '').localeCompare(String(qdValidade(b) || b.revisarEm || '')); });
     if (prox.length) html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Vencimentos e revisões próximos</h2></div>' + prox.map(qdLinha).join('') + '</section>';
-    if (!l.length) html += '<p class="empty-state">Nenhum documento ainda.' + (ger ? ' Toque em “+ Novo documento” para cadastrar o primeiro (POP, Manual de BPF, licença, ficha técnica…).' : '') + '</p>';
-    html += '<p class="hint">Cada documento interno passa por <b>elaboração → aprovação → vigente</b> (quem elabora, revisa e aprova é a gerente da qualidade). Ao aprovar uma nova versão, ela substitui a anterior na lista mestra; a antiga fica no histórico só para consulta, guardada pelo tempo de retenção (2 anos, RE 193/2024).</p>';
+    if (!l.length) html += '<p class="empty-state">Nenhum documento ainda.' + (qdPodeElaborar() ? ' Toque em “+ Novo documento” para cadastrar o primeiro (POP, Manual de BPF, licença, ficha técnica…).' : '') + '</p>';
+    html += '<p class="hint">Cada documento interno passa por <b>elaboração → revisão → aprovação → vigente</b>: quem tem a aba Qualidade elabora; quem está marcado “Revisa e aprova documentos da qualidade” revisa e aprova (nunca a versão que elaborou). Ao aprovar uma nova versão, ela substitui a anterior na lista mestra; a antiga vai para o histórico (só quem aprova abre), guardada pelo tempo de retenção (2 anos, RE 193/2024).</p>';
     return html;
   }
   function qdFiltrados(cat) {
@@ -18849,31 +18979,36 @@
       if (cat === 'interno' ? !qdInterno(d) : qdCategoria(d) !== cat) return false;
       if (qdUi.fTipo && d.tipo !== qdUi.fTipo) return false;
       if (qdUi.fArea && d.area !== qdUi.fArea) return false;
-      if (q && normNome([d.codigo, d.titulo, d.area, d.descricao, d.orgao, d.numeroDoc].join(' ')).indexOf(q) < 0) return false;
+      if (qdUi.fNorma && (d.normas || []).indexOf(qdUi.fNorma) < 0) return false;
+      if (q && normNome([d.codigo, d.titulo, d.area, d.descricao, d.orgao, d.numeroDoc, (d.normas || []).join(' ')].join(' ')).indexOf(q) < 0) return false;
       return true;
-    }).sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); });
+    }).sort(qdPorCodigo);
   }
   function qdFiltrosHtml(cat) {
     var tipos = QD_TIPOS.filter(function(t) { return cat === 'interno' ? t[3] === 'interno' : t[3] === cat; });
-    return '<div class="pr-barra pr-filtros"><input type="search" id="qd-busca" value="' + escapeHtml(qdUi.busca) + '" placeholder="Buscar código, título, área…" aria-label="Buscar documento" autocomplete="off" />' +
+    var normas = qdNormas().slice();
+    qdDocs().forEach(function(d) { (d.normas || []).forEach(function(n) { if (normas.indexOf(n) < 0) normas.push(n); }); });
+    return '<div class="pr-barra pr-filtros"><input type="search" id="qd-busca" value="' + escapeHtml(qdUi.busca) + '" placeholder="Buscar código, título, área, requisito…" aria-label="Buscar documento" autocomplete="off" />' +
       (tipos.length > 1 ? '<select id="qd-f-tipo" aria-label="Tipo"><option value="">Todos os tipos</option>' + tipos.map(function(t) { return '<option value="' + t[0] + '"' + (qdUi.fTipo === t[0] ? ' selected' : '') + '>' + escapeHtml(t[1]) + '</option>'; }).join('') + '</select>' : '') +
-      '<select id="qd-f-area" aria-label="Área"><option value="">Todas as áreas</option>' + QD_AREAS.map(function(a) { return '<option' + (qdUi.fArea === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select></div>';
+      '<select id="qd-f-area" aria-label="Área"><option value="">Todas as áreas</option>' + QD_AREAS.map(function(a) { return '<option' + (qdUi.fArea === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select>' +
+      '<select id="qd-f-norma" aria-label="Requisito normativo"><option value="">Todos os requisitos</option>' + normas.map(function(n) { return '<option' + (qdUi.fNorma === n ? ' selected' : '') + '>' + escapeHtml(n) + '</option>'; }).join('') + '</select></div>';
   }
   function qdHtmlMestra() {
     var l = qdFiltrados('interno');
-    return '<p class="hint">Lista mestra dos documentos internos (POPs, Manual de Boas Práticas, procedimentos, políticas e modelos de registro), sempre com a versão vigente e aprovada.</p>' + qdFiltrosHtml('interno') +
-      (l.length ? '<div class="pr-tab-wrap"><table class="pr-tab qd-mestra"><thead><tr><th>Código</th><th>Título</th><th>Área</th><th>Versão</th><th>Aprovado</th><th>Revisar até</th><th>Situação</th></tr></thead><tbody>' + l.map(function(d) {
+    return '<p class="hint">Lista mestra dos documentos internos (POPs, Manual de Boas Práticas, procedimentos, políticas, plano APPCC, especificações, modelos de registro e formulários), sempre com a versão vigente e aprovada. Filtre por requisito para ir da norma ao documento.</p>' + qdFiltrosHtml('interno') +
+      (l.length ? '<div class="pr-tab-wrap"><table class="pr-tab qd-mestra"><thead><tr><th>Código</th><th>Título</th><th>Processo</th><th>Versão</th><th>Aprovado</th><th>Revisar até</th><th>Requisitos</th><th>Situação</th></tr></thead><tbody>' + l.map(function(d) {
         var v = d.vigente;
         return '<tr data-qd="abrir" data-id="' + escapeHtml(d.id) + '" tabindex="0"><td class="mono">' + escapeHtml(d.codigo) + '</td><td>' + escapeHtml(d.titulo) + '</td><td>' + escapeHtml(d.area || '') + '</td><td class="num">' + (v ? v.versao : '—') + '</td>' +
-          '<td>' + (v && v.aprovado ? escapeHtml(formatDateBR(String(v.aprovado.em).slice(0, 10))) + '<small>' + escapeHtml(v.aprovado.nome) + '</small>' : '—') + '</td><td>' + (v && d.revisarEm ? escapeHtml(formatDateBR(d.revisarEm)) : '—') + '</td><td>' + qdChip(d) + '</td></tr>';
-      }).join('') + '</tbody></table></div>' : '<p class="empty-state">Nenhum documento interno' + (qdUi.busca || qdUi.fTipo || qdUi.fArea ? ' com estes filtros' : '') + '.</p>');
+          '<td>' + (v && v.aprovado ? escapeHtml(formatDateBR(String(v.aprovado.em).slice(0, 10))) + '<small>' + escapeHtml(v.aprovado.nome) + '</small>' : '—') + '</td><td>' + (v && d.revisarEm ? escapeHtml(formatDateBR(d.revisarEm)) : '—') + '</td>' +
+          '<td><small>' + escapeHtml((d.normas || []).join(', ') || '—') + '</small></td><td>' + qdChip(d) + '</td></tr>';
+      }).join('') + '</tbody></table></div>' : '<p class="empty-state">Nenhum documento interno' + (qdUi.busca || qdUi.fTipo || qdUi.fArea || qdUi.fNorma ? ' com estes filtros' : '') + '.</p>');
   }
   function qdHtmlLicencas() {
     var l = qdDocs().filter(function(d) { return !d.obsoleto && qdValidade(d); }).sort(function(a, b) { return qdValidade(a).localeCompare(qdValidade(b)); });
     var semVal = qdFiltrados('licenca').filter(function(d) { return !qdValidade(d); });
     var meses = {};
     l.forEach(function(d) { var k = qdValidade(d).slice(0, 7); (meses[k] = meses[k] || []).push(d); });
-    var html = '<p class="hint">Calendário de vencimentos: licenças, alvarás, certificados e documentos externos com validade (laudos, fichas). Os vencidos e os que vencem em até 60 dias aparecem no Início da gerente da qualidade.</p>';
+    var html = '<p class="hint">Calendário de vencimentos: licenças, alvarás, certificados e documentos externos com validade (laudos, fichas). Os vencidos e os que vencem em até 60 dias aparecem no Início de quem revisa e aprova documentos.</p>';
     html += Object.keys(meses).sort().map(function(k) {
       return '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">' + escapeHtml(nomeMes(k)) + '</h2></div>' + meses[k].map(function(d) {
         var dias = qdDiasAte(qdValidade(d)), wa = qdWhatsHtml(d);
@@ -18887,21 +19022,79 @@
   function qdHtmlExternos() {
     var l = qdFiltrados('externo');
     return '<p class="hint">Documentos de origem externa que a fábrica usa: legislações e normas, fichas técnicas e de segurança (FDS/FISPQ) dos produtos de limpeza e manutenção, bulas dos meios de cultura e laudos de análises externas.</p>' + qdFiltrosHtml('externo') +
-      (l.length ? l.map(qdLinha).join('') : '<p class="empty-state">Nenhum documento externo' + (qdUi.busca || qdUi.fTipo || qdUi.fArea ? ' com estes filtros' : '') + '.</p>');
+      (l.length ? l.map(qdLinha).join('') : '<p class="empty-state">Nenhum documento externo' + (qdUi.busca || qdUi.fTipo || qdUi.fArea || qdUi.fNorma ? ' com estes filtros' : '') + '.</p>');
   }
   function qdHtmlObsoletos() {
-    var obs = qdDocs().filter(function(d) { return d.obsoleto; });
+    var obs = qdDocs().filter(function(d) { return d.obsoleto; }), ger = qdPodeGerir();
     var hist = [];
     qdDocs().forEach(function(d) { (d.historico || []).forEach(function(v) { hist.push({ d: d, v: v }); }); });
     hist.sort(function(a, b) { return String(b.v.substituidaEm || '').localeCompare(String(a.v.substituidaEm || '')); });
-    var html = '<p class="hint">Versões substituídas e documentos cancelados: ficam só para consulta (com a marca OBSOLETO), guardados até o fim do tempo de retenção. Não use para trabalhar: vale sempre a versão vigente.</p>';
+    var html = '<p class="hint">Versões substituídas e documentos cancelados: ficam bloqueados para o uso (com a marca OBSOLETO), guardados até o fim do tempo de retenção. ' + (ger ? 'Você revisa e aprova documentos: pode abrir para consulta.' : 'Só quem revisa e aprova documentos abre as versões antigas.') + ' Vale sempre a versão vigente.</p>';
     html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Versões anteriores</h2></div>' + (hist.length ? hist.map(function(x) {
       var ate = x.v.substituidaEm ? addMesesIso(String(x.v.substituidaEm).slice(0, 10), 12 * (Number(x.d.retencaoAnos) || 2)) : '';
-      return '<button type="button" class="driver-row q-item" data-qd="abrir-versao" data-id="' + escapeHtml(x.d.id) + '" data-v="' + x.v.versao + '"><span class="driver-name"><b class="mono">' + escapeHtml(x.d.codigo) + '</b> ' + escapeHtml(x.d.titulo) + ' · versão ' + x.v.versao +
-        '<span class="driver-sub">' + escapeHtml(['substituída em ' + (x.v.substituidaEm ? formatDateBR(String(x.v.substituidaEm).slice(0, 10)) : '—'), ate ? 'guardar até ' + formatDateBR(ate) : ''].filter(Boolean).join(' · ')) + '</span></span><span class="q-chip">Obsoleta</span></button>';
+      var sub = '<span class="driver-name"><b class="mono">' + escapeHtml(x.d.codigo) + '</b> ' + escapeHtml(x.d.titulo) + ' · versão ' + x.v.versao +
+        '<span class="driver-sub">' + escapeHtml(['substituída em ' + (x.v.substituidaEm ? formatDateBR(String(x.v.substituidaEm).slice(0, 10)) : '—'), ate ? 'guardar até ' + formatDateBR(ate) : ''].filter(Boolean).join(' · ')) + '</span></span><span class="q-chip">Obsoleta</span>';
+      return ger ? '<button type="button" class="driver-row q-item" data-qd="abrir-versao" data-id="' + escapeHtml(x.d.id) + '" data-v="' + x.v.versao + '">' + sub + '</button>' : '<div class="driver-row q-item">' + sub + '</div>';
     }).join('') : '<p class="empty-state">Nenhuma versão substituída ainda.</p>') + '</section>';
     html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Documentos cancelados</h2></div>' + (obs.length ? obs.map(qdLinha).join('') : '<p class="empty-state">Nenhum documento cancelado.</p>') + '</section>';
     return html;
+  }
+  // Distribuição e leitura: quem leu e quem falta, locais de uso, reciclagem no RH e a matriz por função
+  function qdHtmlLeitura() {
+    var docs = qdDocs().filter(function(d) { return qdSituacao(d) === 'vigente' && (d.leituraObrigatoria || (d.funcoesRH || []).length || (d.locais || []).length); }).sort(qdPorCodigo);
+    var html = '<p class="hint">Quem precisa ler cada documento (áreas e pessoas da equipe), onde ele é usado (tablets de setor) e a reciclagem das funções no RH. Uma versão nova volta a pedir a leitura e a reciclagem.</p>';
+    if (!docs.length) html += '<p class="empty-state">Nenhum documento vigente com leitura obrigatória, local de uso ou reciclagem. Marque em “Dados do documento”.</p>';
+    else html += '<div class="pr-tab-wrap"><table class="pr-tab qd-leit-tab"><thead><tr><th>Documento</th><th>Versão</th><th>Leitura</th><th>Falta ler</th><th>Local de uso</th><th>Reciclagem (RH)</th></tr></thead><tbody>' + docs.map(function(d) {
+      var s = qdSituacaoLeitura(d), tr = qdTreinos(d, d.vigente.versao).length, cls = qdClasse(d)[0];
+      return '<tr data-qd="abrir" data-id="' + escapeHtml(d.id) + '" tabindex="0"><td><b class="mono">' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) + '</td><td class="num">' + d.vigente.versao + '</td>' +
+        '<td>' + (s ? (s.lista ? s.lidos.length + ' de ' + s.esperados.length : s.leram.length + (s.leram.length === 1 ? ' confirmou' : ' confirmaram')) : '—') + '</td>' +
+        '<td>' + (s && s.lista ? (s.faltam.length ? '<small>' + escapeHtml(s.faltam.map(qdNomeMembro).join(', ')) + '</small>' : '✓ todos leram') : '—') + '</td>' +
+        '<td><small>' + escapeHtml(cls === 'geral' && (d.locais || []).length ? d.locais.map(function(x) { return x.nome; }).join(', ') : '—') + '</small></td>' +
+        '<td><small>' + escapeHtml((d.funcoesRH || []).length ? d.funcoesRH.join(', ') + ' · ' + tr + (tr === 1 ? ' treinado' : ' treinados') + ' na versão ' + d.vigente.versao : '—') + '</small></td></tr>';
+    }).join('') + '</tbody></table></div>';
+    html += '<section class="drivers-admin"><div class="section-head"><h2 class="section-title">Matriz por função (RH)</h2></div>' + qdHtmlMatriz() + '</section>';
+    return html;
+  }
+  function qdHtmlMatriz() {
+    if (!qdUi.funcoes) {
+      qdCarregarListas().then(function() { if (qUi.area === 'doc' && qdUi.sub === 'leitura') renderQualidade(); });
+      return '<p class="hint">Carregando as funções do RH…</p>';
+    }
+    var usadas = {};
+    qdDocs().forEach(function(d) { if (qdSituacao(d) === 'vigente') (d.funcoesRH || []).forEach(function(f) { usadas[qdNorm(f)] = true; }); });
+    var fs = qdUi.funcoes.slice().sort(function(a, b) { return (usadas[qdNorm(b)] ? 1 : 0) - (usadas[qdNorm(a)] ? 1 : 0) || String(a).localeCompare(String(b), 'pt-BR'); });
+    var html = '<label>Função<select id="qd-matriz-funcao"><option value="">Escolha a função…</option>' + fs.map(function(f) { return '<option value="' + escapeHtml(f) + '"' + (qdUi.matrizFuncao === f ? ' selected' : '') + '>' + escapeHtml(f) + (usadas[qdNorm(f)] ? '' : ' (sem documento)') + '</option>'; }).join('') + '</select></label>';
+    if (!fs.length) return '<p class="hint">Nenhuma função cadastrada no RH (ou o servidor ainda não liberou esta consulta).</p>';
+    var fn = qdUi.matrizFuncao;
+    if (!fn) return html + '<p class="hint">A matriz mostra os documentos que cada função precisa conhecer e quem já foi treinado na versão vigente.</p>';
+    var docs = qdDocs().filter(function(d) { return qdSituacao(d) === 'vigente' && (d.funcoesRH || []).some(function(x) { return qdNorm(x) === qdNorm(fn); }); }).sort(qdPorCodigo);
+    if (!docs.length) return html + '<p class="empty-state">Nenhum documento vigente pede a reciclagem desta função.</p>';
+    if (!qdUi.matrizLista || qdUi.matrizLista.funcao !== fn) {
+      qdCarregarFuncionarios([fn]).then(function(l) { qdUi.matrizLista = { funcao: fn, lista: l }; if (qUi.area === 'doc' && qdUi.sub === 'leitura') renderQualidade(); })
+        .catch(function() { qdUi.matrizLista = { funcao: fn, lista: [] }; });
+      return html + '<p class="hint">Carregando os funcionários…</p>';
+    }
+    var lista = qdUi.matrizLista.lista;
+    if (!lista.length) return html + '<p class="empty-state">Nenhum funcionário ativo com esta função no RH.</p>';
+    return html + '<div class="pr-tab-wrap"><table class="pr-tab qd-matriz"><thead><tr><th>Funcionário</th>' + docs.map(function(d) { return '<th title="' + escapeHtml(d.titulo) + '">' + escapeHtml(d.codigo) + ' v' + d.vigente.versao + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      lista.map(function(f) {
+        return '<tr><td>' + escapeHtml(f.nome) + '</td>' + docs.map(function(d) {
+          var t = qdTreinos(d, d.vigente.versao).find(function(x) { return x.funcionarioId === f.id; });
+          return '<td>' + (t ? '✓ ' + escapeHtml(formatDateBR(t.data)) : '<span class="alerta">pendente</span>') + '</td>';
+        }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+  // Registros: prazo de guarda do registro preenchido, onde fica e quem responde; descarte registrado com assinatura
+  function qdHtmlRegistros() {
+    var l = qdDocs().filter(function(d) { return qdEhRegistro(d.tipo) && !d.obsoleto; }).sort(qdPorCodigo), pode = qdPodeElaborar();
+    var html = '<p class="hint">Modelos de registro e formulário: por quanto tempo o registro preenchido fica guardado, onde fica arquivado e quem responde por ele. Passado o prazo, o app avisa que os registros mais antigos podem ser descartados; o descarte fica registrado com assinatura.</p>';
+    if (!l.length) return html + '<p class="empty-state">Nenhum registro ou formulário cadastrado. Use “+ Novo documento” e escolha “Registro” ou “Formulário”.</p>';
+    return html + '<div class="pr-tab-wrap"><table class="pr-tab qd-regs"><thead><tr><th>Código</th><th>Título</th><th>Guardar por</th><th>Onde fica</th><th>Responsável</th><th>Situação</th><th></th></tr></thead><tbody>' + l.map(function(d) {
+      var r = d.registro || {}, m = qdRegMeses(d), sit = !r.desde ? '<small>informe o registro mais antigo guardado</small>' : qdRegDescartar(d) ? '<span class="alerta">registros anteriores a ' + escapeHtml(formatDateBR(qdRegCorte(d))) + ' podem ser descartados</span>' : '✓ em dia (desde ' + escapeHtml(formatDateBR(r.desde)) + ')';
+      return '<tr><td class="mono"><button type="button" class="btn-text" data-qd="abrir" data-id="' + escapeHtml(d.id) + '">' + escapeHtml(d.codigo) + '</button></td><td>' + escapeHtml(d.titulo) + '</td><td>' + (m % 12 === 0 ? m / 12 + (m === 12 ? ' ano' : ' anos') : m + ' meses') + '</td>' +
+        '<td>' + escapeHtml(r.local || '—') + '</td><td>' + escapeHtml(r.responsavel || '—') + '</td><td>' + sit + '</td>' +
+        '<td>' + (pode && r.desde && qdSituacao(d) === 'vigente' ? '<button type="button" class="btn-text" data-qd="descarte" data-id="' + escapeHtml(d.id) + '">Registrar descarte</button>' : '') + '</td></tr>';
+    }).join('') + '</tbody></table></div>';
   }
   function qdTelGerente() { var g = qdGerentes()[0]; return g && g.telefone ? waNumero(g.telefone) : ''; }
   function qdWhatsHtml(d) {
@@ -18915,93 +19108,211 @@
       return '<div class="qd-sec"><h4>' + escapeHtml(s[1].replace(/ \(.*\)$/, '')) + '</h4><p>' + escapeHtml(c[s[0]]).replace(/\n/g, '<br>') + '</p></div>';
     }).join('');
   }
-  function qdVersaoHtml(d, v, rotulo, obsoleta) {
+  function qdArqBotao(a, acao, d, v, rotulo) {
+    return '<button type="button" class="sol-anx-arq" data-qd="' + acao + '" data-id="' + escapeHtml(d.id) + '" data-v="' + v.versao + '" data-caminho="' + escapeHtml(a.caminho) + '" data-nome="' + escapeHtml(a.nome) + '"><span aria-hidden="true">' + solTipoIcone(a.tipo) + '</span><span><b>' + escapeHtml(rotulo || a.nome) + '</b><small>' + escapeHtml((rotulo ? a.nome + ' · ' : '') + fmtTam(a.tam)) + ' · tocar para abrir</small></span></button>';
+  }
+  // ctx: 'vigente' | 'rascunho' | 'obsoleta'
+  function qdVersaoHtml(d, v, rotulo, ctx) {
     if (!v) return '';
-    var ass = [v.elaborado ? 'Elaborado por ' + qdQuem(v.elaborado) : '', v.revisado ? 'Revisado por ' + qdQuem(v.revisado) : '', v.aprovado ? 'Aprovado por ' + qdQuem(v.aprovado) : '', v.registrado ? 'Registrado por ' + qdQuem(v.registrado) : '',
+    if (ctx === true) ctx = 'obsoleta'; else if (!ctx) ctx = 'vigente';
+    var obsoleta = ctx === 'obsoleta', ger = qdPodeGerir(), elab = qdPodeElaborar();
+    var ass = [v.elaborado ? 'Elaborado por ' + qdQuem(v.elaborado) : '', v.editado ? 'Ajustado por ' + qdQuem(v.editado) : '', v.revisado ? 'Revisado por ' + qdQuem(v.revisado) : '', v.aprovado ? 'Aprovado por ' + qdQuem(v.aprovado) : '', v.registrado ? 'Registrado por ' + qdQuem(v.registrado) : '',
       v.substituidaEm ? 'Substituída em ' + formatDateTimeBR(v.substituidaEm) : ''].filter(Boolean);
+    var arq = '';
+    if (ctx === 'vigente' && !ger) {
+      // quem não aprova: lê sempre o PDF com a marca "cópia não controlada"; o Word/Excel original fica com quem gere
+      if (qdArqLeitura(v)) arq = '<button type="button" class="sol-anx-arq" data-qd="ler" data-id="' + escapeHtml(d.id) + '" data-v="' + v.versao + '"><span aria-hidden="true">📄</span><span><b>Abrir o documento</b><small>PDF com a marca “cópia não controlada”</small></span></button>';
+      else if (v.arquivo && !qdTemTexto(v.conteudo)) arq = '<p class="hint">O arquivo desta versão está em Word ou Excel e ainda não tem a versão em PDF para leitura. Peça a quem revisa e aprova documentos.</p>';
+    } else if (ctx === 'rascunho' && !ger && !elab) {
+      arq = '';
+    } else {
+      if (v.arquivo) arq += qdArqBotao(v.arquivo, 'arquivo', d, v, v.pdf ? 'Arquivo original (editável)' : '');
+      if (v.pdf) arq += qdArqBotao(v.pdf, 'arquivo', d, v, 'Versão em PDF (leitura e impressão)');
+    }
     return '<div class="qd-versao' + (obsoleta ? ' obsoleta' : '') + '"><p class="acesso-titulo">' + escapeHtml(rotulo) + ' · versão ' + v.versao + (obsoleta ? ' <span class="q-chip">OBSOLETA — só consulta</span>' : '') + '</p>' +
       (v.motivo ? '<p class="hint">O que mudou: ' + escapeHtml(v.motivo) + '</p>' : '') +
-      (v.validade ? '<p class="hint">Validade: <b>' + escapeHtml(formatDateBR(v.validade)) + '</b>' + (v.emissao ? ' · emitido em ' + escapeHtml(formatDateBR(v.emissao)) : '') + '</p>' : v.emissao ? '<p class="hint">Data do documento: ' + escapeHtml(formatDateBR(v.emissao)) + '</p>' : '') +
-      (v.arquivo ? '<button type="button" class="sol-anx-arq" data-qd="arquivo" data-caminho="' + escapeHtml(v.arquivo.caminho) + '" data-nome="' + escapeHtml(v.arquivo.nome) + '"><span aria-hidden="true">' + solTipoIcone(v.arquivo.tipo) + '</span><span><b>' + escapeHtml(v.arquivo.nome) + '</b><small>' + escapeHtml(fmtTam(v.arquivo.tam)) + ' · tocar para abrir</small></span></button>' : '') +
+      (v.validade ? '<p class="hint">Validade: <b>' + escapeHtml(formatDateBR(v.validade)) + '</b>' + (v.emissao ? ' · emitido em ' + escapeHtml(formatDateBR(v.emissao)) : '') + '</p>' : v.emissao ? '<p class="hint">Data do documento: ' + escapeHtml(formatDateBR(v.emissao)) + '</p>' : v.aprovado ? '<p class="hint">Emitido em ' + escapeHtml(formatDateBR(String(v.aprovado.em).slice(0, 10))) + '</p>' : '') +
+      arq +
       (v.conteudo && qdConteudoHtml(v.conteudo) ? '<details class="qd-cont"' + (obsoleta ? '' : ' open') + '><summary>Conteúdo do documento</summary>' + qdConteudoHtml(v.conteudo) + '</details><button type="button" class="btn btn-secondary btn-sm" data-qd="pdf" data-id="' + escapeHtml(d.id) + '" data-v="' + v.versao + '">Baixar em PDF</button>' : '') +
       (ass.length ? '<p class="field-hint">' + escapeHtml(ass.join(' · ')) + '</p>' : '') + '</div>';
+  }
+  function qdLeituraHtml(d) {
+    var v = d.vigente, s = qdSituacaoLeitura(d), eu = ocEu();
+    var esperoEu = !s.lista || (eu && s.esperados.some(function(m) { return m.id === eu.m.id; }));
+    var h = '<div class="qd-leit"><p class="acesso-titulo">Leitura obrigatória · ' + (s.lista ? s.lidos.length + ' de ' + s.esperados.length + ' leram' : s.leram.length + (s.leram.length === 1 ? ' pessoa confirmou' : ' pessoas confirmaram')) + ' a versão ' + v.versao + '</p>';
+    if (s.lista) h += '<p class="hint">Quem precisa ler: ' + escapeHtml([].concat((d.leitores.areas || []).map(function(a) { return 'área ' + a; }), (d.leitores.pessoas || []).map(function(p) { return p.nome; })).join(', ')) + '.</p>';
+    h += qdLiEu(d) && eu ? '<p class="hint">✓ Você já confirmou a leitura desta versão.</p>' : esperoEu || !eu ? '<button type="button" class="btn btn-primary btn-sm" data-qd="li" data-id="' + escapeHtml(d.id) + '">Li e entendi</button>' : '';
+    if (s.lista && s.faltam.length) h += '<details><summary>Faltam ler (' + s.faltam.length + ')</summary><ul class="qd-lista">' + s.faltam.map(function(m) { return '<li class="alerta">' + escapeHtml(qdNomeMembro(m)) + (m.area ? ' · ' + escapeHtml(m.area) : '') + '</li>'; }).join('') + '</ul></details>';
+    if (s.leram.length) h += '<details><summary>Quem leu</summary><ul class="qd-lista">' + s.leram.slice().sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }).map(function(l) { return '<li>' + escapeHtml(l.nome) + ' · ' + escapeHtml(formatDateTimeBR(l.em)) + (l.origem === 'tablet' ? ' · no tablet' : '') + '</li>'; }).join('') + '</ul></details>';
+    return h + '</div>';
+  }
+  function qdReciclagemHtml(d, lista) {
+    var v = d.vigente, tr = {}, h = '<p class="acesso-titulo">Reciclagem no RH · versão ' + v.versao + '</p><p class="hint">Funções: ' + escapeHtml(d.funcoesRH.join(', ')) + '. Cada funcionário treinado fica com o registro no cadastro do RH.</p>';
+    qdTreinos(d, v.versao).forEach(function(t) { tr[t.funcionarioId] = t; });
+    if (!lista) h += '<p class="hint">' + Object.keys(tr).length + ' treinado(s) nesta versão. Carregando os funcionários do RH…</p>';
+    else {
+      var falta = lista.filter(function(f) { return !tr[f.id]; });
+      h += '<p>' + (lista.length - falta.length) + ' de ' + lista.length + (lista.length === 1 ? ' funcionário treinado' : ' funcionários treinados') + ' nesta versão.</p>' +
+        (falta.length ? '<details><summary>Faltam (' + falta.length + ')</summary><ul class="qd-lista">' + falta.map(function(f) { return '<li class="alerta">' + escapeHtml(f.nome) + ' · ' + escapeHtml(f.funcao || '') + '</li>'; }).join('') + '</ul></details>' : lista.length ? '<p class="hint">✓ Todos treinados nesta versão.</p>' : '<p class="hint">Nenhum funcionário ativo com essas funções no RH.</p>');
+    }
+    if (qdPodeElaborar()) h += '<button type="button" class="btn btn-secondary btn-sm" data-qd="presenca" data-id="' + escapeHtml(d.id) + '">Registrar lista de presença</button>';
+    return h;
+  }
+  function qdAtualizarReciclagem(d) {
+    var pinta = function(l) { var el = document.getElementById('qd-recicl'); if (el && el.dataset.id === d.id) el.innerHTML = qdReciclagemHtml(d, l); };
+    qdCarregarFuncionarios(d.funcoesRH || []).then(pinta).catch(function(e) { console.warn('funcionários do RH', e); pinta([]); });
+  }
+  function qdRascunhoHtml(d, ger, elab) {
+    var r = d.rascunho, v = d.vigente, elabs = qdElaboradores(r), eu = qdMinhaChave();
+    var rot = r.etapa === 'aprovacao' ? 'Aguardando aprovação' : r.pronto ? 'Aguardando revisão' : 'Em elaboração';
+    var h = '<div class="qd-rasc">' + qdVersaoHtml(d, r, rot, 'rascunho') +
+      ((r.devolucoes || []).length ? '<p class="hint">Devolvido para ajuste: ' + escapeHtml(r.devolucoes.map(function(x) { return x.nome + ' (' + formatDateBR(String(x.em).slice(0, 10)) + '): ' + x.motivo; }).join(' · ')) + '</p>' : '') +
+      (r.pronto ? '<p class="hint">Pronto para revisão: ' + escapeHtml(qdQuem(r.pronto)) + '.</p>' : '');
+    var b = [];
+    if (r.etapa === 'elaboracao') {
+      if (elab) b.push('<button type="button" class="btn btn-secondary btn-sm" data-qd="editar" data-id="' + escapeHtml(d.id) + '">Editar</button>');
+      if (elab && !r.pronto && !ger) b.push('<button type="button" class="btn btn-primary btn-sm" data-qd="pronto" data-id="' + escapeHtml(d.id) + '">Pronto para revisão</button>');
+      if (ger) b.push('<button type="button" class="btn btn-primary btn-sm" data-qd="enviar" data-id="' + escapeHtml(d.id) + '">Revisar e enviar para aprovação</button>');
+    } else if (ger) {
+      b.push('<button type="button" class="btn btn-primary btn-sm" data-qd="aprovar" data-id="' + escapeHtml(d.id) + '">Aprovar e publicar a versão ' + r.versao + '</button><button type="button" class="btn btn-secondary btn-sm" data-qd="devolver" data-id="' + escapeHtml(d.id) + '">Devolver para ajuste</button>');
+    }
+    if (ger || (elab && eu && elabs.indexOf(eu) >= 0)) b.push('<button type="button" class="btn-text danger" data-qd="descartar" data-id="' + escapeHtml(d.id) + '">Descartar ' + (v ? 'a revisão' : 'o rascunho') + '</button>');
+    if (b.length) h += '<div class="frete-acoes">' + b.join('') + '</div>';
+    var podem = qdGerentes().filter(function(m) { return elabs.indexOf('eq-' + m.id) < 0; }).map(qdNomeMembro);
+    h += '<p class="hint">Quem revisa e aprova esta versão: ' + escapeHtml(podem.length ? podem.join(', ') : 'ninguém marcado além de quem elaborou (Cadastros › Equipe)') + (session && session.role === 'admin' ? ' ou a senha mestre' : '') + '. Quem elaborou não revisa nem aprova a mesma versão.</p>';
+    return h + '</div>';
   }
   function qdAbrirDoc(id) {
     var d = qdPorId(id);
     if (!d) return;
-    var ger = qdPodeGerir(), sit = qdSituacao(d), v = d.vigente, r = d.rascunho, interno = qdInterno(d);
-    var info = [qdTipo(d.tipo)[1], d.area ? 'área ' + d.area : '', interno ? 'revisão a cada ' + (d.revisaoMeses || 12) + ' meses' : '', 'retenção ' + (d.retencaoAnos || 2) + ' anos', d.orgao ? 'emissor ' + d.orgao : '', d.numeroDoc ? 'nº ' + d.numeroDoc : ''].filter(Boolean).join(' · ');
-    var html = '<p class="qd-cab"><b class="mono">' + escapeHtml(d.codigo) + '</b> ' + qdChip(d) + '</p><p class="hint">' + escapeHtml(info) + '</p>' + (d.descricao ? '<p>' + escapeHtml(d.descricao) + '</p>' : '');
+    var ger = qdPodeGerir(), elab = qdPodeElaborar(), v = d.vigente, r = d.rascunho, interno = qdInterno(d), cls = qdClasse(d);
+    var info = [qdTipo(d.tipo)[1], d.area ? 'processo ' + d.area : '', d.dono && d.dono.nome ? 'dono ' + d.dono.nome : '', interno ? 'revisão a cada ' + (d.revisaoMeses || 12) + ' meses' : '', 'retenção ' + (d.retencaoAnos || 2) + ' anos', d.orgao ? 'emissor ' + d.orgao : '', d.numeroDoc ? 'nº ' + d.numeroDoc : ''].filter(Boolean).join(' · ');
+    var html = '<p class="qd-cab"><b class="mono">' + escapeHtml(d.codigo) + '</b> ' + qdChip(d) + '</p><p class="hint">' + escapeHtml(info) + '</p>' +
+      '<p class="hint">Acesso: <b>' + escapeHtml(cls[1]) + '</b> (' + escapeHtml(cls[2]) + ')' + ((d.normas || []).length ? ' · Requisitos: ' + escapeHtml(d.normas.join(', ')) : '') +
+      (cls[0] === 'geral' && (d.locais || []).length ? ' · Local de uso: ' + escapeHtml(d.locais.map(function(x) { return x.nome; }).join(', ')) : '') + '</p>' +
+      (d.descricao ? '<p>' + escapeHtml(d.descricao) + '</p>' : '');
     if (d.obsoleto) html += '<div class="est-alertas"><p class="est-alertas-t">Documento cancelado (obsoleto)</p><p style="margin:0">' + escapeHtml(qdQuem(d.obsoleto) + (d.obsoleto.motivo ? ' · motivo: ' + d.obsoleto.motivo : '') + (d.obsoleto.destinacao ? ' · destinação: ' + d.obsoleto.destinacao : '')) + '</p></div>';
-    if (v) html += qdVersaoHtml(d, v, d.obsoleto ? 'Última versão' : 'Versão vigente', !!d.obsoleto);
+    if (v && (!d.obsoleto || ger)) html += qdVersaoHtml(d, v, d.obsoleto ? 'Última versão' : 'Versão vigente', d.obsoleto ? 'obsoleta' : 'vigente');
     if (v && interno && d.revisarEm && !d.obsoleto) html += '<p class="hint">Próxima revisão periódica até <b>' + escapeHtml(formatDateBR(d.revisarEm)) + '</b>.</p>';
-    // leitura
-    if (v && !d.obsoleto && d.leituraObrigatoria) {
-      var lei = qdLeituras(d, v.versao);
-      html += '<div class="qd-leit"><p class="acesso-titulo">Leitura obrigatória · ' + lei.length + (lei.length === 1 ? ' pessoa confirmou' : ' pessoas confirmaram') + ' a versão ' + v.versao + '</p>' +
-        (qdLiEu(d) && ocEu() ? '<p class="hint">✓ Você já confirmou a leitura desta versão.</p>' : '<button type="button" class="btn btn-primary btn-sm" data-qd="li" data-id="' + escapeHtml(d.id) + '">Li e entendi</button>') +
-        (lei.length ? '<details><summary>Quem leu</summary><ul class="qd-lista">' + lei.sort(function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); }).map(function(l) { return '<li>' + escapeHtml(l.nome) + ' · ' + escapeHtml(formatDateTimeBR(l.em)) + '</li>'; }).join('') + '</ul></details>' : '') + '</div>';
-    }
-    // revisão em andamento
-    if (r && !d.obsoleto) {
-      html += '<div class="qd-rasc">' + qdVersaoHtml(d, r, r.etapa === 'aprovacao' ? 'Aguardando aprovação' : 'Em elaboração', false) +
-        ((r.devolucoes || []).length ? '<p class="hint">Devolvido para ajuste: ' + escapeHtml(r.devolucoes.map(function(x) { return x.nome + ' (' + formatDateBR(String(x.em).slice(0, 10)) + '): ' + x.motivo; }).join(' · ')) + '</p>' : '') +
-        (ger ? '<div class="frete-acoes">' + (r.etapa === 'elaboracao'
-          ? '<button type="button" class="btn btn-secondary btn-sm" data-qd="editar" data-id="' + escapeHtml(d.id) + '">Editar</button><button type="button" class="btn btn-primary btn-sm" data-qd="enviar" data-id="' + escapeHtml(d.id) + '">Revisar e enviar para aprovação</button>'
-          : '<button type="button" class="btn btn-primary btn-sm" data-qd="aprovar" data-id="' + escapeHtml(d.id) + '">Aprovar e publicar a versão ' + r.versao + '</button><button type="button" class="btn btn-secondary btn-sm" data-qd="devolver" data-id="' + escapeHtml(d.id) + '">Devolver para ajuste</button>') +
-          '<button type="button" class="btn-text danger" data-qd="descartar" data-id="' + escapeHtml(d.id) + '">Descartar ' + (v ? 'a revisão' : 'o rascunho') + '</button></div>' : '') + '</div>';
+    if (v && !d.obsoleto && d.leituraObrigatoria) html += qdLeituraHtml(d);
+    if (v && !d.obsoleto && (d.funcoesRH || []).length) html += '<div class="qd-recicl" id="qd-recicl" data-id="' + escapeHtml(d.id) + '">' + qdReciclagemHtml(d, null) + '</div>';
+    if (r && !d.obsoleto) html += qdRascunhoHtml(d, ger, elab);
+    // impressão e ponto de uso
+    if (v && !d.obsoleto) {
+      var ac0 = [];
+      if (qdTemLeitura(v)) ac0.push('<button type="button" class="btn btn-secondary btn-sm" data-qd="nao-controlada" data-id="' + escapeHtml(d.id) + '">🖨 Cópia não controlada (PDF)</button>');
+      if (ger && qdTemLeitura(v)) ac0.push('<button type="button" class="btn btn-secondary btn-sm" data-qd="copia" data-id="' + escapeHtml(d.id) + '">🖨 Cópia controlada</button>');
+      if ((ger || elab) && cls[0] === 'geral') ac0.push('<button type="button" class="btn-text" data-qd="qr" data-id="' + escapeHtml(d.id) + '">QR Code para o ponto de uso</button>');
+      if (ac0.length) html += '<div class="qd-impr"><p class="acesso-titulo">Imprimir e ponto de uso</p><div class="frete-acoes">' + ac0.join('') + '</div><p class="hint">Toda impressão sai com marca d’água: “cópia não controlada” (vale só no dia) ou “cópia controlada nº”, registrada para recolher quando sair versão nova.' + (cls[0] === 'geral' ? ' O QR Code abre a versão vigente no celular ou no tablet do setor.' : '') + '</p></div>';
     }
     // cópias controladas
     if (v && !d.obsoleto) {
       var cps = d.copias || [];
       html += '<div class="qd-copias"><p class="acesso-titulo">Cópias impressas controladas</p>' + (cps.length ? '<ul class="qd-lista">' + cps.map(function(c) {
         var velha = !c.recolhidaEm && Number(c.versao) !== Number(v.versao);
-        return '<li class="' + (velha ? 'alerta' : '') + '">' + escapeHtml(c.qtd + (c.qtd === 1 ? ' cópia' : ' cópias') + ' da versão ' + c.versao + ' em ' + c.local + ' (' + formatDateBR(String(c.entregueEm).slice(0, 10)) + ', ' + c.entreguePor + ')') +
+        return '<li class="' + (velha ? 'alerta' : '') + '">' + escapeHtml(c.qtd + (c.qtd === 1 ? ' cópia' : ' cópias') + ' da versão ' + c.versao + ' em ' + c.local + ' (' + (c.numeroDe ? 'nº ' + c.numeroDe + (c.numeroAte && c.numeroAte !== c.numeroDe ? ' a ' + c.numeroAte : '') + ', ' : '') + formatDateBR(String(c.entregueEm).slice(0, 10)) + ', ' + c.entreguePor + ')') +
           (c.recolhidaEm ? ' · recolhida em ' + escapeHtml(formatDateBR(String(c.recolhidaEm).slice(0, 10))) + (c.destinacao ? ' (' + escapeHtml(c.destinacao) + ')' : '') : velha ? ' · <b>versão antiga: recolher</b>' : '') +
           (!c.recolhidaEm && ger ? ' <button type="button" class="btn-text" data-qd="recolher" data-id="' + escapeHtml(d.id) + '" data-c="' + escapeHtml(c.id) + '">Recolher</button>' : '') + '</li>';
-      }).join('') + '</ul>' : '<p class="hint">Nenhuma cópia impressa registrada. O documento vale no app; se imprimir para o local de uso, registre aqui para recolher quando sair uma nova versão.</p>') +
-        (ger ? '<button type="button" class="btn-text" data-qd="copia" data-id="' + escapeHtml(d.id) + '">+ Registrar cópia entregue</button>' : '') + '</div>';
+      }).join('') + '</ul>' : '<p class="hint">Nenhuma cópia impressa registrada. O documento vale no app; se imprimir para o local de uso, use “Cópia controlada” para numerar e recolher quando sair uma nova versão.</p>') + '</div>';
     }
-    // histórico
-    if ((d.historico || []).length) html += '<details class="qd-hist"><summary>Histórico de versões (' + d.historico.length + ')</summary>' + d.historico.slice().reverse().map(function(h) { return qdVersaoHtml(d, h, 'Versão anterior', true); }).join('') + '</details>';
+    // guarda do registro preenchido
+    if (qdEhRegistro(d.tipo)) {
+      var rg = d.registro || {};
+      html += '<div class="qd-copias"><p class="acesso-titulo">Guarda do registro preenchido</p><p class="hint">Guardar por ' + qdRegMeses(d) + ' meses' + (rg.local ? ' · onde fica: ' + escapeHtml(rg.local) : '') + (rg.responsavel ? ' · responsável: ' + escapeHtml(rg.responsavel) : '') + (rg.desde ? ' · registro mais antigo guardado: ' + escapeHtml(formatDateBR(rg.desde)) : '') + '.</p>' +
+        (qdRegDescartar(d) ? '<p class="alerta">Os registros anteriores a ' + escapeHtml(formatDateBR(qdRegCorte(d))) + ' já passaram do prazo de guarda.</p>' : '') +
+        ((rg.descartes || []).length ? '<ul class="qd-lista">' + rg.descartes.map(function(x) { return '<li>Descartados até ' + escapeHtml(formatDateBR(x.ate)) + (x.como ? ' (' + escapeHtml(x.como) + ')' : '') + ' · ' + escapeHtml(qdQuem(x.por)) + '</li>'; }).join('') + '</ul>' : '') +
+        (elab && rg.desde && v && !d.obsoleto ? '<button type="button" class="btn-text" data-qd="descarte" data-id="' + escapeHtml(d.id) + '">Registrar descarte</button>' : '') + '</div>';
+    }
+    // histórico: só quem aprova abre as versões antigas
+    if ((d.historico || []).length) html += ger ? '<details class="qd-hist"><summary>Histórico de versões (' + d.historico.length + ')</summary>' + d.historico.slice().reverse().map(function(h) { return qdVersaoHtml(d, h, 'Versão anterior', 'obsoleta'); }).join('') + '</details>'
+      : '<p class="hint">Versões anteriores: ' + d.historico.length + ' (obsoletas; só quem revisa e aprova documentos abre).</p>';
     // ações
-    if (ger && !d.obsoleto) {
+    if (!d.obsoleto && (ger || elab)) {
       var ac = [];
-      if (v && !r) ac.push(interno ? '<button type="button" class="btn btn-secondary btn-sm" data-qd="revisar" data-id="' + escapeHtml(d.id) + '">Nova revisão</button>' : '<button type="button" class="btn btn-secondary btn-sm" data-qd="substituir" data-id="' + escapeHtml(d.id) + '">' + (qdCategoria(d) === 'licenca' ? 'Renovar (nova via)' : 'Substituir por versão nova') + '</button>');
-      if (v && interno && !r) ac.push('<button type="button" class="btn-text" data-qd="revisado-ok" data-id="' + escapeHtml(d.id) + '">Revisado sem alteração</button>');
-      ac.push('<button type="button" class="btn-text" data-qd="dados" data-id="' + escapeHtml(d.id) + '">Dados do documento</button>');
-      if (v) ac.push('<button type="button" class="btn-text danger" data-qd="obsoleto" data-id="' + escapeHtml(d.id) + '">Cancelar (tornar obsoleto)</button>');
-      html += '<div class="frete-acoes qd-acoes">' + ac.join('') + '</div>';
+      if (v && !r && interno && elab) ac.push('<button type="button" class="btn btn-secondary btn-sm" data-qd="revisar" data-id="' + escapeHtml(d.id) + '">Nova revisão</button>');
+      if (v && !r && !interno && ger) ac.push('<button type="button" class="btn btn-secondary btn-sm" data-qd="substituir" data-id="' + escapeHtml(d.id) + '">' + (qdCategoria(d) === 'licenca' ? 'Renovar (nova via)' : 'Substituir por versão nova') + '</button>');
+      if (v && interno && !r && ger) ac.push('<button type="button" class="btn-text" data-qd="revisado-ok" data-id="' + escapeHtml(d.id) + '">Revisado sem alteração</button>');
+      if (ger || !v) ac.push('<button type="button" class="btn-text" data-qd="dados" data-id="' + escapeHtml(d.id) + '">Dados do documento</button>');
+      if (v && ger) ac.push('<button type="button" class="btn-text danger" data-qd="obsoleto" data-id="' + escapeHtml(d.id) + '">Cancelar (tornar obsoleto)</button>');
+      if (ac.length) html += '<div class="frete-acoes qd-acoes">' + ac.join('') + '</div>';
     }
     qUi.sheet = { modo: 'doc-ver', id: id };
     qAbrir(d.titulo || 'Documento', html, false);
+    if (v && !d.obsoleto && (d.funcoesRH || []).length) qdAtualizarReciclagem(d);
   }
   function qdAbrirVersao(id, versao) {
     var d = qdPorId(id); if (!d) return;
+    if (!qdPodeGerir()) { showToast('Só quem revisa e aprova documentos abre as versões antigas.'); return; }
     var h = (d.historico || []).find(function(x) { return Number(x.versao) === Number(versao); });
     qUi.sheet = { modo: 'doc-ver', id: id };
-    qAbrir(d.codigo + ' · versão ' + versao + ' (obsoleta)', '<p class="hint"><b>OBSOLETA — só para consulta.</b> Vale a versão vigente.</p>' + qdVersaoHtml(d, h, 'Versão anterior', true), false);
+    qAbrir(d.codigo + ' · versão ' + versao + ' (obsoleta)', '<p class="hint"><b>OBSOLETA — só para consulta.</b> Vale a versão vigente.</p>' + qdVersaoHtml(d, h, 'Versão anterior', 'obsoleta'), false);
   }
 
-  // ----- formulário: novo documento, rascunho, revisão, substituição -----
+  // ----- formulário: novo documento, rascunho, revisão, substituição, dados -----
+  function qdChecks(cls, itens, sel) {
+    return itens.map(function(it) { var val = typeof it === 'string' ? it : it.v, nome = typeof it === 'string' ? it : it.n;
+      return '<label class="check"><input type="checkbox" class="' + cls + '" value="' + escapeHtml(val) + '" data-nome="' + escapeHtml(nome) + '"' + (sel.indexOf(val) >= 0 ? ' checked' : '') + ' /> ' + escapeHtml(nome) + '</label>'; }).join('');
+  }
+  function qdLocaisHtml(sel, nomes) {
+    if (!qdUi.setores) return '<span class="field-hint">Carregando os tablets de setor…</span>';
+    var l = qdUi.setores.map(function(s) { return { v: s.ref, n: s.nome }; });
+    sel.forEach(function(ref) { if (!l.some(function(x) { return x.v === ref; })) l.push({ v: ref, n: (nomes[ref] || ref) + ' (acesso removido)' }); });
+    return l.length ? qdChecks('qd-local', l, sel) : '<span class="field-hint">Nenhum acesso de setor (tablet) cadastrado. A senha mestre cria em Cadastros › Acesso ao app.</span>';
+  }
+  function qdFuncoesHtml(sel) {
+    if (!qdUi.funcoes) return '<span class="field-hint">Carregando as funções do RH…</span>';
+    var l = qdUi.funcoes.slice();
+    sel.forEach(function(f) { if (l.indexOf(f) < 0) l.push(f); });
+    return l.length ? qdChecks('qd-funcao', l, sel) : '<span class="field-hint">Nenhuma função cadastrada no RH.</span>';
+  }
+  function qdPreencherListasForm() {
+    var s = qUi.sheet;
+    qdCarregarListas().then(function() {
+      if (qUi.sheet !== s) return;
+      var a = document.getElementById('qd-locais'), b = document.getElementById('qd-funcoes');
+      if (a) a.innerHTML = qdLocaisHtml(s.selLocais || [], s.nomesLocais || {});
+      if (b) b.innerHTML = qdFuncoesHtml(s.selFuncoes || []);
+    });
+  }
   function qdFormHtml(d, modo, base) {
     var tipo = d ? d.tipo : (qdUi.novoTipo || 'pop'), cat = qdTipo(tipo)[3], v = base || {};
     var html = '';
     if (!d) html += '<label>Tipo de documento <span class="req">*</span><select id="qd-tipo">' + ['interno', 'licenca', 'externo'].map(function(c) {
       return '<optgroup label="' + (c === 'interno' ? 'Documentos internos' : c === 'licenca' ? 'Licenças e alvarás' : 'Documentos externos') + '">' + QD_TIPOS.filter(function(t) { return t[3] === c; }).map(function(t) { return '<option value="' + t[0] + '"' + (t[0] === tipo ? ' selected' : '') + '>' + escapeHtml(t[1]) + '</option>'; }).join('') + '</optgroup>';
     }).join('') + '</select></label>';
-    if (modo !== 'rascunho-edit' || !d) {
-      if (!d || modo === 'dados') {
-        html += '<div class="row-2"><label>Código <span class="req">*</span><input type="text" id="qd-codigo" maxlength="20" autocomplete="off" value="' + escapeHtml(d ? d.codigo : qdProximoCodigo(tipo)) + '" /></label>' +
-          '<label>Área <span class="req">*</span><select id="qd-area">' + QD_AREAS.map(function(a) { return '<option' + ((d ? d.area : 'Produção') === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select></label></div>' +
-          '<label>Título <span class="req">*</span><input type="text" id="qd-titulo" maxlength="140" autocomplete="off" value="' + escapeHtml(d ? d.titulo : '') + '" placeholder="' + (cat === 'interno' ? 'Ex.: Higienização dos reservatórios' : cat === 'licenca' ? 'Ex.: Alvará sanitário' : 'Ex.: FDS do detergente alcalino') + '" /></label>' +
-          '<label>Descrição <span class="opt">(opcional)</span><input type="text" id="qd-desc" maxlength="240" autocomplete="off" value="' + escapeHtml(d ? d.descricao || '' : '') + '" /></label>' +
-          (cat === 'interno' ? '<div class="row-2"><label>Revisar a cada (meses)<input type="number" id="qd-rev" min="1" max="60" step="1" value="' + (d ? d.revisaoMeses || 12 : 12) + '" /></label><label>Guardar por (anos)<input type="number" id="qd-ret" min="1" max="20" step="1" value="' + (d ? d.retencaoAnos || 2 : 2) + '" /></label></div>' +
-            '<label class="check-row"><input type="checkbox" id="qd-leitura"' + (!d || d.leituraObrigatoria ? ' checked' : '') + ' /> Leitura obrigatória: quem tem a aba Qualidade confirma que leu cada versão</label>'
-          : '<div class="row-2"><label>' + (cat === 'licenca' ? 'Órgão emissor' : 'Origem / fornecedor') + ' <span class="opt">(opcional)</span><input type="text" id="qd-orgao" maxlength="80" autocomplete="off" value="' + escapeHtml(d ? d.orgao || '' : '') + '" /></label>' +
-            '<label>' + (cat === 'licenca' ? 'Número' : 'Referência') + ' <span class="opt">(opcional)</span><input type="text" id="qd-num" maxlength="40" autocomplete="off" value="' + escapeHtml(d ? d.numeroDoc || '' : '') + '" /></label></div>' +
-            '<label>Guardar por (anos)<input type="number" id="qd-ret" min="1" max="20" step="1" value="' + (d ? d.retencaoAnos || 2 : 2) + '" /></label>');
-      }
+    if (!d || modo === 'dados') {
+      var cls = d ? (d.classificacao || 'geral') : 'geral', normas = d ? d.normas || [] : [], todas = qdNormas().slice();
+      normas.forEach(function(n) { if (todas.indexOf(n) < 0) todas.push(n); });
+      var locais = d ? d.locais || [] : [], nomesL = {};
+      locais.forEach(function(x) { nomesL[x.ref] = x.nome; });
+      qUi.sheet.selLocais = locais.map(function(x) { return x.ref; }); qUi.sheet.nomesLocais = nomesL; qUi.sheet.selFuncoes = d ? (d.funcoesRH || []).slice() : [];
+      var donoId = d && d.dono ? d.dono.id : '';
+      html += '<div class="row-2"><label>Código <span class="req">*</span><input type="text" id="qd-codigo" maxlength="20" autocomplete="off" value="' + escapeHtml(d ? d.codigo : qdProximoCodigo(tipo)) + '" /></label>' +
+        '<label>Processo / área <span class="req">*</span><select id="qd-area">' + QD_AREAS.map(function(a) { return '<option' + ((d ? d.area : 'Produção') === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select></label></div>' +
+        '<label>Título <span class="req">*</span><input type="text" id="qd-titulo" maxlength="140" autocomplete="off" value="' + escapeHtml(d ? d.titulo : '') + '" placeholder="' + (cat === 'interno' ? 'Ex.: Higienização dos reservatórios' : cat === 'licenca' ? 'Ex.: Alvará sanitário' : 'Ex.: FDS do detergente alcalino') + '" /></label>' +
+        '<label>Descrição <span class="opt">(opcional)</span><input type="text" id="qd-desc" maxlength="240" autocomplete="off" value="' + escapeHtml(d ? d.descricao || '' : '') + '" /></label>' +
+        '<div class="row-2"><label>Dono do documento <span class="opt">(opcional)</span><select id="qd-dono"><option value="">—</option>' + equipe.slice().sort(function(a, b) { return qdNomeMembro(a).localeCompare(qdNomeMembro(b), 'pt-BR'); }).map(function(m) { return '<option value="' + escapeHtml(m.id) + '"' + (m.id === donoId ? ' selected' : '') + '>' + escapeHtml(qdNomeMembro(m)) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Classificação de acesso<select id="qd-classe">' + QD_CLASSES.map(function(c) { return '<option value="' + c[0] + '"' + (c[0] === cls ? ' selected' : '') + '>' + escapeHtml(c[1]) + '</option>'; }).join('') + '</select></label></div>' +
+        '<p class="field-hint" id="qd-classe-txt">' + escapeHtml(qdClasse({ classificacao: cls })[2]) + (cls === 'confidencial' ? '. Depois de salvar, só quem revisa e aprova documentos e a senha mestre veem.' : '') + '</p>' +
+        '<fieldset class="qd-fs"><legend>Requisitos normativos</legend><div class="qd-checks">' + qdChecks('qd-norma', todas, normas) + '</div></fieldset>' +
+        '<fieldset class="qd-fs' + (cls === 'geral' ? '' : ' hidden') + '" id="qd-fs-locais"><legend>Local de uso (tablets de setor)</legend><div class="qd-checks" id="qd-locais">' + qdLocaisHtml(qUi.sheet.selLocais, nomesL) + '</div><p class="field-hint">O tablet do setor marcado mostra a versão vigente e aceita o “Li e entendi” com a senha de 4 números.</p></fieldset>';
+      if (cat === 'interno') {
+        var lt = d && d.leitores || {}, areas = lt.areas || [], pes = (lt.pessoas || []).map(function(p) { return p.id; });
+        html += '<div class="row-2"><label>Revisar a cada (meses)<input type="number" id="qd-rev" min="1" max="60" step="1" value="' + (d ? d.revisaoMeses || 12 : 12) + '" /></label><label>Guardar as versões por (anos)<input type="number" id="qd-ret" min="1" max="20" step="1" value="' + (d ? d.retencaoAnos || 2 : 2) + '" /></label></div>' +
+          '<fieldset class="qd-fs"><legend>Distribuição e leitura</legend><label class="check"><input type="checkbox" id="qd-leitura"' + (!d || d.leituraObrigatoria ? ' checked' : '') + ' /> Leitura obrigatória (“Li e entendi” em cada versão)</label>' +
+          '<p class="field-hint">Quem precisa ler. Sem nada marcado, vale para todos com a aba Qualidade (sem a lista de quem falta).</p><div class="qd-checks">' + qdChecks('qd-ler-area', QD_AREAS_EQUIPE, areas) + '</div>' +
+          '<details' + (pes.length ? ' open' : '') + '><summary>Pessoas</summary><div class="qd-checks">' + qdChecks('qd-ler-pessoa', equipe.slice().sort(function(a, b) { return qdNomeMembro(a).localeCompare(qdNomeMembro(b), 'pt-BR'); }).map(function(m) { return { v: m.id, n: qdNomeMembro(m) + (m.area ? ' · ' + m.area : '') }; }), pes) + '</div></details>' +
+          '<p class="acesso-titulo">Reciclagem no RH (funções)</p><p class="field-hint">Cada versão nova pede a reciclagem destas funções (lista de presença) e o registro vai para o cadastro de cada funcionário.</p><div class="qd-checks" id="qd-funcoes">' + qdFuncoesHtml(qUi.sheet.selFuncoes) + '</div></fieldset>';
+        if (qdEhRegistro(tipo)) {
+          var rg = d && d.registro || {};
+          html += '<fieldset class="qd-fs"><legend>Guarda do registro preenchido</legend><div class="row-2"><label>Guardar por (meses)<input type="number" id="qd-reg-meses" min="1" max="600" step="1" value="' + qdRegMeses({ registro: rg }) + '" /></label>' +
+            '<label>Registro mais antigo guardado <span class="opt">(opcional)</span><input type="date" id="qd-reg-desde" max="' + todayIso() + '" value="' + escapeHtml(rg.desde || '') + '" /></label></div>' +
+            '<div class="row-2"><label>Onde fica arquivado <span class="opt">(opcional)</span><input type="text" id="qd-reg-local" maxlength="120" value="' + escapeHtml(rg.local || '') + '" placeholder="Ex.: arquivo da sala da qualidade" /></label>' +
+            '<label>Responsável pela guarda <span class="opt">(opcional)</span><input type="text" id="qd-reg-resp" maxlength="80" value="' + escapeHtml(rg.responsavel || '') + '" /></label></div></fieldset>';
+        }
+      } else html += '<div class="row-2"><label>' + (cat === 'licenca' ? 'Órgão emissor' : 'Origem / fornecedor') + ' <span class="opt">(opcional)</span><input type="text" id="qd-orgao" maxlength="80" autocomplete="off" value="' + escapeHtml(d ? d.orgao || '' : '') + '" /></label>' +
+          '<label>' + (cat === 'licenca' ? 'Número' : 'Referência') + ' <span class="opt">(opcional)</span><input type="text" id="qd-num" maxlength="40" autocomplete="off" value="' + escapeHtml(d ? d.numeroDoc || '' : '') + '" /></label></div>' +
+          '<label>Guardar por (anos)<input type="number" id="qd-ret" min="1" max="20" step="1" value="' + (d ? d.retencaoAnos || 2 : 2) + '" /></label>';
     }
     if (modo === 'dados') return html;
     // a versão
@@ -19010,23 +19321,30 @@
       '<label>Validade ' + (cat === 'licenca' ? '<span class="req">*</span>' : '<span class="opt">(se tiver)</span>') + '<input type="date" id="qd-validade" value="' + escapeHtml(v.validade || '') + '" /></label></div>';
     if ((v.versao || 1) > 1 || modo === 'substituir') html += '<label>O que mudou nesta versão <span class="req">*</span><input type="text" id="qd-motivo" maxlength="240" autocomplete="off" value="' + escapeHtml(v.motivo || '') + '" placeholder="Ex.: inclusão da etapa de enxágue final" /></label>';
     html += '<div class="qd-arq"><label class="btn btn-secondary btn-sm">📎 ' + (v.arquivo ? 'Trocar o arquivo' : 'Anexar o arquivo') + '<input type="file" id="qd-arq" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.xlsm,.ppt,.pptx,.txt,.csv,image/*,application/pdf" /></label>' +
-      '<span id="qd-arq-nome" class="field-hint">' + (v.arquivo ? escapeHtml(v.arquivo.nome + ' · ' + fmtTam(v.arquivo.tam)) : 'PDF, Word, Excel ou foto (até ' + QD_MAX_MB + ' MB)') + '</span></div>';
+      '<span id="qd-arq-nome" class="field-hint">' + (v.arquivo ? escapeHtml(v.arquivo.nome + ' · ' + fmtTam(v.arquivo.tam)) : 'PDF, Word, Excel ou foto (até ' + QD_MAX_MB + ' MB)') + '</span></div>' +
+      '<div class="qd-arq"><label class="btn btn-secondary btn-sm">📄 ' + (v.pdf ? 'Trocar a versão em PDF' : 'Versão em PDF') + '<input type="file" id="qd-pdf" class="hidden" accept="application/pdf,.pdf" /></label>' +
+      '<span id="qd-pdf-nome" class="field-hint">' + (v.pdf ? escapeHtml(v.pdf.nome + ' · ' + fmtTam(v.pdf.tam)) : 'Para leitura e impressão com a marca d’água: obrigatória quando o arquivo é Word ou Excel.') + '</span></div>';
     if (qdTemConteudo(tipo)) {
       var c = v.conteudo || {};
       html += '<details class="qd-cont-form"' + (tipo === 'pop' || qdTemTexto(c) ? ' open' : '') + '><summary>' + (tipo === 'pop' ? 'Conteúdo do POP no modelo padrão (RDC 275/2002)' : 'Escrever o conteúdo no app (opcional)') + '</summary>' +
         '<p class="field-hint">' + (tipo === 'pop' ? 'Preencha no app ou anexe o arquivo. Os itens com * são obrigatórios no POP quando o conteúdo é escrito aqui.' : 'Use se não for anexar o arquivo.') + '</p>' +
         QD_SECOES.map(function(s) { return '<label>' + escapeHtml(s[1]) + (s[2] && tipo === 'pop' ? ' <span class="req">*</span>' : '') + '<textarea id="qd-c-' + s[0] + '" rows="' + (s[0] === 'procedimento' ? 6 : 2) + '" maxlength="6000">' + escapeHtml(c[s[0]] || '') + '</textarea></label>'; }).join('') + '</details>';
     }
-    html += '<p class="hint">' + (cat === 'interno' ? 'Ao salvar, a versão fica <b>em elaboração</b>. Depois: “Revisar e enviar para aprovação” e “Aprovar e publicar”, assinados pela gerente da qualidade.' : 'Ao salvar, o documento fica vigente (assinado pela gerente da qualidade). A versão anterior vai para o histórico.') + '</p>';
+    html += '<p class="hint">' + (cat === 'interno' ? 'Ao salvar, a versão fica <b>em elaboração</b>. Depois: “Pronto para revisão”, e quem revisa e aprova documentos (nunca quem elaborou) faz “Revisar e enviar para aprovação” e “Aprovar e publicar”.' : 'Ao salvar, o documento fica vigente (assinado por quem revisa e aprova documentos). A versão anterior vai para o histórico.') + '</p>';
     return html;
   }
-  function qdLimparVersao(v) { ['elaborado', 'revisado', 'aprovado', 'registrado', 'publicadoEm', 'substituidaEm', 'devolucoes', 'etapa'].forEach(function(k) { delete v[k]; }); return v; }
+  function qdLimparVersao(v) { ['elaborado', 'elaboradores', 'editado', 'revisado', 'aprovado', 'registrado', 'publicadoEm', 'substituidaEm', 'devolucoes', 'etapa', 'pronto', 'pdf'].forEach(function(k) { delete v[k]; }); return v; }
   function qdTemTexto(c) { return !!c && QD_SECOES.some(function(s) { return String(c[s[0]] || '').trim(); }); }
   function qdLerConteudo() {
     var c = {}, tem = false;
     QD_SECOES.forEach(function(s) { var el = document.getElementById('qd-c-' + s[0]); if (el) { var t = el.value.trim(); if (t) { c[s[0]] = t; tem = true; } } });
     return tem ? c : null;
   }
+  function qdEhPdf(a) { return !!a && (/pdf/i.test(a.tipo || a.type || '') || /\.pdf$/i.test(a.nome || a.name || '')); }
+  function qdEhImagem(a) { return !!a && /^image\//.test(a.tipo || a.type || ''); }
+  function qdArqLeitura(v) { return v ? (v.pdf || (qdEhPdf(v.arquivo) || qdEhImagem(v.arquivo) ? v.arquivo : null)) : null; }
+  function qdTemLeitura(v) { return !!v && (qdTemTexto(v.conteudo) || !!qdArqLeitura(v)); }
+  function qdPrecisaPdf(v) { return !!v && !!v.arquivo && !qdArqLeitura(v) && !qdTemTexto(v.conteudo); }
   function qdEnviarArquivo(docId, versao, file) {
     if (!file) return Promise.resolve(null);
     if (file.size > QD_MAX_MB * 1048576) { var e = new Error('grande'); e.codigo = 'grande'; return Promise.reject(e); }
@@ -19042,33 +19360,61 @@
     if (mode === 'db' && db) return db.collection(Q_COL.doc).doc(id).set(dados);
     return qGravar([{ k: 'doc', id: id, data: dados }]);
   }
-  function qdFalha(btn) { return function(err) { if (btn) btn.disabled = false; console.error('documentos', err); qErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo ' + QD_MAX_MB + ' MB).' : err && err.codigo === 'so_inclui' ? 'Seu acesso não altera documentos.' : 'Não foi possível salvar agora. Verifique a internet e tente de novo.'); }; }
+  function qdFalha(btn) {
+    return function(err) {
+      if (btn) btn.disabled = false; console.error('documentos', err);
+      var m = String(err && (err.message || err.msg) || '');
+      qErro(err && err.codigo === 'grande' ? 'Arquivo grande demais (máximo ' + QD_MAX_MB + ' MB).' : err && err.codigo === 'so_inclui' ? 'Seu acesso não altera documentos.' : /documentos: /.test(m) ? 'O servidor recusou: ' + m.replace(/^.*documentos: /, '') + '.' : 'Não foi possível salvar agora. Verifique a internet e tente de novo.');
+    };
+  }
   function qdAbrirForm(id, modo) {
     var d = id ? qdPorId(id) : null;
     var base = modo === 'novo' ? { versao: 1 } : modo === 'rascunho-edit' ? d.rascunho : modo === 'revisar' ? qdLimparVersao(Object.assign({}, d.vigente, { versao: Number(d.vigente.versao) + 1, motivo: '' }))
       : modo === 'substituir' ? { versao: Number(d.vigente.versao) + 1, emissao: '', validade: '', motivo: '' } : null;
-    qUi.sheet = { modo: 'doc', id: id, tipo: modo, arq: null, salvar: function() { return qdSalvarForm(d, modo, base); } };
+    qUi.sheet = { modo: 'doc', id: id, tipo: modo, arq: null, pdf: null, salvar: function() { return qdSalvarForm(d, modo, base); } };
     var titulo = modo === 'novo' ? 'Novo documento' : modo === 'dados' ? 'Dados do documento' : modo === 'revisar' ? 'Nova revisão · ' + d.codigo : modo === 'substituir' ? (qdCategoria(d) === 'licenca' ? 'Renovar · ' : 'Nova versão · ') + d.codigo : 'Editar · ' + d.codigo + ' (versão ' + base.versao + ')';
     qAbrir(titulo, qdFormHtml(d, modo, base), modo === 'dados' ? 'Salvar' : (d ? qdInterno(d) : qdTipo(qdUi.novoTipo || 'pop')[3] === 'interno') ? 'Salvar em elaboração' : 'Salvar e deixar vigente');
+    if (!d || modo === 'dados') qdPreencherListasForm();
+  }
+  function qdLerDados(d, tipo, cat, g) {
+    var codigo = g('qd-codigo').toUpperCase(), titulo = g('qd-titulo');
+    if (!codigo) { qErro('Informe o código do documento.'); return null; }
+    if (!titulo) { qErro('Informe o título.'); return null; }
+    if (qdDocs().some(function(x) { return x.id !== (d && d.id) && String(x.codigo).toUpperCase() === codigo; })) { qErro('Já existe um documento com o código ' + codigo + '.'); return null; }
+    var marcados = function(cls) { return Array.prototype.filter.call(document.querySelectorAll('#q-form-body .' + cls), function(x) { return x.checked; }); };
+    var dados = { codigo: codigo, titulo: titulo, area: g('qd-area'), descricao: g('qd-desc'), retencaoAnos: Math.max(1, Math.round(Number(g('qd-ret')) || 2)) };
+    var donoId = g('qd-dono'), dono = donoId ? equipe.find(function(m) { return m.id === donoId; }) : null;
+    dados.dono = dono ? { id: dono.id, nome: qdNomeMembro(dono) } : null;
+    dados.classificacao = g('qd-classe') || 'geral';
+    dados.normas = marcados('qd-norma').map(function(x) { return x.value; });
+    var locEl = document.getElementById('qd-locais');
+    dados.locais = dados.classificacao !== 'geral' ? [] : locEl && locEl.querySelector('.qd-local') ? marcados('qd-local').map(function(x) { return { ref: x.value, nome: x.dataset.nome.replace(/ \(acesso removido\)$/, '') }; }) : (d && d.locais) || [];
+    if (cat === 'interno') {
+      dados.revisaoMeses = Math.max(1, Math.round(Number(g('qd-rev')) || 12)); dados.leituraObrigatoria = document.getElementById('qd-leitura').checked;
+      dados.leitores = { areas: marcados('qd-ler-area').map(function(x) { return x.value; }), pessoas: marcados('qd-ler-pessoa').map(function(x) { return { id: x.value, nome: x.dataset.nome.replace(/ · .*$/, '') }; }) };
+      var fEl = document.getElementById('qd-funcoes');
+      dados.funcoesRH = fEl && fEl.querySelector('.qd-funcao') ? marcados('qd-funcao').map(function(x) { return x.value; }) : (d && d.funcoesRH) || [];
+      if (qdEhRegistro(tipo)) {
+        var desde = g('qd-reg-desde');
+        if (desde && desde > todayIso()) { qErro('A data do registro mais antigo não pode ser no futuro.'); return null; }
+        dados.registro = Object.assign({}, d && d.registro || {}, { meses: Math.max(1, Math.round(Number(g('qd-reg-meses')) || 24)), desde: desde, local: g('qd-reg-local'), responsavel: g('qd-reg-resp') });
+      }
+    } else { dados.orgao = g('qd-orgao'); dados.numeroDoc = g('qd-num'); }
+    return dados;
   }
   function qdSalvarForm(d, modo, base) {
     var tipo = d ? d.tipo : document.getElementById('qd-tipo').value, cat = qdTipo(tipo)[3], agora = new Date().toISOString();
     var g = function(i) { var el = document.getElementById(i); return el ? el.value.trim() : ''; };
     var dados = {};
-    if (!d || modo === 'dados') {
-      var codigo = g('qd-codigo').toUpperCase(), titulo = g('qd-titulo');
-      if (!codigo) { qErro('Informe o código do documento.'); return null; }
-      if (!titulo) { qErro('Informe o título.'); return null; }
-      if (qdDocs().some(function(x) { return x.id !== (d && d.id) && String(x.codigo).toUpperCase() === codigo; })) { qErro('Já existe um documento com o código ' + codigo + '.'); return null; }
-      dados = { codigo: codigo, titulo: titulo, area: g('qd-area'), descricao: g('qd-desc'), retencaoAnos: Math.max(1, Math.round(Number(g('qd-ret')) || 2)) };
-      if (cat === 'interno') { dados.revisaoMeses = Math.max(1, Math.round(Number(g('qd-rev')) || 12)); dados.leituraObrigatoria = document.getElementById('qd-leitura').checked; }
-      else { dados.orgao = g('qd-orgao'); dados.numeroDoc = g('qd-num'); }
-    }
+    if (!d || modo === 'dados') { dados = qdLerDados(d, tipo, cat, g); if (!dados) return null; }
     if (modo === 'dados') {
-      return new Promise(function(res) { qdAssinar('Dados · ' + d.codigo, function() { var nd = Object.assign({}, d, dados, { atualizadoEm: agora }); delete nd.id; qdGravar(d.id, nd).then(function() { showToast('Dados do documento salvos.'); res(); qdAbrirDoc(d.id); }).catch(qdFalha()); }); });
+      return new Promise(function(res) {
+        var assinar = qdPodeGerir() ? qdAssinar : qdAssinarElaborador;
+        assinar('Dados · ' + d.codigo, function() { var nd = Object.assign({}, d, dados, { atualizadoEm: agora }); delete nd.id; qdGravar(d.id, nd).then(function() { showToast('Dados do documento salvos.'); res(); qdAbrirDoc(d.id); }).catch(qdFalha()); });
+      });
     }
     var versao = Object.assign({}, base || {}, { versao: (base && base.versao) || 1 });
-    var file = qUi.sheet.arq;
+    var file = qUi.sheet.arq, pdfFile = qUi.sheet.pdf;
     var conteudo = qdTemConteudo(tipo) ? qdLerConteudo() : null;
     if (cat !== 'interno') {
       versao.emissao = g('qd-emissao'); versao.validade = g('qd-validade');
@@ -19077,6 +19423,9 @@
     if (document.getElementById('qd-motivo')) { versao.motivo = g('qd-motivo'); if (versao.motivo.length < 3) { qErro('Escreva o que mudou nesta versão.'); return null; } }
     if (conteudo) versao.conteudo = conteudo; else if (qdTemConteudo(tipo)) delete versao.conteudo;
     if (!file && !versao.arquivo && !conteudo) { qErro(qdTemConteudo(tipo) ? 'Anexe o arquivo ou escreva o conteúdo do documento.' : 'Anexe o arquivo do documento.'); return null; }
+    if (pdfFile && !qdEhPdf(pdfFile)) { qErro('A versão para leitura precisa ser um arquivo PDF.'); return null; }
+    if (file) delete versao.pdf; // arquivo novo: a versão em PDF antiga não vale mais
+    if (cat !== 'interno' && !conteudo && !pdfFile && (file ? !(qdEhPdf(file) || qdEhImagem(file)) : qdPrecisaPdf(versao))) { qErro('Este arquivo é Word ou Excel: anexe também a versão em PDF (é a que vale para leitura e impressão).'); return null; }
     if (tipo === 'pop' && conteudo && !versao.arquivo && !file) {
       var falta = QD_SECOES.filter(function(s) { return s[2] && !conteudo[s[0]]; }).map(function(s) { return s[1].replace(/ \(.*\)$/, ''); });
       if (falta.length) { qErro('No POP, preencha: ' + falta.join(', ') + ' (RDC 275/2002) — ou anexe o arquivo.'); return null; }
@@ -19084,14 +19433,22 @@
     var docId = d ? d.id : 'doc-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     var btn = document.getElementById('btn-q-submit');
     return new Promise(function(res) {
-      qdAssinar((cat === 'interno' ? 'Elaborar · ' : 'Registrar · ') + (dados.codigo || d.codigo), function(ass) {
-        btn.disabled = true; btn.textContent = file ? 'Enviando o arquivo…' : 'Salvando…';
+      var assinar = cat === 'interno' ? qdAssinarElaborador : qdAssinar;
+      assinar((cat === 'interno' ? 'Elaborar · ' : 'Registrar · ') + (dados.codigo || d.codigo), function(ass) {
+        btn.disabled = true; btn.textContent = file || pdfFile ? 'Enviando o arquivo…' : 'Salvando…';
         qdEnviarArquivo(docId, versao.versao, file).then(function(arq) {
           if (arq) versao.arquivo = arq;
+          return qdEnviarArquivo(docId, versao.versao, pdfFile);
+        }).then(function(pdf) {
+          if (pdf) versao.pdf = pdf;
           var novo = Object.assign({}, d || { tipo: tipo, criadoEm: agora, criadoPor: ass, historico: [], copias: [] }, dados, { atualizadoEm: agora });
           delete novo.id;
           if (cat === 'interno') {
-            versao.etapa = 'elaboracao'; versao.elaborado = ass;
+            var elabs = qdElaboradores(versao), k = qdChave(ass);
+            if (elabs.indexOf(k) < 0) elabs.push(k);
+            versao.elaboradores = elabs;
+            if (!versao.elaborado) versao.elaborado = ass; else if (qdChave(versao.elaborado) !== k) versao.editado = ass;
+            versao.etapa = 'elaboracao'; delete versao.pronto; delete versao.revisado;
             novo.rascunho = versao;
           } else {
             versao.registrado = ass;
@@ -19107,30 +19464,54 @@
       });
     });
   }
-  // etapas: enviar, aprovar, devolver, descartar, revisado sem alteração, obsoleto, cópias
+  // pede a versão em PDF antes de publicar (o Word/Excel fica guardado só para quem gere)
+  function qdPedirPdf(id, depois) {
+    var d = qdPorId(id); if (!d || !d.rascunho) return;
+    qUi.sheet = { modo: 'doc', id: id, pdf: null, salvar: function() {
+      var f = qUi.sheet.pdf;
+      if (!f) { qErro('Anexe a versão em PDF.'); return null; }
+      if (!qdEhPdf(f)) { qErro('Precisa ser um arquivo PDF.'); return null; }
+      var btn = document.getElementById('btn-q-submit'); btn.disabled = true; btn.textContent = 'Enviando…';
+      return qdEnviarArquivo(id, d.rascunho.versao, f).then(function(pdf) {
+        var novo = Object.assign({}, d); delete novo.id;
+        novo.rascunho = Object.assign({}, d.rascunho, { pdf: pdf }); novo.atualizadoEm = new Date().toISOString();
+        return qdGravar(id, novo);
+      }).then(function() { btn.disabled = false; setTimeout(depois, 50); }).catch(function(err) { btn.textContent = 'Anexar e continuar'; qdFalha(btn)(err); });
+    } };
+    qAbrir('Versão em PDF · ' + d.codigo, '<p>O arquivo desta versão está em <b>Word ou Excel</b>. Para publicar, anexe a versão em <b>PDF</b>: é ela que todos leem e imprimem, com a marca d’água. O arquivo editável continua guardado para quem revisa e aprova.</p>' +
+      '<div class="qd-arq"><label class="btn btn-secondary btn-sm">📄 Escolher o PDF<input type="file" id="qd-pdf" class="hidden" accept="application/pdf,.pdf" /></label><span id="qd-pdf-nome" class="field-hint">Nenhum arquivo escolhido.</span></div>', 'Anexar e continuar');
+  }
+  // etapas: pronto, enviar, aprovar, revisado sem alteração
   function qdEtapa(id, acao) {
     var d = qdPorId(id); if (!d) return;
     var agora = new Date().toISOString(), novo = Object.assign({}, d); delete novo.id;
-    if (acao === 'enviar') {
-      qdAssinar('Revisar e enviar · ' + d.codigo, function(ass) {
-        novo.rascunho = Object.assign({}, d.rascunho, { etapa: 'aprovacao', revisado: ass }); novo.atualizadoEm = agora;
-        qdGravar(id, novo).then(function() { showToast('Versão ' + d.rascunho.versao + ' enviada para aprovação.'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
+    var falhou = function(e) { console.error(e); var m = String(e && e.message || ''); showToast(/documentos: /.test(m) ? 'O servidor recusou: ' + m.replace(/^.*documentos: /, '') + '.' : 'Não foi possível salvar agora.'); };
+    if (acao === 'pronto') {
+      qdAssinarElaborador('Pronto para revisão · ' + d.codigo, function(ass) {
+        novo.rascunho = Object.assign({}, d.rascunho, { pronto: ass }); novo.atualizadoEm = agora;
+        qdGravar(id, novo).then(function() { showToast('Versão ' + d.rascunho.versao + ' pronta: aguardando a revisão.'); qdAbrirDoc(id); }).catch(falhou);
       });
+    } else if (acao === 'enviar') {
+      qdAssinar('Revisar e enviar · ' + d.codigo, function(ass) {
+        novo.rascunho = Object.assign({}, d.rascunho, { etapa: 'aprovacao', revisado: ass }); delete novo.rascunho.pronto; novo.atualizadoEm = agora;
+        qdGravar(id, novo).then(function() { showToast('Versão ' + d.rascunho.versao + ' revisada e enviada para aprovação.'); qdAbrirDoc(id); }).catch(falhou);
+      }, qdElaboradores(d.rascunho));
     } else if (acao === 'aprovar') {
+      if (qdPrecisaPdf(d.rascunho)) { qdPedirPdf(id, function() { qdEtapa(id, 'aprovar'); }); return; }
       qdAssinar('Aprovar e publicar · ' + d.codigo, function(ass) {
-        var v = Object.assign({}, d.rascunho, { aprovado: ass, publicadoEm: agora }); delete v.etapa;
+        var v = Object.assign({}, d.rascunho, { aprovado: ass, publicadoEm: agora }); delete v.etapa; delete v.pronto;
         if (d.vigente) novo.historico = (d.historico || []).concat([Object.assign({}, d.vigente, { substituidaEm: agora })]);
         novo.vigente = v; novo.rascunho = null; novo.versaoAtual = v.versao; novo.revisarEm = addMesesIso(todayIso(), Number(d.revisaoMeses) || 12); novo.atualizadoEm = agora;
         qdGravar(id, novo).then(function() {
           var antigas = (d.copias || []).filter(function(c) { return !c.recolhidaEm; }).length;
-          showToast(d.vigente ? 'Versão ' + v.versao + ' aprovada e publicada: substitui a versão ' + d.vigente.versao + ' na lista mestra.' + (antigas ? ' Recolha ' + (antigas === 1 ? 'a cópia impressa' : 'as ' + antigas + ' cópias impressas') + ' da versão anterior.' : '') : 'Versão ' + v.versao + ' aprovada e publicada na lista mestra.');
+          showToast(d.vigente ? 'Versão ' + v.versao + ' aprovada e publicada: substitui a versão ' + d.vigente.versao + ' na lista mestra.' + (antigas ? ' Recolha ' + (antigas === 1 ? 'a cópia impressa' : 'as ' + antigas + ' cópias impressas') + ' da versão anterior.' : '') + (d.leituraObrigatoria ? ' A leitura volta a ser pedida.' : '') : 'Versão ' + v.versao + ' aprovada e publicada na lista mestra.');
           qdAbrirDoc(id);
-        }).catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
-      });
+        }).catch(falhou);
+      }, qdElaboradores(d.rascunho));
     } else if (acao === 'revisado-ok') {
       qdAssinar('Revisão periódica · ' + d.codigo, function(ass) {
         novo.revisoes = (d.revisoes || []).concat([Object.assign({}, ass, { versao: d.vigente.versao, semAlteracao: true })]); novo.revisarEm = addMesesIso(todayIso(), Number(d.revisaoMeses) || 12); novo.atualizadoEm = agora;
-        qdGravar(id, novo).then(function() { showToast('Revisão periódica registrada sem alteração. Próxima até ' + formatDateBR(novo.revisarEm) + '.'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
+        qdGravar(id, novo).then(function() { showToast('Revisão periódica registrada sem alteração. Próxima até ' + formatDateBR(novo.revisarEm) + '.'); qdAbrirDoc(id); }).catch(falhou);
       });
     }
   }
@@ -19138,19 +19519,20 @@
     qUi.sheet = { modo: 'doc', id: id, salvar: function() { var r = feito(); return r; } };
     qAbrir(titulo, campos, botao);
   }
+  function qdProximaCopia(d) { return (d.copias || []).filter(function(c) { return Number(c.versao) === Number(d.vigente.versao); }).reduce(function(n, c) { return Math.max(n, Number(c.numeroAte) || Number(c.qtd) || 0); }, 0) + 1; }
   function qdAcaoComMotivo(id, acao) {
     var d = qdPorId(id); if (!d) return;
     var agora = new Date().toISOString(), novo = Object.assign({}, d); delete novo.id;
     var g = function(i) { var el = document.getElementById(i); return el ? el.value.trim() : ''; };
-    var salvarCom = function(msg) { return function(ass) { qdGravar(id, Object.assign(novo, { atualizadoEm: agora })).then(function() { showToast(msg); qdAbrirDoc(id); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); }); }; };
+    var salvarCom = function(msg, depois) { return function() { qdGravar(id, Object.assign(novo, { atualizadoEm: agora })).then(function() { showToast(msg); qdAbrirDoc(id); if (depois) depois(); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); }); }; };
     if (acao === 'devolver') qdPergunta(id, 'Devolver para ajuste · ' + d.codigo, '<label>O que precisa ajustar <span class="req">*</span><textarea id="qd-mot" rows="3" maxlength="400"></textarea></label>', 'Devolver', function() {
       var m = g('qd-mot'); if (m.length < 3) { qErro('Escreva o que precisa ajustar.'); return null; }
-      qdAssinar('Devolver · ' + d.codigo, function(ass) { novo.rascunho = Object.assign({}, d.rascunho, { etapa: 'elaboracao', devolucoes: (d.rascunho.devolucoes || []).concat([Object.assign({}, ass, { motivo: m })]) }); salvarCom('Devolvido para ajuste.')(ass); });
+      qdAssinar('Devolver · ' + d.codigo, function(ass) { novo.rascunho = Object.assign({}, d.rascunho, { etapa: 'elaboracao', devolucoes: (d.rascunho.devolucoes || []).concat([Object.assign({}, ass, { motivo: m })]) }); delete novo.rascunho.revisado; delete novo.rascunho.pronto; salvarCom('Devolvido para ajuste.')(ass); });
       return null;
     });
     else if (acao === 'descartar') qdPergunta(id, 'Descartar · ' + d.codigo, '<p>Descartar ' + (d.vigente ? 'a revisão em andamento (versão ' + d.rascunho.versao + ')? A versão vigente continua valendo.' : 'o rascunho? O documento ainda não tem versão aprovada: fica cancelado.') + '</p><label>Motivo <span class="req">*</span><input type="text" id="qd-mot" maxlength="200" /></label>', 'Descartar', function() {
       var m = g('qd-mot'); if (m.length < 3) { qErro('Escreva o motivo.'); return null; }
-      qdAssinar('Descartar · ' + d.codigo, function(ass) {
+      (qdPodeGerir() ? qdAssinar : qdAssinarElaborador)('Descartar · ' + d.codigo, function(ass) {
         novo.descartes = (d.descartes || []).concat([Object.assign({}, ass, { versao: d.rascunho.versao, motivo: m })]); novo.rascunho = null;
         if (!d.vigente) novo.obsoleto = Object.assign({}, ass, { motivo: 'rascunho descartado: ' + m });
         salvarCom('Descartado.')(ass);
@@ -19162,11 +19544,19 @@
       qdAssinar('Cancelar · ' + d.codigo, function(ass) { novo.obsoleto = Object.assign({}, ass, { motivo: m, destinacao: g('qd-dest') }); novo.rascunho = null; salvarCom('Documento cancelado (obsoleto).')(ass); });
       return null;
     });
-    else if (acao === 'copia') qdPergunta(id, 'Cópia controlada · ' + d.codigo, '<div class="row-2"><label>Onde fica <span class="req">*</span><input type="text" id="qd-cp-local" maxlength="80" placeholder="Ex.: sala de envase" /></label><label>Quantas<input type="number" id="qd-cp-qtd" min="1" step="1" value="1" /></label></div>', 'Registrar', function() {
-      var local = g('qd-cp-local'), q = Math.max(1, Math.round(Number(g('qd-cp-qtd')) || 1)); if (!local) { qErro('Informe onde a cópia fica.'); return null; }
-      qdAssinar('Cópia · ' + d.codigo, function(ass) { novo.copias = (d.copias || []).concat([{ id: uid(), versao: d.vigente.versao, local: local, qtd: q, entregueEm: agora, entreguePor: ass.nome }]); salvarCom('Cópia controlada registrada.')(ass); });
-      return null;
-    });
+    else if (acao === 'copia') {
+      var prox = qdProximaCopia(d);
+      qdPergunta(id, 'Cópia controlada · ' + d.codigo, '<p class="hint">Cada cópia sai numerada (a próxima é a nº ' + prox + ' da versão ' + d.vigente.versao + '), com a marca “cópia controlada” e o local em todas as páginas.</p><div class="row-2"><label>Onde fica <span class="req">*</span><input type="text" id="qd-cp-local" maxlength="80" placeholder="Ex.: sala de envase" /></label><label>Quantas<input type="number" id="qd-cp-qtd" min="1" max="20" step="1" value="1" /></label></div>', 'Registrar e gerar o PDF', function() {
+        var local = g('qd-cp-local'), q = Math.min(20, Math.max(1, Math.round(Number(g('qd-cp-qtd')) || 1))); if (!local) { qErro('Informe onde a cópia fica.'); return null; }
+        qdAssinar('Cópia controlada · ' + d.codigo, function(ass) {
+          var de = qdProximaCopia(d), ate = de + q - 1, v = d.vigente, marcas = [];
+          for (var n = de; n <= ate; n++) marcas.push(qdMarcaControlada(d, v, n, local, ass.nome));
+          novo.copias = (d.copias || []).concat([{ id: uid(), versao: v.versao, local: local, qtd: q, numeroDe: de, numeroAte: ate, entregueEm: agora, entreguePor: ass.nome }]);
+          salvarCom('Cópia controlada registrada: nº ' + de + (ate > de ? ' a ' + ate : '') + '.', function() { qdImprimir(d, v, marcas, 'copia-controlada-' + de + (ate > de ? '-a-' + ate : '')); })(ass);
+        });
+        return null;
+      });
+    }
   }
   function qdRecolher(id, cid) {
     var d = qdPorId(id); if (!d) return;
@@ -19190,23 +19580,169 @@
         .catch(function(e) { console.error(e); showToast('Não foi possível salvar agora.'); });
     });
   }
-  function qdAbrirArquivo(caminho, nome) { solAbrirAnexo(caminho, nome, QD_BALDE); }
-  function qdCsv() {
-    var cab = ['codigo', 'titulo', 'tipo', 'area', 'versao vigente', 'aprovado por', 'aprovado em', 'revisar ate', 'validade', 'situacao', 'leitura obrigatoria', 'leituras da versao'];
-    var linhas = qdDocs().filter(function(d) { return qdInterno(d) && !d.obsoleto; }).sort(function(a, b) { return String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); }).map(function(d) {
-      var v = d.vigente;
-      return [d.codigo, d.titulo, qdTipo(d.tipo)[1], d.area, v ? v.versao : '', v && v.aprovado ? v.aprovado.nome : '', v && v.aprovado ? formatDateTimeBR(v.aprovado.em) : '', d.revisarEm ? formatDateBR(d.revisarEm) : '', qdValidade(d) ? formatDateBR(qdValidade(d)) : '', QD_SIT[qdSituacao(d)][1], d.leituraObrigatoria ? 'sim' : 'não', v ? qdLeituras(d, v.versao).length : ''];
+  // lista de presença da reciclagem (vira treinamento no cadastro de cada funcionário no RH)
+  function qdPresenca(id) {
+    var d = qdPorId(id); if (!d || !d.vigente) return;
+    var g = function(i) { var el = document.getElementById(i); return el ? el.value.trim() : ''; };
+    qdCarregarFuncionarios(d.funcoesRH || []).then(function(lista) {
+      var v = d.vigente, tr = {};
+      qdTreinos(d, v.versao).forEach(function(t) { tr[t.funcionarioId] = t; });
+      var html = '<p class="hint">Reciclagem de <b>' + escapeHtml(d.codigo + ' ' + d.titulo) + '</b>, versão ' + v.versao + '. Marque quem participou: fica como treinamento no cadastro de cada funcionário (RH).</p>' +
+        '<div class="row-2"><label>Data <span class="req">*</span><input type="date" id="qd-pr-data" value="' + todayIso() + '" max="' + todayIso() + '" /></label><label>Duração (minutos) <span class="opt">(opcional)</span><input type="number" id="qd-pr-min" min="5" max="600" step="5" /></label></div>' +
+        '<label>Observação <span class="opt">(opcional)</span><input type="text" id="qd-pr-obs" maxlength="200" /></label>' +
+        (lista.length ? '<div class="qd-checks qd-presenca">' + lista.map(function(f) { var t = tr[f.id];
+          return '<label class="check"><input type="checkbox" class="qd-pr-f" value="' + escapeHtml(f.id) + '" data-nome="' + escapeHtml(f.nome) + '" data-funcao="' + escapeHtml(f.funcao || '') + '"' + (t ? ' checked disabled' : '') + ' /> ' + escapeHtml(f.nome) + ' <small>' + escapeHtml((f.funcao || '') + (t ? ' · já treinado em ' + formatDateBR(t.data) : '')) + '</small></label>'; }).join('') + '</div>'
+          : '<p class="empty-state">Nenhum funcionário ativo com essas funções no RH.</p>') +
+        '<p class="hint">Quem deu o treinamento assina (o próprio acesso ou a senha de 4 números).</p>';
+      qdPergunta(id, 'Lista de presença · ' + d.codigo, html, 'Assinar e registrar', function() {
+        var sel = Array.prototype.filter.call(document.querySelectorAll('#q-form-body .qd-pr-f'), function(x) { return x.checked && !x.disabled; }), data = g('qd-pr-data');
+        if (!sel.length) { qErro('Marque quem participou.'); return null; }
+        if (!data || data > todayIso()) { qErro('Informe a data do treinamento.'); return null; }
+        qdAssinarElaborador('Quem deu o treinamento · ' + d.codigo, function(ass) {
+          var agora = new Date().toISOString();
+          var ops = sel.map(function(x) { return { k: 'dtr', id: (d.id + '_v' + v.versao + '_' + x.value).replace(/[^A-Za-z0-9_-]/g, '_'), data: { docId: d.id, codigo: d.codigo, titulo: d.titulo, versao: v.versao, funcionarioId: x.value, funcionarioNome: x.dataset.nome, funcao: x.dataset.funcao, data: data, minutos: Math.round(Number(g('qd-pr-min')) || 0), obs: g('qd-pr-obs'), instrutor: ass, em: agora } }; });
+          qGravar(ops).then(function() { showToast(sel.length + (sel.length === 1 ? ' funcionário treinado' : ' funcionários treinados') + ' na versão ' + v.versao + ' (registrado no RH).'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); });
+        });
+        return null;
+      });
+    }).catch(function(e) { console.warn(e); showToast('Não foi possível carregar os funcionários do RH agora.'); });
+  }
+  // descarte dos registros que passaram do prazo de guarda
+  function qdDescarte(id) {
+    var d = qdPorId(id); if (!d) return;
+    var corte = qdRegCorte(d), g = function(i) { var el = document.getElementById(i); return el ? el.value.trim() : ''; };
+    qdPergunta(id, 'Descarte de registros · ' + d.codigo, '<p class="hint">Guarda de ' + qdRegMeses(d) + ' meses: os registros preenchidos até ' + escapeHtml(formatDateBR(addDiasIso(corte, -1))) + ' já podem ser descartados.</p>' +
+      '<label>Descartados os registros até <span class="req">*</span><input type="date" id="qd-ds-ate" value="' + addDiasIso(corte, -1) + '" max="' + addDiasIso(corte, -1) + '" /></label>' +
+      '<label>Como foi o descarte <span class="req">*</span><input type="text" id="qd-ds-como" maxlength="160" placeholder="Ex.: fragmentados e enviados para reciclagem" /></label>', 'Assinar e registrar', function() {
+      var ate = g('qd-ds-ate'), como = g('qd-ds-como');
+      if (!ate || ate >= corte) { qErro('A data precisa ser antes de ' + formatDateBR(corte) + ' (prazo de guarda).'); return null; }
+      if (como.length < 3) { qErro('Escreva como foi o descarte.'); return null; }
+      qdAssinarElaborador('Descarte · ' + d.codigo, function(ass) {
+        var novo = Object.assign({}, d); delete novo.id;
+        var rg = Object.assign({}, d.registro || {});
+        rg.descartes = (rg.descartes || []).concat([{ ate: ate, como: como, por: ass }]);
+        if (!rg.desde || rg.desde <= ate) rg.desde = addDiasIso(ate, 1);
+        novo.registro = rg; novo.atualizadoEm = new Date().toISOString();
+        qdGravar(id, novo).then(function() { showToast('Descarte registrado: registros até ' + formatDateBR(ate) + '.'); qdAbrirDoc(id); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); });
+      });
+      return null;
     });
-    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(csvEscape).join(';'); }).join('\n');
-    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'qualidade-lista-mestra-' + todayIso() + '.csv');
+  }
+  // lista de requisitos normativos (quem revisa e aprova documentos)
+  function qdEditarNormas() {
+    qdPergunta('', 'Requisitos normativos', '<p class="hint">Um por linha. Aparecem em “Requisitos normativos” de cada documento e no filtro da lista mestra.</p><label>Requisitos<textarea id="qd-normas" rows="9" maxlength="3000">' + escapeHtml(qdNormas().join('\n')) + '</textarea></label>', 'Salvar', function() {
+      var l = String((document.getElementById('qd-normas') || {}).value || '').split(/\n/).map(function(x) { return x.trim(); }).filter(Boolean).filter(function(x, i, a) { return a.indexOf(x) === i; }).slice(0, 60);
+      if (!l.length) { qErro('Deixe pelo menos um requisito.'); return null; }
+      qdAssinar('Requisitos normativos', function(ass) {
+        qGravar([{ k: 'dcf', id: 'config', data: Object.assign({}, qdCfg(), { normas: l, atualizadoEm: new Date().toISOString(), atualizadoPor: ass }) }])
+          .then(function() { showToast('Lista de requisitos salva.'); document.getElementById('btn-close-q-sheet').click(); renderQualidade(); }).catch(function(e) { console.error(e); qErro('Não foi possível salvar agora.'); });
+      });
+      return null;
+    });
+  }
+  function qdAbrirArquivo(caminho, nome) { solAbrirAnexo(caminho, nome, QD_BALDE); }
+  // ----- leitura e impressão: PDF com marca d'água -----
+  var PDFLIB_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+  var QRLIB_URL = 'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';
+  function carregarPdfLib() {
+    if (window.PDFLib) return Promise.resolve(window.PDFLib);
+    if (!carregarPdfLib.p) carregarPdfLib.p = carregarScript(PDFLIB_URL).then(function() { if (!window.PDFLib) throw new Error('pdf-lib'); return window.PDFLib; }).catch(function(e) { carregarPdfLib.p = null; throw e; });
+    return carregarPdfLib.p;
+  }
+  function carregarQrLib() {
+    if (window.qrcode) return Promise.resolve(window.qrcode);
+    if (!carregarQrLib.p) carregarQrLib.p = carregarScript(QRLIB_URL).then(function() { if (!window.qrcode) throw new Error('qrcode'); return window.qrcode; }).catch(function(e) { carregarQrLib.p = null; throw e; });
+    return carregarQrLib.p;
+  }
+  // texto para as fontes padrão do PDF (Latin-1)
+  function qdTxtPdf(s) { return String(s == null ? '' : s).replace(/[—–]/g, '-').replace(/…/g, '...').replace(/[“”]/g, '"').replace(/[‘’]/g, "'").replace(/›/g, '>').replace(/[^\x20-\x7E -ÿ]/g, '?'); }
+  function qdMarcaNaoControlada(d, v) {
+    return { grande: 'CÓPIA NÃO CONTROLADA', cor: '#C0392B', rodape: d.codigo + ' versão ' + v.versao + ' · cópia não controlada, válida somente em ' + formatDateBR(todayIso()) + ' · impressa por ' + quemSessao() + ' em ' + formatDateTimeBR(new Date().toISOString()) + '. Confira a versão vigente no app LEVÍSSIMA.' };
+  }
+  function qdMarcaControlada(d, v, n, local, por) {
+    return { grande: 'CÓPIA CONTROLADA Nº ' + n, cor: '#702082', rodape: d.codigo + ' versão ' + v.versao + ' · cópia controlada nº ' + n + (local ? ' · local: ' + local : '') + ' · entregue por ' + (por || quemSessao()) + ' em ' + formatDateBR(todayIso()) + '. Recolher quando sair versão nova.' };
+  }
+  function qdMarcaObsoleta() { return { grande: 'OBSOLETO', cor: '#C0392B', rodape: 'Versão obsoleta: só para consulta. Vale a versão vigente.' }; }
+  function qdMarcaRascunho() { return { grande: 'RASCUNHO', cor: '#C0392B', rodape: 'Versão em elaboração: ainda não aprovada, não vale para o trabalho.' }; }
+  function qdNomePdf(d, v, suf) { return (d.codigo + '-v' + v.versao + (suf ? '-' + suf : '')).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9-]+/g, '-') + '.pdf'; }
+  // gera o PDF (uma cópia por marca) e baixa
+  function qdImprimir(d, v, marcas, suf) {
+    if (qdTemTexto(v.conteudo)) { qdPdfConteudo(d, v, marcas, suf); return Promise.resolve(); }
+    var a = qdArqLeitura(v);
+    if (!a) { showToast('Este documento ainda não tem a versão em PDF para leitura e impressão. Peça a quem revisa e aprova documentos.'); return Promise.resolve(); }
+    if (mode !== 'db' || !sbCliente) { showToast('Sem o banco on-line não dá para abrir o arquivo.'); return Promise.resolve(); }
+    showToast('Preparando o PDF…');
+    return sbCliente.storage.from(QD_BALDE).download(a.caminho).then(function(r) {
+      if (r.error || !r.data) throw r.error || new Error('sem arquivo');
+      return qdEhPdf(a) ? qdMarcarPdf(r.data, marcas) : qdMarcarImagem(r.data, marcas);
+    }).then(function(bytes) { triggerDownload(new Blob([bytes], { type: 'application/pdf' }), qdNomePdf(d, v, suf)); })
+      .catch(function(e) { console.error('imprimir', e); showToast(e && e.codigo === 'protegido' ? 'Este PDF é protegido contra alteração: não dá para pôr a marca d’água. Anexe uma versão sem proteção.' : 'Não foi possível preparar o PDF agora. Verifique a internet.'); });
+  }
+  function qdLerBlob(blob) {
+    if (blob.arrayBuffer) return blob.arrayBuffer();
+    return new Promise(function(res, rej) { var fr = new FileReader(); fr.onload = function() { res(fr.result); }; fr.onerror = rej; fr.readAsArrayBuffer(blob); });
+  }
+  function qdMarcarPdf(blob, marcas) {
+    return Promise.all([carregarPdfLib(), qdLerBlob(blob)]).then(function(x) {
+      var L = x[0];
+      return L.PDFDocument.load(x[1]).catch(function(e) { if (/encrypt/i.test(String(e && e.message))) { var er = new Error('protegido'); er.codigo = 'protegido'; throw er; } throw e; }).then(function(src) {
+        return L.PDFDocument.create().then(function(out) {
+          return Promise.all([out.embedFont(L.StandardFonts.HelveticaBold), out.embedFont(L.StandardFonts.Helvetica)]).then(function(fs) {
+            var idx = src.getPageIndices();
+            return marcas.reduce(function(p, m) {
+              return p.then(function() { return out.copyPages(src, idx).then(function(pgs) { pgs.forEach(function(pg) { out.addPage(pg); qdCarimbarPagina(L, pg, m, fs[0], fs[1]); }); }); });
+            }, Promise.resolve()).then(function() { out.setTitle(qdTxtPdf(marcas[0].grande)); return out.save(); });
+          });
+        });
+      });
+    });
+  }
+  function qdCorRgb(L, hex) { var n = parseInt(String(hex).slice(1), 16); return L.rgb(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); }
+  function qdCarimbarPagina(L, pg, m, fb, fr) {
+    var s = pg.getSize(), w = s.width, h = s.height, t = qdTxtPdf(m.grande), ang = Math.atan2(h, w), cos = Math.cos(ang), sin = Math.sin(ang);
+    var tam = Math.min(w, h) / 8, larg = fb.widthOfTextAtSize(t, tam), max = Math.sqrt(w * w + h * h) * 0.75, cor = qdCorRgb(L, m.cor);
+    if (larg > max) { tam = tam * max / larg; larg = fb.widthOfTextAtSize(t, tam); }
+    pg.drawText(t, { x: w / 2 - (larg / 2) * cos + (tam / 3) * sin, y: h / 2 - (larg / 2) * sin - (tam / 3) * cos, size: tam, font: fb, color: cor, opacity: 0.16, rotate: L.degrees(ang * 180 / Math.PI) });
+    var rod = qdTxtPdf(m.rodape), tr = 7.5;
+    while (fr.widthOfTextAtSize(rod, tr) > w - 40 && tr > 4.5) tr -= 0.5;
+    pg.drawRectangle({ x: 0, y: 0, width: w, height: tr + 10, color: L.rgb(1, 1, 1), opacity: 0.85 });
+    pg.drawText(rod, { x: 20, y: 5, size: tr, font: fr, color: cor });
+    pg.drawText(t, { x: 20, y: h - 14, size: 8, font: fb, color: cor });
+  }
+  function qdCarimbarCanvas(c, W, H, m) {
+    var fonte = function(peso, tam) { return peso + ' ' + tam + 'px "Helvetica Neue", Arial, sans-serif'; };
+    var ang = Math.atan2(H, W), max = Math.sqrt(W * W + H * H) * 0.75, tam = 150;
+    c.save(); c.globalAlpha = 0.14; c.fillStyle = m.cor; c.font = fonte(900, tam);
+    while (c.measureText(m.grande).width > max && tam > 40) { tam -= 6; c.font = fonte(900, tam); }
+    c.translate(W / 2, H / 2); c.rotate(-ang); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(m.grande, 0, 0); c.restore();
+    c.save(); c.fillStyle = m.cor; c.textAlign = 'left'; c.font = fonte(700, 18); c.fillText(m.grande, 40, 34);
+    var rt = 17; c.font = fonte(400, rt);
+    while (c.measureText(m.rodape).width > W - 80 && rt > 11) { rt--; c.font = fonte(400, rt); }
+    c.fillText(m.rodape, 40, H - 22); c.restore();
+  }
+  function qdMarcarImagem(blob, marcas) {
+    return new Promise(function(res, rej) {
+      var url = URL.createObjectURL(blob), img = new Image();
+      img.onload = function() {
+        var W = 1240, H = 1754, M = 70, pages = [];
+        marcas.forEach(function(m) {
+          var cv = document.createElement('canvas'); cv.width = W; cv.height = H; var c = cv.getContext('2d');
+          c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, W, H);
+          var esc = Math.min((W - 2 * M) / img.width, (H - 2 * M - 40) / img.height), iw = img.width * esc, ih = img.height * esc;
+          c.drawImage(img, (W - iw) / 2, M, iw, ih);
+          qdCarimbarCanvas(c, W, H, m);
+          pages.push({ jpeg: dataUrlToBytes(cv.toDataURL('image/jpeg', 0.9)), w: W, h: H });
+        });
+        try { URL.revokeObjectURL(url); } catch (e) {}
+        res(buildPdfFromJpegs(pages));
+      };
+      img.onerror = function() { try { URL.revokeObjectURL(url); } catch (e) {} rej(new Error('imagem')); };
+      img.src = url;
+    });
   }
   // PDF do conteúdo escrito no app: A4 com cabeçalho padrão (código, título, versão, aprovação) em todas as páginas
-  function qdPdf(id, versao) {
-    var d = qdPorId(id); if (!d) return;
-    var v = d.vigente && Number(d.vigente.versao) === Number(versao) ? d.vigente : (d.historico || []).find(function(x) { return Number(x.versao) === Number(versao); }) || d.rascunho;
-    if (!v || !v.conteudo) return;
-    var obsoleta = !(d.vigente && Number(d.vigente.versao) === Number(versao)) || !!d.obsoleto;
-    var W = 1240, H = 1754, M = 90, pages = [], cv, ctx, y;
+  function qdPdfConteudo(d, v, marcas, suf) {
+    var W = 1240, H = 1754, M = 90, pages = [], cv, ctx, y, marca;
     var fonte = function(peso, tam) { return peso + ' ' + tam + 'px "Helvetica Neue", Arial, sans-serif'; };
     function novaPagina() {
       cv = document.createElement('canvas'); cv.width = W; cv.height = H; ctx = cv.getContext('2d');
@@ -19216,9 +19752,8 @@
       ctx.fillStyle = '#1D1D1F'; ctx.font = fonte(700, 30); ctx.fillText(String(d.codigo + ' · ' + d.titulo).slice(0, 70), M + 24, M + 64);
       ctx.font = fonte(400, 22); ctx.fillStyle = '#555';
       ctx.fillText('Versão ' + v.versao + (v.aprovado ? ' · aprovada por ' + v.aprovado.nome + ' em ' + formatDateBR(String(v.aprovado.em).slice(0, 10)) : ' · NÃO APROVADA'), M + 24, M + 100);
-      if (v.elaborado) ctx.fillText('Elaborada por ' + v.elaborado.nome + (d.area ? ' · área ' + d.area : ''), M + 24, M + 132);
-      pages.push(cv); y = M + 200;
-      if (obsoleta || !v.aprovado) { ctx.save(); ctx.globalAlpha = 0.12; ctx.fillStyle = '#C0392B'; ctx.font = fonte(900, 150); ctx.translate(W / 2, H / 2); ctx.rotate(-Math.PI / 5); ctx.textAlign = 'center'; ctx.fillText(obsoleta ? 'OBSOLETO' : 'RASCUNHO', 0, 0); ctx.restore(); }
+      if (v.elaborado) ctx.fillText('Elaborada por ' + v.elaborado.nome + (v.revisado ? ' · revisada por ' + v.revisado.nome : '') + (d.area ? ' · processo ' + d.area : ''), M + 24, M + 132);
+      pages.push({ cv: cv, marca: marca }); y = M + 200;
     }
     function linhaTexto(t, peso, tam, cor, recuo) {
       ctx.font = fonte(peso, tam); ctx.fillStyle = cor;
@@ -19230,28 +19765,42 @@
       });
       if (lin) { if (y > H - M - 40) { novaPagina(); ctx.font = fonte(peso, tam); ctx.fillStyle = cor; } ctx.fillText(lin, M + (recuo || 0), y); y += tam * 1.45; }
     }
-    novaPagina();
-    QD_SECOES.forEach(function(s) {
-      var t = String(v.conteudo[s[0]] || '').trim(); if (!t) return;
-      if (y > H - M - 120) novaPagina();
-      y += 10; linhaTexto(s[1].replace(/ \(.*\)$/, ''), 700, 26, '#702082'); y += 4;
-      t.split(/\n/).forEach(function(par) { if (par.trim()) linhaTexto(par.trim(), 400, 23, '#1D1D1F', 10); else y += 12; });
+    marcas.forEach(function(m) {
+      marca = m; var ini = pages.length;
+      novaPagina();
+      QD_SECOES.forEach(function(s) {
+        var t = String(v.conteudo[s[0]] || '').trim(); if (!t) return;
+        if (y > H - M - 120) novaPagina();
+        y += 10; linhaTexto(s[1].replace(/ \(.*\)$/, ''), 700, 26, '#702082'); y += 4;
+        t.split(/\n/).forEach(function(par) { if (par.trim()) linhaTexto(par.trim(), 400, 23, '#1D1D1F', 10); else y += 12; });
+      });
+      var doc = pages.slice(ini);
+      doc.forEach(function(p, i) {
+        var c2 = p.cv.getContext('2d'); c2.font = fonte(400, 18); c2.fillStyle = '#777'; c2.textAlign = 'left';
+        c2.fillText('Documento controlado no app LEVÍSSIMA (Qualidade › Documentos).', M, H - M + 14);
+        c2.textAlign = 'right'; c2.fillText('Página ' + (i + 1) + ' de ' + doc.length, W - M, H - M + 14);
+        qdCarimbarCanvas(c2, W, H, p.marca);
+      });
     });
-    pages.forEach(function(p, i) {
-      var c2 = p.getContext('2d'); c2.font = fonte(400, 18); c2.fillStyle = '#777'; c2.textAlign = 'left';
-      c2.fillText('Documento controlado no app LEVÍSSIMA (Qualidade › Documentos).', M, H - M + 14);
-      c2.fillText('Cópia impressa só vale se for a versão vigente.', M, H - M + 40);
-      c2.textAlign = 'right'; c2.fillText('Página ' + (i + 1) + ' de ' + pages.length, W - M, H - M + 40);
-    });
-    var bytes = buildPdfFromJpegs(pages.map(function(p) { return { jpeg: dataUrlToBytes(p.toDataURL('image/jpeg', 0.9)), w: W, h: H }; }));
-    triggerDownload(new Blob([bytes], { type: 'application/pdf' }), (d.codigo + '-v' + v.versao + (obsoleta ? '-obsoleta' : '')).toLowerCase().replace(/[^a-z0-9-]+/g, '-') + '.pdf');
+    var bytes = buildPdfFromJpegs(pages.map(function(p) { return { jpeg: dataUrlToBytes(p.cv.toDataURL('image/jpeg', 0.9)), w: W, h: H }; }));
+    triggerDownload(new Blob([bytes], { type: 'application/pdf' }), qdNomePdf(d, v, suf));
   }
-  // PDF com várias páginas (cada página uma imagem JPEG em A4)
-  function buildPdfFromJpegs(pgs) {
+  // botões: "Baixar em PDF", "Abrir o documento" e "Cópia não controlada"
+  function qdBaixarPdf(id, versao) {
+    var d = qdPorId(id); if (!d) return;
+    var n = Number(versao), vig = !!d.vigente && Number(d.vigente.versao) === n && !d.obsoleto;
+    var rasc = !vig && d.rascunho && Number(d.rascunho.versao) === n ? d.rascunho : null;
+    var v = vig ? d.vigente : rasc || (d.historico || []).find(function(x) { return Number(x.versao) === n; }) || (d.vigente && Number(d.vigente.versao) === n ? d.vigente : null);
+    if (!v) return;
+    if (!vig && !rasc && !qdPodeGerir()) { showToast('Só quem revisa e aprova documentos abre as versões antigas.'); return; }
+    qdImprimir(d, v, [vig ? qdMarcaNaoControlada(d, v) : rasc ? qdMarcaRascunho() : qdMarcaObsoleta()], vig ? 'nao-controlada' : rasc ? 'rascunho' : 'obsoleta');
+  }
+  // PDF com várias páginas (cada página uma imagem JPEG); largura da página em pontos (A4 retrato: 595,28)
+  function buildPdfFromJpegs(pgs, larguraPt) {
     var enc = new TextEncoder(), chunks = [], offsets = [0], pos = 0;
     function push(x) { var b = typeof x === 'string' ? enc.encode(x) : x; chunks.push(b); pos += b.length; }
     function begin(n) { offsets[n] = pos; push(n + ' 0 obj\n'); }
-    var n = pgs.length, pw = 595.28;
+    var n = pgs.length, pw = larguraPt || 595.28;
     push(new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34, 0x0A, 0x25, 0xE2, 0xE3, 0xCF, 0xD3, 0x0A]));
     begin(1); push('<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
     var kids = []; for (var i = 0; i < n; i++) kids.push((3 + i * 3) + ' 0 R');
@@ -19270,26 +19819,217 @@
     chunks.forEach(function(c) { out.set(c, q); q += c.length; });
     return out;
   }
+  // ----- lista mestra: CSV, Excel e PDF -----
+  function qdMestraLinhas() {
+    return qdDocs().filter(function(d) { return qdInterno(d) && !d.obsoleto; }).sort(qdPorCodigo).map(function(d) {
+      var v = d.vigente, s = qdSituacaoLeitura(d);
+      return { codigo: d.codigo, titulo: d.titulo, tipo: qdTipo(d.tipo)[1], sigla: qdTipo(d.tipo)[2], area: d.area || '', dono: d.dono ? d.dono.nome : '', versao: v ? v.versao : '',
+        emissao: v && v.aprovado ? formatDateBR(String(v.aprovado.em).slice(0, 10)) : '', elaborado: v && v.elaborado ? v.elaborado.nome : '', revisado: v && v.revisado ? v.revisado.nome : '', aprovado: v && v.aprovado ? v.aprovado.nome : '',
+        aprovadoEm: v && v.aprovado ? formatDateTimeBR(v.aprovado.em) : '', revisarEm: v && d.revisarEm ? formatDateBR(d.revisarEm) : '', validade: qdValidade(d) ? formatDateBR(qdValidade(d)) : '', situacao: QD_SIT[qdSituacao(d)][1],
+        normas: (d.normas || []).join(', '), classe: qdClasse(d)[1], locais: qdClasse(d)[0] === 'geral' ? (d.locais || []).map(function(x) { return x.nome; }).join(', ') : '',
+        leitura: d.leituraObrigatoria ? 'sim' : 'não', leituras: s ? (s.lista ? s.lidos.length + ' de ' + s.esperados.length : String(s.leram.length)) : '' };
+    });
+  }
+  function qdCsv() {
+    var cab = ['codigo', 'titulo', 'tipo', 'area', 'dono', 'versao vigente', 'elaborado por', 'revisado por', 'aprovado por', 'aprovado em', 'revisar ate', 'validade', 'situacao', 'requisitos', 'classificacao', 'local de uso', 'leitura obrigatoria', 'leituras da versao'];
+    var linhas = qdMestraLinhas().map(function(l) { return [l.codigo, l.titulo, l.tipo, l.area, l.dono, l.versao, l.elaborado, l.revisado, l.aprovado, l.aprovadoEm, l.revisarEm, l.validade, l.situacao, l.normas, l.classe, l.locais, l.leitura, l.leituras]; });
+    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(csvEscape).join(';'); }).join('\n');
+    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'qualidade-lista-mestra-' + todayIso() + '.csv');
+  }
+  function qdXlsxMestra() {
+    carregarXLSX().then(function(X) {
+      var cab = ['Código', 'Título', 'Tipo', 'Processo', 'Dono', 'Versão', 'Emissão', 'Elaborado por', 'Revisado por', 'Aprovado por', 'Revisar até', 'Situação', 'Requisitos normativos', 'Classificação', 'Local de uso', 'Leitura obrigatória', 'Leituras'];
+      var rows = qdMestraLinhas().map(function(l) { return [l.codigo, l.titulo, l.tipo, l.area, l.dono, l.versao, l.emissao, l.elaborado, l.revisado, l.aprovado, l.revisarEm, l.situacao, l.normas, l.classe, l.locais, l.leitura, l.leituras]; });
+      var ws = X.utils.aoa_to_sheet([['LEVÍSSIMA · Lista mestra de documentos internos · emitida em ' + formatDateTimeBR(new Date().toISOString()) + ' por ' + quemSessao()], [], cab].concat(rows));
+      ws['!cols'] = [12, 40, 22, 14, 20, 8, 12, 22, 22, 22, 12, 18, 30, 14, 24, 10, 10].map(function(w) { return { wch: w }; });
+      var wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, 'Lista mestra');
+      var out = X.write(wb, { bookType: 'xlsx', type: 'array' });
+      triggerDownload(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'qualidade-lista-mestra-' + todayIso() + '.xlsx');
+    }).catch(function(e) { console.error(e); showToast(e && e.message ? e.message : 'Não foi possível gerar a planilha agora.'); });
+  }
+  function qdPdfMestra() {
+    var linhas = qdMestraLinhas(), W = 1754, H = 1240, M = 60, pages = [], c, y;
+    var cols = [['Código', 'codigo', 120], ['Título', 'titulo', 400], ['Tipo', 'sigla', 80], ['Processo', 'area', 140], ['Versão', 'versao', 70], ['Emissão', 'emissao', 120], ['Aprovado por', 'aprovado', 200], ['Revisar até', 'revisarEm', 120], ['Requisitos', 'normas', 254], ['Situação', 'situacao', 130]];
+    var fonte = function(peso, tam) { return peso + ' ' + tam + 'px "Helvetica Neue", Arial, sans-serif'; };
+    var emitida = 'Emitida em ' + formatDateTimeBR(new Date().toISOString()) + ' por ' + quemSessao() + ' · ' + linhas.length + (linhas.length === 1 ? ' documento' : ' documentos');
+    function corta(t, larg) { t = String(t == null ? '' : t); if (c.measureText(t).width <= larg) return t; while (t.length > 1 && c.measureText(t + '…').width > larg) t = t.slice(0, -1); return t + '…'; }
+    function cabecalho() {
+      var cv = document.createElement('canvas'); cv.width = W; cv.height = H; c = cv.getContext('2d');
+      c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, W, H);
+      c.fillStyle = '#702082'; c.font = fonte(800, 30); c.textAlign = 'left'; c.fillText('LEVÍSSIMA · Lista mestra de documentos internos', M, M + 10);
+      c.fillStyle = '#555'; c.font = fonte(400, 18); c.fillText(emitida, M, M + 40);
+      y = M + 80; var x = M;
+      c.fillStyle = '#F1E8F4'; c.fillRect(M, y - 24, W - 2 * M, 34);
+      c.fillStyle = '#702082'; c.font = fonte(700, 17);
+      cols.forEach(function(col) { c.fillText(col[0], x + 6, y); x += col[2]; });
+      y += 34; pages.push(cv);
+    }
+    cabecalho();
+    if (!linhas.length) { c.fillStyle = '#555'; c.font = fonte(400, 20); c.fillText('Nenhum documento interno cadastrado.', M, y + 10); }
+    linhas.forEach(function(l, i) {
+      if (y > H - M - 40) cabecalho();
+      if (i % 2) { c.fillStyle = '#FAF7FB'; c.fillRect(M, y - 22, W - 2 * M, 32); }
+      var x = M; c.font = fonte(400, 16); c.fillStyle = '#1D1D1F';
+      cols.forEach(function(col) { c.fillText(corta(l[col[1]], col[2] - 12), x + 6, y); x += col[2]; });
+      y += 32;
+    });
+    pages.forEach(function(cv, i) { var c2 = cv.getContext('2d'); c2.font = fonte(400, 15); c2.fillStyle = '#777'; c2.textAlign = 'right'; c2.fillText('Página ' + (i + 1) + ' de ' + pages.length, W - M, H - 24); c2.textAlign = 'left'; c2.fillText('Documento controlado no app LEVÍSSIMA (Qualidade › Documentos). Vale sempre a lista do app.', M, H - 24); });
+    var bytes = buildPdfFromJpegs(pages.map(function(cv) { return { jpeg: dataUrlToBytes(cv.toDataURL('image/jpeg', 0.9)), w: W, h: H }; }), 841.89);
+    triggerDownload(new Blob([bytes], { type: 'application/pdf' }), 'qualidade-lista-mestra-' + todayIso() + '.pdf');
+  }
+  function qdLeituraCsv() {
+    var cab = ['codigo', 'titulo', 'versao', 'pessoa', 'area', 'leu', 'em', 'onde'], linhas = [];
+    qdDocs().filter(function(d) { return qdSituacao(d) === 'vigente' && d.leituraObrigatoria; }).sort(qdPorCodigo).forEach(function(d) {
+      var v = d.vigente, s = qdSituacaoLeitura(d), lei = qdLeituras(d, v.versao);
+      if (s.lista) s.esperados.forEach(function(m) { var l = lei.find(function(x) { return x.pessoaId === m.id; }); linhas.push([d.codigo, d.titulo, v.versao, qdNomeMembro(m), m.area || '', l ? 'sim' : 'não', l ? formatDateTimeBR(l.em) : '', l && l.origem === 'tablet' ? 'tablet' : l ? 'app' : '']); });
+      lei.filter(function(l) { return !s.lista || !s.esperados.some(function(m) { return m.id === l.pessoaId; }); }).forEach(function(l) { linhas.push([d.codigo, d.titulo, v.versao, l.nome, '', 'sim', formatDateTimeBR(l.em), l.origem === 'tablet' ? 'tablet' : 'app']); });
+    });
+    var csv = '﻿' + [cab].concat(linhas).map(function(l) { return l.map(csvEscape).join(';'); }).join('\n');
+    triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), 'qualidade-leituras-' + todayIso() + '.csv');
+  }
+  // ----- QR Code no ponto de uso: abre a versão vigente (celular com acesso à Qualidade ou o tablet do setor) -----
+  function qdLinkDoc(id) { return SITE_URL + '#doc=' + encodeURIComponent(id); }
+  function qdQr(id) {
+    var d = qdPorId(id); if (!d) return;
+    carregarQrLib().then(function(qrcode) {
+      var q = qrcode(0, 'M'); q.addData(qdLinkDoc(id)); q.make();
+      var n = q.getModuleCount(), W = 1240, H = 1754, cv = document.createElement('canvas'); cv.width = W; cv.height = H; var c = cv.getContext('2d');
+      var fonte = function(peso, tam) { return peso + ' ' + tam + 'px "Helvetica Neue", Arial, sans-serif'; };
+      c.fillStyle = '#FFFFFF'; c.fillRect(0, 0, W, H);
+      c.strokeStyle = '#702082'; c.lineWidth = 4; c.setLineDash([16, 10]); c.strokeRect(150, 100, W - 300, 1060); c.setLineDash([]);
+      c.textAlign = 'center'; c.fillStyle = '#702082'; c.font = fonte(800, 46); c.fillText('LEVÍSSIMA · ' + d.codigo, W / 2, 190);
+      var lado = 600, cel = lado / (n + 8), x0 = (W - lado) / 2, y0 = 230;
+      c.fillStyle = '#000000';
+      for (var r = 0; r < n; r++) for (var k = 0; k < n; k++) if (q.isDark(r, k)) c.fillRect(Math.floor(x0 + (k + 4) * cel), Math.floor(y0 + (r + 4) * cel), Math.ceil(cel), Math.ceil(cel));
+      c.fillStyle = '#1D1D1F'; c.font = fonte(700, 34);
+      var palavras = String(d.titulo).split(/\s+/), lin = '', yy = 900;
+      palavras.forEach(function(p) { var t = lin ? lin + ' ' + p : p; if (c.measureText(t).width > W - 360 && lin) { c.fillText(lin, W / 2, yy); yy += 44; lin = p; } else lin = t; });
+      if (lin) { c.fillText(lin, W / 2, yy); yy += 44; }
+      c.font = fonte(400, 26); c.fillStyle = '#555';
+      c.fillText('Aponte a câmera do celular ou do tablet para abrir a versão vigente.', W / 2, yy + 30);
+      c.fillText('Esta etiqueta não é cópia do documento: o conteúdo está sempre no app.', W / 2, yy + 68);
+      var bytes = buildPdfFromJpegs([{ jpeg: dataUrlToBytes(cv.toDataURL('image/jpeg', 0.92)), w: W, h: H }]);
+      triggerDownload(new Blob([bytes], { type: 'application/pdf' }), 'qr-' + String(d.codigo).toLowerCase().replace(/[^a-z0-9-]+/g, '-') + '.pdf');
+      showToast('Etiqueta com o QR Code baixada: imprima e cole no ponto de uso.');
+    }).catch(function() { showToast('Sem internet para desenhar o QR Code agora.'); });
+  }
+  // link do QR: #doc=<id> (depois do login também)
+  function qdDocPedido() { var m = /(?:^#|&)doc=([A-Za-z0-9_-]{1,80})/.exec(location.hash || ''); return m ? m[1] : ''; }
+  function qdIrDocPedido() {
+    var id = qdDocPedido();
+    if (!id || !session) return false;
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    if (session.role === 'setor') { qdSetor.pedido = id; qdSetorLigar(); return true; }
+    if (session.role === 'motorista' || session.role === 'representante' || abasPermitidas().indexOf('qualidade') < 0) { showToast('Este QR Code é de um documento da Qualidade: o seu acesso não abre a aba Qualidade.'); return false; }
+    setTab('qualidade'); qUi.area = 'doc'; qdUi.sub = 'painel'; renderQualidade();
+    var tenta = 0;
+    (function abrir() { if (qdPorId(id)) qdAbrirDoc(id); else if (++tenta < 25) setTimeout(abrir, 300); else showToast('Documento não encontrado (ou o seu acesso não abre este documento).'); })();
+    return true;
+  }
+  window.addEventListener('hashchange', function() { if (qdDocPedido() && session) qdIrDocPedido(); });
+  // ----- tablet de setor: documentos do local de uso (0051) -----
+  var qdSetor = { lista: null, pedido: '' };
+  function qdSetorLigar() {
+    var box = document.getElementById('setor-docs');
+    if (!box || !session || session.role !== 'setor' || mode !== 'db' || !db) return;
+    db.rpc('qd_docs_setor_0051').then(function(l) { qdSetor.lista = Array.isArray(l) ? l : []; qdSetorRender(); })
+      .catch(function(e) { console.warn('documentos do setor', e); qdSetor.lista = []; qdSetorRender(); });
+  }
+  function qdSetorRender() {
+    var box = document.getElementById('setor-docs'); if (!box) return;
+    var l = qdSetor.lista || [];
+    box.innerHTML = l.length ? '<p class="section-title" style="margin-top:22px">Documentos do setor</p><p class="hint" style="margin-top:0">Versão vigente dos POPs e documentos usados aqui. Leu? Toque em “Li e entendi” e digite a sua senha de 4 números.</p>' +
+      '<div class="qd-setor-lista">' + l.map(function(d) {
+        return '<button type="button" class="driver-row q-item" data-qds="abrir" data-id="' + escapeHtml(d.id) + '"><span class="driver-name"><b class="mono">' + escapeHtml(d.codigo) + '</b> ' + escapeHtml(d.titulo) +
+          '<span class="driver-sub">versão ' + escapeHtml(String(d.vigente.versao)) + (d.vigente.aprovado ? ' · desde ' + escapeHtml(formatDateBR(String(d.vigente.aprovado.em).slice(0, 10))) : '') + (d.leituraObrigatoria ? ' · ' + d.lidos + (Number(d.lidos) === 1 ? ' leitura confirmada' : ' leituras confirmadas') : '') + '</span></span></button>';
+      }).join('') + '</div>' : '';
+    if (qdSetor.pedido) {
+      var id = qdSetor.pedido; qdSetor.pedido = '';
+      if (l.some(function(d) { return d.id === id; })) qdSetorAbrir(id); else showToast('Este documento não está liberado para este tablet.');
+    }
+  }
+  function qdSetorDoc(id) { return (qdSetor.lista || []).find(function(d) { return d.id === id; }) || null; }
+  function qdSetorAbrir(id) {
+    var d = qdSetorDoc(id); if (!d) return;
+    var v = d.vigente, html = '<p class="hint"><b class="mono">' + escapeHtml(d.codigo) + '</b> · versão ' + escapeHtml(String(v.versao)) + (v.aprovado ? ' · aprovada por ' + escapeHtml(v.aprovado.nome) + ' em ' + escapeHtml(formatDateBR(String(v.aprovado.em).slice(0, 10))) : '') + '</p>';
+    if (qdTemTexto(v.conteudo)) html += '<div class="qd-cont">' + qdConteudoHtml(v.conteudo) + '</div>';
+    if (qdTemLeitura(v)) html += '<button type="button" class="btn btn-secondary btn-sm" data-qds="pdf" data-id="' + escapeHtml(d.id) + '">📄 Abrir em PDF (cópia não controlada)</button>';
+    if (d.leituraObrigatoria) html += '<div class="qd-leit"><p class="acesso-titulo">Leitura obrigatória · ' + d.lidos + (Number(d.lidos) === 1 ? ' leitura confirmada' : ' leituras confirmadas') + '</p><button type="button" class="btn btn-primary btn-sm" data-qds="li" data-id="' + escapeHtml(d.id) + '">Li e entendi</button></div>';
+    gerAbrir({ titulo: d.titulo, html: html });
+  }
+  function qdSetorLer(id) {
+    var d = qdSetorDoc(id); if (!d) return;
+    gerAbrir({ titulo: 'Li e entendi · ' + d.codigo, botao: 'Confirmar a leitura',
+      html: '<p>Confirme que leu e entendeu <b>' + escapeHtml(d.codigo + ' ' + d.titulo) + '</b>, versão ' + escapeHtml(String(d.vigente.versao)) + '.</p><label>Sua senha de 4 números<input type="password" id="qds-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" /></label>',
+      salvar: function() {
+        var pin = String((document.getElementById('qds-pin') || {}).value || '').replace(/\D/g, '');
+        if (pin.length !== 4) { gerErro('Digite os 4 números da sua senha.'); return false; }
+        var b = document.getElementById('btn-ger-submit'); if (b) b.disabled = true;
+        db.rpc('qd_ler_setor_0051', { p_doc: d.id, p_pin: pin }).then(function(r) {
+          if (b) b.disabled = false;
+          if (r && r.ok) { showToast(r.ja ? r.nome + ' já tinha confirmado esta versão.' : 'Leitura confirmada: ' + r.nome + ' · ' + d.codigo + ' versão ' + d.vigente.versao + '.'); gerFechar(); qdSetorLigar(); return; }
+          var el = document.getElementById('qds-pin'); if (el) el.value = '';
+          gerErro(r && r.bloqueado ? (r.mestre ? 'Muitas senhas erradas: o tablet está bloqueado para assinar até a senha mestre liberar.' : 'Muitas senhas erradas: espere ' + (r.minutos || 15) + ' minutos.') : r && r.trocar ? 'Essa senha precisa ser trocada antes de assinar. Peça à senha mestre.' : 'Senha não confere.' + (r && r.restam != null ? ' Restam ' + r.restam + ' tentativas.' : ''));
+        }).catch(function(e) { if (b) b.disabled = false; console.warn(e); gerErro('Não foi possível confirmar agora. Verifique a internet.'); });
+        return false;
+      }
+    });
+    setTimeout(function() { var el = document.getElementById('qds-pin'); if (el) try { el.focus(); } catch (e) {} }, 50);
+  }
+  document.addEventListener('click', function(e) {
+    var b = e.target.closest('[data-qds]');
+    if (!b || !session || session.role !== 'setor') return;
+    var a = b.dataset.qds, id = b.dataset.id, d = qdSetorDoc(id);
+    if (a === 'abrir') qdSetorAbrir(id);
+    else if (a === 'li') qdSetorLer(id);
+    else if (a === 'pdf' && d) qdImprimir(d, d.vigente, [qdMarcaNaoControlada(d, d.vigente)], 'nao-controlada');
+  });
+  // ----- RH: reciclagens dos POPs no cadastro do funcionário (0051) -----
+  function qdRhPreencher(fid) {
+    var el = document.getElementById('rh-qd-recicl');
+    if (!el || mode !== 'db' || !db) return;
+    db.rpc('qd_rh_reciclagens_0051', { p_funcionario: fid }).then(function(l) {
+      el = document.getElementById('rh-qd-recicl');
+      if (!el || el.dataset.func !== fid) return;
+      l = Array.isArray(l) ? l : [];
+      el.innerHTML = l.length ? '<div class="section-head"><h2 class="section-title">POPs e documentos da Qualidade</h2></div>' + l.map(function(x) {
+        var t = x.treinamento, ok = t && Number(t.versao) === Number(x.versao);
+        var txt = ok ? 'em dia: treinado na versão ' + x.versao + ' em ' + formatDateBR(t.data) : t ? 'reciclagem pendente: versão ' + x.versao + (x.desde ? ' desde ' + formatDateBR(String(x.desde).slice(0, 10)) : '') + ' (último treinamento na versão ' + t.versao + ')' : 'pendente: sem treinamento na versão ' + x.versao;
+        return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.codigo + ' · ' + x.titulo) + '<span class="driver-sub ' + (ok ? '' : 'alerta') + '">' + escapeHtml(txt) + '</span></span></div>';
+      }).join('') + '<p class="hint">A Qualidade registra a lista de presença em Qualidade › Documentos; cada versão nova de um POP pede a reciclagem da função.</p>' : '';
+    }).catch(function(e) { console.warn('reciclagens do RH', e); });
+  }
   // eventos da área Documentos (na aba e na folha)
   document.addEventListener('click', function(e) {
     var b = e.target.closest('[data-qd]');
     if (!b || !(b.closest('#tab-qualidade') || b.closest('#q-sheet-overlay'))) return;
     var a = b.dataset.qd, id = b.dataset.id;
     if (a === 'sub') { qdUi.sub = b.dataset.sub; qdUi.fTipo = ''; renderQualidade(); }
-    else if (a === 'novo') { qdUi.novoTipo = 'pop'; qdAbrirForm(null, 'novo'); }
     else if (a === 'abrir') qdAbrirDoc(id);
     else if (a === 'abrir-versao') qdAbrirVersao(id, b.dataset.v);
     else if (a === 'csv') qdCsv();
-    else if (a === 'arquivo') qdAbrirArquivo(b.dataset.caminho, b.dataset.nome);
-    else if (a === 'pdf') qdPdf(id, b.dataset.v);
+    else if (a === 'mestra-pdf') qdPdfMestra();
+    else if (a === 'mestra-xlsx') qdXlsxMestra();
+    else if (a === 'leitura-csv') qdLeituraCsv();
+    else if (a === 'arquivo') { if (qdPodeGerir() || qdPodeElaborar()) qdAbrirArquivo(b.dataset.caminho, b.dataset.nome); else qdBaixarPdf(id, b.dataset.v); }
+    else if (a === 'pdf' || a === 'ler') qdBaixarPdf(id, b.dataset.v);
+    else if (a === 'nao-controlada') { var dn = qdPorId(id); if (dn && dn.vigente) qdBaixarPdf(id, dn.vigente.versao); }
     else if (a === 'li') qdConfirmarLeitura(id);
-    else if (!qdPodeGerir()) return;
+    else if (!qdPodeElaborar()) return;
+    else if (a === 'novo') { qdUi.novoTipo = 'pop'; qdAbrirForm(null, 'novo'); }
     else if (a === 'editar') qdAbrirForm(id, 'rascunho-edit');
     else if (a === 'revisar') qdAbrirForm(id, 'revisar');
-    else if (a === 'substituir') qdAbrirForm(id, 'substituir');
+    else if (a === 'pronto') qdEtapa(id, 'pronto');
+    else if (a === 'presenca') qdPresenca(id);
+    else if (a === 'descarte') qdDescarte(id);
+    else if (a === 'qr') qdQr(id);
+    else if (a === 'descartar') qdAcaoComMotivo(id, a);
     else if (a === 'dados') qdAbrirForm(id, 'dados');
+    else if (!qdPodeGerir()) return;
+    else if (a === 'substituir') qdAbrirForm(id, 'substituir');
+    else if (a === 'normas') qdEditarNormas();
     else if (a === 'enviar' || a === 'aprovar' || a === 'revisado-ok') qdEtapa(id, a);
-    else if (a === 'devolver' || a === 'descartar' || a === 'obsoleto' || a === 'copia') qdAcaoComMotivo(id, a);
+    else if (a === 'devolver' || a === 'obsoleto' || a === 'copia') qdAcaoComMotivo(id, a);
     else if (a === 'recolher') qdRecolher(id, b.dataset.c);
   });
   document.getElementById('tab-qualidade').addEventListener('keydown', function(e) { if (e.key === 'Enter' && e.target.matches('tr[data-qd="abrir"]')) qdAbrirDoc(e.target.dataset.id); });
@@ -19302,16 +20042,23 @@
   document.getElementById('q-conteudo').addEventListener('change', function(e) {
     if (e.target.id === 'qd-f-tipo') { qdUi.fTipo = e.target.value; renderQualidade(); }
     else if (e.target.id === 'qd-f-area') { qdUi.fArea = e.target.value; renderQualidade(); }
+    else if (e.target.id === 'qd-f-norma') { qdUi.fNorma = e.target.value; renderQualidade(); }
+    else if (e.target.id === 'qd-matriz-funcao') { qdUi.matrizFuncao = e.target.value; renderQualidade(); }
   });
   document.getElementById('q-form-body').addEventListener('change', function(e) {
     if (!qUi.sheet || qUi.sheet.modo !== 'doc') return;
-    if (e.target.id === 'qd-arq') {
-      var f = e.target.files && e.target.files[0];
-      qUi.sheet.arq = f || null;
-      var n = document.getElementById('qd-arq-nome'); if (n && f) n.textContent = f.name + ' · ' + fmtTam(f.size) + (f.size > QD_MAX_MB * 1048576 ? ' — grande demais' : '');
+    if (e.target.id === 'qd-arq' || e.target.id === 'qd-pdf') {
+      var f = e.target.files && e.target.files[0], pdf = e.target.id === 'qd-pdf';
+      qUi.sheet[pdf ? 'pdf' : 'arq'] = f || null;
+      var n = document.getElementById(pdf ? 'qd-pdf-nome' : 'qd-arq-nome');
+      if (n && f) n.textContent = f.name + ' · ' + fmtTam(f.size) + (f.size > QD_MAX_MB * 1048576 ? ' — grande demais' : pdf && !qdEhPdf(f) ? ' — precisa ser PDF' : !pdf && !qdEhPdf(f) && !qdEhImagem(f) ? ' — Word/Excel: anexe também a versão em PDF' : '');
     } else if (e.target.id === 'qd-tipo') {
       qdUi.novoTipo = e.target.value; var t = document.getElementById('qd-titulo'), tit = t ? t.value : '';
       qdAbrirForm(null, 'novo'); var t2 = document.getElementById('qd-titulo'); if (t2) t2.value = tit;
+    } else if (e.target.id === 'qd-classe') {
+      var c = e.target.value, fs = document.getElementById('qd-fs-locais'), tx = document.getElementById('qd-classe-txt');
+      if (fs) fs.classList.toggle('hidden', c !== 'geral');
+      if (tx) tx.textContent = qdClasse({ classificacao: c })[2] + (c === 'confidencial' ? '. Depois de salvar, só quem revisa e aprova documentos e a senha mestre veem.' : '');
     }
   });
 
@@ -31355,11 +32102,11 @@
       // o tempo real também precisa do login (o banco só manda as mudanças para quem entrou)
       if (token && sbCliente.realtime && sbCliente.realtime.setAuth) sbCliente.realtime.setAuth(token);
       if (irParaModuloPedido()) return;
-      if (s.role === 'setor') { showSetorView(); return; } // senha de setor: só os módulos da fábrica
+      if (s.role === 'setor') { showSetorView(); if (qdDocPedido()) setTimeout(qdIrDocPedido, 300); return; } // senha de setor: só os módulos da fábrica (e os documentos do setor)
       if (s.role === 'representante') { ligarDadosRep(); showRepView(); return; } // Força de vendas: só os pedidos dele
       ligarDados();
     }
-    if (s.role === 'motorista') showDriverView(); else { ui.tab = 'inicio'; showAdminView(); retomadaAoEntrar(!senhaDigitada && !comecarComSenha); }
+    if (s.role === 'motorista') showDriverView(); else { ui.tab = 'inicio'; showAdminView(); retomadaAoEntrar(!senhaDigitada && !comecarComSenha); if (qdDocPedido()) setTimeout(qdIrDocPedido, 900); }
     comecarComSenha = false;
     travaGuardar();
     // senha mestre: avisos de segurança (número no botão Cadastros e aviso na hora dos graves)
