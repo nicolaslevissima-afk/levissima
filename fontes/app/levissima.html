@@ -25376,7 +25376,7 @@
     if (chat.canal) { try { sbCliente.removeChannel(chat.canal); } catch (e) {} chat.canal = null; }
     chat.de = ref; chat.msgs = []; chat.carregado = false; chat.carregando = true; chat.pessoas = null; chat.aberta = null; chat.solAberta = null; chat.montada = '';
     chat.acoesMsg = null; chat.editando = null; chat.antesDaEdicao = ''; chat.respondendo = null;
-    chat.pend = [];
+    chat.pend = []; chat.anexosPend = {};
     chat.canal = sbCliente.channel('levissima-chat-' + ref.replace(/[^a-z0-9]/gi, '')).on('postgres_changes', { event: '*', schema: 'public', table: 'chat_msgs' }, function(p) {
       var row = p && p.new && p.new.id != null ? p.new : null;
       if (!row || chat.de !== ref) return;
@@ -25530,9 +25530,11 @@
         : '<span class="chat-reacao' + (minha ? ' minha' : '') + '" title="' + escapeHtml(r[0] + ' de ' + nomes) + '">' + txt + '</span>';
     }).join('') + '</div>';
   }
-  // ---------- anexos nas Solicitações (pedido de 24/10/2026): arquivo, foto e áudio ----------
-  // Os arquivos vão para o balde privado "comunicacao", na pasta da conversa (0032): quem pede só lê a pasta dele; o
-  // Nicolas lê todas. Foto é reduzida antes de enviar; áudio é gravado no próprio app (ou escolhido do celular).
+  // ---------- anexos nas Solicitações (pedido de 24/10/2026) e no Chat (11/11/2026): arquivo, foto e áudio ----------
+  // Os arquivos vão para o balde privado "comunicacao", na pasta da conversa. Solicitações (0032): sol/<quem pede>/;
+  // quem pede só lê a pasta dele, o Nicolas lê todas. Chat (0050): chat/<quem envia>/<para quem>/, cada pessoa pelo
+  // sha256 da referência de acesso; só as duas pessoas da conversa leem. Foto é reduzida antes de enviar; áudio é
+  // gravado no próprio app (ou escolhido do celular). Os anexos esperando envio ficam por conversa (chat.montada).
   var SOL_BALDE = 'comunicacao', SOL_MAX_ANEXOS = 6, SOL_MAX_MB = 25;
   var SOL_TIPOS_OK = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'audio/webm', 'audio/ogg', 'audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/aac', 'audio/x-m4a', 'audio/m4a',
     'audio/wav', 'audio/x-wav', 'audio/3gpp', 'audio/amr', 'audio/opus', 'video/mp4', 'video/webm', 'video/quicktime', 'video/3gpp', 'application/pdf', 'application/msword',
@@ -25546,13 +25548,16 @@
   chat.anexosPend = chat.anexosPend || {};
   var solRec = null;
   function solPasta(conversa) { return 'sol/' + String(conversa || '').replace(/[^A-Za-z0-9_-]/g, '_'); }
-  function solConversaAtual() { var eu = minhaRef(); return eu === 'mestre' ? chat.solAberta : eu; }
-  function solPend() { var k = 'sol|' + (solConversaAtual() || ''); return chat.anexosPend[k] = chat.anexosPend[k] || []; }
+  function chatPastaAnexos(para) {
+    if (!criptoOk()) { var e = new Error('cripto'); e.codigo = 'cripto'; return Promise.reject(e); }
+    return Promise.all([sha256Hex(minhaRef()), sha256Hex(para)]).then(function(h) { return 'chat/' + h[0] + '/' + h[1]; });
+  }
+  function solPend(chave) { var k = chave || chat.montada || ''; return chat.anexosPend[k] = chat.anexosPend[k] || []; }
   function fmtTam(n) { n = Number(n) || 0; return n >= 1048576 ? (n / 1048576).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
   function fmtSeg(s) { s = Math.max(0, Math.round(Number(s) || 0)); return Math.floor(s / 60) + ':' + pad2(s % 60); }
   function solTipoIcone(t) { t = String(t || ''); return /^image\//.test(t) ? '🖼️' : /^audio\//.test(t) ? '🎤' : /^video\//.test(t) ? '🎬' : /pdf/.test(t) ? '📄' : /sheet|excel|csv/.test(t) ? '📊' : /word|text/.test(t) ? '📝' : '📎'; }
-  function solAdicionar(lista) {
-    var pend = solPend(), recusados = [];
+  function solAdicionar(lista, chave) {
+    var pend = solPend(chave), recusados = [];
     Array.prototype.forEach.call(lista || [], function(f) {
       if (pend.length >= SOL_MAX_ANEXOS) { recusados.push(f.name + ' (máximo ' + SOL_MAX_ANEXOS + ' por mensagem)'); return; }
       if (f.size > SOL_MAX_MB * 1048576 && !/^image\//.test(f.type || '')) { recusados.push(f.name + ' (passa de ' + SOL_MAX_MB + ' MB)'); return; }
@@ -25576,8 +25581,8 @@
   function solTipoEnvio(t) { t = String(t || '').split(';')[0].toLowerCase(); return SOL_TIPOS_OK.indexOf(t) >= 0 ? t : 'application/octet-stream'; }
   function solNomeSeguro(n) { return String(n || 'arquivo').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(-80) || 'arquivo'; }
   // envia os anexos pendentes: devolve a lista para a mensagem [{ caminho, nome, tipo, tam, seg }]
-  function solEnviarAnexos(conversa) {
-    var pend = solPend().slice(), pasta = solPasta(conversa);
+  function solEnviarAnexos(pasta, chave) {
+    var pend = solPend(chave).slice();
     return pend.reduce(function(p, a) {
       return p.then(function(out) {
         var prep = /^image\/(jpeg|png|webp|heic|heif)$/.test(a.tipo) ? prepararFotoLeve(a.blob).then(function(x) { return { blob: x.blob, tipo: x.mime, nome: a.nome.replace(/\.[^.]+$/, '') + '.' + x.ext }; })
@@ -25594,7 +25599,7 @@
       });
     }, Promise.resolve([]));
   }
-  function solLimparPend() { solPend().forEach(function(a) { if (a.url) try { URL.revokeObjectURL(a.url); } catch (e) {} }); chat.anexosPend['sol|' + (solConversaAtual() || '')] = []; solRenderPend(); }
+  function solLimparPend(chave) { var k = chave || chat.montada || ''; solPend(k).forEach(function(a) { if (a.url) try { URL.revokeObjectURL(a.url); } catch (e) {} }); chat.anexosPend[k] = []; solRenderPend(); }
   // na bolha: foto, áudio, vídeo ou arquivo
   function anexosHtml(m) {
     var l = Array.isArray(m.anexos) ? m.anexos : [];
@@ -25634,7 +25639,7 @@
       var tipos = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/ogg'];
       var tipo = tipos.find(function(t) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t); }) || '';
       var rec = tipo ? new MediaRecorder(stream, { mimeType: tipo }) : new MediaRecorder(stream), chunks = [], inicio = Date.now();
-      solRec = { rec: rec, stream: stream, inicio: inicio, cancelado: false, timer: null };
+      solRec = { rec: rec, stream: stream, inicio: inicio, cancelado: false, timer: null, chave: chat.montada };
       rec.ondataavailable = function(e) { if (e.data && e.data.size) chunks.push(e.data); };
       rec.onstop = function() {
         stream.getTracks().forEach(function(t) { t.stop(); });
@@ -25644,7 +25649,7 @@
         var agora = new Date(), nome = 'audio-' + pad2(agora.getHours()) + 'h' + pad2(agora.getMinutes()) + '.' + ext, arq;
         try { arq = new File(chunks, nome, { type: mime }); } catch (e) { arq = new Blob(chunks, { type: mime }); try { Object.defineProperty(arq, 'name', { value: nome }); } catch (x) {} }
         arq.seg = Math.round((Date.now() - inicio) / 1000);
-        solAdicionar([arq]);
+        solAdicionar([arq], st.chave);
       };
       rec.start(1000);
       solMostrarGravando(true);
@@ -25680,20 +25685,22 @@
         '<div class="chat-msgs" aria-live="polite"></div>' +
         '<form class="chat-escrever" data-chat-form="' + tipo + '"><div class="chat-editando hidden" id="chat-editando"><span>✏️ Editando a mensagem</span><button type="button" class="btn-text" data-chat="cancelar-edicao">Cancelar</button></div>' +
         '<div class="chat-respondendo hidden" id="chat-respondendo"><span></span><button type="button" class="btn-text" data-chat="cancelar-resposta">Cancelar</button></div>' +
-        (tipo === 'sol' ? '<div class="sol-anexos-pend hidden" id="sol-anexos-pend"></div>' +
+        '<div class="sol-anexos-pend hidden" id="sol-anexos-pend"></div>' +
           '<div class="sol-anexar" id="sol-anexar"><label class="btn btn-secondary btn-sm">📎 Arquivo<input type="file" id="sol-arq" multiple class="hidden" /></label>' +
           '<label class="btn btn-secondary btn-sm">📷 Foto<input type="file" id="sol-foto" accept="image/*" multiple class="hidden" /></label>' +
           '<button type="button" class="btn btn-secondary btn-sm" data-chat="gravar-audio">🎤 Áudio</button>' +
           '<input type="file" id="sol-audio-arq" accept="audio/*" capture class="hidden" /></div>' +
           '<div class="sol-gravando hidden" id="sol-gravando" role="status"><span class="sol-rec-dot" aria-hidden="true"></span> Gravando <b id="sol-rec-tempo">0:00</b>' +
-          '<button type="button" class="btn btn-primary btn-sm" data-chat="parar-audio">⏹ Parar e anexar</button><button type="button" class="btn-text" data-chat="cancelar-audio">Cancelar</button></div>' : '') +
+          '<button type="button" class="btn btn-primary btn-sm" data-chat="parar-audio">⏹ Parar e anexar</button><button type="button" class="btn-text" data-chat="cancelar-audio">Cancelar</button></div>' +
         '<textarea id="chat-texto" rows="2" maxlength="2000" placeholder="' + (tipo === 'sol' ? (minhaRef() === 'mestre' ? 'Responder…' : 'Escreva a sua solicitação ou sugestão…') : 'Escreva uma mensagem…') + '" aria-label="Mensagem"></textarea>' +
         '<button type="submit" class="btn btn-primary">Enviar</button></form></div>';
       var ta = box.querySelector('#chat-texto');
       ta.value = chat.rascunho[chave] || chat.rascunho[outro] || '';
       delete chat.rascunho[outro];
       if (ta.value) setTimeout(function() { try { ta.focus(); } catch (e) {} }, 30);
-      if (tipo === 'sol') solRenderPend();
+      solRenderPend();
+      // gravação em andamento: volta a aparecer na mesma conversa; em outra conversa, é cancelada
+      if (solRec) { if (solRec.chave === chave) solMostrarGravando(true); else { solPararAudio(true); showToast('A gravação do áudio foi cancelada: você trocou de conversa.'); } }
     }
     // a mensagem em edição foi apagada (ou sumiu): volta ao normal
     if (chat.editando && !lista.some(function(m) { return m.id === chat.editando.id && !m.apagada; })) cancelarEdicao(false);
@@ -25805,8 +25812,8 @@
     });
   }
   function enviarMensagem(form) {
-    var tipo = form.dataset.chatForm, ta = form.querySelector('#chat-texto'), txt = String(ta.value || '').trim();
-    var comAnexos = tipo === 'sol' && !chat.editando && solPend().length > 0;
+    var tipo = form.dataset.chatForm, ta = form.querySelector('#chat-texto'), txt = String(ta.value || '').trim(), chave = chat.montada;
+    var comAnexos = !chat.editando && solPend(chave).length > 0;
     if ((!txt && !comAnexos) || chat.enviando) return;
     if (solRec) { showToast('Termine a gravação do áudio (Parar e anexar) antes de enviar.'); return; }
     if (chat.editando) { salvarEdicao(form, ta, txt); return; }
@@ -25816,12 +25823,13 @@
     var btn = form.querySelector('button[type=submit]');
     chat.enviando = true; btn.disabled = true;
     if (comAnexos) btn.textContent = 'Enviando…';
-    var p = tipo === 'chat' ? db.rpc('chat_enviar2', { p_para: outro, p_texto: txt, p_responde: resp })
-      : comAnexos ? solEnviarAnexos(eu === 'mestre' ? outro : eu).then(function(anx) { return db.rpc('sol_enviar3', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp, p_anexos: anx }); })
+    var p = tipo === 'chat' ? (comAnexos ? chatPastaAnexos(outro).then(function(pasta) { return solEnviarAnexos(pasta, chave); }).then(function(anx) { return db.rpc('chat_enviar3', { p_para: outro, p_texto: txt, p_responde: resp, p_anexos: anx }); })
+        : db.rpc('chat_enviar2', { p_para: outro, p_texto: txt, p_responde: resp }))
+      : comAnexos ? solEnviarAnexos(solPasta(eu === 'mestre' ? outro : eu), chave).then(function(anx) { return db.rpc('sol_enviar3', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp, p_anexos: anx }); })
       : db.rpc('sol_enviar2', { p_texto: txt, p_conversa: eu === 'mestre' ? outro : null, p_responde: resp });
     p.then(function(row) {
       chat.enviando = false; btn.disabled = false; btn.textContent = 'Enviar';
-      if (comAnexos) solLimparPend();
+      if (comAnexos) solLimparPend(chave);
       ta.value = ''; delete chat.rascunho[tipo + '|' + outro];
       if (chat.respondendo === resp) chat.respondendo = null;
       if (row && row.id != null) chatAplicar(row, false); else chatAtualizarTela();
@@ -25830,7 +25838,7 @@
     }).catch(function(e) {
       chat.enviando = false; btn.disabled = false; btn.textContent = 'Enviar';
       console.error('enviar', e);
-      showToast(e && e.codigo === 'grande' ? (e.nome || 'O arquivo') + ' passa de ' + SOL_MAX_MB + ' MB: mande um menor.' : /muitas/.test(String(e && e.message)) ? 'Muitas mensagens seguidas: espere um minuto.' : /destino/.test(String(e && e.message)) ? 'Essa pessoa não tem mais acesso ao app.' : 'Não foi possível enviar agora. Verifique a internet.');
+      showToast(e && e.codigo === 'grande' ? (e.nome || 'O arquivo') + ' passa de ' + SOL_MAX_MB + ' MB: mande um menor.' : e && e.codigo === 'cripto' ? 'Este aparelho não consegue enviar anexos: atualize o navegador ou o app.' : /muitas/.test(String(e && e.message)) ? 'Muitas mensagens seguidas: espere um minuto.' : /destino/.test(String(e && e.message)) ? 'Essa pessoa não tem mais acesso ao app.' : 'Não foi possível enviar agora. Verifique a internet.');
     });
   }
   function reagirMensagem(id, emoji) {
