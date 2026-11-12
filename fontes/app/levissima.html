@@ -265,6 +265,7 @@
   .mod-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; border-radius: 0; }
   .mod-frame.hidden { display: none; }
   body.com-modulo .fab, body.com-modulo #nivel-aviso { display: none !important; }
+  body.com-modulo #app { padding-bottom: 0; } /* o módulo ocupa a tela: a página não rola por baixo dele (12/11/2026) */
   .telas-pausadas .tp-chip.tp-mod { border-left: 4px solid var(--verde); }
   #tab-producao.pr-leitura [data-mp="op-nova"], #tab-producao.pr-leitura [data-mp="op-editar"], #tab-producao.pr-leitura [data-mp="op-concluir"], #tab-producao.pr-leitura [data-mp="op-excluir"], #tab-producao.pr-leitura [data-mp="ir-materia"], #tab-producao.pr-leitura [data-mp="op-desfazer"] { display: none; }
   .pr-ltm select { display: block; width: 100%; min-width: 120px; margin: 2px 0 !important; }
@@ -619,13 +620,17 @@
     #app { max-width: 1340px; display: grid; grid-template-columns: 228px minmax(0, 1fr); column-gap: 30px; align-items: start; padding-top: 18px; }
     #app > * { grid-column: 2; min-width: 0; }
     #app .header-row { grid-column: 1 / -1; }
-    #admin-tabs, #admin-tabs.tabs-3 { grid-column: 1; grid-row: 2 / span 40; flex-direction: column; overflow: visible; position: sticky; top: 16px; margin: 4px 0 0;
+    /* o menu rola sozinho (12/11/2026): mais alto que a tela, ele esticava a página e a barra da direita não rolava o conteúdo nem o módulo aberto */
+    #admin-tabs, #admin-tabs.tabs-3 { grid-column: 1; grid-row: 2 / span 40; flex-direction: column; overflow-x: hidden; overflow-y: auto; max-height: calc(100vh - 70px); overscroll-behavior: contain; scrollbar-width: thin; position: sticky; top: 16px; margin: 4px 0 0;
       padding: 8px; border: 1px solid var(--line); border-radius: 14px; background: #FFFFFF; gap: 2px; box-shadow: 0 2px 8px rgba(28, 42, 46, 0.06); }
     #admin-tabs .seg-btn { flex-direction: row; max-width: none; min-width: 0; width: 100%; gap: 11px; padding: 10px 12px; border-radius: 9px; border-bottom: 0;
       font-size: 0.9375rem; text-align: left; justify-content: flex-start; }
     #admin-tabs .tab-ico, #admin-tabs .tab-ico svg { width: 21px; height: 21px; }
     #admin-tabs .seg-btn.active { background: rgba(112, 32, 130, 0.09); color: #702082; box-shadow: inset 3px 0 0 #702082; }
     #admin-tabs .seg-btn .tab-alerta { position: static; margin-left: auto; }
+    #admin-tabs::-webkit-scrollbar { display: block; width: 8px; }
+    #admin-tabs::-webkit-scrollbar-thumb { background: rgba(28, 42, 46, 0.18); border-radius: 8px; }
+    body.com-pausadas #admin-tabs { max-height: calc(100vh - 134px); }
     #admin-tabs .tab-org { flex-direction: row; max-width: none; min-width: 0; width: 100%; gap: 11px; padding: 10px 12px; margin-top: 6px; border-left: 0; border-bottom: 0; border-top: 1px solid var(--line);
       border-radius: 0 0 9px 9px; font-size: 0.8125rem; text-align: left; justify-content: flex-start; }
   }
@@ -921,6 +926,11 @@
   .pr-filtros select { min-width: 0; max-width: 100%; }
   .pr-per { display: inline-flex; }
   .sol-anexar, .sol-anexos-pend, .sol-gravando { flex-basis: 100%; }
+  .pt-org { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; width: 100%; margin: 2px 0 4px; }
+  .pt-org-l { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: 0.8125rem; font-weight: 700; color: inherit; }
+  .pt-org-l input { width: 84px; min-height: 34px; padding: 4px 6px; margin: 0; }
+  .pt-org-r { font-size: 0.75rem; font-weight: 600; color: inherit; opacity: 0.9; width: 100%; }
+  .carga-origem { color: #00678C; font-weight: 600; }
   .qd-fs { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px 10px; margin: 10px 0; }
   .qd-fs legend { font-weight: 700; font-size: 0.875rem; padding: 0 4px; }
   .qd-fs details { margin: 6px 0; }
@@ -2370,7 +2380,6 @@
   <div class="tab-panel hidden" id="tab-qualidade">
     <nav class="segmented q-areas" id="q-areas" aria-label="Áreas da qualidade">
       <button type="button" class="seg-btn" data-qarea="hoje">Hoje</button>
-      <button type="button" class="seg-btn" data-qarea="rec">Recebimento</button>
       <button type="button" class="seg-btn" data-qarea="linha">Linha</button>
       <button type="button" class="seg-btn" data-qarea="ana">Laboratório</button>
       <button type="button" class="seg-btn" data-qarea="nc">NCs</button>
@@ -4858,10 +4867,51 @@
   }
 
   // ---------- estoque: cálculo ----------
-  function quantidadeNaCarga(c, pid) {
+  // De onde sai a carga (pedido de 12/11/2026): cada produto sai de Americana (a fábrica, o padrão) ou, escolhendo na
+  // linha do produto, de Pedra Bela ou de Atibaia (as fontes de Produções externas); o mesmo produto pode sair em parte
+  // de cada cidade. O item guarda "origens" só com as fontes ({ 'pedra-bela': 100 }); o resto sai de Americana. A parte
+  // de Americana conta no estoque da fábrica (fila, falta de estoque, PCP, produtos do dia); a parte de uma fonte baixa
+  // do estoque da fonte em Produções externas quando o carregamento é concluído.
+  var CARGA_ORIGENS = [{ id: 'americana', nome: 'Americana' }, { id: 'pedra-bela', nome: 'Pedra Bela' }, { id: 'atibaia', nome: 'Atibaia' }];
+  var CARGA_FONTES = ['pedra-bela', 'atibaia'];
+  function origemNome(id) { var o = CARGA_ORIGENS.find(function(x) { return x.id === id; }); return o ? o.nome : id; }
+  function qtdOrigemItem(it, o) {
+    var q = Math.max(0, Math.floor(Number(it && it.quantidade) || 0)), org = (it && it.origens) || {};
+    var fontes = CARGA_FONTES.reduce(function(a, f) { return a + Math.max(0, Math.floor(Number(org[f]) || 0)); }, 0);
+    if (o === 'americana') return Math.max(0, q - fontes);
+    var v = Math.max(0, Math.floor(Number(org[o]) || 0));
+    return fontes > q ? Math.floor(v * q / fontes) : v;
+  }
+  // quantidade do produto na carga; sem "origem": só a parte que sai de Americana (é a que mexe no estoque da fábrica)
+  function quantidadeNaCarga(c, pid, origem) {
+    var o = origem || 'americana';
     return (c.clientes || []).reduce(function(a, cl) {
-      return a + (cl.itens || []).reduce(function(b, it) { return b + (it.produtoId === pid ? (Number(it.quantidade) || 0) : 0); }, 0);
+      return a + (cl.itens || []).reduce(function(b, it) { return b + (it.produtoId === pid ? (o === 'total' ? Math.max(0, Number(it.quantidade) || 0) : qtdOrigemItem(it, o)) : 0); }, 0);
     }, 0);
+  }
+  function origensDaCarga(c) {
+    var t = {};
+    (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) { CARGA_ORIGENS.forEach(function(o) { var q = qtdOrigemItem(it, o.id); if (q) t[o.id] = (t[o.id] || 0) + q; }); }); });
+    return CARGA_ORIGENS.filter(function(o) { return t[o.id]; }).map(function(o) { return { id: o.id, nome: o.nome, qtd: t[o.id] }; });
+  }
+  function cargaSoAmericana(c) { return !origensDaCarga(c).some(function(o) { return o.id !== 'americana'; }); }
+  function origemCargaTexto(c) {
+    if (cargaSoAmericana(c)) return '';
+    var l = origensDaCarga(c);
+    return l.length === 1 ? l[0].nome : l.map(function(o) { return o.nome + ' (' + fmtInt(o.qtd) + ')'; }).join(' + ');
+  }
+  // "Pedra Bela: 100 fardos de 510ml natural; Americana: 200 fardos de 510ml natural"
+  function origemDetalheTexto(c) {
+    if (cargaSoAmericana(c)) return '';
+    return CARGA_ORIGENS.map(function(o) {
+      var l = [];
+      (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) { var q = qtdOrigemItem(it, o.id); if (q) l.push(qtdUnidade(q, it.unidade || '') + ' de ' + (it.produtoNome || '—')); }); });
+      return l.length ? o.nome + ': ' + l.join(', ') : '';
+    }).filter(Boolean).join('; ');
+  }
+  function origemItemTexto(it) {
+    if (!CARGA_FONTES.some(function(f) { return qtdOrigemItem(it, f); })) return '';
+    return CARGA_ORIGENS.map(function(o) { var q = qtdOrigemItem(it, o.id); return q ? o.nome + ' ' + fmtInt(q) : ''; }).filter(Boolean).join(' · ');
   }
   // Fila das cargas: primeiro pelo dia/hora programados, depois pela ordem em que foram lançadas.
   function antesNaFila(a, b) {
@@ -4917,7 +4967,7 @@
   function subscribeCargas() {
     db.collection('cargas').onSnapshot(function(snap) {
       cargas = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
-      if (session) { avisarAceites(); render(); }
+      if (session) { avisarAceites(); render(); if (ui.tab === 'prodexternas') renderProdExt(); }
     }, function(err) { console.error('cargas error', err); });
   }
   function addOrUpdateCarga(rec, editingId) {
@@ -6440,6 +6490,17 @@
     box.style.height = Math.max(380, window.innerHeight - topo - baixo) + 'px';
   }
   window.addEventListener('resize', modAjustarAltura);
+  // PC (12/11/2026): com um módulo aberto, a roda do mouse fora do quadro (nas margens da tela) rola o módulo
+  window.addEventListener('wheel', function(e) {
+    if (!ui.modulo || !modAbertos[ui.modulo] || e.ctrlKey) return;
+    if (e.target && e.target.closest && e.target.closest('#admin-tabs, .sheet-overlay, .telas-pausadas, .pin-overlay')) return;
+    try {
+      var w = modAbertos[ui.modulo].fr.contentWindow;
+      if (!w) return;
+      w.scrollBy(0, e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * w.innerHeight : e.deltaY);
+      e.preventDefault();
+    } catch (x) {}
+  }, { passive: false });
   document.getElementById('btn-logout-setor').addEventListener('click', function() { logout(); });
 
   // ---------- produtos cadastrados (admin) ----------
@@ -6745,6 +6806,7 @@
         (done ? '' : aceiteChipHtml(c)) +
         '<div class="carga-clientes-line">' + escapeHtml(cargaClientesResumo(c) || '—') + '</div>' +
         cargaProdutosHtml(c) +
+        (origemCargaTexto(c) ? '<div class="carga-sub carga-origem">📍 Sai de ' + escapeHtml(origemCargaTexto(c)) + '</div>' : '') +
         (done ? '' : estoqueFaltaCardHtml(c)) +
         (esperaAtual(c) != null ? '<div class="carga-sub espera' + (esperaAtual(c) >= ESPERA_LONGA_MIN ? ' longa' : '') + '">No pátio há ' + fmtDuracao(esperaAtual(c)) + '</div>' : '') +
         viagemInfo +
@@ -6798,6 +6860,7 @@
       var ae = aceiteEstado(c);
       info += row('Aceite do motorista', escapeHtml(aceiteTexto(c)) + (ae !== 'aceito' ? '<button type="button" class="btn-text" data-action="aceite-registrar" data-id="' + id + '">Registrar resposta (telefone)</button>' : ''), ae === 'aceito' ? 'ok' : 'ask');
     }
+    if (origemDetalheTexto(c)) info += row('Sai de', escapeHtml(origemDetalheTexto(c)));
     info += fvDetailRows(c, id, row);
     info += duplaDetailRow(c, id, row);
     var dev = devolucaoAnteriorTexto(c);
@@ -7582,8 +7645,11 @@
       if (conc ? isoLocal(c.concluidoEm) !== dia : (dia < hoje || cdiaDiaEfetivo(c) !== dia)) return;
       if (conc) { r.nCarr++; r.palCarr += Number(c.totalPaletes) || 0; } else { r.nPend++; r.palPend += Number(c.totalPaletes) || 0; }
       (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
-        var x = reg(it), q = Number(it.quantidade) || 0;
-        if (conc) x.carr += q; else { x.pend += q; x.palPend += Number(it.paletes) || 0; x.cargas[c.id] = 1; }
+        // o que sai de Pedra Bela ou Atibaia não é carregado aqui (12/11/2026)
+        var q = qtdOrigemItem(it, 'americana'), qt = Number(it.quantidade) || 0;
+        if (!q) return;
+        var x = reg(it);
+        if (conc) x.carr += q; else { x.pend += q; x.palPend += qt ? Math.round((Number(it.paletes) || 0) * q / qt) : 0; x.cargas[c.id] = 1; }
       }); });
     });
     r.itens = ordem.map(function(k) {
@@ -7808,7 +7874,7 @@
   // planilha: uma linha por produto de cada cliente (para conferir e somar no Excel)
   function exportarRelatorioCargas(lista) {
     var esc = function(v) { var x = String(v == null ? '' : v); return /[;"\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
-    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Cliente', 'Pedido / NF', 'Destino', 'Motorista', 'Produto', 'Quantidade', 'Unidade', 'Paletes', 'Chapatex', 'Observação do produto', 'Troca (quantidade)', 'Motivo da troca', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em', 'Pedido lançado em'].join(';')];
+    var linhas = [['Dia', 'Data da carga', 'Hora', 'Carga', 'Cliente', 'Pedido / NF', 'Destino', 'Motorista', 'Produto', 'Quantidade', 'Unidade', 'Paletes', 'Chapatex', 'Observação do produto', 'Troca (quantidade)', 'Motivo da troca', 'Sai de', 'Situação', 'Carregada em', 'Faturamento', 'Ok do faturamento por', 'Ok em', 'Pedido lançado em'].join(';')];
     lista.forEach(function(c) {
       var base = [formatDateBR(crelDiaDaCarga(c)), formatDateBR(c.data), c.hora || '', cargaCode(c)];
       var fim = [crelSituacao(c).txt, c.concluidoEm ? formatDateTimeBR(c.concluidoEm) : '', c.faturamentoOk ? 'ok' : 'sem ok', c.faturamentoOk ? (nomePessoa(c.faturamentoPor) || c.faturamentoPor || '') : '', c.faturamentoEm ? formatDateTimeBR(c.faturamentoEm) : '', c.criadoEm ? formatDateTimeBR(c.criadoEm) : ''];
@@ -7816,10 +7882,10 @@
       cls.forEach(function(cl) {
         (cl.itens || []).forEach(function(it) {
           algum = true;
-          linhas.push(base.concat([cl.cliente || '', cl.pedidoNf || cl.numeroDocumento || '', cl.destino || '', crelMotorista(c), it.produtoNome || '', fmtInt(it.quantidade), it.unidade || '', fmtInt(it.paletes), fmtInt(it.chapatex), crelItemAviso(it), trocaQtd(it) ? fmtInt(trocaQtd(it)) : '', trocaQtd(it) ? it.trocaMotivo || '' : ''], fim).map(esc).join(';'));
+          linhas.push(base.concat([cl.cliente || '', cl.pedidoNf || cl.numeroDocumento || '', cl.destino || '', crelMotorista(c), it.produtoNome || '', fmtInt(it.quantidade), it.unidade || '', fmtInt(it.paletes), fmtInt(it.chapatex), crelItemAviso(it), trocaQtd(it) ? fmtInt(trocaQtd(it)) : '', trocaQtd(it) ? it.trocaMotivo || '' : '', origemItemTexto(it) || 'Americana'], fim).map(esc).join(';'));
         });
       });
-      if (!algum) linhas.push(base.concat([cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '), '', '', crelMotorista(c), '', '', '', fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), '', '', ''], fim).map(esc).join(';'));
+      if (!algum) linhas.push(base.concat([cls.map(function(x) { return x.cliente || ''; }).filter(Boolean).join(', '), '', '', crelMotorista(c), '', '', '', fmtInt(c.totalPaletes), fmtInt(c.totalChapatex), '', '', '', ''], fim).map(esc).join(';'));
     });
     var nome = 'relatorio-cargas-' + (crelUi.de || todayIso()) + (crelUi.ate ? '-a-' + crelUi.ate : '') + '.csv';
     triggerDownload(new Blob(['﻿' + linhas.join('\n')], { type: 'text/csv;charset=utf-8' }), nome);
@@ -8702,13 +8768,14 @@
       '<span class="viagem-sub">' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) + ' · ' + fmtInt(c.totalChapatex) + ' chapatex' +
         (Number(c.totalBatidos) ? ' · ' + fmtInt(c.totalBatidos) + ' soltos por cima' : '') + '</span>' +
       (cargaDestinosTexto(c) ? '<span class="viagem-sub">' + escapeHtml(cargaDestinosTexto(c)) + '</span>' : '') +
+      (origemCargaTexto(c) ? '<span class="viagem-sub carga-origem">📍 Carregar em: ' + escapeHtml(origemCargaTexto(c)) + '</span>' : '') +
       '</div></div>' + resp + '</div>';
   }
   function aceiteResponder(id, sim) {
     var c = findCarga(id);
     if (!c || !session) return;
     var resumo = '<p class="hint">Carga de <b>' + escapeHtml(cargaQuandoTexto(c)) + '</b> · ' + fmtInt(c.totalPaletes) + palavraPaletes(c.totalPaletes) +
-      (cargaDestinosTexto(c) ? ' · ' + escapeHtml(cargaDestinosTexto(c)) : '') + '</p>';
+      (cargaDestinosTexto(c) ? ' · ' + escapeHtml(cargaDestinosTexto(c)) : '') + (origemCargaTexto(c) ? ' · carregar em ' + escapeHtml(origemCargaTexto(c)) : '') + '</p>';
     if (sim) {
       gerAbrir({
         titulo: 'Aceitar a carga', botao: 'Aceito e vou carregar',
@@ -9078,15 +9145,19 @@
 
   // ---------- cargas: lançamento por cliente em lista fixa de produtos (sempre na ordem do catálogo) ----------
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
-  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, bat: {}, batOn: {}, grp: {}, grpOn: {}, trc: {}, trcOn: {}, trcMot: {}, nf: null }; }
+  function newCgCliente() { return { uid: uid(), cliente: '', numeroDocumento: '', pedidoNf: '', destino: '', qtd: {}, bat: {}, batOn: {}, grp: {}, grpOn: {}, trc: {}, trcOn: {}, trcMot: {}, org: {}, orgOn: {}, nf: null }; }
   // Converte os clientes salvos de uma carga para o editor. Produto que saiu do catálogo continua
   // aparecendo (com a regra gravada na carga), para não perder nada ao editar.
   function editorStateFromCarga(carga) {
     var extras = [];
     var clientes = ((carga && carga.clientes) || []).map(function(cl) {
-      var qtd = {}, bat = {}, batOn = {}, grp = {}, grpOn = {}, trc = {}, trcOn = {}, trcMot = {};
+      var qtd = {}, bat = {}, batOn = {}, grp = {}, grpOn = {}, trc = {}, trcOn = {}, trcMot = {}, org = {}, orgOn = {};
       (cl.itens || []).forEach(function(it) {
         if (!it.produtoId) return;
+        if (it.origens && CARGA_FONTES.some(function(f) { return Number(it.origens[f]) > 0; })) {
+          orgOn[it.produtoId] = true; org[it.produtoId] = org[it.produtoId] || {};
+          CARGA_FONTES.forEach(function(f) { var v = Number(it.origens[f]) || 0; if (v) org[it.produtoId][f] = String((Number(org[it.produtoId][f]) || 0) + v); });
+        }
         qtd[it.produtoId] = String((Number(qtd[it.produtoId]) || 0) + (Number(it.quantidade) || 0));
         if (Number(it.troca) > 0) { trcOn[it.produtoId] = true; trc[it.produtoId] = String((Number(trc[it.produtoId]) || 0) + Number(it.troca)); trcMot[it.produtoId] = [trcMot[it.produtoId], it.trocaMotivo].filter(Boolean).join('; '); }
         var gs = gruposDoItem(it);
@@ -9102,7 +9173,7 @@
       });
       Object.keys(bat).forEach(function(pid) { if (Number(bat[pid]) >= (Number(qtd[pid]) || 0)) bat[pid] = ''; }); // tudo solto: "todos"
       Object.keys(trc).forEach(function(pid) { if (Number(trc[pid]) >= (Number(qtd[pid]) || 0)) trc[pid] = ''; }); // tudo troca: "todos"
-      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, bat: bat, batOn: batOn, grp: grp, grpOn: grpOn, trc: trc, trcOn: trcOn, trcMot: trcMot, nf: cl.nf || null };
+      return { uid: uid(), cliente: cl.cliente || '', numeroDocumento: cl.numeroDocumento || '', pedidoNf: cl.pedidoNf || '', destino: cl.destino || '', qtd: qtd, bat: bat, batOn: batOn, grp: grp, grpOn: grpOn, trc: trc, trcOn: trcOn, trcMot: trcMot, org: org, orgOn: orgOn, nf: cl.nf || null };
     });
     return { clientes: clientes, extras: extras };
   }
@@ -9121,7 +9192,36 @@
 
     function lista() { return produtosOrdenados().concat(extras.filter(function(x) { return !findProduto(x.id); })); }
     function prod(pid) { return findProduto(pid) || extras.find(function(x) { return x.id === pid; }); }
-    function garantir(cl) { ['qtd', 'bat', 'batOn', 'grp', 'grpOn', 'trc', 'trcOn', 'trcMot'].forEach(function(k) { if (!cl[k]) cl[k] = {}; }); }
+    var allowOrigem = !!opts.allowOrigem; // de onde sai (12/11/2026): Americana é o padrão; Pedra Bela e Atibaia, escolhendo
+    function garantir(cl) { ['qtd', 'bat', 'batOn', 'grp', 'grpOn', 'trc', 'trcOn', 'trcMot', 'org', 'orgOn'].forEach(function(k) { if (!cl[k]) cl[k] = {}; }); }
+    function origensDe(cl, pid) {
+      if (!(cl.orgOn || {})[pid]) return {};
+      var o = (cl.org || {})[pid] || {}, r = {};
+      CARGA_FONTES.forEach(function(f) { var v = Math.max(0, Math.floor(Number(o[f]) || 0)); if (v) r[f] = v; });
+      return r;
+    }
+    function qtdAmericana(cl, pid) { var q = Math.max(0, Math.floor(Number(cl.qtd[pid]) || 0)), o = origensDe(cl, pid); return q - CARGA_FONTES.reduce(function(a, f) { return a + (o[f] || 0); }, 0); }
+    function origemRestoTexto(cl, p) {
+      var am = qtdAmericana(cl, p.id);
+      return am < 0 ? 'a soma das cidades passa da quantidade em ' + qtdUnidade(-am, unidadeDe(p)) : 'Americana: ' + qtdUnidade(am, unidadeDe(p)) + (fonteFaltaTexto(cl, p) ? ' · ' + fonteFaltaTexto(cl, p) : '');
+    }
+    function fonteFaltaTexto(cl, p) {
+      var id = opts.getCargaId ? opts.getCargaId() : null, o = origensDe(cl, p.id);
+      return CARGA_FONTES.map(function(f) {
+        if (!o[f]) return '';
+        var pede = state.reduce(function(a, x) { return a + (origensDe(x, p.id)[f] || 0); }, 0), d = fonteDisponivel(f, p.id, id);
+        return d && pede > d.disponivel ? origemNome(f) + ' tem só ' + qtdUnidade(Math.max(0, d.disponivel), unidadeDe(p)) : d === false ? origemNome(f) + ': produto sem ligação em Produções externas (o estoque da fonte não baixa)' : '';
+      }).filter(Boolean).join(' · ');
+    }
+    function origemHtml(cl, p) {
+      var has = (Number(cl.qtd[p.id]) || 0) > 0, on = !!(cl.orgOn || {})[p.id], attrs = attrsDe(cl, p), o = (cl.org || {})[p.id] || {};
+      if (!has) return '';
+      if (!allowOrigem) { var t = origemItemTexto({ quantidade: cl.qtd[p.id], origens: origensDe(cl, p.id) }); return t ? '<span class="pt-bat-ro pt-org-ro">📍 ' + escapeHtml(t) + '</span>' : ''; }
+      return '<label class="pt-bat-l" title="Padrão: sai de Americana"><input type="checkbox" class="' + prefix + '-org-check"' + attrs + (on ? ' checked' : '') + ' /><span>📍 Sai (no todo ou em parte) de outra cidade <span class="pt-bat-obs">(padrão: Americana)</span></span></label>' +
+        (on ? '<span class="pt-org">' + CARGA_FONTES.map(function(f) {
+          return '<label class="pt-org-l">' + escapeHtml(origemNome(f)) + '<input type="number" min="0" step="1" inputmode="numeric" class="' + prefix + '-org-input"' + attrs + ' data-org="' + f + '" value="' + escapeHtml(o[f] || '') + '" placeholder="0" aria-label="Quanto de ' + escapeHtml(p.nome) + ' sai de ' + escapeHtml(origemNome(f)) + '" /></label>';
+        }).join('') + '<span class="pt-org-r" id="' + escapeHtml(rid('orgr', cl, p.id)) + '">' + escapeHtml(origemRestoTexto(cl, p)) + '</span></span>' : '');
+    }
     // troca (05/11/2026): parte da linha vai para trocar produto do cliente (não é venda), com o motivo; vazio = a linha toda
     function trocaDe(cl, pid) {
       if (!(cl.trcOn || {})[pid]) return 0;
@@ -9146,7 +9246,7 @@
     function totals(cl) {
       return lista().reduce(function(a, p) { var c = calc(cl, p.id); a.p += c.paletes; a.c += c.chapatex; a.b += c.batidos; return a; }, { p: 0, c: 0, b: 0 });
     }
-    function batHtml(cl, p, c) { return grpHtml(cl, p, c) + batOnlyHtml(cl, p, c) + trocaHtml(cl, p); }
+    function batHtml(cl, p, c) { return grpHtml(cl, p, c) + batOnlyHtml(cl, p, c) + trocaHtml(cl, p) + origemHtml(cl, p); }
     function attrsDe(cl, p) { return ' data-cliente="' + cl.uid + '" data-produto="' + escapeHtml(p.id) + '"'; }
     // um palete com q unidades: fileiras e chapatex (o que o app conta sozinho)
     function grpInfoTexto(p, g) {
@@ -9191,7 +9291,7 @@
     }
     function rid(kind, cl, pid) { return prefix + '-' + kind + '-' + cl.uid + '-' + pid; }
     // Quanto desta carga é deste produto (todos os clientes juntos), para comparar com o estoque.
-    function totalProduto(pid) { return state.reduce(function(a, cl) { return a + Math.max(0, Math.floor(Number(cl.qtd[pid]) || 0)); }, 0); }
+    function totalProduto(pid) { return state.reduce(function(a, cl) { return a + Math.max(0, qtdAmericana(cl, pid)); }, 0); }
     function faltaEstoque(p) {
       var id = opts.getCargaId ? opts.getCargaId() : null;
       var e = estoqueDe(p.id, id ? findCarga(id) : null);
@@ -9304,6 +9404,8 @@
         if (batQ) batQ.textContent = batRestoTexto(p, c);
         var grR = document.getElementById(rid('grpr', cl, pid));
         if (grR) grR.textContent = grpRestoTexto(p, c);
+        var orR = document.getElementById(rid('orgr', cl, pid));
+        if (orR) orR.textContent = origemRestoTexto(cl, p);
         ((cl.grp || {})[pid] || []).forEach(function(g, i) { var el = document.getElementById(rid('grpi' + i, cl, pid)); if (el) el.textContent = grpInfoTexto(p, g); });
       }
       // o aviso de estoque depende do total da carga: atualiza a linha deste produto em todos os clientes
@@ -9323,6 +9425,14 @@
     // caixas de marcar: alguns navegadores mandam "input", outros só "change"
     function marcar(cl, t) {
       var pid = t.dataset.produto;
+      if (allowOrigem && t.classList.contains(prefix + '-org-check')) {
+        if (!!cl.orgOn[pid] === t.checked) return true;
+        cl.orgOn[pid] = t.checked;
+        if (t.checked && !cl.org[pid]) cl.org[pid] = {};
+        refreshRow(cl, pid);
+        if (t.checked) { var oi = container.querySelector('input.' + prefix + '-org-input[data-cliente="' + cl.uid + '"][data-produto="' + pid + '"]'); if (oi) oi.focus(); }
+        return true;
+      }
       if (t.classList.contains(prefix + '-trc-check')) {
         if (!!cl.trcOn[pid] === t.checked) return true;
         cl.trcOn[pid] = t.checked;
@@ -9374,6 +9484,9 @@
       } else if (allowBatido && t.classList.contains(prefix + '-bat-input')) {
         cl.bat[pid] = t.value;
         refreshRow(cl, pid);
+      } else if (allowOrigem && t.classList.contains(prefix + '-org-input')) {
+        cl.org[pid] = cl.org[pid] || {}; cl.org[pid][t.dataset.org] = t.value;
+        refreshRow(cl, pid);
       } else if (t.classList.contains(prefix + '-trc-input')) {
         cl.trc[pid] = t.value;
         if (opts.onChange) opts.onChange();
@@ -9411,7 +9524,7 @@
         return;
       }
       // ao sair de um campo dos paletes diferentes ou dos soltos, a linha mostra o que vale
-      if (t.dataset.produto && (t.classList.contains(prefix + '-grp-n') || t.classList.contains(prefix + '-grp-q') || t.classList.contains(prefix + '-bat-input'))) {
+      if (t.dataset.produto && (t.classList.contains(prefix + '-grp-n') || t.classList.contains(prefix + '-grp-q') || t.classList.contains(prefix + '-bat-input') || t.classList.contains(prefix + '-org-input'))) {
         setTimeout(function() { var b = document.getElementById(rid('bat', cl, t.dataset.produto)); if (!(b && b.contains(document.activeElement))) refreshRow(cl, t.dataset.produto); }, 0);
       }
     });
@@ -9447,7 +9560,8 @@
             fileirasPorPalete: c.fileirasPadrao, fileirasPadrao: c.fileirasPadrao, fileirasAjustadas: false,
             excedente: 0, resto: c.resto
           }, c.batidos ? { batidos: c.batidos } : {}, c.grupos.length ? { paletesMistos: c.grupos, paletesResto: c.paletesResto } : {}, c.sobraGrupos ? { sobraGrupos: c.sobraGrupos } : {},
-            trocaDe(cl, p.id) ? { troca: trocaDe(cl, p.id), trocaMotivo: String((cl.trcMot || {})[p.id] || '').replace(/\s+/g, ' ').trim() } : {});
+            trocaDe(cl, p.id) ? { troca: trocaDe(cl, p.id), trocaMotivo: String((cl.trcMot || {})[p.id] || '').replace(/\s+/g, ' ').trim() } : {},
+            Object.keys(origensDe(cl, p.id)).length ? { origens: origensDe(cl, p.id) } : {});
         });
         var out = { cliente: (cl.cliente || '').trim(), numeroDocumento: docMask(cl.numeroDocumento || ''), pedidoNf: (cl.pedidoNf || '').trim(), itens: itens };
         if (String(cl.destino || '').trim()) out.destino = String(cl.destino).trim();
@@ -9485,6 +9599,12 @@
       faltasEstoque: function() {
         var id = opts.getCargaId ? opts.getCargaId() : null, ref = id ? findCarga(id) : null;
         return produtosOrdenados().map(function(p) { return faltaEstoqueProduto(p, totalProduto(p.id), ref); }).filter(Boolean);
+      },
+      // soma das cidades acima da quantidade da linha (não deixa salvar)
+      errosOrigem: function() {
+        var e = [];
+        state.forEach(function(cl) { lista().forEach(function(p) { if ((Number(cl.qtd[p.id]) || 0) > 0 && qtdAmericana(cl, p.id) < 0) e.push((cl.cliente || 'cliente') + ', ' + p.nome); }); });
+        return e;
       }
     };
   }
@@ -9504,7 +9624,7 @@
       (t.b ? ' · <span class="figure-bat">' + fmtInt(t.b) + ' soltos (batidos)</span>' : '') + '</span></div>';
   }
 
-  var cgEditor = makeClientesEditor('cg-clientes-list', 'cg', { allowClienteEdit: true, allowAjustePaletes: true, allowBatido: true, getCargaId: function() { return editingCargaId; }, onChange: function() { renderCgTotaisInto('cg-totais', cgEditor); } });
+  var cgEditor = makeClientesEditor('cg-clientes-list', 'cg', { allowClienteEdit: true, allowAjustePaletes: true, allowBatido: true, allowOrigem: true, getCargaId: function() { return editingCargaId; }, onChange: function() { renderCgTotaisInto('cg-totais', cgEditor); } });
   var cgcEditor = makeClientesEditor('cgc-clientes-list', 'cgc', { allowClienteEdit: false, allowAjustePaletes: true, getCargaId: function() { return cargaConcludeId; }, onChange: function() { renderCgTotaisInto('cgc-totais', cgcEditor); atualizarFreteCombinado(); atualizarAlteracaoCgc(); } });
 
   document.getElementById('btn-cg-add-cliente').addEventListener('click', function() { cgEditor.addCliente(); });
@@ -10043,6 +10163,8 @@
     var devolucaoAnteriorObs = devObsEl ? devObsEl.value.trim() : '';
     var clientesOut = cgEditor.toOut();
     var errEl = document.getElementById('carga-form-error');
+    var errOrg = cgEditor.errosOrigem();
+    if (errOrg.length) { errEl.textContent = 'A quantidade que sai de Pedra Bela e Atibaia passa do total do produto: ' + errOrg.join('; ') + '.'; errEl.classList.remove('hidden'); return; }
     var err = null;
     var rep = !!session && session.role === 'representante';
     if (!data) err = 'Informe a data da carga.';
@@ -11453,6 +11575,7 @@
       var espera = c.concluidoEm ? minutosEntre(c.pagerEm, c.concluidoEm) : null;
       infos.push(['Espera no pátio', 'pager às ' + horaDe(c.pagerEm) + (espera != null ? '; carregada às ' + horaDe(c.concluidoEm) + ' (' + fmtDuracao(espera) + ')' : '')]);
     }
+    if (origemCargaTexto(c)) infos.push(['Sai de', origemCargaTexto(c)]);
     infos.push(['Faturamento', c.faturamentoOk
       ? 'ok de ' + (nomePessoa(c.faturamentoPor) || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')
       : 'aguardando ok']);
@@ -11539,7 +11662,7 @@
     txt(ctx, fmtInt(c.totalChapatex) + ' chapatex', R - 20, y + 96, rFont(700, 40, R_MONO), RC.teal, 'right');
     y += boxH + 44;
 
-    var obsOrdem = [liberacaoTexto(c), c.obs].filter(Boolean).join(' · ');
+    var obsOrdem = [origemDetalheTexto(c) ? 'Sai de ' + origemDetalheTexto(c) : '', liberacaoTexto(c), c.obs].filter(Boolean).join(' · ');
     if (obsOrdem) {
       ctx.font = rFont(400, 28, R_DISP);
       var obsLines = wrapLines(ctx, obsOrdem, CW, 7);
@@ -11672,11 +11795,12 @@
     L.push('*Ordem de carregamento* · carga ' + cargaCode(c));
     L.push(c.retira ? 'Retirada: ' + retiraTexto(c) + ' (caminhão próprio)' : 'Motorista: ' + (c.motorista || 'a definir'));
     L.push(c.concluidoEm ? 'Carregada em ' + formatDateTimeBR(c.concluidoEm) : 'Para ' + formatDateBR(c.data) + (c.hora ? ' às ' + c.hora : ''));
+    if (origemCargaTexto(c)) L.push('*Carregar em:* ' + origemCargaTexto(c));
     (c.clientes || []).forEach(function(cl, i) {
       L.push('');
       L.push('*' + (i + 1) + '. ' + (cl.cliente || '—') + '*' + (cl.pedidoNf ? ' · ' + cl.pedidoNf : '') + (cl.destino ? ' · ' + cl.destino : ''));
       (cl.itens || []).forEach(function(it) {
-        L.push('• ' + (it.produtoNome || '—') + ': ' + qtdUnidade(it.quantidade, it.unidade || '') + ' (' + fmtInt(it.paletes) + palavraPaletes(it.paletes) + ', ' + fmtInt(it.chapatex) + ' chapatex)' + (trocaQtd(it) ? ' — ' + trocaTexto(it) : ''));
+        L.push('• ' + (it.produtoNome || '—') + ': ' + qtdUnidade(it.quantidade, it.unidade || '') + ' (' + fmtInt(it.paletes) + palavraPaletes(it.paletes) + ', ' + fmtInt(it.chapatex) + ' chapatex)' + (trocaQtd(it) ? ' — ' + trocaTexto(it) : '') + (origemItemTexto(it) ? ' — sai de ' + origemItemTexto(it) : ''));
       });
       mktDaCarga(c.id).filter(function(v) { return normNome(v.cargaCliente || (v.para && v.para.nome)) === normNome(cl.cliente); }).forEach(function(v) { L.push('• Levar também (marketing): ' + mktItensTexto(v)); });
       var rec = recolherTexto(saldoClienteSem(cl.cliente, c.id));
@@ -17583,7 +17707,9 @@
     var el = document.getElementById('q-conteudo');
     if (!el || !session || !ehEscritorio()) return;
     document.querySelectorAll('#q-areas .seg-btn').forEach(function(b) { var on = b.dataset.qarea === qUi.area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
-    var f = { hoje: qHtmlHoje, rec: qHtmlRec, linha: qHtmlLinha, ana: labHtml, nc: qHtmlNc, plano: qHtmlPlano, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
+    // Recebimento saiu da Qualidade em 12/11/2026 (vai para Matéria-prima, com a inspeção); os registros continuam guardados
+    if (qUi.area === 'rec') qUi.area = 'hoje';
+    var f = { hoje: qHtmlHoje, linha: qHtmlLinha, ana: labHtml, nc: qHtmlNc, plano: qHtmlPlano, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
     el.innerHTML = f();
     if (qUi.area === 'ana' && labUi.vista !== 'plano') labRenderLista();
   }
@@ -17592,7 +17718,6 @@
   }
   function qHtmlHoje() {
     var pend = qPendencias(), linhas = qSituacaoLinhas(), an = labSituacaoGeral(), ncs = qNcsAbertas();
-    var rec7 = qual.rec.filter(function(r) { return qDiasDesde(r.data) <= 7; });
     var alertas = [];
     linhas.filter(function(x) { return x.atrasada; }).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.l.nome) + '</b>: verificação de processo atrasada (última há ' + fmtDuracao(x.minDesde) + ').'); });
     an.pend.filter(function(x) { return x.vencida; }).slice(0, 6).forEach(function(x) { alertas.push('<b>' + escapeHtml(x.rotulo) + '</b>: ' + (x.ult ? 'análise vencida desde ' + escapeHtml(formatDateBR(x.prox)) : 'nenhuma análise lançada') + '.'); });
@@ -17600,7 +17725,6 @@
     ncs.filter(function(n) { return n.prazo && n.prazo < todayIso(); }).forEach(function(n) { alertas.push('<b>NC nº ' + n.numero + '</b> (' + escapeHtml(n.descricao || '') + '): prazo vencido em ' + escapeHtml(formatDateBR(n.prazo)) + '.'); });
     var html = '<div class="est-cards">' +
       qCard('verde', 'Checklists de hoje', fmtInt(qual.chk.filter(function(c) { return c.data === todayIso(); }).length), linhas.filter(function(x) { return x.emProducao; }).length + ' de ' + Q_LINHAS.length + ' linhas com pré-operacional', '<button type="button" class="btn btn-primary btn-sm" data-q="novo-chk">+ Checklist de linha</button>') +
-      qCard('azul', 'Recebimentos (7 dias)', fmtInt(rec7.length), rec7.filter(function(r) { return r.resultado === 'reprovado'; }).length + ' reprovados · ' + rec7.filter(function(r) { return r.resultado === 'restricao'; }).length + ' com restrição', '<button type="button" class="btn btn-secondary btn-sm" data-q="novo-rec">+ Inspeção de recebimento</button>') +
       qCard(pend.analises ? 'laranja' : 'roxo', 'Laboratório', pend.analises ? pend.analises + ' vencida' + (pend.analises > 1 ? 's' : '') : 'em dia', an.pend.filter(function(x) { return x.hoje; }).length + ' para hoje · ' + an.validar.length + ' para validar · ' + an.aguardando.length + ' aguardando resultado', '<button type="button" class="btn btn-secondary btn-sm" data-lab="novo">+ Lançar análise</button>') +
       qCard(ncs.length ? 'laranja' : 'verde', 'Não conformidades', fmtInt(ncs.length) + (ncs.length === 1 ? ' aberta' : ' abertas'), pend.ncsVencidas ? pend.ncsVencidas + ' com prazo vencido' : 'nenhuma com prazo vencido', '<button type="button" class="btn btn-secondary btn-sm" data-q="nova-nc">+ Abrir NC</button>') +
       '</div>';
@@ -28525,7 +28649,63 @@
   function pxSaldos(fid) {
     var s = {};
     pxMovs(fid).forEach(function(m) { if (m.cancelado) return; (m.efeitos || []).forEach(function(e) { var k = e.item + '|' + e.local; s[k] = arred3((s[k] || 0) + (Number(e.qtd) || 0)); }); });
+    // cargas carregadas que saíram desta fonte (12/11/2026): baixam do estoque na fonte
+    var cfg = pxCfg(fid);
+    cargas.forEach(function(c) {
+      if (c.status !== 'concluida') return;
+      (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+        var q = qtdOrigemItem(it, fid), pp = q ? pxProdutoDaCarga(cfg, it.produtoId) : null;
+        if (pp) { var k = 'p:' + pp.id + '|fonte'; s[k] = arred3((s[k] || 0) - q); }
+      }); });
+    });
     return s;
+  }
+  // produto da fonte que corresponde ao produto do cadastro (o ligado em Ajustes; senão, pelo tamanho e gás, se só um servir)
+  function pxTamGas(nome) {
+    var n = normNome(nome), tam = /1[,.]?5l|1500/.test(n) ? '1500' : /510/.test(n) ? '510' : '';
+    return tam ? tam + (/semgas|natural/.test(n) ? '-natural' : /gas/.test(n) ? '-gas' : '-natural') : '';
+  }
+  function pxProdutoDaCarga(cfg, pid) {
+    var l = pxAtivos(cfg.produtos), x = l.find(function(p) { return p.produtoId === pid; });
+    if (x) return x;
+    var prod = findProduto(pid), k = prod ? pxTamGas(prod.nome) : '';
+    if (!k) return null;
+    var cand = l.filter(function(p) { return !p.produtoId && pxTamGas(p.nome) === k; });
+    return cand.length === 1 ? cand[0] : null;
+  }
+  function pxQtdCargaFonte(c, fid, cfg, pxId) {
+    return (c.clientes || []).reduce(function(a, cl) { return a + (cl.itens || []).reduce(function(b, it) { var q = qtdOrigemItem(it, fid); if (!q) return b; var pp = pxProdutoDaCarga(cfg, it.produtoId); return pp && pp.id === pxId ? b + q : b; }, 0); }, 0);
+  }
+  // estoque da fonte para a carga: saldo na fonte − o que outras cargas ainda não carregadas desta fonte reservaram
+  // (null: quem lança não vê Produções externas ou não há nada lançado; false: produto sem ligação com a fonte)
+  function fonteDisponivel(fid, pid, cargaRefId) {
+    if (!podeVerProdExt() || (!pxd.cfg.length && !pxd.mov.length)) return null;
+    var cfg = pxCfg(fid), pp = pxProdutoDaCarga(cfg, pid);
+    if (!pp) return false;
+    var saldo = pxS(pxSaldos(fid), 'p:' + pp.id, 'fonte');
+    var res = cargas.reduce(function(a, c) { return c.status === 'concluida' || c.id === cargaRefId ? a : a + pxQtdCargaFonte(c, fid, cfg, pp.id); }, 0);
+    return { disponivel: arred3(saldo - res), saldo: saldo, reservado: res };
+  }
+  function pxHtmlCargasFonte(fid, cfg) {
+    var pend = [], conc = [], semLiga = {};
+    cargas.forEach(function(c) {
+      var l = [];
+      (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) {
+        var q = qtdOrigemItem(it, fid); if (!q) return;
+        if (!pxProdutoDaCarga(cfg, it.produtoId)) semLiga[it.produtoNome || it.produtoId] = true;
+        l.push(qtdUnidade(q, it.unidade || '') + ' de ' + (it.produtoNome || '—'));
+      }); });
+      if (l.length) (c.status === 'concluida' ? conc : pend).push({ c: c, txt: l.join(', ') });
+    });
+    conc.sort(function(a, b) { return String(b.c.concluidoEm || '').localeCompare(String(a.c.concluidoEm || '')); });
+    pend.sort(function(a, b) { return String(a.c.data || '').localeCompare(String(b.c.data || '')); });
+    var linha = function(x) { return '<div class="frete-item"><b>' + escapeHtml(cargaClientesResumo(x.c) || '—') + '</b><div class="frete-sub">' + escapeHtml((x.c.status === 'concluida' ? 'carregada em ' + formatDateTimeBR(x.c.concluidoEm) : 'programada para ' + formatDateBR(x.c.data)) + ' · ' + x.txt) + '</div></div>'; };
+    var h = '<h3 class="q-plano-t">Cargas que saem desta fonte</h3>';
+    if (!pend.length && !conc.length) return h + '<p class="hint">Na carga, marque na linha do produto quanto sai desta fonte: quando o carregamento é concluído, baixa do estoque na fonte.</p>';
+    if (Object.keys(semLiga).length) h += '<p class="alerta">Sem ligação com um produto desta fonte (não baixa do estoque): ' + escapeHtml(Object.keys(semLiga).join(', ')) + '. Ligue em Ajustes.</p>';
+    if (pend.length) h += '<p class="acesso-titulo">Programadas (reservam o estoque)</p>' + pend.map(linha).join('');
+    if (conc.length) h += '<p class="acesso-titulo">Carregadas (já baixaram do estoque)</p>' + conc.slice(0, 8).map(linha).join('');
+    return h;
   }
   function pxS(s, item, local) { return s[item + '|' + local] || 0; }
   function pxSomaTipo(fid, tipo, item) {
@@ -28616,6 +28796,7 @@
       pxTabela(['Produto (fardos)', 'Na fonte', 'Na unidade', 'Total'], linhas, '<tr><td>Total</td><td>' + pxQ(tf) + '</td><td>' + pxQ(tu) + '</td><td>' + pxQ(tf + tu) + '</td></tr>');
     h += '<p class="hint">A produção entra no estoque da fonte; a transferência leva da fonte para a nossa unidade; saída e perda tiram do local escolhido; a contagem acerta o saldo pelo que foi contado. Este estoque é separado do estoque da fábrica (aba Estoque).</p>';
     h += pxUltimos(fid, cfg, 'p', 6);
+    h += pxHtmlCargasFonte(fid, cfg);
     return h;
   }
   function pxHtmlInsumos(fid, cfg, s, ed) {
@@ -28928,6 +29109,7 @@
             var u = (cfg.uso[p.id] || {})[ins.id];
             return '<div class="q-param"><span>' + escapeHtml(ins.nome) + '<small>' + escapeHtml(ins.unidade || 'un') + ' por fardo</small></span><input type="number" class="pxa-uso-q" data-p="' + escapeHtml(p.id) + '" data-i="' + escapeHtml(ins.id) + '" min="0" step="any" inputmode="decimal" value="' + escapeHtml(u != null ? String(u) : '') + '" /></div>';
           }).join('') + '</details>' +
+          '<label>Produto no cadastro <span class="opt">(para as cargas que saem desta fonte)</span><select class="pxa-pc" data-i="' + i + '"><option value="">Automático (pelo tamanho e gás)</option>' + produtosOrdenados().map(function(pr) { return '<option value="' + escapeHtml(pr.id) + '"' + (p.produtoId === pr.id ? ' selected' : '') + '>' + escapeHtml(pr.nome) + '</option>'; }).join('') + '</select></label>' +
           '<label class="check"><input type="checkbox" class="pxa-pa" data-i="' + i + '"' + (p.ativo === false ? '' : ' checked') + ' /> Em uso</label></div>';
       }).join('') + '<button type="button" class="btn-text" data-ger="pxa-p-add">+ Produto</button>' +
         '<h3 class="q-plano-t">Insumos que enviamos</h3>' + st.insumos.map(function(ins, i) {
@@ -28938,6 +29120,7 @@
     var ler = function() {
       document.querySelectorAll('#pxa-corpo .pxa-pn').forEach(function(el) { st.produtos[Number(el.dataset.i)].nome = el.value; });
       document.querySelectorAll('#pxa-corpo .pxa-pa').forEach(function(el) { st.produtos[Number(el.dataset.i)].ativo = el.checked; });
+      document.querySelectorAll('#pxa-corpo .pxa-pc').forEach(function(el) { st.produtos[Number(el.dataset.i)].produtoId = el.value; });
       document.querySelectorAll('#pxa-corpo .pxa-in').forEach(function(el) { st.insumos[Number(el.dataset.i)].nome = el.value; });
       document.querySelectorAll('#pxa-corpo .pxa-iu').forEach(function(el) { st.insumos[Number(el.dataset.i)].unidade = el.value; });
       document.querySelectorAll('#pxa-corpo .pxa-ia').forEach(function(el) { st.insumos[Number(el.dataset.i)].ativo = el.checked; });
@@ -28960,7 +29143,7 @@
         if (!nome) return gerErro('Informe o nome da fonte.');
         var prods = st.produtos.filter(function(p) { return String(p.nome || '').trim(); }), ins = st.insumos.filter(function(i) { return String(i.nome || '').trim(); });
         if (!prods.length) return gerErro('Deixe ao menos um produto.');
-        var dados = { nome: nome, marca: gerVal('pxa-marca'), produtos: prods.map(function(p) { return { id: p.id, nome: String(p.nome).trim(), unidade: p.unidade || 'fardos', ativo: p.ativo !== false }; }),
+        var dados = { nome: nome, marca: gerVal('pxa-marca'), produtos: prods.map(function(p) { return { id: p.id, nome: String(p.nome).trim(), unidade: p.unidade || 'fardos', ativo: p.ativo !== false, produtoId: p.produtoId || '' }; }),
           insumos: ins.map(function(i) { return { id: i.id, nome: String(i.nome).trim(), unidade: String(i.unidade || 'un').trim() || 'un', ativo: i.ativo !== false }; }), precos: cfg.precos, uso: cfg.uso, atualizadoEm: new Date().toISOString(), atualizadoPor: quemSessao() };
         return pxGravar('cfg', fid, dados).then(function() { showToast('Ajustes salvos.'); });
       }
