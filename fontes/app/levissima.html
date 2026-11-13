@@ -2383,7 +2383,6 @@
       <button type="button" class="seg-btn" data-qarea="linha">Linha</button>
       <button type="button" class="seg-btn" data-qarea="ana">Laboratório</button>
       <button type="button" class="seg-btn" data-qarea="nc">NCs</button>
-      <button type="button" class="seg-btn" data-qarea="plano">Plano</button>
       <button type="button" class="seg-btn" data-qarea="doc">Documentos</button>
     </nav>
     <div id="q-conteudo"></div>
@@ -17708,8 +17707,10 @@
     if (!el || !session || !ehEscritorio()) return;
     document.querySelectorAll('#q-areas .seg-btn').forEach(function(b) { var on = b.dataset.qarea === qUi.area; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     // Recebimento saiu da Qualidade em 12/11/2026 (vai para Matéria-prima, com a inspeção); os registros continuam guardados
-    if (qUi.area === 'rec') qUi.area = 'hoje';
-    var f = { hoje: qHtmlHoje, linha: qHtmlLinha, ana: labHtml, nc: qHtmlNc, plano: qHtmlPlano, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
+    // A área Plano saiu em 12/11/2026: o plano que vale fica no Laboratório (“Plano do laboratório”); os itens dos
+    // checklists de linha continuam como estão configurados (qHtmlPlano fica guardada, sem botão)
+    if (qUi.area === 'rec' || qUi.area === 'plano') qUi.area = 'hoje';
+    var f = { hoje: qHtmlHoje, linha: qHtmlLinha, ana: labHtml, nc: qHtmlNc, doc: qHtmlDoc }[qUi.area] || qHtmlHoje;
     el.innerHTML = f();
     if (qUi.area === 'ana' && labUi.vista !== 'plano') labRenderLista();
   }
