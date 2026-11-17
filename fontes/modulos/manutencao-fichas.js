@@ -13,6 +13,8 @@
    Fichas de lubrificação no mesmo modelo: cada ITEM vira um ponto do plano de Lubrificação (lubrificante e
    quantidade pelas colunas LUBRIFICANTE/QUANTIDADE ou pela aba Lista). A importação da tela Lubrificação (e da
    Preventiva) reconhece a ficha e a manda para cá.
+   17/11/2026: as fichas de lubrificação da fábrica são checklists do Word (.docx): o app lê o documento (tabela com o
+   ponto e a frequência, ou colunas "A CADA: 14 d 28 d" com ☐/X), e a mesma ficha pode ir para várias máquinas.
    ===================================================================== */
 const FI_MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 const FI = { st: null, m: null };
@@ -48,7 +50,8 @@ const FI = { st: null, m: null };
     + '.fi-tag.atu{border-color:color-mix(in srgb,var(--violet) 50%,var(--surface));color:var(--violet)}'
     + '.fi-tag.erro{border-color:var(--crit);color:var(--crit)}'
     + '.fi-card{border:1px solid var(--line);border-radius:var(--r-lg,14px);padding:12px;margin-top:12px;background:var(--surface)}'
-    + '.fi-card h3{margin:0 0 4px;font-size:15px}';
+    + '.fi-card h3{margin:0 0 4px;font-size:15px}'
+    + '.fi-extras{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}';
   document.head.appendChild(s);
 })();
 
@@ -226,9 +229,352 @@ function fiLerAba(rows, nomeAba) {
   if (!itens.length) avisos.push('Nenhum item encontrado na aba ' + nomeAba + '.');
   return Object.assign(head, { aba: nomeAba, linha: parseLinha(head.linhaTxt), meses: meses.map(m => m.d), itens, avisos, tipoSug: lub ? 'lubrificacao' : 'preventiva' });
 }
+/* ---------- Checklist do Word (.docx) — pedido de 17/11/2026 ----------
+   As fichas de lubrificação da fábrica são checklists do Word (Sopradora PET, Empacotadora L1), não planilhas:
+   título ("CHECKLIST DE LUBRIFICAÇÃO – SOPRADORA PET"), máquina, "fabricante • modelo", uma tabela com o ponto ou
+   atividade e a frequência ("A cada": 6 meses) ou com uma coluna por frequência ("A CADA: 14 d 28 d", ☐ onde se
+   aplica e X onde não se aplica) e as instruções ("Após lubrificar, remover o excesso…"). Cada linha da tabela vira
+   um ponto do plano (ou uma tarefa da preventiva). O checklist não tem meses: a ficha mostra a lista dos pontos com a
+   última execução e a situação, e os pontos sem data começam a contar na data escolhida na prévia. */
+const FI_W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+const FI_SIMB = { f0a8: '☐', f06f: '☐', f071: '☐', f0a1: '☐', f0fe: '☒', f078: '☒', f0fd: '☒', f0fb: '☒', f0fc: '✓' };
+const FI_DOCX_ITEM = /^(ponto|pontos|atividade|atividades|item|itens|tarefa|tarefas|descricao|local|componente|componentes|parte|elemento|servico|servicos|o que fazer)\b/;
+const FI_DOCX_FREQ = /^(a cada|frequencia|periodicidade|intervalo|freq|periodo)\b/;
+const FI_FREQ_TOK = /(\d+(?:[.,]\d+)?)\s*(dias|dia|d|horas|hora|hs|h|semanas|semana|sem|meses|mes|mês|anos|ano)(?![a-zà-ú0-9])/gi;
+function fiEhDocx(file) { return /\.docx$/i.test((file && file.name) || '') || (file && file.type) === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'; }
+function fiEhDocAntigo(file) { return /\.doc$/i.test((file && file.name) || '') || (file && file.type) === 'application/msword'; }
+async function fiInflarRaw(bytes) {
+  if (typeof DecompressionStream === 'undefined') throw new Error('sem DecompressionStream');
+  const s = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Uint8Array(await new Response(s).arrayBuffer());
+}
+// lê um arquivo de dentro do .docx (que é um ZIP); se o navegador não descompacta, usa o leitor do SheetJS
+async function fiZipLer(buf, nome) {
+  const u8 = new Uint8Array(buf), dv = new DataView(buf), td = new TextDecoder('utf-8');
+  let fim = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { fim = i; break; }
+  if (fim < 0) return null;
+  const total = dv.getUint16(fim + 10, true);
+  let p = dv.getUint32(fim + 16, true);
+  for (let k = 0; k < total && p + 46 <= u8.length; k++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const metodo = dv.getUint16(p + 10, true), tam = dv.getUint32(p + 20, true);
+    const ln = dv.getUint16(p + 28, true), le = dv.getUint16(p + 30, true), lc = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    const nm = td.decode(u8.subarray(p + 46, p + 46 + ln));
+    if (nm === nome) {
+      const ini = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true);
+      const dados = u8.subarray(ini, ini + tam);
+      if (metodo === 0) return td.decode(dados);
+      if (metodo !== 8) throw new Error('Este .docx usa uma compressão que o app não lê. Abra no Word e salve de novo como .docx.');
+      try { return td.decode(await fiInflarRaw(dados)); } catch (e) {
+        const X = await carregarXLSX();
+        const z = X.CFB.read(u8, { type: 'array' }), ent = X.CFB.find(z, nome);
+        if (ent && ent.content) return td.decode(ent.content instanceof Uint8Array ? ent.content : new Uint8Array(ent.content));
+        throw e;
+      }
+    }
+    p += 46 + ln + le + lc;
+  }
+  return null;
+}
+const FI_PULAR = { pPr: 1, rPr: 1, tblPr: 1, trPr: 1, tcPr: 1, sectPr: 1, del: 1, delText: 1, instrText: 1, moveFrom: 1 };
+function fiDocxTexto(el) {
+  let s = '';
+  const andar = n => {
+    for (const c of n.children) {
+      const ln = c.localName;
+      if (FI_PULAR[ln]) continue;
+      if (ln === 't') s += c.textContent;
+      else if (ln === 'tab' || ln === 'ptab') s += '    ';
+      else if (ln === 'br' || ln === 'cr') s += ' ';
+      else if (ln === 'sym') { const ch = String(c.getAttributeNS(FI_W, 'char') || c.getAttribute('w:char') || '').toLowerCase(); s += FI_SIMB[ch] || ''; }
+      else andar(c);
+    }
+  };
+  andar(el);
+  return s.replace(/ /g, ' ');
+}
+function fiDocxFilhos(el, nome) {
+  const r = [];
+  for (const c of el.children) {
+    if (c.localName === nome) r.push(c);
+    else if (c.localName === 'sdt' || c.localName === 'sdtContent' || c.localName === 'customXml') r.push(...fiDocxFilhos(c, nome));
+  }
+  return r;
+}
+function fiDocxTabela(tbl) {
+  const rows = [];
+  for (const tr of fiDocxFilhos(tbl, 'tr')) {
+    const row = [];
+    for (const tc of fiDocxFilhos(tr, 'tc')) {
+      const partes = [];
+      for (const c of tc.children) {
+        if (c.localName === 'p' || c.localName === 'sdt') partes.push(fiDocxTexto(c));
+        else if (c.localName === 'tbl') partes.push(fiDocxTabela(c).map(r => r.join(' ')).join(' '));
+      }
+      row.push(partes.map(x => x.trim()).filter(Boolean).join(' ').replace(/\s+/g, ' ').trim());
+      const pr = [...tc.children].find(x => x.localName === 'tcPr'), gs = pr && [...pr.children].find(x => x.localName === 'gridSpan');
+      const span = gs ? (parseInt(gs.getAttributeNS(FI_W, 'val') || gs.getAttribute('w:val'), 10) || 1) : 1;
+      for (let i = 1; i < span; i++) row.push('');
+    }
+    rows.push(row);
+  }
+  return rows;
+}
+function fiDocxBlocos(xml) {
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('Não consegui ler o conteúdo deste documento do Word.');
+  const body = doc.getElementsByTagNameNS(FI_W, 'body')[0];
+  if (!body) return [];
+  const out = [];
+  const visitar = el => {
+    for (const c of el.children) {
+      if (c.localName === 'p') out.push({ t: 'p', s: fiDocxTexto(c).trim() });
+      else if (c.localName === 'tbl') out.push({ t: 'tbl', rows: fiDocxTabela(c) });
+      else if (c.localName === 'sdt' || c.localName === 'sdtContent' || c.localName === 'customXml') visitar(c);
+    }
+  };
+  visitar(body);
+  return out;
+}
+function fiSoTraco(v) { return !String(v || '').replace(/[_\s.\/\-–—:•·]/g, ''); }
+function fiCaixa(v) { return /^[☐□❑❒▢◻⬜○◯\s]*$/.test(String(v || '')); }
+function fiNaoAplica(v) { return /^(x|☒|✗|✘|na|n\/a|n\.a\.?|-|–|—|nao se aplica|nao aplicavel)$/.test(norm(String(v || '')).trim()); }
+function fiFreqsDe(s) { const out = []; let m; FI_FREQ_TOK.lastIndex = 0; while ((m = FI_FREQ_TOK.exec(String(s || '')))) out.push(m[0].replace(/\s+/g, ' ').trim()); return out; }
+// "SOPRADORA PET" → "Sopradora PET" (só quando está tudo em maiúsculas)
+function fiCapitalizar(s) {
+  s = String(s || '').replace(/\s+/g, ' ').trim();
+  if (!s || s !== s.toUpperCase()) return s;
+  return s.split(' ').map((w, i) => {
+    if (/^[A-Z0-9-]{1,3}$/.test(w) && !/^(DE|DA|DO|DAS|DOS|E)$/.test(w)) return w;
+    const l = w.toLowerCase();
+    if (i && /^(de|da|do|das|dos|e|com|para)$/.test(l)) return l;
+    return l.charAt(0).toUpperCase() + l.slice(1);
+  }).join(' ');
+}
+// "Máquina: ____    Setor: ____" → [{ k: 'maquina', v: '' }, { k: 'setor', v: '' }]
+function fiDocxRotulos(s) {
+  const out = [];
+  for (const seg of String(s || '').split(/\s{3,}|\t/)) {
+    const m = /^([^:]{1,30}):\s*(.*)$/.exec(seg.trim());
+    if (!m) continue;
+    const v = m[2].replace(/_{2,}/g, ' ').replace(/^[\s\/.\-]+|[\s\/.\-]+$/g, '').trim();
+    out.push({ k: fiChave(m[1]), v: fiSoTraco(v) ? '' : v });
+  }
+  return out;
+}
+function fiDocxEhRotulo(s) { return /^[^:]{1,30}:/.test(String(s || '').trim()); }
+// qual coluna tem o texto do ponto e quais são de marcar (☐ / X)
+function fiDocxColunas(rows) {
+  const nc = Math.max(0, ...rows.map(r => r.length));
+  const txt = [], marca = [];
+  for (let c = 0; c < nc; c++) {
+    let t = 0, mk = 0, cheias = 0;
+    for (const r of rows) { const v = (r[c] || '').trim(); if (v) cheias++; if (/[a-zà-ú]{3,}/i.test(v) && !fiNaoAplica(v)) t++; else if (fiCaixa(v) || fiNaoAplica(v)) mk++; }
+    txt.push(t); marca.push(cheias ? mk : 0);
+  }
+  let ci = -1, best = 0;
+  txt.forEach((t, c) => { if (t > best) { best = t; ci = c; } });
+  const marcas = [];
+  for (let c = 0; c < nc; c++) if (c !== ci && marca[c] >= Math.max(1, Math.ceil(rows.length / 2)) && rows.some(r => fiCaixa(r[c]) && (r[c] || '').trim())) marcas.push(c);
+  return { ci, marcas };
+}
+function fiLerDocx(blocos, nomeArq) {
+  const paras = blocos.filter(b => b.t === 'p' && b.s);
+  const o = { linhaTxt: '', equipamento: '', fabricante: '', modelo: '', controle: '', aprovado: '', verificado: '', legenda: '', periodo: '', titulo: '' };
+  const avisos = [], itens = [], instrucoes = [], usados = new Set();
+  let freqTokens = null, seq = 0, antesDaTabela = true, temTabela = false;
+  const titulo = paras.length ? paras[0].s : '';
+  o.titulo = fiCapitalizar(titulo);
+  usados.add(titulo);
+  // título "CHECKLIST DE LUBRIFICAÇÃO – SOPRADORA PET": a máquina vem depois do travessão
+  const tm = /^(.*?(checklist|ficha|plano|roteiro|lubrifica|preventiva).*?)\s+[–—-]\s+(.+)$/i.exec(titulo);
+  if (tm) o.equipamento = tm[3].trim();
+  const topo = [];
+  for (const b of blocos) {
+    if (b.t === 'p') {
+      const s = b.s; if (!s) continue;
+      if (antesDaTabela) topo.push(s);
+      const n = norm(s).trim();
+      if (/^(a cada|frequencia|periodicidade)\b/.test(n)) { const tk = fiFreqsDe(s); if (tk.length) freqTokens = tk; usados.add(s); continue; }
+      for (const r of fiDocxRotulos(s)) {
+        if (!r.v) continue;
+        if (/^(maquina|equipamento)$/.test(r.k) && !o.equipamento) o.equipamento = r.v;
+        else if (/^linha$/.test(r.k) && !o.linhaTxt) o.linhaTxt = r.v;
+        else if (/^(fabricante|marca)$/.test(r.k) && !o.fabricante) o.fabricante = r.v;
+        else if (/^modelo$/.test(r.k) && !o.modelo) o.modelo = r.v;
+        else if (/(controle|codigo|documento)$/.test(r.k) && !o.controle) o.controle = r.v;
+      }
+      continue;
+    }
+    // tabela: cabeçalho com o ponto e a frequência, ou colunas de marcar com as frequências acima da tabela
+    const rows = (b.rows || []).filter(r => r.some(c => c && !fiSoTraco(c)));
+    if (!rows.length) continue;
+    let hdr = -1, ci = -1, cf = -1, tkCols = null;
+    for (let r = 0; r < Math.min(3, rows.length) && hdr < 0; r++) {
+      if (rows[r].some(c => c && c.trim() && fiCaixa(c))) continue;
+      const cn = rows[r].map(fiChave);
+      const i = cn.findIndex(h => FI_DOCX_ITEM.test(h) && h.split(' ').length <= 5);
+      if (i < 0) continue;
+      const f = cn.findIndex((h, j) => j !== i && FI_DOCX_FREQ.test(h));
+      if (f >= 0) { hdr = r; ci = i; cf = f; break; }
+      const tk = rows[r].map((c, j) => j === i ? null : (fiFreqsDe(c)[0] || null));
+      if (tk.some(Boolean)) { hdr = r; ci = i; tkCols = tk; break; }
+      hdr = r; ci = i;
+    }
+    let corpo = rows.slice(hdr + 1), marcas = [];
+    if (cf < 0) {
+      const col = fiDocxColunas(corpo);
+      if (ci < 0) ci = col.ci;
+      marcas = tkCols ? tkCols.map((t, j) => t ? j : -1).filter(j => j >= 0) : col.marcas.filter(j => j !== ci);
+      // tabela de layout (título, logotipo), sem ponto nem marcação: o texto vale como cabeçalho
+      if (hdr < 0 && !marcas.length) {
+        rows.forEach(r => r.forEach(c => { if (c && antesDaTabela) topo.push(c); for (const x of fiDocxRotulos(c)) { if (!x.v) continue; if (/^(maquina|equipamento)$/.test(x.k) && !o.equipamento) o.equipamento = x.v; else if (/^(fabricante|marca)$/.test(x.k) && !o.fabricante) o.fabricante = x.v; else if (/^modelo$/.test(x.k) && !o.modelo) o.modelo = x.v; else if (/^linha$/.test(x.k) && !o.linhaTxt) o.linhaTxt = x.v; } }));
+        continue;
+      }
+    }
+    if (ci < 0) continue;
+    temTabela = true; antesDaTabela = false;
+    let tokens = null;
+    if (cf < 0 && marcas.length) {
+      tokens = tkCols ? marcas.map(j => tkCols[j]) : (freqTokens || []).slice(0, marcas.length);
+      if (!tkCols && freqTokens && freqTokens.length !== marcas.length) avisos.push('O checklist tem ' + marcas.length + ' ' + plural(marcas.length, 'coluna') + ' de marcar e ' + freqTokens.length + ' ' + plural(freqTokens.length, 'frequência') + ' no cabeçalho (' + freqTokens.join(', ') + '): confira a frequência de cada ponto.');
+      if (!tokens.length) avisos.push('Não achei as frequências das colunas de marcar (linha "A CADA:" acima da tabela). Informe a frequência de cada ponto abaixo.');
+    }
+    for (const row of corpo) {
+      const tit = (row[ci] || '').replace(/\s+/g, ' ').trim().replace(/[.;]+$/, '');
+      if (!tit || fiSoTraco(tit) || fiCaixa(tit)) continue;
+      if (/^(observac|responsavel|assinatura|total)\b/.test(norm(tit))) continue;
+      let frequencia = '';
+      if (cf >= 0) frequencia = (row[cf] || '').trim();
+      else if (tokens && tokens.length) {
+        for (let k = 0; k < marcas.length && k < tokens.length; k++) {
+          const v = (row[marcas[k]] || '').trim();
+          if (fiNaoAplica(v)) continue;
+          if (fiCaixa(v)) { frequencia = tokens[k] || ''; break; }
+        }
+      }
+      seq++;
+      const freq = parseFreq(frequencia);
+      if (!freq) avisos.push('Ponto ' + seq + ' (' + tit + '): frequência ' + (frequencia ? '"' + frequencia + '" não reconhecida' : 'não encontrada') + ' — informe abaixo.');
+      itens.push({ n: seq, titulo: tit, frequencia, freq, metodo: '', marcas: [], lubrificante: '', qtdTxt: '', unidade: '' });
+    }
+  }
+  if (!temTabela || !itens.length) return null;
+  // máquina e "fabricante • modelo" nas linhas logo abaixo do título
+  for (const s of topo.slice(1)) {
+    if (usados.has(s) || fiDocxEhRotulo(s) || fiSoTraco(s)) continue;
+    const partes = s.split(/\s+[•·|]\s+/);
+    if (partes.length === 2 && !o.fabricante && s.length <= 60) { o.fabricante = partes[0].trim(); o.modelo = o.modelo || partes[1].trim(); usados.add(s); continue; }
+    if (!o.equipamento && s.length <= 50 && !/[.!?]$/.test(s) && !/^(marcar|marque|apos|antes|lubrificar|limpar|verificar|preencher|assinale|obs)/.test(norm(s))) { o.equipamento = s; usados.add(s); }
+  }
+  if (!o.equipamento) {
+    o.equipamento = String(nomeArq || '').replace(/\.docx?$/i, '').replace(/[_]+/g, ' ')
+      .replace(/\b(checklist|check list|ficha|plano|de|da|do|lubrificacao|lubrificação|preventiva|ajustado|final|novo|v\d+)\b/gi, ' ').replace(/\s\d{1,2}$/, '').replace(/\s+/g, ' ').trim();
+  }
+  // linha no nome da máquina ("Empacotadora L1"): vira a linha e sai do nome
+  const lm = /\b(?:l|linha)\s*-?\s*([123])\b/i.exec(o.equipamento);
+  if (lm) { if (!o.linhaTxt) o.linhaTxt = lm[1]; o.equipamento = o.equipamento.replace(lm[0], ' ').replace(/\s+[–—-]\s*$/, '').replace(/\s+/g, ' ').trim(); }
+  o.equipamento = fiCapitalizar(o.equipamento);
+  // instruções do checklist (frases fora da tabela), menos as de preenchimento
+  for (const p of paras.slice(1)) {
+    const s = p.s;
+    if (usados.has(s) || s.length < 20 || fiDocxEhRotulo(s) || fiSoTraco(s) || /^(marcar|marque|preencher|assinale)/.test(norm(s))) continue;
+    if (fiChave(s) === fiChave(o.equipamento)) continue;
+    if (!instrucoes.includes(s)) instrucoes.push(s);
+  }
+  const lub = /lubrifica/.test(norm(titulo + ' ' + nomeArq)) && !/preventiva/.test(norm(titulo));
+  return Object.assign(o, { aba: 'Word', linha: parseLinha(o.linhaTxt), meses: [], itens, avisos, instrucoes, checklist: true, inicio: hoje(), extras: [],
+    tipoSug: lub || !/preventiva/.test(norm(titulo + ' ' + nomeArq)) ? 'lubrificacao' : 'preventiva' });
+}
+async function fiLerDocxArquivo(file, tipoForcado) {
+  const xml = await fiZipLer(await file.arrayBuffer(), 'word/document.xml');
+  if (!xml) throw new Error('"' + (file.name || 'arquivo') + '" não parece um documento do Word (.docx). Abra no Word e salve como .docx.');
+  const f = fiLerDocx(fiDocxBlocos(xml), file.name || '');
+  const fichas = f ? [f] : [];
+  fichas.forEach(x => { x.tipo = tipoForcado || x.tipoSug; });
+  return { fichas, arquivo: file.name || 'checklist.docx', docx: true };
+}
+function fiProxDr(dr, it) { return dr.checklist ? (dr.inicio || hoje()) : fiProximaProgramada(dr.meses, it.marcas, it.freq); }
+function fiInstrDr(dr) { return (dr.instrucoes || []).join(' '); }
+function fiCopiaPara(dr, eqId) {
+  const e = eqDe(eqId);
+  const c = Object.assign({}, dr, { equipId: eqId, extras: [], existente: null, outras: [], itens: dr.itens.map(it => Object.assign({}, it, { alvo: null })) });
+  if (e) c.linha = e.linha;
+  fiCasar(c);
+  return c;
+}
+// outras máquinas parecidas (mesmo tipo ou mesmo nome-base) para aplicar a mesma ficha
+function fiCandidatosExtra(dr) {
+  const principal = dr.equipId && dr.equipId !== '__novo' ? eqDe(dr.equipId) : null;
+  const tipo = principal ? fiChave(principal.tipo) : '';
+  const base = (fiChave(principal ? principal.nome : dr.equipamento).split(' ')[0] || '');
+  return Store.all('equipamentos').filter(e => e.ativo !== false && e.id !== dr.equipId
+    && ((tipo && tipo !== 'outro' && fiChave(e.tipo) === tipo) || (base.length >= 4 && fiChave(e.nome).split(' ')[0] === base)))
+    .sort((a, b) => ordemLinha(a.linha) - ordemLinha(b.linha) || byText(a.nome, b.nome));
+}
+function fiExtrasHtml(dr, i) {
+  const cands = fiCandidatosExtra(dr), ext = (dr.extras || []).filter(id => id !== dr.equipId);
+  const lista = cands.concat(ext.filter(id => !cands.some(e => e.id === id)).map(eqDe).filter(Boolean));
+  const col = fiCol(dr);
+  let h = '<div class="field" style="margin-top:8px"><span class="flabel">Aplicar também em</span><div class="fi-extras">'
+    + lista.map(e => '<label class="check"><input type="checkbox" data-ch="fi-dr-extra" data-i="' + i + '" data-eq="' + e.id + '"' + (ext.includes(e.id) ? ' checked' : '') + '> ' + esc(e.nome) + ' <span class="small muted">' + esc(linhaCurto(e.linha)) + '</span></label>').join('')
+    + '<select class="inp" style="width:auto;min-width:190px" data-ch="fi-dr-extra-add" data-i="' + i + '" aria-label="Outra máquina">' + eqOptions('', { vazio: '+ Outra máquina…', todos: true }) + '</select></div>';
+  if (ext.length) {
+    h += '<div class="small ink2" style="margin-top:4px">' + ext.map(id => {
+      const e = eqDe(id); if (!e) return '';
+      const c = fiCopiaPara(dr, id), comFreq = c.itens.filter(it => it.freq), atu = comFreq.filter(it => it.alvo).length;
+      return esc(e.nome) + ': ' + (comFreq.length - atu) + ' ' + plural(comFreq.length - atu, col === 'lubrificacao' ? 'ponto novo' : 'tarefa nova', col === 'lubrificacao' ? 'pontos novos' : 'tarefas novas') + (atu ? ' e ' + atu + ' ' + plural(atu, 'atualizado', 'atualizados') : '');
+    }).filter(Boolean).join(' · ') + '</div>';
+  } else h += '<span class="small ink2" style="display:block;margin-top:4px">Marque as outras máquinas que usam este mesmo checklist: cada uma recebe os próprios pontos (os que já existem com o mesmo nome são atualizados, sem duplicar).</span>';
+  return h + '</div>';
+}
+function fiDocxResumoHtml(dr) {
+  return 'Checklist do Word' + (dr.titulo ? ' "' + esc(dr.titulo) + '"' : '') + (dr.fabricante ? ' · Fabricante ' + esc(dr.fabricante) : '') + (dr.modelo ? ' · Modelo ' + esc(dr.modelo) : '')
+    + ' · ' + dr.itens.length + ' ' + plural(dr.itens.length, fiTipo(dr) === 'lubrificacao' ? 'ponto' : 'item', fiTipo(dr) === 'lubrificacao' ? 'pontos' : 'itens');
+}
+function fiChecklistHtml(f) {
+  const col = fiCol(f), lub = col === 'lubrificacao';
+  let h = '';
+  if ((f.instrucoes || []).length) h += '<div class="banner" style="margin-top:12px">' + ico('info') + '<div class="grow">' + f.instrucoes.map(esc).join('<br>') + '</div></div>';
+  h += '<div class="tbl-wrap" style="margin-top:12px"><table class="tbl"><thead><tr><th>Nº</th><th>' + (lub ? 'Ponto ou atividade' : 'Item') + '</th><th>A cada</th><th>Última</th><th>Situação</th><th></th></tr></thead><tbody>';
+  for (const it of f.itens || []) {
+    const p = it.prevId ? Store.get(col, it.prevId) : null, s = p ? statusPlano(p, col) : null;
+    h += '<tr><td class="mono">' + esc(it.n) + '</td><td style="white-space:normal;min-width:180px">'
+      + (p ? '<button type="button" class="fi-it-t" data-act="plano" data-col="' + col + '" data-id="' + p.id + '">' + esc(fiNome(p) || it.titulo) + '</button>' : '<span class="fi-it-t">' + esc(it.titulo) + '</span>')
+      + (p && lub && p.lubrificante ? '<span class="fi-it-s">' + esc(p.lubrificante) + '</span>' : '') + (p ? '' : '<span class="fi-it-s"><b style="color:var(--crit)">fora do plano</b></span>') + '</td>'
+      + '<td>' + esc(p ? freqTexto(p) : (it.frequencia || '—')) + '</td><td>' + (p && p.ultimaData ? fmtData(p.ultimaData) : '—') + '</td>'
+      + '<td>' + (s ? stPill(s) : '') + '</td>'
+      + '<td>' + (p && podeEscrever() && p.ativo !== false ? '<button type="button" class="btn sm" data-act="pl-exec" data-col="' + col + '" data-id="' + p.id + '">' + ico('check', 'sm') + ' Executar</button>' : '') + '</td></tr>';
+  }
+  return h + '</tbody></table></div>';
+}
+INP['fi-dr-inicio'] = el => { const dr = FI.st && FI.st.fichas[+el.dataset.i]; if (dr && el.value) { dr.inicio = el.value; FI.m.refresh(); } };
+INP['fi-dr-extra'] = el => {
+  const dr = FI.st && FI.st.fichas[+el.dataset.i]; if (!dr) return;
+  const id = el.dataset.eq; dr.extras = (dr.extras || []).filter(x => x !== id);
+  if (el.checked) dr.extras.push(id);
+  FI.m.refresh();
+};
+INP['fi-dr-extra-add'] = el => {
+  const dr = FI.st && FI.st.fichas[+el.dataset.i]; if (!dr || !el.value) return;
+  if (el.value !== dr.equipId && !(dr.extras || []).includes(el.value)) dr.extras = (dr.extras || []).concat(el.value);
+  FI.m.refresh();
+};
+INP['fi-it-freq'] = el => {
+  const dr = FI.st && FI.st.fichas[+el.dataset.i], it = dr && dr.itens[+el.dataset.k]; if (!it) return;
+  it.frequencia = el.value.trim(); it.freq = parseFreq(it.frequencia);
+  if (!it.freq && it.frequencia) toast('Não entendi "' + it.frequencia + '". Escreva como 14 dias, 2 meses, 1 ano ou 500 h.', 'crit');
+  FI.m.refresh();
+};
+
 async function fiLerArquivo(file, tipoForcado) {
+  if (fiEhDocx(file)) return fiLerDocxArquivo(file, tipoForcado);
+  if (fiEhDocAntigo(file)) throw new Error('"' + (file.name || 'Arquivo') + '" é do Word antigo (.doc). Abra no Word, salve como "Documento do Word (.docx)" e importe de novo.');
   const X = await carregarXLSX();
-  const wb = X.read(await file.arrayBuffer(), { type: 'array', cellDates: true });
+  let wb;
+  try { wb = X.read(await file.arrayBuffer(), { type: 'array', cellDates: true }); }
+  catch (e) { throw new Error('Não consegui ler "' + (file.name || 'o arquivo') + '". Use a planilha da ficha (.xlsx) ou o checklist do Word (.docx).'); }
   const fichas = [], listas = [];
   for (const nome of wb.SheetNames) {
     const rows = X.utils.sheet_to_json(wb.Sheets[nome], { header: 1, raw: true, defval: '' });
@@ -270,7 +616,7 @@ function fiFichaExistente(dr) {
   if (!dr.equipId || dr.equipId === '__novo') return null;
   const todas = Store.all('fichas').filter(f => f.equipId === dr.equipId && fiTipo(f) === fiTipo(dr));
   if (dr.controle) return todas.find(f => fiChave(f.controle) === fiChave(dr.controle)) || null;
-  return todas.find(f => !f.controle && fiChave(f.periodo) === fiChave(dr.periodo)) || null;
+  return todas.find(f => !f.controle && fiChave(f.periodo) === fiChave(dr.periodo) && fiChave(f.titulo || '') === fiChave(dr.titulo || '')) || null;
 }
 function fiMesmoNumeroOutra(dr) {
   if (!dr.controle) return [];
@@ -407,6 +753,7 @@ function fiResumo(f) {
   for (const it of f.itens || []) {
     const p = it.prevId ? Store.get(col, it.prevId) : null;
     if (!p) { fora++; continue; }
+    if (!(f.meses || []).length) { const s = statusPlano(p, col); if (s.estado === 'vencida') atr++; else if (s.proxima && s.proxima.slice(0, 7) === mes) noMes++; continue; }
     const cel = fiCelulas(f, it, p);
     cel.forEach((c, j) => { if (c.e === 'atr') atr++; if ((c.e === 'prox' || c.e === 'fut' || c.e === 'atr') && (f.meses[j] || '').slice(0, 7) === mes) noMes++; });
   }
@@ -494,7 +841,7 @@ VIEWS.fichas = {
       const e = eqDe(f.equipId);
       h += '<div class="row clickable wrap-sm" data-act="fi-abrir" data-id="' + f.id + '" role="button" tabindex="0"><span class="grow">'
         + '<span class="t1" style="display:block">' + ltag(f.linha) + ' ' + esc(fiEqNome(f)) + (fiTipo(f) === 'lubrificacao' ? ' <span class="fi-tag">lubrificação</span>' : '') + (f.referencia ? ' <span class="fi-tag atu">modelo de referência</span>' : '') + '</span>'
-        + '<span class="t2" style="display:block">' + esc(['Nº controle ' + (f.controle || '—'), f.periodo, (f.itens || []).length + ' itens', [f.fabricante, f.modelo].filter(Boolean).join(' · ')].filter(Boolean).join(' · ')) + (e ? '' : ' · <b style="color:var(--crit)">equipamento não encontrado</b>') + '</span></span>'
+        + '<span class="t2" style="display:block">' + esc([f.checklist && !f.controle ? 'Checklist do Word' : 'Nº controle ' + (f.controle || '—'), f.periodo, (f.itens || []).length + ' itens', [f.fabricante, f.modelo].filter(Boolean).join(' · ')].filter(Boolean).join(' · ')) + (e ? '' : ' · <b style="color:var(--crit)">equipamento não encontrado</b>') + '</span></span>'
         + '<span class="side-r"><span class="acts">' + (r.atr ? stPill({ cls: 'crit', txt: r.atr + ' ' + plural(r.atr, 'atrasado') }) : '') + (r.noMes ? stPill({ cls: 'warn', txt: r.noMes + ' neste mês' }) : '') + (!r.atr && !r.noMes ? stPill({ cls: 'ok', txt: 'Em dia' }) : '') + '</span></span></div>';
     }
     body.innerHTML = h + '</div>';
@@ -514,7 +861,7 @@ function fiAbrir(id) {
       const f = Store.get('fichas', id);
       if (!f) return vazio('Ficha removida', 'Esta ficha não existe mais.');
       const e = eqDe(f.equipId), r = fiResumo(f);
-      let h = '<div class="tk-head">' + ltag(f.linha) + pill('', '', 'Nº controle ' + (f.controle || '—')) + (f.referencia ? '<span class="fi-tag atu">modelo de referência</span>' : '')
+      let h = '<div class="tk-head">' + ltag(f.linha) + (f.checklist && !f.controle ? pill('', '', 'Checklist do Word') : pill('', '', 'Nº controle ' + (f.controle || '—'))) + (f.referencia ? '<span class="fi-tag atu">modelo de referência</span>' : '')
         + (r.atr ? stPill({ cls: 'crit', txt: r.atr + ' ' + plural(r.atr, 'atrasado') }) : '') + (r.noMes ? stPill({ cls: 'warn', txt: r.noMes + ' neste mês' }) : '') + '</div>';
       h += '<dl class="kv" style="margin-top:10px"><dt>Equipamento</dt><dd>' + (e ? '<button type="button" class="oslink" style="font-family:var(--f-body)" data-act="equip" data-id="' + e.id + '">' + esc(e.nome) + '</button> <span class="mono small muted">' + esc(e.tag || '') + '</span>' : '<b style="color:var(--crit)">não encontrado</b>')
         + (f.equipamento && e && fiChave(f.equipamento) !== fiChave(e.nome) ? ' <span class="small muted">(na ficha: ' + esc(f.equipamento) + ')</span>' : '') + '</dd>'
@@ -522,9 +869,9 @@ function fiAbrir(id) {
         + (f.fabricante || f.modelo ? '<dt>Fabricante / modelo</dt><dd>' + esc([f.fabricante, f.modelo].filter(Boolean).join(' · ')) + '</dd>' : '')
         + (f.periodo ? '<dt>Período</dt><dd>' + esc(f.periodo) + ((f.meses || []).length ? ' · ' + fiMesCurto(f.meses[0]) + ' a ' + fiMesCurto(f.meses[f.meses.length - 1]) : '') + '</dd>' : '')
         + (f.aprovado || f.verificado ? '<dt>Aprovado / verificado</dt><dd>' + esc([f.aprovado || '—', f.verificado || '—'].join(' / ')) + '</dd>' : '')
-        + '<dt>Planilha</dt><dd>' + esc(f.arquivo || '—') + (f.importadoEm ? ' · importada em ' + fmtData(msToISO(f.importadoEm)) : '') + (f.importadoPor ? ' por ' + esc(f.importadoPor) : '') + '</dd></dl>';
-      h += fiLegendaHtml() + fiGradeHtml(f);
-      h += '<p class="small ink2" style="margin-top:8px">' + (podeEscrever() ? 'Toque no mês (• próxima, ! atrasada) para registrar a execução com O ou X. ' : '') + (fiTipo(f) === 'lubrificacao' ? 'Toque no ponto para vê-lo no plano de Lubrificação, com o histórico.' : 'Toque no item para ver a tarefa no plano de Preventiva, com o histórico.') + '</p>';
+        + '<dt>' + (f.checklist ? 'Checklist' : 'Planilha') + '</dt><dd>' + esc(f.arquivo || '—') + (f.importadoEm ? ' · importada em ' + fmtData(msToISO(f.importadoEm)) : '') + (f.importadoPor ? ' por ' + esc(f.importadoPor) : '') + '</dd></dl>';
+      h += (f.meses || []).length ? fiLegendaHtml() + fiGradeHtml(f) : fiChecklistHtml(f);
+      h += '<p class="small ink2" style="margin-top:8px">' + (podeEscrever() ? ((f.meses || []).length ? 'Toque no mês (• próxima, ! atrasada) para registrar a execução com O ou X. ' : 'Toque em Executar para registrar a execução. ') : '') + (fiTipo(f) === 'lubrificacao' ? 'Toque no ponto para vê-lo no plano de Lubrificação, com o histórico.' : 'Toque no item para ver a tarefa no plano de Preventiva, com o histórico.') + '</p>';
       h += fiListaHtml(f);
       return h;
     },
@@ -662,14 +1009,22 @@ function fiPrepararFichas(r) {
   if (typeof orig !== 'function') return;
   INP['imp-arq'] = async el => {
     const st = IMP.st, file = el.files && el.files[0];
+    if (file && fiEhDocx(file) && !(st && (st.tipo === 'lubrificacao' || st.tipo === 'preventivas'))) { el.value = ''; return toast('O checklist do Word serve para as fichas de lubrificação ou de preventiva. Aqui, use a planilha (.xlsx ou .csv).', 'crit'); }
     if (file && st && (st.tipo === 'lubrificacao' || st.tipo === 'preventivas') && podeEscrever()) {
-      let r = null;
-      try { r = await fiLerArquivo(file, st.tipo === 'lubrificacao' ? 'lubrificacao' : null); } catch (e) { r = null; }
-      const fichas = r ? r.fichas.filter(f => f.equipamento || f.meses.length >= 2) : [];
+      let r = null, erro = '';
+      try { r = await fiLerArquivo(file, st.tipo === 'lubrificacao' ? 'lubrificacao' : null); } catch (e) { r = null; erro = (e && e.message) || ''; }
+      const fichas = r ? r.fichas.filter(f => f.checklist || f.equipamento || f.meses.length >= 2) : [];
+      if (!fichas.length && fiEhDocx(file)) {
+        Modal.closeAll();
+        FI.st = { etapa: 'arquivo', fichas: [], arquivo: '', lendo: false, res: null,
+          erro: erro || 'Não encontrei a tabela do checklist (ponto ou atividade e a frequência) em "' + file.name + '".' };
+        FI.m = Modal.open({ title: 'Importar ficha de preventiva ou lubrificação', wide: true, persist: true, render: fiImpRender, footer: fiImpRodape });
+        return;
+      }
       if (fichas.length) {
         Modal.closeAll();
         FI.st = { etapa: 'previa', fichas: fiPrepararFichas({ fichas }), arquivo: r.arquivo, erro: '', lendo: false, res: null,
-          nota: 'Esta planilha é uma ficha (equipamento no topo e uma coluna por mês): ela entra em Fichas e ' + (st.tipo === 'lubrificacao' ? 'cada item vira um ponto do plano de Lubrificação.' : 'cada item vira uma tarefa do plano de Preventiva.') };
+          nota: (r.docx ? 'Este checklist do Word é uma ficha' : 'Esta planilha é uma ficha (equipamento no topo e uma coluna por mês)') + ': ela entra em Fichas e ' + (st.tipo === 'lubrificacao' ? 'cada item vira um ponto do plano de Lubrificação.' : 'cada item vira uma tarefa do plano de Preventiva.') };
         FI.m = Modal.open({ title: 'Importar ficha de ' + (st.tipo === 'lubrificacao' ? 'lubrificação' : 'preventiva'), wide: true, persist: true, render: fiImpRender, footer: fiImpRodape });
         return;
       }
@@ -681,16 +1036,17 @@ function fiImpRender() {
   const st = FI.st;
   if (st.etapa === 'arquivo') {
     const ref = Store.all('fichas').find(f => f.referencia);
-    return '<div class="form"><p class="ink2">Escolha a planilha da ficha (.xlsx). Ela deve seguir o modelo da ficha da Enchedora da Linha 1' + (ref ? ' (Nº controle ' + esc(ref.controle || '—') + ')' : '') + ':</p>'
+    return '<div class="form"><p class="ink2">Escolha o checklist do Word (.docx) ou a planilha da ficha (.xlsx). A planilha deve seguir o modelo da ficha da Enchedora da Linha 1' + (ref ? ' (Nº controle ' + esc(ref.controle || '—') + ')' : '') + ':</p>'
       + '<ul class="small ink2" style="margin:0;padding-left:20px;line-height:1.6"><li>no topo: <b>LINHA:</b>, <b>EQUIPAMENTO:</b>, <b>FABRICANTE:</b>, <b>MODELO:</b> e <b>Nº CONTROLE</b> (com o número na célula de baixo);</li>'
       + '<li>a tabela com as colunas <b>Nº</b>, <b>ITEM</b>, <b>FREQUÊNCIA</b> (ex.: 1 mês, 2 meses, 6 meses, 1 ano, 2 anos), <b>MÉTODO</b> e uma coluna por mês com a data no topo;</li>'
       + '<li>nos meses: <b>NA</b> onde o item não se aplica, vazio onde está programado, e <b>O</b> (normal) ou <b>X</b> (anormal) se já foi feito;</li>'
       + '<li>a aba <b>Lista</b> com Item, Descrição, Fornecedor e Quantidade.</li>'
-      + '<li>ficha de <b>lubrificação</b>: o mesmo modelo — cada ITEM (ou PONTO) vira um ponto do plano de Lubrificação; o lubrificante e a quantidade vêm das colunas <b>LUBRIFICANTE</b> e <b>QUANTIDADE</b>, se houver, ou da aba Lista. O app reconhece pelo título ou pelo nome do arquivo, e você confirma na prévia.</li></ul>'
+      + '<li>ficha de <b>lubrificação</b>: o mesmo modelo — cada ITEM (ou PONTO) vira um ponto do plano de Lubrificação; o lubrificante e a quantidade vêm das colunas <b>LUBRIFICANTE</b> e <b>QUANTIDADE</b>, se houver, ou da aba Lista. O app reconhece pelo título ou pelo nome do arquivo, e você confirma na prévia.</li>'
+      + '<li><b>checklist do Word</b> (.docx), como o da Sopradora PET e o da Empacotadora L1: o título com a máquina, a tabela com o ponto ou atividade e a frequência (coluna <b>A cada</b>, ou colunas como <b>A CADA: 14 d 28 d</b> com ☐ onde se aplica e X onde não se aplica). Na prévia você escolhe a máquina, pode marcar outras que usam o mesmo checklist e a data da primeira execução.</li></ul>'
       + '<p class="small ink2">Pode importar quantas fichas quiser, inclusive de linhas diferentes com o mesmo Nº controle. Se o equipamento já tem tarefas (ou pontos) com o mesmo nome no plano, elas são atualizadas (sem duplicar e sem perder o histórico).</p>'
-      + '<input class="inp" type="file" accept=".xlsx,.xls,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.ms-excel.sheet.macroEnabled.12" data-ch="fi-arq" aria-label="Planilha da ficha">'
+      + '<input class="inp" type="file" accept=".xlsx,.xls,.xlsm,.docx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,application/vnd.ms-excel.sheet.macroEnabled.12,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-ch="fi-arq" aria-label="Checklist do Word ou planilha da ficha">'
       + (ref ? '<div><button type="button" class="btn sm ghost" data-act="fi-modelo">' + ico('download', 'sm') + ' Baixar ficha modelo em branco</button></div>' : '')
-      + (st.erro ? '<div class="banner crit">' + ico('alert') + '<div class="grow">' + esc(st.erro) + '</div></div>' : '') + (st.lendo ? carregando('Lendo a planilha…') : '') + '</div>';
+      + (st.erro ? '<div class="banner crit">' + ico('alert') + '<div class="grow">' + esc(st.erro) + '</div></div>' : '') + (st.lendo ? carregando('Lendo o arquivo…') : '') + '</div>';
   }
   if (st.etapa === 'previa') {
     let h = (st.nota ? '<div class="banner">' + ico('info') + '<div class="grow">' + esc(st.nota) + '</div></div>' : '')
@@ -716,14 +1072,17 @@ function fiPreviaHtml(dr, i, varias) {
   const eqSel = '<option value="">Escolha o equipamento</option><option value="__novo"' + (dr.equipId === '__novo' ? ' selected' : '') + '>➕ Cadastrar novo: ' + esc(dr.equipamento || 'equipamento da ficha') + '</option>' + eqOptions(dr.equipId === '__novo' ? '' : dr.equipId, { todos: true });
   let h = '<div class="fi-card">' + (varias ? '<label class="check" style="float:right"><input type="checkbox" data-ch="fi-incluir" data-i="' + i + '"' + (dr.incluir ? ' checked' : '') + '> Importar</label>' : '')
     + '<h3>' + esc(dr.equipamento || 'Ficha sem nome de equipamento') + ' · ' + esc(dr.linhaTxt ? 'Linha ' + dr.linhaTxt : 'linha não informada') + '</h3>'
-    + '<p class="small ink2" style="margin:0 0 8px">Aba "' + esc(dr.aba) + '" · Nº controle <b>' + esc(dr.controle || '—') + '</b>' + (dr.fabricante ? ' · Fabricante ' + esc(dr.fabricante) : '') + (dr.modelo ? ' · Modelo ' + esc(dr.modelo) : '') + (dr.periodo ? ' · ' + esc(dr.periodo) : '')
-    + ' · ' + dr.meses.length + ' meses' + (dr.meses.length ? ' (' + fiMesCurto(dr.meses[0]) + ' a ' + fiMesCurto(dr.meses[dr.meses.length - 1]) + ')' : '') + (dr.lista ? ' · materiais da aba "' + esc(dr.lista) + '"' : ' · <b>sem aba Lista</b>') + '</p>'
+    + '<p class="small ink2" style="margin:0 0 8px">' + (dr.checklist ? fiDocxResumoHtml(dr) : 'Aba "' + esc(dr.aba) + '" · Nº controle <b>' + esc(dr.controle || '—') + '</b>' + (dr.fabricante ? ' · Fabricante ' + esc(dr.fabricante) : '') + (dr.modelo ? ' · Modelo ' + esc(dr.modelo) : '') + (dr.periodo ? ' · ' + esc(dr.periodo) : '')
+    + ' · ' + dr.meses.length + ' meses' + (dr.meses.length ? ' (' + fiMesCurto(dr.meses[0]) + ' a ' + fiMesCurto(dr.meses[dr.meses.length - 1]) + ')' : '') + (dr.lista ? ' · materiais da aba "' + esc(dr.lista) + '"' : ' · <b>sem aba Lista</b>')) + '</p>'
     + '<div class="field"><span class="flabel">Tipo da ficha</span><div class="seg" role="group" aria-label="Tipo da ficha">'
     + '<button type="button" data-act="fi-dr-tipo" data-i="' + i + '" data-t="preventiva" aria-pressed="' + !lub + '">Preventiva</button>'
     + '<button type="button" data-act="fi-dr-tipo" data-i="' + i + '" data-t="lubrificacao" aria-pressed="' + lub + '">Lubrificação</button></div>'
     + '<span class="small ink2" style="display:block;margin:4px 0 6px">' + (lub ? 'Cada item vira um ponto do plano de Lubrificação.' : 'Cada item vira uma tarefa do plano de Preventiva.') + '</span></div>'
     + '<div class="frow"><label class="field"><span class="flabel">Linha</span><select class="inp" data-ch="fi-dr-linha" data-i="' + i + '">' + opts(LINHAS.map(l => ({ v: l.id, l: l.nome })), dr.linha, 'Escolha a linha') + '</select></label>'
-    + '<label class="field"><span class="flabel">Equipamento no app</span><select class="inp" data-ch="fi-dr-eq" data-i="' + i + '">' + eqSel + '</select></label></div>';
+    + '<label class="field"><span class="flabel">Equipamento no app</span><select class="inp" data-ch="fi-dr-eq" data-i="' + i + '">' + eqSel + '</select></label></div>'
+    + (dr.checklist ? fiExtrasHtml(dr, i)
+      + '<label class="field" style="max-width:300px;margin-top:8px"><span class="flabel">Primeira execução em</span><input class="inp" type="date" value="' + esc(dr.inicio || hoje()) + '" data-ch="fi-dr-inicio" data-i="' + i + '"><span class="small ink2">O checklist não traz datas: os pontos ainda sem execução vencem nesta data e depois seguem a frequência.</span></label>'
+      + ((dr.instrucoes || []).length ? '<div class="banner" style="margin-top:8px">' + ico('info') + '<div class="grow"><b>Instruções do checklist</b> (vão para a observação dos pontos novos): ' + dr.instrucoes.map(esc).join(' ') + '</div></div>' : '') : '');
   if (dr.equipId && dr.equipId !== '__novo') {
     const e = eqDe(dr.equipId);
     if (e && fiChave(e.nome) !== fiChave(dr.equipamento)) h += '<p class="small ink2" style="margin:2px 0 0">Na ficha está "' + esc(dr.equipamento) + '"; vai para <b>' + esc(e.nome) + '</b> (' + esc(e.tag || linhaNome(e.linha)) + '). Se não for esse, escolha outro acima.</p>';
@@ -736,18 +1095,18 @@ function fiPreviaHtml(dr, i, varias) {
   }
   (dr.avisos || []).forEach(a => { h += '<div class="banner warn" style="margin-top:8px">' + ico('alert') + '<div class="grow">' + esc(a) + '</div></div>'; });
   h += '<div class="tbl-wrap" style="margin-top:10px"><table class="tbl fi-prev"><thead><tr><th>Nº</th><th>' + (lub ? 'Ponto' : 'Item') + '</th><th>Frequência</th><th>Método</th><th>Meses</th><th>No plano</th></tr></thead><tbody>';
-  for (const it of dr.itens) {
+  for (const [k, it] of dr.itens.entries()) {
     const p = it.alvo ? Store.get(col, it.alvo) : null;
     const ld = lub ? fiLubDados(it) : null;
     const prog = it.marcas.filter(x => x !== 'NA').length, feitos = it.marcas.filter(x => x === 'O' || x === 'X').length;
     const mud = p ? fiMudancas(dr, it, p) : [];
     const plano = !it.freq ? '<span class="fi-tag erro">frequência não reconhecida — não entra no plano</span>'
       : p ? '<span class="fi-tag atu">' + (lub ? 'atualiza ponto' : 'atualiza tarefa') + '</span><span class="small muted" style="display:block;white-space:normal">' + esc(fiNome(p)) + (mud.length ? ' · ' + esc(mud.join(' · ')) : ' · sem mudanças') + '</span>'
-        : '<span class="fi-tag nova">' + (lub ? 'novo ponto' : 'nova tarefa') + '</span><span class="small muted" style="display:block">próxima: ' + esc(fmtData(fiProximaProgramada(dr.meses, it.marcas, it.freq))) + '</span>';
+        : '<span class="fi-tag nova">' + (lub ? 'novo ponto' : 'nova tarefa') + '</span><span class="small muted" style="display:block">próxima: ' + esc(fmtData(fiProxDr(dr, it))) + '</span>';
     const det = lub ? [ld.lubrificante, ld.quantidade != null ? fmtNum(ld.quantidade) + ' ' + ld.unidade : ''].filter(Boolean).join(' · ') : (it.lista && it.lista.descricao ? cap(it.lista.descricao, 90) : '');
     h += '<tr><td class="mono">' + esc(it.n) + '</td><td style="white-space:normal;min-width:180px">' + esc(it.titulo) + (det ? '<span class="small muted" style="display:block">' + esc(det) + '</span>' : '') + '</td>'
-      + '<td>' + esc(it.frequencia || '—') + (it.freq ? '<span class="small muted" style="display:block">' + esc(it.freq.tipo === 'horas' ? 'a cada ' + fmtNum(it.freq.horas) + ' h' : freqTexto({ freqTipo: 'dias', freqDias: it.freq.dias })) + '</span>' : '') + '</td>'
-      + '<td>' + esc(it.metodo || '—') + '</td><td>' + prog + ' de ' + it.marcas.length + (feitos ? '<span class="small muted" style="display:block">' + feitos + ' com O/X</span>' : '') + '</td><td style="white-space:normal;min-width:170px">' + plano + '</td></tr>';
+      + '<td>' + (it.freq ? esc(it.frequencia || '—') : '<input class="inp" style="width:120px;padding:4px 6px" placeholder="ex.: 30 dias" value="' + esc(it.frequencia || '') + '" data-ch="fi-it-freq" data-i="' + i + '" data-k="' + k + '" aria-label="Frequência do item ' + esc(it.n) + '">') + (it.freq ? '<span class="small muted" style="display:block">' + esc(it.freq.tipo === 'horas' ? 'a cada ' + fmtNum(it.freq.horas) + ' h' : freqTexto({ freqTipo: 'dias', freqDias: it.freq.dias })) + '</span>' : '') + '</td>'
+      + '<td>' + esc(it.metodo || '—') + '</td><td>' + (dr.checklist ? '—' : prog + ' de ' + it.marcas.length) + (feitos ? '<span class="small muted" style="display:block">' + feitos + ' com O/X</span>' : '') + '</td><td style="white-space:normal;min-width:170px">' + plano + '</td></tr>';
   }
   return h + '</tbody></table></div></div>';
 }
@@ -757,7 +1116,7 @@ function fiImpRodape() {
   if (st.etapa === 'previa') {
     const sel = st.fichas.filter(x => x.incluir);
     const falta = sel.some(x => !x.equipId || (x.equipId === '__novo' && !x.linha));
-    return '<button type="button" class="btn" data-act="fi-voltar">Outra planilha</button><button type="button" class="btn pri" data-act="fi-gravar"' + (!sel.length || falta ? ' disabled' : '') + '>' + ico('upload', 'sm') + ' Importar' + (sel.length > 1 ? ' ' + sel.length + ' fichas' : ' ficha') + '</button>';
+    return '<button type="button" class="btn" data-act="fi-voltar">Outro arquivo</button><button type="button" class="btn pri" data-act="fi-gravar"' + (!sel.length || falta ? ' disabled' : '') + '>' + ico('upload', 'sm') + ' Importar' + (sel.length > 1 ? ' ' + sel.length + ' fichas' : ' ficha') + '</button>';
   }
   if (st.etapa === 'gravando') return '';
   const r = st.res || {};
@@ -770,7 +1129,7 @@ INP['fi-arq'] = async el => {
   try {
     const r = await fiLerArquivo(file);
     st.lendo = false;
-    if (!r.fichas.length) { st.erro = 'Não encontrei a tabela da ficha (colunas ITEM ou PONTO e FREQUÊNCIA) em nenhuma aba de "' + r.arquivo + '". Confira se é a planilha no modelo da ficha da Enchedora da Linha 1.'; FI.m.refresh(); return; }
+    if (!r.fichas.length) { st.erro = r.docx ? 'Não encontrei a tabela do checklist (ponto ou atividade e a frequência) em "' + r.arquivo + '".' : 'Não encontrei a tabela da ficha (colunas ITEM ou PONTO e FREQUÊNCIA) em nenhuma aba de "' + r.arquivo + '". Confira se é a planilha no modelo da ficha da Enchedora da Linha 1.'; FI.m.refresh(); return; }
     st.arquivo = r.arquivo;
     st.fichas = fiPrepararFichas(r);
     st.etapa = 'previa'; FI.m.refresh();
@@ -796,7 +1155,9 @@ INP['fi-dr-eq'] = el => {
 ACT['fi-voltar'] = () => { FI.st.etapa = 'arquivo'; FI.st.fichas = []; FI.st.erro = ''; FI.m.refresh(); };
 ACT['fi-gravar'] = async el => {
   const st = FI.st; if (st.etapa !== 'previa') return;
-  const sel = st.fichas.filter(x => x.incluir); if (!sel.length) return;
+  const sel = [];
+  st.fichas.filter(x => x.incluir).forEach(dr => { sel.push(dr); (dr.extras || []).forEach(id => { if (id && id !== dr.equipId && eqDe(id)) sel.push(fiCopiaPara(dr, id)); }); });
+  if (!sel.length) return;
   const agora = Date.now(), por = nomeUsuario() || '';
   const res = { fichas: 0, novas: 0, atualizadas: 0, lNovas: 0, lAtual: 0, execs: 0, eqCriados: 0, erros: [], abrir: null };
   st.etapa = 'gravando'; st.total = sel.reduce((s, d) => s + d.itens.length + 1, 0); st.feitos = 0; FI.m.refresh();
@@ -845,18 +1206,18 @@ ACT['fi-gravar'] = async el => {
           let pid;
           if (p) {
             const patch = Object.assign({}, comumL);
-            if (!p.obs && ld.obs) patch.obs = ld.obs;
+            if (!p.obs && (ld.obs || fiInstrDr(dr))) patch.obs = ld.obs || fiInstrDr(dr);
             if (novosHist.length) {
               patch.historico = (p.historico || []).concat(novosHist).sort((a, b) => String(a.data).localeCompare(String(b.data)) || (a.t || 0) - (b.t || 0)).slice(-40);
               if (!p.ultimaData || ultMarca > p.ultimaData) { patch.ultimaData = ultMarca; patch.proximaData = null; }
-            } else if (!p.ultimaData && !p.proximaData) patch.proximaData = fiProximaProgramada(dr.meses, it.marcas, it.freq);
+            } else if (!p.ultimaData && !p.proximaData) patch.proximaData = fiProxDr(dr, it);
             await Store.update(col, p.id, patch);
             pid = p.id; res.lAtual++;
           } else {
             pid = uid();
             await Store.set(col, pid, Object.assign({
-              equipId: eqId, ponto: it.titulo, lubrificante: '', pecaId: null, quantidade: null, unidade: 'g', responsavel: 'Manutenção', h1: false, obs: ld.obs || '', ativo: true,
-              historico: novosHist, ultimaData: ultMarca, proximaData: ultMarca ? null : fiProximaProgramada(dr.meses, it.marcas, it.freq), ultimaHoras: null,
+              equipId: eqId, ponto: it.titulo, lubrificante: '', pecaId: null, quantidade: null, unidade: 'g', responsavel: 'Manutenção', h1: false, obs: ld.obs || fiInstrDr(dr), ativo: true,
+              historico: novosHist, ultimaData: ultMarca, proximaData: ultMarca ? null : fiProxDr(dr, it), ultimaHoras: null,
               criadoEm: agora, origem: 'ficha'
             }, comumL));
             res.lNovas++;
@@ -878,15 +1239,15 @@ ACT['fi-gravar'] = async el => {
           if (novosHist.length) {
             patch.historico = (p.historico || []).concat(novosHist).sort((a, b) => String(a.data).localeCompare(String(b.data)) || (a.t || 0) - (b.t || 0)).slice(-40);
             if (!p.ultimaData || ultMarca > p.ultimaData) { patch.ultimaData = ultMarca; patch.proximaData = null; }
-          } else if (!p.ultimaData && !p.proximaData) patch.proximaData = fiProximaProgramada(dr.meses, it.marcas, it.freq);
+          } else if (!p.ultimaData && !p.proximaData) patch.proximaData = fiProxDr(dr, it);
           await Store.update('preventivas', p.id, patch);
           pid = p.id; res.atualizadas++;
         } else {
           pid = uid();
           await Store.set('preventivas', pid, Object.assign({
-            equipId: eqId, titulo: it.titulo, descricao: l.descricao || '', checklist: [], responsavel: 'Manutenção', duracaoMin: null,
+            equipId: eqId, titulo: it.titulo, descricao: l.descricao || fiInstrDr(dr), checklist: [], responsavel: 'Manutenção', duracaoMin: null,
             requerParada: /substitu|troca|limpeza|desmont|reparo/.test(norm(it.metodo + ' ' + it.titulo)), pecas: [], ativo: true,
-            historico: novosHist, ultimaData: ultMarca, proximaData: ultMarca ? null : fiProximaProgramada(dr.meses, it.marcas, it.freq), ultimaHoras: null,
+            historico: novosHist, ultimaData: ultMarca, proximaData: ultMarca ? null : fiProxDr(dr, it), ultimaHoras: null,
             criadoEm: agora, origem: 'ficha'
           }, comum));
           res.novas++;
@@ -899,6 +1260,7 @@ ACT['fi-gravar'] = async el => {
         tipo: fiTipo(dr), equipId: eqId, linha: dr.linha || (eqDe(eqId) && eqDe(eqId).linha) || '', linhaTxt: dr.linhaTxt || '', equipamento: dr.equipamento || '', fabricante: dr.fabricante || '', modelo: dr.modelo || '',
         controle: dr.controle || '', periodo: dr.periodo || '', aprovado: dr.aprovado || '', verificado: dr.verificado || '', legenda: dr.legenda || '', meses: dr.meses, itens,
         arquivo: st.arquivo, aba: dr.aba, listaAba: dr.lista || '', importadoEm: agora, importadoPor: por,
+        titulo: dr.titulo || '', checklist: !!dr.checklist, instrucoes: dr.instrucoes || [],
         referencia: ex ? !!ex.referencia : (!lub && !temRef), criadoEm: ex ? (ex.criadoEm || agora) : agora, atualizadoEm: agora
       });
       if (!ex && !lub && !temRef) temRef = true;

@@ -146,7 +146,7 @@ TROCAS_MANUTENCAO_2110 = [
     # no app do Android, o seletor de arquivos só mostra o que bate com o tipo (MIME): ".xlsx" sozinho deixava as
     # planilhas apagadas (23/10/2026)
     ('''accept=".xlsx,.xls,.csv,.txt" data-ch="imp-arq"''',
-     '''accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain" data-ch="imp-arq"'''),
+     '''accept=".xlsx,.xls,.csv,.txt,.docx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" data-ch="imp-arq"'''),
     ("function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão'; }",
      "function ehManutencao() { const s = perfil().setor; return s === 'Manutenção' || s === 'Gestão' || levSouNicolas(); }"),
     ("  if (fechado(c) && man) out.push(b('os-reabrir', '', 'refresh', 'Reabrir'));\n  return out.join('');",
@@ -180,6 +180,52 @@ TROCAS_MANUTENCAO_2110 = [
      "custo: parseNumBR(r.custo) != null ? parseNumBR(r.custo) : (ex ? ex.custo : null), maquinas: levMaquinasDaCelula(r.maquina, ex), atualizadoEm: agora"),
 ]
 
+# Manutenção, pedido de 17/11/2026: o "Geral" separado pelo local dos equipamentos (setorizar). Quatro setores entram
+# na lista de linhas (Sala de compressores, Reservatórios de ar, Setor de Paletização e Envases); o "Geral" continua
+# para o que não for de um setor, mas só aparece no painel, ao abrir chamado e nos equipamentos quando tiver algum
+# equipamento. Os equipamentos foram movidos pela migração 0053 (mesmo id: chamados, planos e histórico continuam).
+TROCAS_MANUTENCAO_1711 = [
+    ("""  { id: 'UTIL', nome: 'Geral e utilidades', curto: 'Geral', util: true }
+];
+const LINHA = Object.fromEntries(LINHAS.map(l => [l.id, l]));""",
+     """  { id: 'COMP', nome: 'Sala de compressores', curto: 'Compressores', setor: true },
+  { id: 'RESAR', nome: 'Reservatórios de ar', curto: 'Reservatórios', setor: true },
+  { id: 'PALET', nome: 'Setor de Paletização', curto: 'Paletização', setor: true },
+  { id: 'ENV', nome: 'Envases', curto: 'Envases', setor: true },
+  { id: 'UTIL', nome: 'Geral', curto: 'Geral', util: true }
+];
+const LINHA = Object.fromEntries(LINHAS.map(l => [l.id, l]));
+// o "Geral" só aparece quando tem equipamento (ou chamado aberto)
+function linhaVisivel(l) {
+  if (!l.util) return true;
+  try { return Store.all('equipamentos').some(e => e.linha === l.id) || Store.all('chamados').some(c => c.linha === l.id && !fechado(c)); } catch (e) { return true; }
+}"""),
+    ("""  if (/util|geral|compress|paletiz|arcomprim/.test(s) && !/^l\\d/.test(s)) return 'UTIL';""",
+     """  if (!/^l\\d/.test(s)) {
+    if (/reservatorio(s)?dear|^resar$|^reservatorios$/.test(s)) return 'RESAR';
+    if (/compress|booster|secadordear|arcomprim/.test(s)) return 'COMP';
+    if (/paletiz/.test(s)) return 'PALET';
+    if (/^envases?$|setordeenvase/.test(s)) return 'ENV';
+    if (/util|geral/.test(s)) return 'UTIL';
+  }"""),
+    ("""não reconhecida (use L1, L2, L3, Copos, 6L ou Geral)""",
+     """não reconhecida (use L1, L2, L3, Copos, 6L, Compressores, Reservatórios de ar, Paletização, Envases ou Geral)"""),
+    ("""'<div class="andon" role="list">' + LINHAS.map(l => {""",
+     """'<div class="andon" role="list">' + LINHAS.filter(linhaVisivel).map(l => {"""),
+    ("""+ '<span class="row1"><b>' + esc(l.curto) + '</b>""",
+     """+ '<span class="row1"><b' + (l.setor ? ' class="setor"' : '') + '>' + esc(l.curto) + '</b>"""),
+    (""".andon-t b{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1}""",
+     """.andon-t b{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1}
+.andon-t b.setor{font-size:19px;line-height:1.15}"""),
+    ("""+ LINHAS.map(l => '<button type="button" class="choice line" data-act="ab-linha\"""",
+     """+ LINHAS.filter(linhaVisivel).map(l => '<button type="button" class="choice line" data-act="ab-linha\""""),
+    ("""      if (this.f.linha && this.f.linha !== l.id) continue;""",
+     """      if (this.f.linha && this.f.linha !== l.id) continue;
+      if (!this.f.linha && !linhaVisivel(l)) continue;"""),
+    ("""Cadastre os equipamentos de cada linha (L1, L2, L3, Copos, 6L e geral) ou importe uma planilha.""",
+     """Cadastre os equipamentos de cada linha e de cada setor (L1, L2, L3, Copos, 6L, compressores, reservatórios de ar, paletização e envases) ou importe uma planilha."""),
+]
+
 MODULOS = {
     'manutencao': {
         'titulo': ('<title>Manutenção Levíssima</title>', '<title>Manutenção · LEVÍSSIMA</title>'),
@@ -197,7 +243,7 @@ MODULOS = {
             ("'<span class=\"small muted\">A IA fica disponível ao usar o app pelo Claude com sua conta.</span>'", "''"),
             ("'Banco compartilhado: todos que usam este app pelo link do Claude veem os mesmos dados, ao vivo.'",
              "'Banco do LEVÍSSIMA: todos com acesso ao módulo Manutenção veem os mesmos dados, ao vivo.'"),
-        ] + TROCAS_MANUTENCAO_1710 + TROCAS_MANUTENCAO_FICHAS + TROCAS_MANUTENCAO_2110,
+        ] + TROCAS_MANUTENCAO_1710 + TROCAS_MANUTENCAO_FICHAS + TROCAS_MANUTENCAO_2110 + TROCAS_MANUTENCAO_1711,
         'inserir_antes': ('/* =====================================================================\n   Inicialização', ['manutencao-fichas.js', 'manutencao-extra.js']),
     },
     'uniformes': {
