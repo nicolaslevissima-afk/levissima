@@ -1076,6 +1076,76 @@
   .pcp-cont-p { color: var(--muted); }
   .pcp-qtd b { font-family: var(--font-display); }
   .lp-copiar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin-top: 6px; }
+  .pl-maq-n { min-width: 110px; }
+  /* tablet da máquina (17/11/2026): botões grandes, bom contraste, poucos campos */
+  .maq-on #setor-modulos, .maq-on #setor-docs, .maq-on #btn-cp-setor, .maq-on #setor-metas, .maq-on .setor-escolha, .maq-on #setor-titulo { display: none !important; }
+  .maq { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; font-size: 1.05rem; }
+  .maq-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+  .maq-topo > div { display: flex; flex-direction: column; }
+  .maq-nome { font-family: var(--font-display); font-size: 1.5rem; }
+  .maq-topo span { color: var(--muted); font-size: 0.9rem; }
+  .maq-rede { font-weight: 700; font-size: 0.9rem !important; border-radius: 999px; padding: 4px 10px; border: 1px solid var(--line); }
+  .maq-rede.ok { color: var(--verde-texto) !important; }
+  .maq-rede.pend { color: var(--laranja-texto) !important; }
+  .maq-rede.off { color: rgb(var(--danger-rgb)) !important; }
+  .maq-oper { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 1.1rem; }
+  .maq-grande { min-height: 54px; font-size: 1.1rem; padding: 10px 18px; }
+  .maq-op { display: flex; flex-direction: column; gap: 2px; border: 2px solid var(--azul); border-radius: 12px; padding: 10px 14px; background: var(--card); }
+  .maq-op b { font-family: var(--font-display); font-size: 1.35rem; }
+  .maq-op span, .maq-op small { color: var(--ink); }
+  .maq-op > span:first-child { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .maq-op.sem { border-color: var(--laranja); }
+  .maq-parada { border-radius: 12px; padding: 12px 14px; background: rgb(var(--danger-rgb)); color: #fff; font-size: 1.1rem; }
+  .maq-acoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .maq-btn { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-height: 96px; padding: 16px; border-radius: 14px; border: 2px solid var(--line); background: var(--card); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+  .maq-btn b { font-family: var(--font-display); font-size: 1.3rem; }
+  .maq-btn span { color: var(--muted); font-size: 0.95rem; }
+  .maq-btn.prim { background: var(--azul); border-color: var(--azul); color: #fff; }
+  .maq-btn.prim span { color: rgba(255, 255, 255, 0.85); }
+  .maq-btn.alerta { border-color: rgb(var(--danger-rgb)); }
+  .maq-btn.verde { background: #43B02A; border-color: #43B02A; color: #10200C; }
+  .maq-btn.verde span { color: #10200C; }
+  .maq-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .maq-pend > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .maq-ultimo { color: var(--verde-texto); font-weight: 600; }
+  .maq-aviso { border-left: 4px solid var(--laranja); background: var(--paper); padding: 8px 12px; border-radius: 6px; }
+  .maq-erro { color: rgb(var(--danger-rgb)); font-weight: 700; }
+  .maq-falhas { border: 2px solid rgb(var(--danger-rgb)); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+  .maq-falhas > div { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .maq-painel { border: 1px solid var(--line); border-radius: 14px; background: var(--card); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .maq-painel h3 { margin: 0; font-family: var(--font-display); font-size: 1.3rem; }
+  .maq-painel label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; }
+  .maq-num { font-size: 2rem !important; min-height: 64px; font-family: var(--font-mono); }
+  .maq-horas, .maq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .maq-hora, .maq-chip { min-height: 52px; padding: 8px 16px; border-radius: 10px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+  .maq-hora.on, .maq-chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .maq-outro { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .maq-interv { font-size: 1.15rem; }
+  .maq-tag { font-size: 0.75rem; font-weight: 700; border-radius: 999px; padding: 2px 8px; background: var(--laranja); color: #1C2A2E; }
+  .maq-seg { border-top: 1px solid var(--line); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .maq-semop { color: var(--laranja-texto); font-weight: 700; }
+  .maq-pe { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+  .maq-pin { display: flex; gap: 14px; justify-content: center; }
+  .maq-pin span { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--ink); }
+  .maq-pin span.on { background: var(--ink); }
+  .maq-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; width: 100%; margin: 0 auto; }
+  .maq-teclado button { min-height: 64px; font-size: 1.6rem; font-weight: 700; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .maq-teclado button[data-maq="cancelar"] { font-size: 1rem; }
+  .maq-lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .maq-lista li { display: flex; flex-direction: column; border-bottom: 1px solid var(--line); padding: 6px 0; }
+  .maq-lista li small { color: var(--muted); }
+  .maq-lista li.falha small { color: rgb(var(--danger-rgb)); }
+  .maq-lista li.anulado span { text-decoration: line-through; color: var(--muted); }
+  .prm-maqs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 6px; }
+  .prm-maq { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; font-size: 0.8125rem; background: var(--card); }
+  .prm-maq.parada { border-color: rgb(var(--danger-rgb)); }
+  .prm-maq b small { font-weight: 600; color: var(--muted); }
+  .prm-st { font-weight: 700; }
+  .prm-st.ok { color: var(--verde-texto); }
+  .prm-st.velho { color: var(--laranja-texto); }
+  .prm-st.parada { color: rgb(var(--danger-rgb)); }
+  .prm-anulado td { color: var(--muted); text-decoration: line-through; }
+  .pcp-alerta.ok { opacity: 0.6; }
   .pcp-card-t { display: flex; align-items: center; gap: 6px; }
   .pcp-card-t b { font-family: var(--font-display); font-size: 0.875rem; }
   .pcp-pos { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--muted); }
@@ -2437,11 +2507,13 @@
     <nav class="segmented mp-areas" id="pr-sub-tabs" aria-label="Partes da produção">
       <button type="button" class="seg-btn" data-pr="andamento">Em produção</button>
       <button type="button" class="seg-btn" data-pr="lancar">Lançar produção</button>
+      <button type="button" class="seg-btn" data-pr="maquinas">Máquinas</button>
       <button type="button" class="seg-btn" data-pr="lancamentos">Lançamentos</button>
       <button type="button" class="seg-btn" data-pr="indicadores">Indicadores do mês</button>
       <button type="button" class="seg-btn" data-pr="metas">Metas do mês</button>
     </nav>
     <div id="pr-andamento"></div>
+    <div id="pr-maquinas" class="hidden"></div>
     <div id="pr-lancamentos" class="hidden"></div>
     <div id="pr-indicadores" class="hidden"></div>
     <div id="pr-lancar" class="hidden"></div>
@@ -2730,7 +2802,8 @@
       </div>
     </header>
     <h2 class="section-title" id="setor-titulo" style="font-size:1.25rem;margin-top:18px">Olá</h2>
-    <p class="tagline" style="margin-top:4px">Escolha o que você vai usar agora.</p>
+    <p class="tagline setor-escolha" style="margin-top:4px">Escolha o que você vai usar agora.</p>
+    <section id="maq-tela" class="maq hidden" aria-live="polite"></section>
     <div class="mod-cards" id="setor-modulos"></div>
     <div id="setor-docs"></div>
     <div id="setor-chamados"></div>
@@ -5714,7 +5787,7 @@
       blocoSetores = '<h3 class="acesso-sub">Senhas de setor (módulos da fábrica)</h3>';
       var setores = (acessoInfo && acessoInfo.setores) || [];
       if (!carregando && !setores.length) blocoSetores += '<p class="field-hint">Nenhuma ainda. Ex.: uma senha para a Manutenção, uma para os operadores de empilhadeira e uma para o almoxarifado.</p>';
-      setores.forEach(function(x) {
+      setores.filter(function(x) { return !/^setor:maq-/.test(x.ref); }).forEach(function(x) {
         blocoSetores += confirmRemoverSetor === x.ref
           ? '<div class="driver-confirm">Remover a senha de “' + escapeHtml(x.nome) + '”? Quem estiver usando sai do app.' +
             '<button class="btn-text danger" data-action="setor-remover-confirmar" data-ref="' + escapeHtml(x.ref) + '">Remover</button><button class="btn-text" data-action="setor-remover-cancelar">Cancelar</button></div>'
@@ -5723,6 +5796,7 @@
             '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button></div>';
       });
       blocoSetores += '<button type="button" class="btn btn-secondary btn-sm" data-action="setor-novo" style="margin-top:10px">+ Nova senha de setor</button>';
+      blocoSetores += maqAcessosHtml(); // tablets das máquinas (17/11/2026)
       // acessos da diretoria (pedido de 18/10/2026): veem tudo e só incluem; podem exigir o rosto
       blocoSetores += '<h3 class="acesso-sub">Acessos da diretoria (vê tudo e só inclui)</h3>';
       var dirs = (acessoInfo && acessoInfo.diretoria) || [];
@@ -6105,6 +6179,7 @@
     else if (a === 'acesso-equipe-remover') { confirmRemoverEquipe = true; renderAcessoAdmin(); }
     else if (a === 'acesso-equipe-cancelar') { confirmRemoverEquipe = false; renderAcessoAdmin(); }
     else if (a === 'setor-novo') openSetorForm('novo', null);
+    else if (a === 'maq-senha') maqAbrirSenha(b.dataset.ref);
     else if (a === 'dir-novo') abrirAcessoDiretoria(null);
     else if (a === 'dir-editar') abrirAcessoDiretoria(((acessoInfo && acessoInfo.diretoria) || []).find(function(x) { return x.ref === b.dataset.ref; }) || null);
     else if (a === 'dir-apagar-rosto') {
@@ -6533,7 +6608,8 @@
     document.getElementById('setor-modulos').innerHTML = mods.length ? mods.map(function(m) {
       return '<a class="mod-card" href="' + linkModulo(m.id) + '">' + iconeMod(m.id) + '<b>' + escapeHtml(m.nome) + '</b><span>' + escapeHtml(m.desc) + '</span>' +
         (m.nivel === 'gerir' ? '<span class="mod-nivel-tag">Você gerencia</span>' : '') + '</a>';
-    }).join('') : '<p class="empty-state">A sua senha ainda não abre nenhum módulo. Peça à diretoria.</p>';
+    }).join('') : (session && (session.modulos || []).indexOf('lider_producao') >= 0 ? '<p class="empty-state">Abrindo a tela da máquina…</p>' : '<p class="empty-state">A sua senha ainda não abre nenhum módulo. Peça à diretoria.</p>');
+    setTimeout(maqIniciar, 0); // tablet de máquina (17/11/2026): abre direto a tela da máquina
     setTimeout(mtLigarSetor, 0); // metas do mês e apontamento de turno (liberado para os setores em 17/10/2026)
     setTimeout(chLigarPedir, 0); // chamados para a TI e a manutenção predial (09/11/2026)
     setTimeout(qdSetorLigar, 0); // documentos da qualidade do local de uso (11/11/2026)
@@ -15676,6 +15752,7 @@
       },
       salvar: function() {
         var x = it(), q = numCampo(gerVal('ap-qtd')), dia = gerVal('ap-data') || hoje, hi = gerVal('ap-ini'), hf = gerVal('ap-fim'), tu = gerVal('ap-turno');
+        if (maqLinhaAtiva(lid, dia, /^\d{2}:\d{2}$/.test(hi) ? hi : pcpHoraAgora())) return gerErro(maqAvisoLinhaAtiva(lid));
         if (q === null || q <= 0) return gerErro('Informe a quantidade produzida.');
         var inc = s.modo === 'total' ? q - Math.round(x.feito) : q;
         if (s.modo === 'total' && q < Math.round(x.feito)) return gerErro('O total (' + fmtInt(q) + ') é menor que o já apontado (' + fmtInt(Math.round(x.feito)) + '). Para corrigir um apontamento, use Produção › Lançamentos.');
@@ -15842,6 +15919,617 @@
     if (!algum) h += '<p class="empty-state">Nenhuma ordem de produção aberta. O PCP abre as ordens na aba PCP.</p>';
     box.innerHTML = h;
   }
+  // =====================================================================================================
+  // TABLETS DAS MÁQUINAS (pedido de 17/11/2026, parte 2 do pedido da Laura/PCP; banco: migrações 0054 e 0055)
+  // - Cada máquina da configuração das linhas tem id e um acesso 'setor:maq-<id>' (senha criada em Cadastros ›
+  //   Acesso ao app › Acessos das máquinas, com a marca 'lider_producao'). Entrando com ela, o app abre a tela da
+  //   máquina: máquina, linha e OP vigente vêm do banco (maq_contexto); o operador não escolhe nada disso.
+  // - Operador: senha de 4 números (maq_operador_entrar); a troca de operador mantém a autoria dos lançamentos.
+  // - Lançamentos (produção do intervalo, parada, retomada) vão por uma fila no aparelho (localStorage) com um id
+  //   cada: sem internet ficam guardados; o mesmo id reenviado não duplica (maq_registrar devolve o que já existe).
+  // - A troca de OP dentro do horário vem do PCP: o tablet pede os trechos (maq_segmentos) e lança um valor por trecho.
+  // - Painel "Máquinas" (Produção): estado das máquinas, últimos lançamentos, pendências e conferência pelo PCP
+  //   (maq_painel, maq_corrigir, maq_validar). A etapa final que entra no estoque usa a confirmação de sempre.
+  var MAQ_MOTIVOS = ['Manutenção', 'Setup / troca', 'Falta de material', 'Qualidade', 'Refeição', 'Troca de turno', 'Limpeza', 'Aguardando outra máquina', 'Operacional', 'Outro'];
+  var MAQ_FILA = 'levissima-maq-fila-v1', MAQ_CTX = 'levissima-maq-ctx-v1';
+  var MAQ_ERROS = {
+    maquina: 'Este acesso não está ligado a uma máquina. Fale com o escritório.', operador: 'Identifique o operador (senha de 4 números) antes de lançar.',
+    intervalo: 'Confira o horário.', futuro: 'Esse horário ainda não terminou.', antigo: 'Lançamento de mais de 7 dias atrás: fale com o PCP.',
+    segmentar: 'O PCP trocou a OP dentro desse horário: lance de novo, um valor para cada trecho.', quantidade: 'Confira a quantidade.',
+    motivo: 'Escolha o motivo da parada.', parada_sobreposta: 'Já existe uma parada desta máquina nesse horário.', sem_parada: 'A máquina não está parada.',
+    dados: 'Lançamento incompleto.', tipo: 'Lançamento desconhecido.'
+  };
+  var maq = { ctx: null, erro: '', tela: '', form: null, enviando: false, timer: null, ultimo: null, ligado: false };
+  function maqFila() { try { var f = JSON.parse(localStorage.getItem(MAQ_FILA) || '[]'); return Array.isArray(f) ? f : []; } catch (e) { return []; } }
+  function maqGuardarFila(f) { try { localStorage.setItem(MAQ_FILA, JSON.stringify(f.slice(-300))); } catch (e) {} }
+  function maqId() {
+    var a = new Uint8Array(10);
+    try { crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+    return Array.prototype.map.call(a, function(b) { return ('0' + b.toString(16)).slice(-2); }).join('') + Date.now().toString(36);
+  }
+  function maqErroRede(e) { var m = String((e && (e.message || e.code)) || e || ''); return !navigator.onLine || /fetch|network|timeout|Failed|Load failed|ERR_|conex/i.test(m); }
+  function maqMsgErro(e) { var m = String((e && e.message) || '').trim(); return MAQ_ERROS[m] || 'Não foi possível gravar (' + (m || 'erro') .slice(0, 80) + ').'; }
+  // nome do acesso: "L2 · Sopradora 2A"
+  function maqNomeAcesso(l, m) { var n = String((l && l.nome) || ''), d = /(\d+)/.exec(n); return (d && /^linha/i.test(n) ? 'L' + d[1] : n) + ' · ' + ((m && m.nome) || ''); }
+  function maqHoraTxt(iso) { var q = pcpPartes(Date.parse(iso)); return pad2(q.h) + 'h' + (q.mi ? pad2(q.mi) : ''); }
+  function maqIntervaloTxt(ini, fim) { return 'das ' + maqHoraTxt(ini) + ' às ' + maqHoraTxt(fim); }
+  function maqQtd(q, u) { return q == null || q === '' ? '—' : fmtInt(Math.round(Number(q))) + (u ? ' ' + u : ''); }
+  // turnos e dia operacional da linha da máquina (o tablet não lê a configuração das linhas: vem no contexto)
+  function maqTurnos() { var l = maq.ctx && maq.ctx.linha; return ((l && l.turnos) || []).filter(function(t) { return t && typeof t === 'object' && hmOk(t.inicio) && hmOk(t.fim); }); }
+  function maqCorte() { var c = 0; maqTurnos().forEach(function(t) { if (pcpMin(t.fim) <= pcpMin(t.inicio)) { var m = pcpMin(t.fim); if (m > c && m <= 720) c = m; } }); return c; }
+  function maqDia(ms) { return pcpIso(ms - maqCorte() * 60000); }
+  function maqTurno(ms) {
+    var r = '', ini = -Infinity, hoje = pcpIso(ms);
+    maqTurnos().forEach(function(x) {
+      [pcpAddDias(hoje, -1), hoje].forEach(function(d) {
+        if ((x.dias || [1, 2, 3, 4, 5, 6]).map(Number).indexOf(pcpDow(d)) < 0) return;
+        var a = pcpMs(d, x.inicio), b = pcpMs(pcpMin(x.fim) <= pcpMin(x.inicio) ? pcpAddDias(d, 1) : d, x.fim);
+        if (a <= ms && ms < b && a > ini) { ini = a; r = x.nome; }
+      });
+    });
+    return r;
+  }
+  function maqHoraCheia(ms) { var q = pcpPartes(ms); return pcpMs(pcpIso(ms), pad2(q.h) + ':00'); }
+  function maqProdTxt(op) {
+    if (!op) return '';
+    return (op.itens || []).map(function(it) { var p = { nome: it.nome }; return phNomeSemMarca(p) + ' · ' + phMarcaDoProduto(p) + ' · ' + (it.unidade || ''); }).join(' / ');
+  }
+
+  // ----- contexto e fila -----
+  function maqGuardarCtx() { try { localStorage.setItem(MAQ_CTX, JSON.stringify({ ref: session && session.ref, ctx: maq.ctx, em: Date.now() })); } catch (e) {} }
+  function maqCtxGuardado() { try { var c = JSON.parse(localStorage.getItem(MAQ_CTX) || 'null'); return c && session && c.ref === session.ref ? c.ctx : null; } catch (e) { return null; } }
+  function maqCarregar(silencio) {
+    if (mode !== 'db' || !db) return Promise.resolve(maq.ctx);
+    return db.rpc('maq_contexto', {}).then(function(c) {
+      maq.ctx = c && c.maquina ? c : null; maq.erro = '';
+      if (maq.ctx) maqGuardarCtx();
+      maqRender(); return maq.ctx;
+    }, function(e) {
+      if (!maq.ctx) maq.ctx = maqCtxGuardado();
+      maq.erro = maqErroRede(e) ? 'Sem conexão agora: os lançamentos ficam guardados neste tablet e vão sozinhos quando a internet voltar.' : (silencio ? maq.erro : 'Não foi possível atualizar a tela da máquina agora.');
+      maqRender(); return maq.ctx;
+    });
+  }
+  function maqEnfileirar(tipo, dados) {
+    var p = Object.assign({ id: maqId(), tipo: tipo, criadoEm: new Date().toISOString() }, dados);
+    var f = maqFila(); f.push({ id: p.id, p: p, estado: 'pendente', erro: '', tentativas: 0 });
+    maqGuardarFila(f);
+    return p;
+  }
+  function maqEnviar() {
+    if (maq.enviando || mode !== 'db' || !db) return Promise.resolve();
+    var prox = maqFila().find(function(x) { return x.estado === 'pendente'; });
+    if (!prox) return Promise.resolve();
+    maq.enviando = true; maqRender();
+    return db.rpc('maq_registrar', { p: prox.p }).then(function(r) {
+      maqGuardarFila(maqFila().filter(function(x) { return x.id !== prox.id; }));
+      maq.enviando = false;
+      if (r && r.doc) { maq.ultimo = r.doc; if (r.doc.duplicado && !r.repetido) showToast('Lançado, mas já havia outro lançamento desta máquina nesse horário: o PCP confere.'); }
+      return maqEnviar().then(function() { return maqCarregar(true); });
+    }, function(e) {
+      maq.enviando = false;
+      var f = maqFila(), it = f.find(function(x) { return x.id === prox.id; });
+      if (it) { it.tentativas++; if (!maqErroRede(e)) { it.estado = 'falha'; it.erro = maqMsgErro(e); } maqGuardarFila(f); }
+      maqRender();
+    });
+  }
+  function maqLigar() {
+    if (maq.ligado) return;
+    maq.ligado = true;
+    window.addEventListener('online', function() { if (maq.ctx) maqEnviar(); });
+    maq.timer = setInterval(function() { if (!maq.ctx || !session || session.role !== 'setor') return; maqEnviar(); if (!maq.form) maqCarregar(true); }, 60000);
+  }
+  // depois do login de setor: o acesso de uma máquina abre direto a tela dela
+  function maqIniciar() {
+    var tela = document.getElementById('maq-tela');
+    if (!tela || !session || session.role !== 'setor') return;
+    if ((session.modulos || []).indexOf('lider_producao') < 0 && !/^setor:maq-/.test(session.ref || '')) return;
+    maq.ctx = maqCtxGuardado();
+    if (maq.ctx) maqMostrar();
+    maqCarregar().then(function(c) {
+      if (!c) { tela.classList.add('hidden'); document.getElementById('setor-app').classList.remove('maq-on'); return; }
+      maqMostrar(); maqLigar(); maqEnviar();
+    });
+  }
+  function maqMostrar() {
+    document.getElementById('setor-app').classList.add('maq-on');
+    document.getElementById('maq-tela').classList.remove('hidden');
+    document.getElementById('setor-titulo').textContent = maqNomeAcesso(maq.ctx.linha, maq.ctx.maquina);
+    maqRender();
+  }
+  // parada aberta: a do banco ou uma ainda na fila (sem retomada depois)
+  function maqParadaAberta() {
+    var f = maqFila().filter(function(x) { return x.estado !== 'falha'; }), loc = null;
+    f.forEach(function(x) { if (x.p.tipo === 'parada' && !x.p.fim) loc = { id: '', ini: x.p.ini, motivo: x.p.motivo, escopo: x.p.escopo, local: true }; if (x.p.tipo === 'retomada') loc = 'retomou'; });
+    if (loc === 'retomou') return null;
+    return loc || (maq.ctx && maq.ctx.parada) || null;
+  }
+
+  // ----- tela -----
+  function maqRender() {
+    var box = document.getElementById('maq-tela');
+    if (!box || !maq.ctx) return;
+    var c = maq.ctx, m = c.maquina || {}, l = c.linha || {}, fila = maqFila(), pend = fila.filter(function(x) { return x.estado === 'pendente'; }).length, falhas = fila.filter(function(x) { return x.estado === 'falha'; });
+    var par = maqParadaAberta(), on = navigator.onLine;
+    var rede = !on ? '<span class="maq-rede off">● sem internet' + (pend ? ' · ' + pend + ' guardado' + (pend > 1 ? 's' : '') : '') + '</span>'
+      : pend ? '<span class="maq-rede pend">● enviando ' + pend + '</span>' : '<span class="maq-rede ok">● tudo enviado</span>';
+    var h = '<div class="maq-topo"><div><b class="maq-nome">' + escapeHtml(maqNomeAcesso(l, m)) + '</b><span>' + escapeHtml(l.nome + ' · ' + m.nome + (m.producao ? ' · etapa final (entra no estoque)' : '') + ' · unidade: ' + (m.unidade || 'a confirmar')) + '</span></div>' + rede + '</div>';
+    if (maq.erro) h += '<p class="maq-aviso">' + escapeHtml(maq.erro) + '</p>';
+    h += '<div class="maq-oper">' + (c.operador ? 'Operador: <b>' + escapeHtml(c.operador.nome || '—') + '</b><button type="button" class="btn btn-secondary" data-maq="operador">Trocar operador</button>'
+      : '<button type="button" class="btn btn-primary maq-grande" data-maq="operador">Identificar o operador</button>') + '</div>';
+    if (c.op) h += '<div class="maq-op"><span>OP em execução</span><b>OP nº ' + escapeHtml(String(c.op.numero || '—')) + '</b><span>' + escapeHtml(maqProdTxt(c.op)) + '</span>' + (c.op.obs ? '<small>' + escapeHtml(c.op.obs) + '</small>' : '') + '</div>';
+    else h += '<div class="maq-op sem"><b>Sem OP em execução nesta linha agora</b><span>Pode lançar: o registro fica guardado sem OP e o PCP vincula depois (não mexe no estoque antes disso).</span></div>';
+    if (par) h += '<div class="maq-parada" role="status">⛔ <b>Máquina parada</b> desde ' + escapeHtml(maqHoraTxt(par.ini)) + ' · ' + escapeHtml(par.motivo || '') + (par.escopo === 'linha' ? ' · a linha toda' : '') + (par.local ? ' <small>(ainda não enviado)</small>' : '') + '</div>';
+    if (maq.tela === 'operador') h += maqOperadorHtml();
+    else if (maq.tela === 'producao') h += maqProducaoHtml();
+    else if (maq.tela === 'parada') h += maqParadaHtml();
+    else if (maq.tela === 'ultimos') h += maqUltimosHtml();
+    else {
+      h += '<div class="maq-acoes">' +
+        '<button type="button" class="maq-btn prim" data-maq="producao"' + (c.operador ? '' : ' disabled') + '><b>Lançar produção</b><span>quantidade do horário</span></button>' +
+        (par ? '<button type="button" class="maq-btn verde" data-maq="retomar"' + (c.operador ? '' : ' disabled') + '><b>Retomar a máquina</b><span>a parada termina agora</span></button>'
+          : '<button type="button" class="maq-btn alerta" data-maq="parada"' + (c.operador ? '' : ' disabled') + '><b>Registrar parada</b><span>motivo e horário</span></button>') +
+        '<button type="button" class="maq-btn" data-maq="ultimos"><b>Últimos lançamentos</b><span>o que já foi enviado</span></button></div>';
+      if (!c.operador) h += '<p class="field-hint">Para lançar, o operador se identifica com a senha de 4 números.</p>';
+      var pends = (c.pendentes || []).filter(function(x) { return !fila.some(function(y) { return y.p.tipo === 'producao' && y.p.ini < x.fim && y.p.fim > x.ini; }); });
+      if (pends.length && c.operador) h += '<div class="maq-pend"><b>Horas sem lançamento</b> <span class="field-hint">(com OP em execução)</span><div>' + pends.slice().reverse().map(function(x) {
+        return '<button type="button" class="btn btn-secondary" data-maq="lancar-hora" data-ini="' + escapeHtml(x.ini) + '" data-fim="' + escapeHtml(x.fim) + '">' + escapeHtml(maqHoraTxt(x.ini) + '–' + maqHoraTxt(x.fim)) + '</button>';
+      }).join('') + '</div></div>';
+      var ult = maq.ultimo || (c.ultimos || [])[0];
+      if (ult) h += '<p class="maq-ultimo">✓ Último lançamento: ' + escapeHtml(maqDescReg(ult)) + '</p>';
+    }
+    if (falhas.length) h += '<div class="maq-falhas"><b>Não foi enviado</b>' + falhas.map(function(x) {
+      return '<div><span>' + escapeHtml(maqDescReg(x.p)) + ' — ' + escapeHtml(x.erro) + '</span><button type="button" class="btn-text" data-maq="refazer" data-id="' + escapeHtml(x.id) + '">Tentar de novo</button><button type="button" class="btn-text danger" data-maq="descartar" data-id="' + escapeHtml(x.id) + '">Descartar</button></div>';
+    }).join('') + '</div>';
+    box.innerHTML = h;
+    if (maq.tela === 'producao') { var inp = box.querySelector('.maq-num'); if (inp && !maq.form.focado) { maq.form.focado = true; inp.focus(); } }
+  }
+  function maqDescReg(r) {
+    if (!r) return '';
+    if (r.tipo === 'parada') return 'parada ' + (r.ini ? 'desde ' + maqHoraTxt(r.ini) : '') + (r.motivo ? ' (' + r.motivo + ')' : '');
+    if (r.tipo === 'retomada') return 'retomou ' + (r.fim ? 'às ' + maqHoraTxt(r.fim) : 'agora');
+    var u = (maq.ctx && maq.ctx.maquina && maq.ctx.maquina.unidade) || r.unidade || '';
+    return 'produção ' + maqIntervaloTxt(r.ini, r.fim) + ' · ' + (r.quantidade != null ? maqQtd(r.quantidade, u) : r.contador != null ? 'contador ' + fmtInt(r.contador) : '—') + (r.opNumero ? ' · OP nº ' + r.opNumero : '');
+  }
+  // senha de 4 números do operador
+  function maqOperadorHtml() {
+    var f = maq.form || {};
+    return '<div class="maq-painel"><h3>Quem está operando?</h3><p class="field-hint">Digite a sua senha de 4 números.</p>' +
+      '<div class="maq-pin" aria-label="Senha">' + [0, 1, 2, 3].map(function(i) { return '<span class="' + ((f.pin || '').length > i ? 'on' : '') + '"></span>'; }).join('') + '</div>' +
+      (f.erro ? '<p class="maq-erro">' + escapeHtml(f.erro) + '</p>' : '') +
+      '<div class="maq-teclado">' + ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', '0', '<'].map(function(k) {
+        return k === 'x' ? '<button type="button" data-maq="cancelar">Cancelar</button>' : '<button type="button" data-maq="pin" data-k="' + k + '"' + (f.enviando ? ' disabled' : '') + '>' + (k === '<' ? '⌫' : k) + '</button>';
+      }).join('') + '</div>' + (maq.ctx.operador ? '<button type="button" class="btn-text" data-maq="sair-operador">Encerrar o turno de ' + escapeHtml(maq.ctx.operador.nome || '') + ' (sem outro operador)</button>' : '') + '</div>';
+  }
+  function maqPin(k) {
+    var f = maq.form || (maq.form = {});
+    if (f.enviando) return;
+    if (k === '<') f.pin = (f.pin || '').slice(0, -1); else if ((f.pin || '').length < 4) f.pin = (f.pin || '') + k;
+    f.erro = '';
+    if ((f.pin || '').length < 4) { maqRender(); return; }
+    f.enviando = true; maqRender();
+    db.rpc('maq_operador_entrar', { p_pin: f.pin }).then(function(r) {
+      f.enviando = false; f.pin = '';
+      if (r && r.ok) { maq.tela = ''; maq.form = null; showToast('Olá, ' + (nomePessoa(r.nome || '') || 'operador') + '. Os próximos lançamentos ficam no seu nome.'); maqCarregar(); return; }
+      f.erro = r && r.trocar ? 'Essa senha precisa ser trocada: peça uma nova ao escritório.' : r && r.bloqueado ? (r.mestre ? 'Muitas senhas erradas: o escritório precisa liberar.' : 'Muitas senhas erradas. Espere ' + (r.minutos || 15) + ' min.') : 'Senha errada.' + (r && r.restam != null && r.restam <= 2 ? ' Mais ' + r.restam + ' erro(s) bloqueia(m) por 15 min.' : '');
+      maqRender();
+    }, function(e) { f.enviando = false; f.pin = ''; f.erro = maqErroRede(e) ? 'Sem internet: a identificação do operador precisa de conexão.' : 'Não foi possível conferir agora.'; maqRender(); });
+  }
+  // lançar produção: o horário, os trechos (troca de OP pelo PCP) e a quantidade de cada um
+  function maqNovoForm(ini, fim) {
+    var agora = Date.now(), cheia = maqHoraCheia(agora);
+    if (!ini) {
+      var pends = (maq.ctx.pendentes || []).slice().sort(function(a, b) { return String(a.ini).localeCompare(String(b.ini)); });
+      if (pends.length) { ini = pends[0].ini; fim = pends[0].fim; } else { ini = new Date(cheia - 3600000).toISOString(); fim = new Date(cheia).toISOString(); }
+    }
+    maq.form = { ini: ini, fim: fim, segs: null, valores: {}, carregando: false, conf: '', erro: '', outro: false };
+    maqSegmentos();
+  }
+  function maqSegmentos() {
+    var f = maq.form;
+    f.segs = null; f.carregando = true; f.erro = ''; f.conf = '';
+    maqRender();
+    if (mode !== 'db' || !db || !navigator.onLine) { f.carregando = false; f.segs = [{ ini: f.ini, fim: f.fim, op: maq.ctx.op || null, offline: true }]; maqRender(); return; }
+    db.rpc('maq_segmentos', { p_ini: f.ini, p_fim: f.fim }).then(function(s) {
+      if (maq.form !== f) return;
+      f.carregando = false; f.segs = Array.isArray(s) && s.length ? s : [{ ini: f.ini, fim: f.fim, op: null }]; maqRender();
+    }, function(e) {
+      if (maq.form !== f) return;
+      f.carregando = false; f.segs = [{ ini: f.ini, fim: f.fim, op: maq.ctx.op || null, offline: true }];
+      if (!maqErroRede(e)) f.erro = maqMsgErro(e);
+      maqRender();
+    });
+  }
+  function maqProducaoHtml() {
+    var f = maq.form, m = maq.ctx.maquina || {}, u = m.unidade || '', cont = m.modo === 'contador', agora = Date.now(), cheia = maqHoraCheia(agora);
+    var horas = [];
+    for (var i = 1; i <= 4; i++) horas.push({ ini: new Date(cheia - i * 3600000).toISOString(), fim: new Date(cheia - (i - 1) * 3600000).toISOString() });
+    var h = '<div class="maq-painel"><h3>Lançar produção</h3>' +
+      '<div class="maq-horas" role="group" aria-label="Horário">' + horas.reverse().map(function(x) {
+        var on = x.ini === f.ini && x.fim === f.fim;
+        return '<button type="button" class="maq-hora' + (on ? ' on' : '') + '" data-maq="hora" data-ini="' + x.ini + '" data-fim="' + x.fim + '" aria-pressed="' + on + '">' + escapeHtml(maqHoraTxt(x.ini) + '–' + maqHoraTxt(x.fim)) + '</button>';
+      }).join('') + '<button type="button" class="maq-hora' + (f.outro ? ' on' : '') + '" data-maq="outro">Outro horário</button></div>';
+    if (f.outro) {
+      var dHoje = pcpIso(agora), dSel = pcpIso(Date.parse(f.ini)), hSel = pcpPartes(Date.parse(f.ini)).h;
+      h += '<div class="maq-outro"><label>Dia<select id="maq-o-dia">' + [0, 1, 2].map(function(k) { var d = pcpAddDias(dHoje, -k); return '<option value="' + d + '"' + (d === dSel ? ' selected' : '') + '>' + escapeHtml((k === 0 ? 'Hoje' : k === 1 ? 'Ontem' : PCP_DIAS_LONGOS[pcpDow(d)]) + ' ' + pcpDataCurta(d)) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Hora<select id="maq-o-hora">' + Array.from({ length: 24 }, function(_, k) { return '<option value="' + k + '"' + (k === hSel ? ' selected' : '') + '>' + pad2(k) + 'h às ' + pad2((k + 1) % 24) + 'h</option>'; }).join('') + '</select></label>' +
+        '<button type="button" class="btn btn-secondary" data-maq="outro-ok">Usar este horário</button></div>';
+    }
+    var retro = agora - Date.parse(f.fim) > 90 * 60000;
+    h += '<p class="maq-interv">Produção <b>' + escapeHtml(maqIntervaloTxt(f.ini, f.fim)) + '</b>' + (pcpIso(Date.parse(f.ini)) !== pcpIso(agora) ? ' de ' + escapeHtml(PCP_DIAS[pcpDow(pcpIso(Date.parse(f.ini)))].toLowerCase() + ' ' + pcpDataCurta(pcpIso(Date.parse(f.ini)))) : '') + (retro ? ' <span class="maq-tag">retroativo</span>' : '') + '</p>';
+    if (f.carregando) h += '<p class="field-hint">Conferindo a OP desse horário…</p>';
+    else if (f.segs) {
+      if (f.segs.length > 1) h += '<p class="maq-aviso">O PCP trocou a OP dentro desse horário: informe a quantidade de cada trecho.</p>';
+      h += f.segs.map(function(s, k) {
+        var ultC = maq.ctx.ultimoContador;
+        return '<div class="maq-seg"><div class="maq-seg-t">' + (f.segs.length > 1 ? '<b>' + escapeHtml(maqIntervaloTxt(s.ini, s.fim)) + '</b> · ' : '') + (s.op ? 'OP nº ' + escapeHtml(String(s.op.numero || '')) + ' · ' + escapeHtml(maqProdTxt(s.op)) : '<span class="maq-semop">sem OP nesse horário: fica para o PCP vincular</span>') + (s.offline ? ' <small>(sem internet: o PCP confere a OP)</small>' : '') + '</div>' +
+          (cont ? '<label>Leitura do contador no fim do horário<input type="number" class="maq-num" inputmode="numeric" min="0" step="1" id="maq-v-' + k + '" value="' + escapeHtml(f.valores[k] != null ? String(f.valores[k]) : '') + '" /></label>' +
+              (ultC && ultC.contador != null ? '<p class="field-hint">Última leitura: ' + escapeHtml(fmtInt(ultC.contador)) + ' às ' + escapeHtml(maqHoraTxt(ultC.fim)) + '. Se o contador zerou, o app percebe.</p>'
+                : '<label>Leitura no início do horário <span class="opt">(primeira leitura deste tablet)</span><input type="number" class="maq-num" inputmode="numeric" min="0" step="1" id="maq-vi-' + k + '" value="' + escapeHtml(f.valoresIni && f.valoresIni[k] != null ? String(f.valoresIni[k]) : '') + '" /></label>')
+            : '<label>Quantidade produzida <span class="opt">(' + escapeHtml(u || 'unidades') + ')</span><input type="number" class="maq-num" inputmode="numeric" min="0" step="1" id="maq-v-' + k + '" value="' + escapeHtml(f.valores[k] != null ? String(f.valores[k]) : '') + '" /></label>') + '</div>';
+      }).join('');
+    }
+    if (f.erro) h += '<p class="maq-erro">' + escapeHtml(f.erro) + '</p>';
+    if (f.conf) h += '<p class="maq-aviso">' + escapeHtml(f.conf) + '</p>';
+    h += '<div class="maq-pe"><button type="button" class="btn btn-secondary maq-grande" data-maq="cancelar">Cancelar</button><button type="button" class="btn btn-primary maq-grande" data-maq="salvar-producao"' + (f.carregando || !f.segs ? ' disabled' : '') + '>' + (f.conf ? 'Lançar mesmo assim' : 'Lançar') + '</button></div></div>';
+    return h;
+  }
+  function maqLerValores() {
+    var f = maq.form; if (!f || !f.segs) return;
+    f.valoresIni = f.valoresIni || {};
+    f.segs.forEach(function(s, k) {
+      var el = document.getElementById('maq-v-' + k); if (el) f.valores[k] = el.value === '' ? null : el.value;
+      var ei = document.getElementById('maq-vi-' + k); if (ei) f.valoresIni[k] = ei.value === '' ? null : ei.value;
+    });
+  }
+  function maqSalvarProducao() {
+    var f = maq.form, m = maq.ctx.maquina || {}, cont = m.modo === 'contador';
+    maqLerValores();
+    if (!f.segs) return;
+    var lista = [];
+    for (var k = 0; k < f.segs.length; k++) {
+      var v = numCampo(f.valores[k]);
+      if (v === null || v < 0 || Math.round(v) !== v) { f.erro = (cont ? 'Informe a leitura do contador' : 'Informe a quantidade') + (f.segs.length > 1 ? ' de cada trecho' : '') + ' (número inteiro, pode ser 0).'; maqRender(); return; }
+      var vi = cont && f.valoresIni && f.valoresIni[k] != null ? numCampo(f.valoresIni[k]) : null;
+      if (cont && !(maq.ctx.ultimoContador && maq.ctx.ultimoContador.contador != null) && vi === null) { f.erro = 'Informe também a leitura do início do horário (primeira leitura).'; maqRender(); return; }
+      lista.push({ s: f.segs[k], v: v, vi: vi });
+    }
+    // aviso de duplicidade: já existe lançamento desta máquina nesse horário
+    var ja = (maq.ctx.ultimos || []).concat(maqFila().map(function(x) { return x.p; })).filter(function(r) { return r.tipo === 'producao' && r.estado !== 'anulado' && r.ini < f.fim && r.fim > f.ini; });
+    var chave = f.ini + '|' + f.fim;
+    if (ja.length && f.confChave !== chave) {
+      f.confChave = chave;
+      f.conf = 'Já existe lançamento desta máquina ' + maqIntervaloTxt(ja[0].ini, ja[0].fim) + ' (' + (ja[0].quantidade != null ? maqQtd(ja[0].quantidade, m.unidade) : '—') + '). Se lançar de novo, fica marcado como duplicado para o PCP conferir.';
+      maqRender(); return;
+    }
+    lista.forEach(function(x) {
+      var ini = Date.parse(x.s.ini), it = x.s.op && x.s.op.itens && x.s.op.itens[0];
+      var d = { ini: x.s.ini, fim: x.s.fim, dia: maqDia(ini), turno: maqTurno(ini), produtoId: it ? it.produtoId : '', marca: it ? phMarcaDoProduto({ nome: it.nome }) : '' };
+      if (cont) { d.contador = x.v; if (x.vi !== null) d.contadorIni = x.vi; } else d.quantidade = x.v;
+      maq.ultimo = maqEnfileirar('producao', d);
+    });
+    maq.tela = ''; maq.form = null;
+    showToast(navigator.onLine ? 'Produção ' + maqIntervaloTxt(lista[0].s.ini, lista[lista.length - 1].s.fim) + ' lançada.' : 'Sem internet: guardado no tablet, vai sozinho quando a internet voltar.');
+    maqRender(); maqEnviar();
+  }
+  // parada da máquina (ou da linha toda): não muda a situação da OP
+  function maqParadaHtml() {
+    var f = maq.form || {};
+    return '<div class="maq-painel"><h3>Registrar parada</h3><p class="field-hint">A parada é da máquina: não pausa a OP (quem pausa a OP é o PCP).</p>' +
+      '<fieldset class="ph-grupo"><legend>Motivo <span class="req">*</span></legend><div class="maq-chips">' + MAQ_MOTIVOS.map(function(x) { return '<button type="button" class="maq-chip' + (f.motivo === x ? ' on' : '') + '" data-maq="motivo" data-v="' + escapeHtml(x) + '" aria-pressed="' + (f.motivo === x) + '">' + escapeHtml(x) + '</button>'; }).join('') + '</div></fieldset>' +
+      '<fieldset class="ph-grupo"><legend>O que parou</legend><div class="maq-chips"><button type="button" class="maq-chip' + (f.escopo !== 'linha' ? ' on' : '') + '" data-maq="escopo" data-v="maquina">Só esta máquina</button><button type="button" class="maq-chip' + (f.escopo === 'linha' ? ' on' : '') + '" data-maq="escopo" data-v="linha">A linha toda</button></div></fieldset>' +
+      '<label>Começou às <span class="opt">(vazio = agora)</span><input type="time" id="maq-p-ini" value="' + escapeHtml(f.hora || '') + '" /></label>' +
+      '<label>Observação <span class="opt">(opcional' + (f.motivo === 'Outro' ? '; obrigatória em “Outro”' : '') + ')</span><input type="text" id="maq-p-obs" maxlength="200" value="' + escapeHtml(f.obs || '') + '" autocomplete="off" /></label>' +
+      (f.erro ? '<p class="maq-erro">' + escapeHtml(f.erro) + '</p>' : '') +
+      '<div class="maq-pe"><button type="button" class="btn btn-secondary maq-grande" data-maq="cancelar">Cancelar</button><button type="button" class="btn btn-primary maq-grande" data-maq="salvar-parada">Registrar parada</button></div></div>';
+  }
+  function maqSalvarParada() {
+    var f = maq.form || {};
+    f.hora = (document.getElementById('maq-p-ini') || {}).value || ''; f.obs = String((document.getElementById('maq-p-obs') || {}).value || '').trim();
+    if (!f.motivo) { f.erro = 'Escolha o motivo.'; maqRender(); return; }
+    if (f.motivo === 'Outro' && !f.obs) { f.erro = 'Escreva o motivo na observação.'; maqRender(); return; }
+    var agora = Date.now(), ini = agora;
+    if (f.hora) { ini = pcpMs(pcpIso(agora), f.hora); if (ini > agora + 60000) ini -= 864e5; if (agora - ini > 12 * 3600000) { f.erro = 'Confira o horário (até 12 horas atrás).'; maqRender(); return; } }
+    if (maqParadaAberta()) { f.erro = 'A máquina já está parada. Retome antes de registrar outra parada.'; maqRender(); return; }
+    maq.ultimo = maqEnfileirar('parada', { ini: new Date(ini).toISOString(), motivo: f.motivo, escopo: f.escopo === 'linha' ? 'linha' : 'maquina', obs: f.obs, dia: maqDia(ini), turno: maqTurno(ini) });
+    maq.tela = ''; maq.form = null; showToast('Parada registrada.'); maqRender(); maqEnviar();
+  }
+  function maqRetomar() {
+    var par = maqParadaAberta();
+    if (!par) return;
+    maq.ultimo = maqEnfileirar('retomada', { paradaId: par.id || '', fim: new Date().toISOString(), dia: maqDia(Date.now()) });
+    showToast('Máquina retomada.'); maqRender(); maqEnviar();
+  }
+  function maqUltimosHtml() {
+    var fila = maqFila(), l = (maq.ctx.ultimos || []);
+    var h = '<div class="maq-painel"><h3>Últimos lançamentos desta máquina</h3>';
+    if (!fila.length && !l.length) h += '<p class="field-hint">Nenhum lançamento ainda.</p>';
+    h += '<ul class="maq-lista">' + fila.slice().reverse().map(function(x) { return '<li class="' + (x.estado === 'falha' ? 'falha' : 'pend') + '"><span>' + escapeHtml(maqDescReg(x.p)) + '</span><small>' + (x.estado === 'falha' ? '✕ ' + escapeHtml(x.erro) : '⏳ guardado, enviando') + '</small></li>'; }).join('') +
+      l.map(function(r) {
+        var st = r.estado === 'anulado' ? 'anulado pelo PCP' : r.estado === 'validado' ? '✓ conferido pelo PCP' : '✓ enviado';
+        var flags = [r.duplicado ? 'duplicado' : '', r.tipo === 'producao' && !r.opId ? 'sem OP' : '', r.retro ? 'retroativo' : '', r.reinicio ? 'contador zerou' : ''].filter(Boolean);
+        return '<li class="' + (r.estado === 'anulado' ? 'anulado' : '') + '"><span>' + escapeHtml(maqDescReg(r)) + '</span><small>' + escapeHtml(st + ' · ' + formatDateTimeBR(r.enviadoEm) + (r.operador && r.operador.nome ? ' · ' + nomePessoa(r.operador.nome) : '') + (flags.length ? ' · ' + flags.join(', ') : '')) + '</small></li>';
+      }).join('') + '</ul><div class="maq-pe"><button type="button" class="btn btn-secondary maq-grande" data-maq="cancelar">Voltar</button></div></div>';
+    return h;
+  }
+  function maqClique(e) {
+    var b = e.target.closest('[data-maq]');
+    if (!b || b.disabled) return;
+    var a = b.dataset.maq;
+    if (a === 'operador') { maq.tela = 'operador'; maq.form = { pin: '' }; }
+    else if (a === 'pin') { maqPin(b.dataset.k); return; }
+    else if (a === 'sair-operador') { db.rpc('maq_operador_sair', {}).then(function() { maq.tela = ''; maq.form = null; maqCarregar(); }, function() { showToast('Sem conexão: tente de novo.'); }); return; }
+    else if (a === 'producao') { maq.tela = 'producao'; maqNovoForm(); return; }
+    else if (a === 'lancar-hora') { maq.tela = 'producao'; maqNovoForm(b.dataset.ini, b.dataset.fim); return; }
+    else if (a === 'hora') { maqLerValores(); maq.form.ini = b.dataset.ini; maq.form.fim = b.dataset.fim; maq.form.outro = false; maq.form.valores = {}; maqSegmentos(); return; }
+    else if (a === 'outro') { maq.form.outro = !maq.form.outro; }
+    else if (a === 'outro-ok') {
+      var d = (document.getElementById('maq-o-dia') || {}).value, hh = Number((document.getElementById('maq-o-hora') || {}).value);
+      var ini = pcpMs(d, pad2(hh) + ':00'), fim = ini + 3600000;
+      if (fim > Date.now() + 5 * 60000) { maq.form.erro = 'Esse horário ainda não terminou.'; maqRender(); return; }
+      maq.form.ini = new Date(ini).toISOString(); maq.form.fim = new Date(fim).toISOString(); maq.form.valores = {}; maqSegmentos(); return;
+    }
+    else if (a === 'salvar-producao') { maqSalvarProducao(); return; }
+    else if (a === 'parada') { maq.tela = 'parada'; maq.form = { motivo: '', escopo: 'maquina' }; }
+    else if (a === 'motivo') { maq.form.hora = (document.getElementById('maq-p-ini') || {}).value || ''; maq.form.obs = (document.getElementById('maq-p-obs') || {}).value || ''; maq.form.motivo = b.dataset.v; }
+    else if (a === 'escopo') { maq.form.hora = (document.getElementById('maq-p-ini') || {}).value || ''; maq.form.obs = (document.getElementById('maq-p-obs') || {}).value || ''; maq.form.escopo = b.dataset.v; }
+    else if (a === 'salvar-parada') { maqSalvarParada(); return; }
+    else if (a === 'retomar') { maqRetomar(); return; }
+    else if (a === 'ultimos') { maq.tela = 'ultimos'; maqCarregar(true); }
+    else if (a === 'cancelar') { maq.tela = ''; maq.form = null; }
+    else if (a === 'refazer') { var f = maqFila(); f.forEach(function(x) { if (x.id === b.dataset.id) { x.estado = 'pendente'; x.erro = ''; } }); maqGuardarFila(f); maqEnviar(); }
+    else if (a === 'descartar') { maqGuardarFila(maqFila().filter(function(x) { return x.id !== b.dataset.id; })); }
+    maqRender();
+  }
+
+  // ----- Cadastros › Acesso ao app › Acessos das máquinas -----
+  function maqTodasMaquinas() {
+    var out = [];
+    phLinhas().forEach(function(l) { (l.maquinas || []).forEach(function(m) { if (m && m.acesso) out.push({ l: l, m: m, ref: m.acesso, nome: maqNomeAcesso(l, m) }); }); });
+    return out;
+  }
+  function maqAcessosHtml() {
+    var lista = maqTodasMaquinas(), todas = (acessoInfo && acessoInfo.todas) || [];
+    var h = '<h3 class="acesso-sub">Acessos das máquinas (tablets)</h3><p class="field-hint">Cada senha abre direto a tela da máquina: o operador lança a produção, as paradas e (depois) os insumos; não mexe nas OPs. O operador se identifica com a senha de 4 números dele.</p>';
+    if (!lista.length) return h + '<p class="field-hint">Nenhuma máquina com acesso na configuração das linhas (PCP › Linhas e turnos).</p>';
+    lista.forEach(function(x) {
+      var s = todas.find(function(t) { return t.ref === x.ref; });
+      h += confirmRemoverSetor === x.ref
+        ? '<div class="driver-confirm">Remover a senha do tablet “' + escapeHtml(x.nome) + '”? Quem estiver usando sai do app.<button class="btn-text danger" data-action="setor-remover-confirmar" data-ref="' + escapeHtml(x.ref) + '">Remover</button><button class="btn-text" data-action="setor-remover-cancelar">Cancelar</button></div>'
+        : '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="est-sub">' + escapeHtml(s ? 'senha criada' + (s.aparelhos ? ' · ' + s.aparelhos + (s.aparelhos === 1 ? ' aparelho' : ' aparelhos') : '') : 'sem senha ainda') + (x.m.confirmar ? ' · unidade a confirmar pelo PCP' : '') + '</span></span>' +
+          '<button class="btn-text" data-action="maq-senha" data-ref="' + escapeHtml(x.ref) + '">' + (s ? 'Trocar senha' : 'Criar senha') + '</button>' +
+          (s ? '<button class="btn-text danger" data-action="setor-remover" data-ref="' + escapeHtml(x.ref) + '">Remover</button>' : '') + '</div>';
+    });
+    return h;
+  }
+  function maqAbrirSenha(ref) {
+    var x = maqTodasMaquinas().find(function(y) { return y.ref === ref; });
+    if (!x) return;
+    gerAbrir({
+      titulo: 'Senha do tablet · ' + x.nome, botao: 'Salvar senha',
+      html: '<p class="hint">Quem entrar com esta senha vê só a tela da máquina ' + escapeHtml(x.nome) + '. Mínimo de 8 caracteres, diferente das outras senhas.</p>' +
+        '<label>Senha <span class="req">*</span><input type="password" id="maq-s1" autocomplete="new-password" maxlength="72" /></label>' +
+        '<label>Repita a senha <span class="req">*</span><input type="password" id="maq-s2" autocomplete="new-password" maxlength="72" /></label>',
+      salvar: function() {
+        var s1 = (document.getElementById('maq-s1') || {}).value || '', s2 = (document.getElementById('maq-s2') || {}).value || '';
+        if (senhaAcessoProblema(s1)) return gerErro(senhaAcessoProblema(s1));
+        if (s1 !== s2) return gerErro('As duas senhas não são iguais.');
+        return chamarAcesso({ acao: 'definir', ref: x.ref, nome: x.nome, senha: s1, modulos: ['lider_producao'] }).then(function() {
+          showToast('Senha do tablet ' + x.nome + ' salva.'); carregarAcessoInfo(); return true;
+        }, function(err) {
+          var c = err && err.codigo;
+          gerErro(c === 'senha_em_uso' ? 'Essa senha já é usada por outro acesso.' : c === 'senha_fraca' || c === 'senha_curta' ? 'Senha fraca: use pelo menos 8 caracteres, misturando letras e números.' : 'Não foi possível salvar agora.');
+          return false;
+        });
+      }
+    });
+  }
+
+  // ----- linha com apontamento pelas máquinas: o lançamento da hora e o apontamento da OP ficam fechados -----
+  function maqLinhaAtiva(lid, dia, hora) {
+    var l = phLinha(lid), d = l && l.apontaMaquinas && l.apontaMaquinas.desde;
+    if (!d || !dia) return false;
+    return pcpMs(dia, hmOk(hora) ? hora : '00:00') >= Date.parse(d);
+  }
+  function maqAvisoLinhaAtiva(lid) {
+    var l = phLinha(lid), fin = l ? (l.maquinas || []).find(function(m) { return m.producao; }) : null;
+    return (l ? l.nome : 'Esta linha') + ' lança pelos tablets das máquinas desde ' + formatDateTimeBR(l.apontaMaquinas.desde) + ': a produção que entra no estoque vem da ' + (fin ? fin.nome : 'etapa final') + '. Para corrigir, use Produção › Máquinas.';
+  }
+
+  // ----- Produção › Máquinas: acompanhamento e conferência (PCP e liderança) -----
+  var prMaq = { dia: '', linha: '', dados: null, buscando: false, erro: '', buscadoEm: 0, diaBuscado: '', sel: {}, timer: null };
+  function maqOpVigenteApp(lid, ms) {
+    var ult = {};
+    (mp.eventos || []).forEach(function(e) {
+      if (e.linha !== lid || ['iniciar', 'retomar', 'pausar'].indexOf(e.tipo) < 0 || !e.opId) return;
+      var t = Date.parse(e.em); if (isNaN(t) || t > ms) return;
+      if (!ult[e.opId] || t > ult[e.opId].t) ult[e.opId] = { t: t, tipo: e.tipo };
+    });
+    var best = null;
+    Object.keys(ult).forEach(function(id) {
+      var x = ult[id]; if (x.tipo === 'pausar') return;
+      var o = mp.ordens.find(function(y) { return y.id === id; });
+      if (!o) return;
+      if (o.status === 'concluida' && Date.parse(o.concluidoEm || '') <= ms) return;
+      if (!best || x.t > best.t) best = { t: x.t, o: o };
+    });
+    return best ? best.o : null;
+  }
+  function prMaqBuscar(forcar) {
+    if (mode !== 'db' || !db || prMaq.buscando) return;
+    if (!forcar && prMaq.dados && prMaq.diaBuscado === prMaq.dia && Date.now() - prMaq.buscadoEm < 50000) return;
+    prMaq.buscando = true;
+    var dia = prMaq.dia;
+    db.rpc('maq_painel', { p_de: dia, p_ate: dia }).then(function(r) {
+      prMaq.buscando = false; prMaq.dados = r || null; prMaq.erro = ''; prMaq.buscadoEm = Date.now(); prMaq.diaBuscado = dia; renderPrMaquinas();
+    }, function(e) { prMaq.buscando = false; prMaq.erro = maqErroRede(e) ? 'Sem conexão.' : 'Não foi possível carregar as máquinas (' + String((e && e.message) || '').slice(0, 60) + ').'; renderPrMaquinas(); });
+  }
+  function prMaqPendHoras(reg, lid, mq, dia) {
+    var out = [], agora = Date.now(), corte = pcpCorteHm(lid), ini = pcpMs(dia, corte);
+    for (var h = 0; h < 24; h++) {
+      var a = maqHoraCheia(ini) + h * 3600000, b = a + 3600000;
+      if (b > agora) break;
+      if (!maqOpVigenteApp(lid, a + 1800000)) continue;
+      var tem = reg.some(function(r) { return r.maquinaId === mq.id && r.tipo === 'producao' && r.estado !== 'anulado' && Date.parse(r.ini) < b && Date.parse(r.fim) > a; });
+      var parou = reg.some(function(r) { return r.maquinaId === mq.id && r.tipo === 'parada' && r.estado !== 'anulado' && Date.parse(r.ini) <= a && (!r.fim || Date.parse(r.fim) >= b); });
+      if (!tem && !parou) out.push(a);
+    }
+    return out;
+  }
+  function renderPrMaquinas() {
+    var box = document.getElementById('pr-maquinas');
+    if (!box || !session) return;
+    if (!prMaq.dia) prMaq.dia = pcpHoje();
+    prMaqBuscar(false);
+    clearTimeout(prMaq.timer);
+    prMaq.timer = setTimeout(function() { if (prSubAtual() === 'maquinas' && ui.tab === 'producao') { prMaqBuscar(true); } }, 60000);
+    var linhas = pcpLinhasOp().filter(function(l) { return (l.maquinas || []).some(function(m) { return m.acesso; }); });
+    var d = prMaq.dados, reg = d ? (d.registros || []) : [], pode = !!(d && d.podeCorrigir), agora = Date.now();
+    var h = '<p class="tagline">O que cada máquina lançou no tablet: estado, último lançamento, horas sem lançamento, duplicidades e registros sem OP. ' +
+      'A <b>etapa final</b> de cada linha alimenta o avanço da OP e entra no estoque quando o PCP confirma; as outras máquinas ficam nos indicadores.</p>';
+    h += '<div class="pcp-barra"><div class="pcp-nav"><input type="date" id="prm-dia" value="' + escapeHtml(prMaq.dia) + '" max="' + escapeHtml(pcpHoje()) + '" aria-label="Dia" />' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-prm="hoje">Hoje</button><button type="button" class="btn btn-secondary btn-sm" data-prm="atualizar">Atualizar</button>' +
+      (prMaq.buscando ? '<span class="field-hint">carregando…</span>' : d ? '<span class="field-hint">atualizado ' + escapeHtml(formatDateTimeBR(new Date(prMaq.buscadoEm).toISOString())) + '</span>' : '') + '</div>' +
+      '<div class="pcp-filtros"><label>Linha<select id="prm-linha">' + pcpOpcoesSel([['', 'Todas as linhas']].concat(linhas.map(function(l) { return [l.id, l.nome]; })), prMaq.linha) + '</select></label></div></div>';
+    if (prMaq.erro) h += '<p class="field-hint warn">' + escapeHtml(prMaq.erro) + '</p>';
+    if (!linhas.length) { box.innerHTML = h + '<p class="empty-state">Nenhuma máquina com tablet configurada.</p>'; return; }
+    var doDia = reg.filter(function(r) { return r.dia === prMaq.dia && (!prMaq.linha || r.linha === prMaq.linha); });
+    var prods = doDia.filter(function(r) { return r.tipo === 'producao'; });
+    var dups = prods.filter(function(r) { return r.duplicado && r.estado !== 'anulado'; }), semOp = prods.filter(function(r) { return !r.opId && r.estado !== 'anulado'; }), aguard = prods.filter(function(r) { return r.estado === 'apontado'; });
+    var pendTot = 0;
+    var corpo = '';
+    linhas.filter(function(l) { return !prMaq.linha || l.id === prMaq.linha; }).forEach(function(l) {
+      var opv = maqOpVigenteApp(l.id, agora), fin = (l.maquinas || []).find(function(m) { return m.producao; }), and = opv ? opAndamento()[opv.id] : null;
+      corpo += '<div class="pcp-linha"><div class="pcp-linha-cab"><b>' + escapeHtml(l.nome) + '</b>' +
+        (opv ? '<span class="field-hint">OP em execução: nº ' + escapeHtml(String(opv.numero)) + (and && fin ? ' · ' + escapeHtml(fmtInt(Math.round(and.feito)) + ' de ' + fmtInt(Math.round(and.plan))) + ' pela ' + escapeHtml(fin.nome) + ' (etapa final)' : '') + '</span>' : '<span class="field-hint">nenhuma OP em execução agora</span>') +
+        (l.apontaMaquinas && l.apontaMaquinas.desde ? '<span class="chip-est pago" style="margin-left:6px">estoque pelos tablets desde ' + escapeHtml(formatDateTimeBR(l.apontaMaquinas.desde)) + '</span>' : '<span class="chip-est" style="margin-left:6px">tablets só nos indicadores</span>') + '</div><div class="prm-maqs">';
+      (l.maquinas || []).filter(function(m) { return m.acesso; }).forEach(function(m) {
+        var par = reg.find(function(r) { return r.maquinaId === m.id && r.tipo === 'parada' && !r.fim && r.estado !== 'anulado'; });
+        var ult = d && d.ultimos ? d.ultimos[m.id] : null, idade = ult ? (agora - Date.parse(ult.enviadoEm)) / 60000 : null;
+        var est = par ? '<span class="prm-st parada">⛔ Parada desde ' + escapeHtml(maqHoraTxt(par.ini)) + ' · ' + escapeHtml(par.motivo || '') + (par.escopo === 'linha' ? ' (linha toda)' : '') + '</span>'
+          : !ult ? '<span class="prm-st">ainda sem lançamento</span>'
+          : idade > 90 ? '<span class="prm-st velho">⚠ sem atualização há ' + escapeHtml(fmtDuracao(Math.round(idade))) + '</span>'
+          : '<span class="prm-st ok">lançou há ' + escapeHtml(fmtDuracao(Math.max(1, Math.round(idade)))) + '</span>';
+        var tot = prods.filter(function(r) { return r.maquinaId === m.id && r.estado !== 'anulado'; }).reduce(function(s, r) { return s + (Number(r.quantidade) || 0); }, 0);
+        var ph = prMaqPendHoras(reg, l.id, m, prMaq.dia); pendTot += ph.length;
+        var op = d && d.operadores ? d.operadores[m.acesso] : null;
+        corpo += '<div class="prm-maq' + (par ? ' parada' : '') + '"><b>' + escapeHtml(m.nome) + (m.producao ? ' <small>etapa final</small>' : '') + '</b>' + est +
+          '<span>' + escapeHtml(op ? 'operador: ' + nomePessoa(op.nome) : 'sem operador identificado') + '</span>' +
+          '<span>no dia: <b>' + escapeHtml(maqQtd(tot, m.unidade)) + '</b></span>' +
+          (ph.length ? '<span class="alerta">' + ph.length + (ph.length === 1 ? ' hora sem lançamento: ' : ' horas sem lançamento: ') + escapeHtml(ph.map(function(t) { return maqHoraTxt(new Date(t).toISOString()); }).join(', ')) + '</span>' : '') + '</div>';
+      });
+      corpo += '</div></div>';
+    });
+    h += '<div class="pcp-alertas">' + [[pendTot, 'horas sem lançamento (com OP em execução)'], [dups.length, 'duplicidades'], [semOp.length, 'registros sem OP'], [aguard.length, 'aguardando validação']].map(function(x) {
+      return '<span class="pcp-alerta' + (x[0] ? '' : ' ok') + '"><b>' + x[0] + '</b> ' + escapeHtml(x[1]) + '</span>';
+    }).join('') + '</div>' + corpo;
+    // registros do dia
+    var lista = doDia.filter(function(r) { return r.tipo === 'producao' || r.tipo === 'parada'; }).sort(function(a, b) { return String(b.ini).localeCompare(String(a.ini)); });
+    var nSel = Object.keys(prMaq.sel).filter(function(k) { return prMaq.sel[k]; }).length;
+    h += '<div class="section-head"><h2 class="section-title">Registros do dia</h2>' + (pode ? '<button type="button" class="btn btn-primary btn-sm" data-prm="validar"' + (nSel ? '' : ' disabled') + '>Validar selecionados' + (nSel ? ' (' + nSel + ')' : '') + '</button>' : '') + '</div>';
+    if (!lista.length) h += '<p class="empty-state">Nenhum registro das máquinas neste dia.</p>';
+    else h += '<div class="pcp-tab-wrap"><table class="resumo-table prm-tab"><thead><tr>' + (pode ? '<th scope="col"><input type="checkbox" id="prm-todos" aria-label="Selecionar todos" /></th>' : '') + '<th scope="col">Horário</th><th scope="col">Máquina</th><th scope="col">Operador</th><th scope="col">OP · produto</th><th scope="col">Quantidade</th><th scope="col">Situação</th>' + (pode ? '<th scope="col"></th>' : '') + '</tr></thead><tbody>' +
+      lista.map(function(r) {
+        var mq = (phLinha(r.linha) && (phLinha(r.linha).maquinas || []).find(function(m) { return m.id === r.maquinaId; })) || { nome: r.maquina };
+        var flags = [r.duplicado && r.estado !== 'anulado' ? '<span class="pcp-chip falta">duplicado</span>' : '', r.tipo === 'producao' && !r.opId && r.estado !== 'anulado' ? '<span class="pcp-chip confirmar">sem OP</span>' : '',
+          r.retro ? '<span class="pcp-chip">retroativo</span>' : '', r.reinicio ? '<span class="pcp-chip confirmar">contador zerou</span>' : '', r.primeiraLeitura ? '<span class="pcp-chip confirmar">1ª leitura, sem quantidade</span>' : '',
+          r.estoqueId ? (function() { var em = estoqueMovs.find(function(x) { return x.id === r.estoqueId; }); return '<span class="pcp-chip ' + (em && !em.pendente ? 'pago' : '') + '">' + (em && !em.pendente ? 'no estoque' : 'estoque estimado') + '</span>'; })() : '',
+          (r.historico || []).length ? '<span class="pcp-chip">corrigido</span>' : ''].join('');
+        var st = r.estado === 'anulado' ? '<span class="pcp-chip">anulado</span>' : r.estado === 'validado' ? '<span class="pcp-chip pago">✓ validado</span>' : '<span class="pcp-chip">aguardando</span>';
+        var hor = r.tipo === 'parada' ? '⛔ ' + maqHoraTxt(r.ini) + '–' + (r.fim ? maqHoraTxt(r.fim) : 'agora') : maqHoraTxt(r.ini) + '–' + maqHoraTxt(r.fim);
+        return '<tr class="' + (r.estado === 'anulado' ? 'prm-anulado' : '') + '">' + (pode ? '<td>' + (r.tipo === 'producao' && r.estado === 'apontado' ? '<input type="checkbox" class="prm-sel" data-id="' + escapeHtml(r.id) + '"' + (prMaq.sel[r.id] ? ' checked' : '') + ' aria-label="Selecionar" />' : '') + '</td>' : '') +
+          '<td>' + escapeHtml(hor) + '</td><td>' + escapeHtml(mq.nome || '') + '</td><td>' + escapeHtml(r.operador && r.operador.nome ? nomePessoa(r.operador.nome) : '—') + '</td>' +
+          '<td>' + (r.tipo === 'parada' ? escapeHtml((r.motivo || '') + (r.escopo === 'linha' ? ' · linha toda' : '')) : escapeHtml((r.opNumero ? 'OP nº ' + r.opNumero : 'sem OP') + (r.produtoNome ? ' · ' + r.produtoNome : ''))) + '</td>' +
+          '<td>' + (r.tipo === 'parada' ? '—' : escapeHtml(maqQtd(r.quantidade, r.unidade)) + (r.contador != null ? '<span class="est-sub">contador ' + escapeHtml(fmtInt(r.contador)) + '</span>' : '')) + '</td>' +
+          '<td>' + st + flags + '</td>' + (pode ? '<td><button type="button" class="btn-text" data-prm="corrigir" data-id="' + escapeHtml(r.id) + '">Corrigir</button></td>' : '') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+    // produção por máquina e turno
+    var porT = {}, turnos = [];
+    prods.forEach(function(r) { if (r.estado === 'anulado') return; var t = r.turno || '—'; if (turnos.indexOf(t) < 0) turnos.push(t); var k = r.linha + '|' + r.maquinaId; porT[k] = porT[k] || { r: r, t: {} }; porT[k].t[t] = (porT[k].t[t] || 0) + (Number(r.quantidade) || 0); });
+    if (Object.keys(porT).length) h += '<div class="section-head"><h2 class="section-title">Produção por máquina e turno</h2></div><div class="pcp-tab-wrap"><table class="resumo-table"><thead><tr><th scope="col">Linha · máquina</th>' + turnos.map(function(t) { return '<th scope="col">' + escapeHtml(t) + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      Object.keys(porT).map(function(k) { var x = porT[k]; return '<tr><td>' + escapeHtml(phLinhaNome(x.r.linha) + ' · ' + (x.r.maquina || '')) + '</td>' + turnos.map(function(t) { return '<td>' + (x.t[t] != null ? escapeHtml(maqQtd(x.t[t], x.r.unidade)) : '—') + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div><p class="field-hint">As máquinas da mesma linha são etapas do mesmo fluxo: não se somam como produto acabado.</p>';
+    box.innerHTML = h;
+  }
+  function prMaqValidar() {
+    var ids = Object.keys(prMaq.sel).filter(function(k) { return prMaq.sel[k]; });
+    var reg = ((prMaq.dados && prMaq.dados.registros) || []).filter(function(r) { return ids.indexOf(r.id) >= 0; });
+    if (!reg.length) return;
+    var estIds = [], porU = {};
+    reg.forEach(function(r) { var em = r.estoqueId ? estoqueMovs.find(function(x) { return x.id === r.estoqueId; }) : null; if (em && em.pendente) { estIds.push(em.id); porU[em.unidade] = (porU[em.unidade] || 0) + (Number(em.quantidade) || 0); } });
+    var podeEst = pcpPodeConfirmar();
+    gerAbrir({
+      titulo: 'Validar ' + reg.length + (reg.length === 1 ? ' registro' : ' registros'), botao: 'Validar',
+      html: '<p class="hint">Os registros ficam marcados como conferidos pelo PCP' + (estIds.length ? '; ' + (podeEst ? '<b>' + escapeHtml(Object.keys(porU).map(function(u) { return qtdUnidade(porU[u], u); }).join(' + ')) + '</b> da etapa final entram no estoque (deixam de ser estimados).' : 'a entrada da etapa final no estoque fica para quem confirma a produção.') : '.') + '</p>' +
+        '<ul>' + reg.slice(0, 30).map(function(r) { return '<li>' + escapeHtml((r.maquina || '') + ' · ' + maqHoraTxt(r.ini) + '–' + maqHoraTxt(r.fim) + ' · ' + maqQtd(r.quantidade, r.unidade) + (r.opNumero ? ' · OP nº ' + r.opNumero : ' · sem OP')) + '</li>'; }).join('') + '</ul>',
+      salvar: function() {
+        return (estIds.length && podeEst ? pcpConfirmar(estIds) : Promise.resolve()).then(function() { return db.rpc('maq_validar', { p_ids: ids }); }).then(function(r) {
+          prMaq.sel = {}; showToast((r && r.validados) + ' registro(s) validado(s).'); prMaqBuscar(true); return true;
+        });
+      }
+    });
+  }
+  function prMaqCorrigir(id) {
+    var r = ((prMaq.dados && prMaq.dados.registros) || []).find(function(x) { return x.id === id; });
+    if (!r) return;
+    var ops = mp.ordens.filter(function(o) { return (o.linha || opLinha(o).id) === r.linha && (o.status === 'aberta' || (o.status === 'concluida' && String(o.concluidoEm || '') > new Date(Date.now() - 15 * 864e5).toISOString())); });
+    var parada = r.tipo === 'parada';
+    gerAbrir({
+      titulo: 'Corrigir · ' + (r.maquina || '') + ' · ' + maqHoraTxt(r.ini) + (r.fim ? '–' + maqHoraTxt(r.fim) : ''), botao: 'Salvar correção',
+      html: '<p class="hint">A correção fica no histórico do registro, com quem corrigiu e o motivo.' + (r.estoqueId ? ' A entrada estimada no estoque acompanha (a já confirmada se corrige em Lançamentos).' : '') + '</p>' +
+        (parada ? '<label>Motivo da parada<select id="prm-c-mot">' + MAQ_MOTIVOS.map(function(x) { return '<option' + (x === r.motivo ? ' selected' : '') + '>' + escapeHtml(x) + '</option>'; }).join('') + '</select></label>' +
+            '<label>Fim da parada<input type="datetime-local" id="prm-c-fim" value="' + escapeHtml(r.fim ? pcpIso(Date.parse(r.fim)) + 'T' + pcpHoraTxt(Date.parse(r.fim)) : '') + '" /></label>'
+          : '<label>Quantidade <span class="opt">(' + escapeHtml(r.unidade || '') + ')</span><input type="number" id="prm-c-q" min="0" step="1" inputmode="numeric" value="' + escapeHtml(r.quantidade != null ? String(r.quantidade) : '') + '" /></label>' +
+            '<label>OP<select id="prm-c-op"><option value="">sem OP</option>' + ops.map(function(o) { return '<option value="' + escapeHtml(o.id) + '"' + (o.id === r.opId ? ' selected' : '') + '>' + escapeHtml('OP nº ' + o.numero + ' · ' + resumoItensOp(o.itens) + (o.status === 'concluida' ? ' (concluída)' : '')) + '</option>'; }).join('') + '</select></label>' +
+            (r.duplicado ? '<label class="check-row"><input type="checkbox" id="prm-c-nd" /> Conferido: não é duplicado</label>' : '')) +
+        '<label class="check-row"><input type="checkbox" id="prm-c-anular"' + (r.estado === 'anulado' ? ' checked' : '') + ' /> Anular este registro</label>' +
+        '<label>Motivo da correção <span class="req">*</span><input type="text" id="prm-c-motivo" maxlength="200" autocomplete="off" /></label>',
+      salvar: function() {
+        var motivo = gerVal('prm-c-motivo'), patch = {};
+        if (!motivo) return gerErro('Escreva o motivo da correção.');
+        var an = document.getElementById('prm-c-anular').checked;
+        if (an !== (r.estado === 'anulado')) patch.estado = an ? 'anulado' : 'apontado';
+        if (parada) {
+          var mo = gerVal('prm-c-mot'); if (mo && mo !== r.motivo) patch.motivo = mo;
+          var fv = gerVal('prm-c-fim'); if (fv) { var fm = pcpMs(fv.slice(0, 10), fv.slice(11, 16)); if (!r.fim || Math.abs(fm - Date.parse(r.fim)) > 30000) patch.fim = new Date(fm).toISOString(); }
+        } else {
+          var q = numCampo(gerVal('prm-c-q')); if (q === null || q < 0) return gerErro('Informe a quantidade (pode ser 0).');
+          if (q !== Number(r.quantidade)) patch.quantidade = Math.round(q);
+          var op = gerVal('prm-c-op'); if (op !== (r.opId || '')) patch.opId = op;
+          var nd = document.getElementById('prm-c-nd'); if (nd && nd.checked) patch.duplicado = false;
+        }
+        if (!Object.keys(patch).length) return gerErro('Nada mudou.');
+        return db.rpc('maq_corrigir', { p_id: r.id, p_patch: patch, p_motivo: motivo }).then(function() { showToast('Registro corrigido.'); prMaqBuscar(true); return true; }, function(e) {
+          var m = String((e && e.message) || '');
+          gerErro(m.indexOf('confirmado') >= 0 ? 'A produção deste registro já entrou no estoque: corrija em Produção › Lançamentos.' : m.indexOf('permissao') >= 0 ? 'Corrigir é do PCP (Configura o PCP, Confirma a produção ou Vê e corrige lançamentos).' : 'Não foi possível corrigir agora.');
+          return false;
+        });
+      }
+    });
+  }
+  function prMaqClique(e) {
+    var b = e.target.closest('[data-prm]');
+    if (!b) return;
+    var a = b.dataset.prm;
+    if (a === 'hoje') { prMaq.dia = pcpHoje(); prMaq.sel = {}; prMaqBuscar(true); }
+    else if (a === 'atualizar') prMaqBuscar(true);
+    else if (a === 'validar') { prMaqValidar(); return; }
+    else if (a === 'corrigir') { prMaqCorrigir(b.dataset.id); return; }
+    renderPrMaquinas();
+  }
+  function prMaqMudou(e) {
+    var t = e.target;
+    if (t.id === 'prm-dia') { prMaq.dia = t.value || pcpHoje(); prMaq.sel = {}; prMaqBuscar(true); }
+    else if (t.id === 'prm-linha') prMaq.linha = t.value;
+    else if (t.classList.contains('prm-sel')) prMaq.sel[t.dataset.id] = t.checked;
+    else if (t.id === 'prm-todos') { document.querySelectorAll('#pr-maquinas .prm-sel').forEach(function(c) { prMaq.sel[c.dataset.id] = t.checked; }); }
+    else return;
+    renderPrMaquinas();
+  }
+
+  (function maqLigarCliques() {
+    var t = document.getElementById('maq-tela'); if (t) t.addEventListener('click', maqClique);
+    var pm = document.getElementById('pr-maquinas'); if (pm) { pm.addEventListener('click', prMaqClique); pm.addEventListener('change', prMaqMudou); }
+  })();
   // =====================================================================================================
   // PCP · PROGRAMAÇÃO (pedido de 12/11/2026, etapa 1)
   // - Datas e horários sempre em America/Sao_Paulo (o aparelho pode estar em outro fuso).
@@ -17247,6 +17935,9 @@
       var p = pcpPendLinha(l).map(function(x) { return x.txt; }), semCap = [];
       plano.ordens.forEach(function(o) { var r = plano.porId[o.id] || {}; if (r.linha === l.id && r.semCap) r.semCap.forEach(function(n) { if (semCap.indexOf(n) < 0) semCap.push(n); }); });
       if (semCap.length && !pcpPendLinha(l).some(function(x) { return x.k === 'capacidade'; })) p.push('sem capacidade para ' + semCap.join(', '));
+      var mqs = (l.maquinas || []).filter(function(m) { return m.acesso; });
+      if (mqs.some(function(m) { return m.confirmar; })) p.push('confirme a unidade das máquinas dos tablets (' + mqs.filter(function(m) { return m.confirmar; }).map(function(m) { return m.nome; }).join(', ') + ')');
+      if (mqs.length && !(l.maquinas || []).some(function(m) { return m.producao; })) p.push('escolha a etapa final (a máquina que entra no estoque)');
       var semHora = phTurnosDet(l.id).filter(function(t) { return !turnoTemHorario(t); }).map(function(t) { return t.nome; });
       if (semHora.length && phTurnosDet(l.id).some(turnoTemHorario)) p.push('turno sem horário: ' + semHora.join(', '));
       if (p.length) out.push({ l: l, p: p });
@@ -17328,10 +18019,14 @@
         t.dias = []; for (var d = 0; d < 7; d++) { var c = document.getElementById('lp-td-' + i + '-' + d); if (c && c.checked) t.dias.push(d); }
         t.pausas.forEach(function(p, k) { p.inicio = v('lp-pi-' + i + '-' + k); p.fim = v('lp-pf-' + i + '-' + k); });
       });
-      if (mestre) {
+      var am = document.getElementById('lp-am');
+      if (am) l.apontaMaquinas = am.checked ? { desde: v('lp-am-desde') ? new Date(pcpMs(v('lp-am-desde').slice(0, 10), v('lp-am-desde').slice(11, 16))).toISOString() : ((l.apontaMaquinas && l.apontaMaquinas.desde) || new Date().toISOString()), por: (l.apontaMaquinas && l.apontaMaquinas.por) || quemSessao() } : null;
+      if (mestre || cfg) {
         var pr = document.querySelector('input[name="lp-mp"]:checked');
         l.maquinas.forEach(function(m, j) {
-          m.nome = v('lp-m-' + j).slice(0, 40); m.unidade = v('lp-mu-' + j) || 'unidades';
+          if (mestre) m.nome = v('lp-m-' + j).slice(0, 40);
+          m.unidade = v('lp-mu-' + j) || 'unidades';
+          m.modo = v('lp-mm-' + j) === 'contador' ? 'contador' : 'intervalo';
           m.obrigatoria = !!(document.getElementById('lp-mo-' + j) || {}).checked;
           m.producao = !!pr && Number(pr.value) === j;
           var c = numCampo(v('lp-mc-' + j)); m.porHora = c && c > 0 ? Math.round(c) : 0;
@@ -17369,15 +18064,23 @@
           }).join('') : '<p class="field-hint">Nenhum turno.</p>') + '<button type="button" class="btn-text" data-ger="lp-turno">+ turno</button>' +
           (outrasComTurno.length ? '<div class="lp-copiar"><label>Copiar os turnos de<select id="lp-copiar-de"><option value="">escolha a linha</option>' + outrasComTurno.map(function(x) { return '<option value="' + escapeHtml(x.id) + '">' + escapeHtml(x.nome) + '</option>'; }).join('') + '</select></label><button type="button" class="btn-text" data-ger="lp-copiar">Copiar</button></div>' : '') +
           '<p class="field-hint">O turno que passa da meia-noite termina no dia seguinte (ex.: 20:55 às 05:20) e pertence ao dia em que começa. Os turnos são a escala das pessoas; a linha fica disponível na união deles: a sobreposição na troca de turno conta uma vez só.</p></fieldset>' +
-        (mestre ? '<fieldset class="ph-grupo"><legend>Máquinas com contador <span class="opt">(lançamento da hora)</span></legend>' + l.maquinas.map(function(m, j) {
-            return '<div class="pl-maq"><input type="text" id="lp-m-' + j + '" maxlength="40" value="' + escapeHtml(m.nome || '') + '" placeholder="Nome da máquina" aria-label="Nome da máquina" autocomplete="off" />' +
-              '<select id="lp-mu-' + j + '" aria-label="Unidade do contador">' + phOpcoes(PH_UNIDADES, m.unidade || 'garrafas') + '</select>' +
+        (mestre || cfg ? '<fieldset class="ph-grupo"><legend>Máquinas <span class="opt">(contador da hora e tablets)</span></legend>' +
+          '<p class="field-hint">A <b>etapa final</b> (“entra no estoque”) é a máquina que alimenta o avanço da OP e a entrada de produto acabado; as outras ficam nos indicadores. ' +
+          '“Quantidade do intervalo”: o operador digita quanto fez no horário; “contador acumulado”: digita a leitura e o app faz a diferença (e percebe quando o contador zera).' + (mestre ? '' : ' Nome, inclusão e o acesso do tablet: só a senha mestre.') + '</p>' + l.maquinas.map(function(m, j) {
+            return '<div class="pl-maq">' + (mestre ? '<input type="text" id="lp-m-' + j + '" maxlength="40" value="' + escapeHtml(m.nome || '') + '" placeholder="Nome da máquina" aria-label="Nome da máquina" autocomplete="off" />' : '<b class="pl-maq-n">' + escapeHtml(m.nome || '') + (m.confirmar ? ' <span class="alerta">(confirme)</span>' : '') + '</b>') +
+              '<select id="lp-mu-' + j + '" aria-label="Unidade">' + phOpcoes(PH_UNIDADES, m.unidade || 'garrafas') + '</select>' +
+              '<select id="lp-mm-' + j + '" aria-label="Como conta"><option value="intervalo"' + (m.modo !== 'contador' ? ' selected' : '') + '>quantidade do intervalo</option><option value="contador"' + (m.modo === 'contador' ? ' selected' : '') + '>contador acumulado</option></select>' +
               '<input type="number" id="lp-mc-' + j + '" min="0" step="1" inputmode="numeric" value="' + (m.porHora || '') + '" placeholder="capacidade/hora" aria-label="Capacidade por hora (opcional)" />' +
               '<label class="check-row"><input type="checkbox" id="lp-mo-' + j + '"' + (m.obrigatoria ? ' checked' : '') + ' /> obrigatória</label>' +
-              '<label class="check-row"><input type="radio" name="lp-mp" value="' + j + '"' + (m.producao ? ' checked' : '') + ' /> entra no estoque</label>' +
-              '<button type="button" class="btn-text danger" data-ger="lp-maq-x" data-j="' + j + '" aria-label="Tirar a máquina">✕</button></div>';
+              '<label class="check-row"><input type="radio" name="lp-mp" value="' + j + '"' + (m.producao ? ' checked' : '') + ' /> entra no estoque (etapa final)</label>' +
+              (m.acesso ? '<span class="field-hint">tablet: ' + escapeHtml(maqNomeAcesso(l, m)) + '</span>' : '') +
+              (mestre ? '<button type="button" class="btn-text danger" data-ger="lp-maq-x" data-j="' + j + '" aria-label="Tirar a máquina">✕</button>' : '') + '</div>';
           }).join('') + '<label class="check-row"><input type="radio" name="lp-mp" value="-1"' + (semProd ? ' checked' : '') + ' /> nenhuma máquina entra no estoque (o líder escreve a quantidade)</label>' +
-          '<button type="button" class="btn-text" data-ger="lp-maq">+ máquina</button></fieldset>' : '') +
+          (mestre ? '<button type="button" class="btn-text" data-ger="lp-maq">+ máquina</button>' : '') + '</fieldset>' : '') +
+        (l.id && (mestre || cfg) && l.maquinas.some(function(m) { return m.acesso; }) ? '<fieldset class="ph-grupo"><legend>Apontamento pelos tablets das máquinas</legend>' +
+          '<label class="check-row"><input type="checkbox" id="lp-am"' + (l.apontaMaquinas && l.apontaMaquinas.desde ? ' checked' : '') + ' /> A produção desta linha entra pelo tablet da etapa final</label>' +
+          '<label>A partir de <span class="opt">(vazio = agora)</span><input type="datetime-local" id="lp-am-desde" value="' + escapeHtml(l.apontaMaquinas && l.apontaMaquinas.desde ? pcpIso(Date.parse(l.apontaMaquinas.desde)) + 'T' + pcpHoraTxt(Date.parse(l.apontaMaquinas.desde)) : '') + '" /></label>' +
+          '<p class="field-hint">Ligado: o lançamento da etapa final vira produção estimada da OP (entra no estoque quando o PCP confirma) e o “Lançar a hora” e o “Apontar produção” desta linha ficam fechados a partir desse momento, para não contar duas vezes. Desligado: os tablets só alimentam os indicadores das máquinas; o histórico antigo da linha continua igual.</p></fieldset>' : '') +
         (mestre && idx >= 0 && !usada && todas.length > 1 ? '<button type="button" class="btn-text danger" data-ger="lp-linha-x">Tirar esta linha</button>' : '');
     }
     gerAbrir({
@@ -17445,7 +18148,16 @@
           var nomesM = {};
           for (var j = 0; j < l.maquinas.length; j++) { var nm = normNome(l.maquinas[j].nome); if (nomesM[nm]) return gerErro('A máquina ' + l.maquinas[j].nome + ' está duas vezes.'); nomesM[nm] = true; }
           if (!l.id) { var base = normNome(l.nome).replace(/[^a-z0-9]+/g, '') || 'linha', id = base, n = 2; while (todas.some(function(x) { return x.id === id; })) id = base + (n++); l.id = id; }
+          // cada máquina com id e acesso de tablet próprios (a senha do tablet é criada em Cadastros › Acesso ao app)
+          var usadosM = {};
+          todas.forEach(function(x, k) { if (k !== idx) (x.maquinas || []).forEach(function(m) { if (m.id) usadosM[m.id] = true; }); });
+          l.maquinas.forEach(function(m) {
+            if (!m.id) { var pref = (/^linha(\d+)$/.test(l.id) ? 'l' + l.id.slice(5) : l.id) + '-' + normNome(m.nome).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''), mid = pref, k2 = 2; while (usadosM[mid]) mid = pref + '-' + (k2++); m.id = mid; }
+            usadosM[m.id] = true;
+            if (!m.acesso) m.acesso = 'setor:maq-' + m.id;
+          });
         }
+        l.maquinas.forEach(function(m) { delete m.confirmar; }); // o PCP conferiu as máquinas ao salvar
         var final = Object.assign({}, orig || {}, l);
         final.turnos = l.turnos.map(function(t) {
           if (!t.inicio) return { nome: t.nome };
@@ -17455,7 +18167,15 @@
           return x;
         });
         if (!Object.keys(final.capProd || {}).length) delete final.capProd;
-        if (!mestre && orig) ['id', 'nome', 'un', 'produtos', 'maquinas', 'op', 'metaId'].forEach(function(k) { if (k in orig) final[k] = orig[k]; else delete final[k]; });
+        if (!mestre && orig) ['id', 'nome', 'un', 'produtos', 'op', 'metaId'].forEach(function(k) { if (k in orig) final[k] = orig[k]; else delete final[k]; });
+        // "Configura o PCP": das máquinas, só unidade, modo de contagem, etapa final, capacidade e obrigatória
+        if (!mestre && orig) final.maquinas = (orig.maquinas || []).map(function(m0, j) {
+          var mm = l.maquinas[j] || {}, x = Object.assign({}, m0);
+          ['unidade', 'modo', 'producao', 'porHora', 'obrigatoria'].forEach(function(k) { if (mm[k] !== undefined && mm[k] !== '' && mm[k] !== false && mm[k] !== 0) x[k] = mm[k]; else delete x[k]; });
+          delete x.confirmar;
+          return x;
+        });
+        if (!final.apontaMaquinas) delete final.apontaMaquinas;
         if (idx >= 0) todas[idx] = final; else todas.push(final);
         return pcpGravarCfgLinhas(todas, null, l.nome + ' salva.');
       }
@@ -32356,6 +33076,7 @@
     if (minTot > 60) return gerErro('As paradas somam ' + minTot + ' minutos, e a hora tem 60.');
     if (Math.round(q) === 0 && !paradas.length) return gerErro('Produção zero nesta hora: informe a parada (motivo e minutos).');
     var hv = pad2(s.hora) + ':00', avisos = [];
+    if (!s.id && maqLinhaAtiva(s.linha, s.dia, hv)) return gerErro(maqAvisoLinhaAtiva(s.linha));
     if (phLancsLT(s.dia, s.linha, s.turno).some(function(m) { return m.hora === hv && m.id !== s.id; })) avisos.push('a hora ' + phHoraTxt(s.hora) + ' já foi lançada para ' + lin.nome + (s.turno ? ' · ' + s.turno : '') + ' neste dia');
     maqs.forEach(function(mq) { var md = phMediaMaquina(s.linha, mq.nome, s.id); if (cont[mq.nome] != null && phForaDoNormal(cont[mq.nome], md)) avisos.push(mq.nome + ' com ' + fmtInt(cont[mq.nome]) + ' (a média é ' + fmtInt(Math.round(md)) + ')'); });
     var chave = avisos.join('|');
@@ -32470,9 +33191,9 @@
   function temOrdensProducao() { if (!session) return false; if (session.role !== 'equipe') return true; return (session.modulos || []).indexOf('abas') < 0 || temPermissao('aba:producao'); }
   // Produção (03/11/2026): Em produção (iniciar, pausar, apontar), Lançar a hora, Lançamentos (planilha), Indicadores e Metas
   function prSubsPermitidas() {
-    if (ehLiderProducao()) return ['andamento', 'lancar', 'indicadores', 'metas'];
+    if (ehLiderProducao()) return ['andamento', 'lancar', 'maquinas', 'indicadores', 'metas'];
     var l = [];
-    if (temOrdensProducao()) l.push('andamento', 'lancar');
+    if (temOrdensProducao()) l.push('andamento', 'lancar', 'maquinas');
     if (podeVerLancProducao() || pcpPodeConfirmar()) l.push('lancamentos');
     l.push('indicadores');
     return l;
@@ -32485,8 +33206,9 @@
       var on = b.dataset.pr === atual; b.classList.toggle('hidden', subs.indexOf(b.dataset.pr) < 0); b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
     document.getElementById('tab-producao').classList.toggle('pr-leitura', ehLiderProducao());
-    ['andamento', 'lancamentos', 'indicadores', 'lancar', 'metas'].forEach(function(s) { document.getElementById('pr-' + s).classList.toggle('hidden', s !== atual); });
-    if (atual === 'andamento') renderPrAndamento(); else if (atual === 'lancamentos') renderPrLanc(); else if (atual === 'indicadores') renderPrInd(); else if (atual === 'lancar') renderProducaoHora(); else if (atual === 'metas') renderPrMetas();
+    ['andamento', 'lancamentos', 'indicadores', 'lancar', 'metas', 'maquinas'].forEach(function(s) { document.getElementById('pr-' + s).classList.toggle('hidden', s !== atual); });
+    if (atual === 'maquinas') renderPrMaquinas();
+    else if (atual === 'andamento') renderPrAndamento(); else if (atual === 'lancamentos') renderPrLanc(); else if (atual === 'indicadores') renderPrInd(); else if (atual === 'lancar') renderProducaoHora(); else if (atual === 'metas') renderPrMetas();
   }
 
   // ----- Lançamentos dos líderes (planilha) -----
