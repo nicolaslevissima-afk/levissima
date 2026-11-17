@@ -1071,6 +1071,11 @@
   .pcp-card.is-risco, .pcp-card.is-falta { background: rgba(168, 65, 46, 0.05); }
   .pcp-card.arrastando { opacity: 0.4; }
   .pcp-card.completo { font-size: 0.8125rem; padding: 8px 10px; }
+  .pcp-card.is-cont { border-style: dashed; border-left-style: solid; background: var(--paper); gap: 1px; padding: 4px 8px; }
+  .pcp-cont-tx { font-size: 0.6rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+  .pcp-cont-p { color: var(--muted); }
+  .pcp-qtd b { font-family: var(--font-display); }
+  .lp-copiar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; margin-top: 6px; }
   .pcp-card-t { display: flex; align-items: center; gap: 6px; }
   .pcp-card-t b { font-family: var(--font-display); font-size: 0.875rem; }
   .pcp-pos { font-family: var(--font-mono); font-size: 0.6875rem; color: var(--muted); }
@@ -15399,18 +15404,20 @@
         '<button class="btn-text" data-mp="op-iniciar-troca" data-id="' + id + '">Pausar e iniciar</button><button class="btn-text" data-mp="op-iniciar-nao">Cancelar</button>';
     } else {
       if (podeOp) {
-        if (ex.estado === 'rodando') acoes += '<button type="button" class="btn btn-primary btn-sm" data-mp="op-apontar" data-id="' + id + '">Apontar produção</button><button type="button" class="btn btn-secondary btn-sm" data-mp="op-pausar" data-id="' + id + '">⏸ Pausar</button>';
-        else if (ex.estado === 'pausada') acoes += '<button type="button" class="btn btn-primary btn-sm" data-mp="op-retomar" data-id="' + id + '">▶ Retomar</button><button type="button" class="btn btn-secondary btn-sm" data-mp="op-apontar" data-id="' + id + '">Apontar produção</button>';
-        else acoes += '<button type="button" class="btn btn-' + (modo === 'prod' ? 'primary' : 'secondary') + ' btn-sm" data-mp="op-iniciar" data-id="' + id + '">▶ Iniciar</button>';
+        var adm = pcpPodeAdmOp();
+        if (ex.estado === 'rodando') acoes += '<button type="button" class="btn btn-primary btn-sm" data-mp="op-apontar" data-id="' + id + '">Apontar produção</button>' + (adm ? '<button type="button" class="btn btn-secondary btn-sm" data-mp="op-pausar" data-id="' + id + '">⏸ Pausar</button>' : '');
+        else if (ex.estado === 'pausada') acoes += (adm ? '<button type="button" class="btn btn-primary btn-sm" data-mp="op-retomar" data-id="' + id + '">▶ Retomar</button>' : '') + '<button type="button" class="btn btn-secondary btn-sm" data-mp="op-apontar" data-id="' + id + '">Apontar produção</button>';
+        else if (adm) acoes += '<button type="button" class="btn btn-' + (modo === 'prod' ? 'primary' : 'secondary') + ' btn-sm" data-mp="op-iniciar" data-id="' + id + '">▶ Iniciar</button>';
+        else acoes += '<span class="field-hint">Quem inicia a OP: o PCP.</span>';
       }
       if (planeja) {
         acoes += '<button class="btn-text" data-mp="op-ver" data-id="' + id + '">' + (aberto ? 'Esconder matéria-prima' : 'Matéria-prima') + '</button>';
         if (podeEd) acoes += '<button class="btn-text" data-mp="op-editar" data-id="' + id + '">Editar</button>';
-        if (pcpPodeConfirmar()) acoes += '<button class="btn-text" data-mp="op-concluir" data-id="' + id + '">Concluir</button>';
+        if (pcpPodeAdmOp()) acoes += '<button class="btn-text" data-mp="op-concluir" data-id="' + id + '">Concluir</button>';
         if (podeEd) acoes += '<button class="btn-text danger" data-mp="op-excluir" data-id="' + id + '">Excluir</button>';
         if (podeEd && pos && pos.n > 1) acoes += '<span class="op-mover">' + (pos.i > 0 ? '<button type="button" class="btn-text" data-mp="op-subir" data-id="' + id + '" aria-label="Subir na sequência">▲</button>' : '') +
           (pos.i < pos.n - 1 ? '<button type="button" class="btn-text" data-mp="op-descer" data-id="' + id + '" aria-label="Descer na sequência">▼</button>' : '') + '</span>';
-      } else if (pcpPodeConfirmar() && a.and && a.and.estado === 'fim') acoes += '<button class="btn-text" data-mp="op-concluir" data-id="' + id + '">Concluir</button>';
+      } else if (pcpPodeAdmOp() && a.and && a.and.estado === 'fim') acoes += '<button class="btn-text" data-mp="op-concluir" data-id="' + id + '">Concluir</button>';
     }
     var turnosTxt = (o.turnos || []).length ? 'Turnos: ' + o.turnos.join(', ') : (li && phTurnos(li.id).length ? 'Todos os turnos da linha' : '');
     var rodou = opMinutosRodando(o);
@@ -15572,6 +15579,9 @@
   function pcpPodeEditarOp() { return !!session && ehEscritorio() && !ehLiderProducao() && !session.soInclui && !session.soVer && nivelDaAba('producao') === 'edita'; }
   function pcpPodeCriarOp() { return !!session && ehEscritorio() && !ehLiderProducao() && !session.soVer && nivelDaAba('producao') !== 'ver'; }
   function pcpPodeOperar() { return !!session && ehEscritorio() && !session.soVer && nivelDaAba('producao') !== 'ver'; }
+  // iniciar, pausar, retomar e concluir a OP: só o PCP (senha mestre ou "Configura o PCP"), pedido de 17/11/2026.
+  // Parada de máquina não muda a situação da OP.
+  function pcpPodeAdmOp() { return pcpPodeConfigurar(); }
   function pcpPodeEditarLinhas() { return !!session && session.role === 'admin' && !session.soInclui; }
   function pcpMover(o, dir) {
     if (!pcpPodeEditarOp()) return;
@@ -15590,13 +15600,13 @@
     return { op: 'set', col: MP_COL.eventos, id: null, data: { opId: o.id, numero: o.numero || '', linha: opLinha(o).id, tipo: tipo, motivo: motivo || '', em: new Date().toISOString(), por: { nome: quemSessao(), ref: minhaRef() } } };
   }
   function pcpEvento(o, tipo, motivo) {
-    if (!pcpPodeOperar()) return Promise.resolve();
+    if (!pcpPodeAdmOp()) { showToast('Iniciar, pausar, retomar e concluir a OP é do PCP.'); return Promise.resolve(); }
     return mpGravar([pcpEventoOp(o, tipo, motivo)]).then(function() {
       showToast('OP nº ' + o.numero + (tipo === 'pausar' ? ' pausada' + (motivo ? ' (' + motivo + ')' : '') : tipo === 'retomar' ? ' retomada' : ' iniciada') + '.');
     }).catch(function(e) { console.error('evento OP', e); showToast('Não foi possível gravar agora.'); });
   }
   function pcpIniciar(o, trocar) {
-    if (!pcpPodeOperar()) return;
+    if (!pcpPodeAdmOp()) { showToast('Iniciar, pausar, retomar e concluir a OP é do PCP.'); return; }
     var lid = opLinha(o).id;
     var outra = lid ? pcpFilaLinha(lid).find(function(x) { return x.id !== o.id && opExec(x).estado === 'rodando'; }) : null;
     if (outra && !trocar) { opUi.trocar = { nova: o.id, atual: outra.id }; renderProducao(); return; }
@@ -15888,7 +15898,8 @@
 
   // ---------- calendário da linha ----------
   var PCP_QUEM_CONFIG = 'a senha mestre ou quem tem “Configura o PCP” (Cadastros › Equipe)';
-  var PCP_TURNOS_INFORMADOS = [{ nome: 'DESC 1', inicio: '05:20', fim: '13:15' }, { nome: 'DESC 2', inicio: '12:10', fim: '21:00' }, { nome: 'DESC 3', inicio: '20:55', fim: '05:25' }];
+  // turnos de referência do pedido de 17/11/2026 (a confirmar no cadastro de cada linha; o app não preenche sozinho)
+  var PCP_TURNOS_INFORMADOS = [{ nome: 'DESC 1', inicio: '05:15', fim: '13:15' }, { nome: 'DESC 2', inicio: '12:15', fim: '21:00' }, { nome: 'DESC 3', inicio: '20:55', fim: '05:20' }];
   function pcpPodeConfigurar() {
     if (!session || session.soInclui || session.soVer || !ehEscritorio()) return false;
     if (session.role === 'admin') return true;
@@ -16509,7 +16520,7 @@
   var PCP_INS_ST = { ok: ['pago', '✓ Insumos ok'], falta: ['falta', '⚠ Falta insumo'], 'sem-ficha': ['falta', '✕ Sem ficha técnica'], 'sem-contagem': ['confirmar', '? Insumo sem contagem'], antiga: ['confirmar', '⏱ Contagem antiga'], comprado: ['', '🛒 Comprado pronto'] };
   var PCP_FIN = { cargas: '🚚 Cargas', estoque: '📦 Reposição de estoque', ambas: '🚚📦 Cargas e estoque' };
   var PCP_BLOCOS = { manutencao: { nome: 'Manutenção', ico: '🔧' }, indisponivel: { nome: 'Linha indisponível', ico: '⛔' } };
-  var PCP_SITS = [['', 'Todas as situações'], ['planejada', 'Planejadas'], ['producao', 'Em produção'], ['risco', 'Em risco de atraso'], ['insumos', 'Com pendência de insumos'], ['semprev', 'Sem previsão'], ['rascunho', 'Alteradas no rascunho']];
+  var PCP_SITS = [['', 'Todas as situações'], ['planejada', 'Planejadas'], ['execucao', 'Em execução'], ['pausada', 'Pausadas'], ['concluida', 'Concluídas no período'], ['risco', 'Em risco de atraso'], ['insumos', 'Com pendência de insumos'], ['semprev', 'Sem previsão'], ['rascunho', 'Alteradas no rascunho']];
   function pcpNumOp(o) { return o._nova || !o.numero ? 'OP nova' : 'OP nº ' + o.numero; }
   function pcpSubAtual() { return pcpUi.sub === 'linhas' ? 'linhas' : pcpUi.sub === 'hist' ? 'hist' : 'prog'; }
   function renderProducao() {
@@ -16544,31 +16555,45 @@
     (o.itens || []).forEach(function(it) { var p = findProduto(it.produtoId); var mk = p ? phMarcaDoProduto(p) : ''; if (mk && l.indexOf(mk) < 0) l.push(mk); });
     return l;
   }
-  function pcpPassaFiltro(o, plano, ins) {
+  function pcpPassaFiltro(o, plano, ins, semSit) {
     var r = plano.porId[o.id] || {}, x = ins.porOp[o.id] || {}, f = pcpUi.fSit;
     if (pcpUi.fLinha && (r.linha || '_sem') !== pcpUi.fLinha) return false;
     if (pcpUi.fMarca && pcpMarcasOp(o).indexOf(pcpUi.fMarca) < 0) return false;
-    if (!f) return true;
+    if (!f || semSit) return true;
     if (f === 'rascunho') return !!(o._nova || o._rasc);
-    if (f === 'producao') return opEmProducao(o);
+    if (f === 'execucao' || f === 'producao') return opExec(o).estado === 'rodando';
+    if (f === 'pausada') return opExec(o).estado === 'pausada';
     if (f === 'planejada') return !opEmProducao(o);
+    if (f === 'concluida') return false;
     if (f === 'risco') return pcpEmRisco(r);
     if (f === 'insumos') return !!x.st && x.st !== 'ok' && x.st !== 'comprado';
     if (f === 'semprev') return r.inicio == null;
     return true;
   }
-  // ocorrências: cada OP aparece em cada dia operacional em que roda (ou no dia programado, sem previsão)
-  function pcpOcorrencias(plano, ins, per) {
+  // ocorrências: cada OP aparece em cada dia operacional em que roda (ou no dia programado, sem previsão). O primeiro
+  // dia visível tem o cartão completo; os outros só a continuidade, sem repetir a quantidade (17/11/2026). A OP já
+  // em execução também aparece nos dias desde o início real (iniciada antes do período e ainda em execução).
+  function pcpOcorrencias(plano, ins, per, semSit) {
     var occ = {}, ops = {}, hoje = plano.hoje;
     plano.ordens.forEach(function(o) {
-      if (!pcpPassaFiltro(o, plano, ins)) return;
-      var r = plano.porId[o.id] || {}, lid = r.linha || '_sem';
+      if (!pcpPassaFiltro(o, plano, ins, semSit)) return;
+      var r = plano.porId[o.id] || {}, lid = r.linha || '_sem', ex = opExec(o);
       var dias = r.dias && r.dias.length ? r.dias : [o.data && o.data > hoje ? o.data : hoje];
-      dias.forEach(function(d, i) {
+      var reais = [];
+      if ((ex.estado === 'rodando' || ex.estado === 'pausada') && ex.inicioEm && r.linha) {
+        var t0 = Date.parse(ex.inicioEm);
+        if (!isNaN(t0)) for (var d0 = pcpDiaOper(lid, t0), n = 0; d0 < dias[0] && n < 62; d0 = pcpAddDias(d0, 1), n++) reais.push(d0);
+      }
+      var todos = reais.concat(dias), vis = 0;
+      todos.forEach(function(d, i) {
         if (d < per.de || d > per.ate) return;
-        var x = { o: o, r: r, dia: d, primeiro: i === 0, ultimo: i === dias.length - 1 };
-        if (r.seg && r.seg[d]) { x.ini = r.seg[d].ini; x.fim = r.seg[d].fim; }
-        else if (r.inicio != null && r.linha) { var c = pcpCorteHm(lid), di = pcpMs(d, c), df = pcpMs(pcpAddDias(d, 1), c); x.ini = Math.max(r.inicio, di); x.fim = Math.min(r.fim, df); }
+        var real = i < reais.length;
+        var x = { o: o, r: r, dia: d, primeiro: i === 0, ultimo: i === todos.length - 1, cont: vis > 0, real: real, desde: todos[0] };
+        if (!real) {
+          if (r.seg && r.seg[d]) { x.ini = r.seg[d].ini; x.fim = r.seg[d].fim; }
+          else if (r.inicio != null && r.linha) { var c = pcpCorteHm(lid), di = pcpMs(d, c), df = pcpMs(pcpAddDias(d, 1), c); x.ini = Math.max(r.inicio, di); x.fim = Math.min(r.fim, df); }
+        }
+        vis++;
         var dl = occ[lid] = occ[lid] || {};
         (dl[d] = dl[d] || []).push(x);
         ops[o.id] = true;
@@ -16576,7 +16601,8 @@
     });
     Object.keys(occ).forEach(function(lid) {
       Object.keys(occ[lid]).forEach(function(d) {
-        occ[lid][d].sort(function(a, b) { return (a.ini != null ? a.ini : 9e15) - (b.ini != null ? b.ini : 9e15) || (a.r.pos || 0) - (b.r.pos || 0); });
+        var k = function(x) { return x.ini != null ? x.ini : x.real ? -1 : 9e15; };
+        occ[lid][d].sort(function(a, b) { return k(a) - k(b) || (a.r.pos || 0) - (b.r.pos || 0); });
       });
     });
     return { occ: occ, ops: ops };
@@ -16594,12 +16620,13 @@
     if (plano.ordens.some(function(o) { return !(plano.porId[o.id] || {}).linha; })) ls.push({ id: '_sem', nome: 'Sem linha', l: null });
     return pcpUi.fLinha ? ls.filter(function(x) { return x.id === pcpUi.fLinha; }) : ls;
   }
+  // situação administrativa da OP (definida pelo PCP), diferente do estado das máquinas
   function pcpEstadoChip(o) {
     if (o._nova) return '<span class="pcp-chip nova">✚ Nova (rascunho)</span>';
     var e = opExec(o);
-    if (e.estado === 'rodando') return '<span class="pcp-chip rodando">▶ Em produção</span>';
-    if (e.estado === 'pausada') return '<span class="pcp-chip pausada">⏸ Pausada' + (e.motivo ? ': ' + escapeHtml(e.motivo) : '') + '</span>';
-    return '<span class="pcp-chip">Planejada</span>';
+    if (e.estado === 'rodando') return '<span class="pcp-chip rodando" title="Situação da OP, definida pelo PCP">▶ Em execução</span>';
+    if (e.estado === 'pausada') return '<span class="pcp-chip pausada" title="Situação da OP, definida pelo PCP">⏸ Pausada' + (e.motivo ? ': ' + escapeHtml(e.motivo) : '') + '</span>';
+    return '<span class="pcp-chip" title="Situação da OP">Planejada</span>';
   }
   function pcpInsChip(x) {
     if (!x || !x.st) return '';
@@ -16626,32 +16653,80 @@
     if (!mesma) return (r.itens || []).map(function(it) { return it.nome + ': ' + fmtInt(Math.round(Math.min(it.feito, it.plan))) + '/' + fmtInt(it.plan); }).join(' · ');
     return 'Prog. ' + fmtInt(Math.round(r.plan || 0)) + ' · Prod. ' + fmtInt(Math.round(r.feito || 0)) + ' · Saldo ' + fmtInt(Math.round(r.falta || 0)) + ' ' + u;
   }
-  function pcpHorarioTxt(x) {
-    var r = x.r;
+  // saldo a produzir em destaque, com paletes quando o produto tem a paletização cadastrada
+  function pcpSaldoHtml(r) {
+    return (r.itens || []).map(function(it) {
+      var p = it.p, sd = Math.max(0, it.falta || 0), pal = p && sd > 0 ? emPaletes(p, sd) : null;
+      return '<div class="pcp-prod"><b>' + escapeHtml(p ? phNomeSemMarca(p) : it.nome) + '</b>' + (p ? ' <span class="pcp-marca">' + escapeHtml(phMarcaDoProduto(p)) + '</span>' : '') +
+        '<span class="pcp-qtd">' + (sd > 0 ? 'Saldo <b>' + escapeHtml(qtdUnidade(sd, it.unidade)) + '</b>' + (pal !== null ? ' · ' + escapeHtml(fmtPal(pal)) + ' pal' : '') : 'Quantidade já apontada') + '</span></div>';
+    }).join('');
+  }
+  // previsão de início e término da OP inteira (não inventa duração: sem previsão, diz o que falta)
+  function pcpPrevTxt(x) {
+    var r = x.r, ex = opExec(x.o);
     if (r.inicio == null) return '<span class="pcp-semprev">Sem previsão: ' + escapeHtml(pcpMotivoTxt(r)) + '</span>';
     if (r.pronto) return 'Quantidade já apontada · aguarda a conclusão';
-    var ini = x.ini != null ? x.ini : r.inicio, fim = x.fim != null ? x.fim : r.fim;
-    return (x.primeiro ? '' : '↪ ') + escapeHtml(pcpHoraTxt(ini)) + ' → ' + escapeHtml(pcpHoraTxt(fim)) + (x.ultimo ? '' : ' ↩') +
-      (!x.primeiro ? ' <small>(continua de antes)</small>' : !x.ultimo ? ' <small>(termina ' + escapeHtml(pcpQuandoTxt(r.fim)) + ')</small>' : '');
+    var t0 = ex.inicioEm ? Date.parse(ex.inicioEm) : NaN, emEx = (ex.estado === 'rodando' || ex.estado === 'pausada') && !isNaN(t0);
+    return escapeHtml(emEx ? 'Começou ' + pcpQuandoTxt(t0) : 'Início ' + pcpQuandoTxt(r.inicio)) + ' · término ' + escapeHtml(pcpQuandoTxt(r.fim)) +
+      (ex.estado === 'pausada' ? ' <small>(se retomar agora)</small>' : '') + (!emEx && r.dias && r.dias.length > 1 ? ' <small>· ' + r.dias.length + ' dias</small>' : '');
+  }
+  // dia de continuação: só a OP, o produto e o horário do dia (a quantidade fica no primeiro cartão)
+  function pcpContHtml(x, cls) {
+    var o = x.o, r = x.r, ex = opExec(o);
+    var nomes = (r.itens || []).map(function(it) { return it.p ? phNomeSemMarca(it.p) + ' · ' + phMarcaDoProduto(it.p) : it.nome; }).join(', ');
+    var hora = x.real ? (ex.estado === 'pausada' ? '⏸ pausada' : '▶ em execução') : x.ini != null ? '🕒 ' + escapeHtml(pcpHoraTxt(x.ini)) + ' → ' + escapeHtml(pcpHoraTxt(x.fim)) + (x.ultimo ? ' · termina' : '') : '';
+    return '<div class="' + cls + ' is-cont" data-op="' + escapeHtml(o.id) + '" tabindex="0" role="button" aria-label="' + escapeHtml(pcpNumOp(o) + ' continua: abrir os detalhes') + '">' +
+      '<div class="pcp-card-t"><b>↪ ' + escapeHtml(pcpNumOp(o)) + '</b></div>' +
+      '<div class="pcp-cont-p"><span class="pcp-cont-tx">continua</span> ' + escapeHtml(nomes) + '</div>' + (hora ? '<div class="pcp-hora">' + hora + '</div>' : '') + '</div>';
   }
   function pcpCardHtml(x, ins, completo) {
     var o = x.o, r = x.r, st = ins.porOp[o.id] || {}, ex = opExec(o), pode = pcpPodeEditarOp() && pcpVistaAtual() === 'rascunho';
-    var mov = pode && ex.estado === 'planejada' && !!r.linha, risco = pcpEmRisco(r);
+    var mov = pode && ex.estado === 'planejada' && !!r.linha, risco = pcpEmRisco(r), u = urgenciaOp(o);
     var cls = 'pcp-card' + (o._nova ? ' is-nova' : '') + (o._rasc ? ' is-rasc' : '') + (ex.estado === 'rodando' ? ' is-rodando' : ex.estado === 'pausada' ? ' is-pausada' : '') +
       (risco ? ' is-risco' : '') + (st.st === 'falta' || st.st === 'sem-ficha' ? ' is-falta' : '') + (completo ? ' completo' : '');
-    var setup = x.primeiro && r.setupMin ? '<div class="pcp-setup">⚙ Setup ' + r.setupMin + ' min' + (r.setupIni != null ? ' · ' + escapeHtml(pcpHoraTxt(r.setupIni)) + '–' + escapeHtml(pcpHoraTxt(r.setupFim)) : '') + '</div>' : '';
+    if (x.cont && !completo) return pcpContHtml(x, cls);
+    var setup = x.primeiro && !x.real && r.setupMin ? '<div class="pcp-setup">⚙ Setup ' + r.setupMin + ' min' + (r.setupIni != null ? ' · ' + escapeHtml(pcpHoraTxt(r.setupIni)) + '–' + escapeHtml(pcpHoraTxt(r.setupFim)) : '') + '</div>' : '';
+    var pct = r.plan > 0 ? Math.min(100, Math.round(r.feito / r.plan * 100)) : 0;
     return setup + '<div class="' + cls + '" data-op="' + escapeHtml(o.id) + '" tabindex="0" role="button"' + (mov ? ' draggable="true"' : '') +
       ' aria-label="' + escapeHtml(pcpNumOp(o) + ': abrir os detalhes') + '">' +
       '<div class="pcp-card-t"><b>' + escapeHtml(pcpNumOp(o)) + '</b>' + (r.pos != null && r.linha ? '<span class="pcp-pos" title="posição na sequência da linha">' + (r.pos + 1) + 'º</span>' : '') +
         (mov ? '<span class="pcp-arrasta" aria-hidden="true" title="arraste para mudar o dia ou a sequência">⠿</span>' : '') + '</div>' +
-      pcpProdutosHtml(r) +
-      '<div class="pcp-hora">🕒 ' + pcpHorarioTxt(x) + '</div>' +
-      '<div class="pcp-sub">' + (o.dataLimite ? 'Prazo ' + escapeHtml(pcpDataCurta(o.dataLimite)) : 'Sem prazo') + ' · ' + escapeHtml(pcpProgTxt(r)) + '</div>' +
-      (r.feito > 0 && r.plan > 0 ? '<div class="pcp-prog' + (r.and && r.and.estado ? ' op-' + r.and.estado : '') + '" role="progressbar" aria-label="Produzido" aria-valuenow="' + Math.min(100, Math.round(r.feito / r.plan * 100)) + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + Math.min(100, Math.round(r.feito / r.plan * 100)) + '%"></i></div>' : '') +
+      pcpSaldoHtml(r) +
+      '<div class="pcp-hora">🕒 ' + pcpPrevTxt(x) + '</div>' +
+      (!x.primeiro && !completo ? '<div class="pcp-sub">↪ continua de ' + escapeHtml(pcpDataCurta(x.desde)) + '</div>' : '') +
+      (r.feito > 0 && r.plan > 0 ? '<div class="pcp-prog' + (r.and && r.and.estado ? ' op-' + r.and.estado : '') + '" role="progressbar" aria-label="Produzido" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + pct + '%"></i></div>' : '') +
       '<div class="pcp-chips">' + pcpEstadoChip(o) + (o._rasc ? '<span class="pcp-chip rasc">✎ Alterada no rascunho</span>' : '') + (!o.linha && r.linha ? '<span class="pcp-chip confirmar" title="OP de antes da escolha da linha: confirme em Editar">Linha pelo produto: confirme</span>' : '') + pcpInsChip(st) + pcpRiscoChips(o, r) +
-        '<span class="pcp-chip fin">' + escapeHtml(PCP_FIN[o.finalidade] || 'Finalidade não informada') + '</span>' + (urgenciaOp(o).v !== 3 ? '<span class="pcp-chip ' + urgenciaOp(o).cls + '">' + urgenciaOp(o).ico + escapeHtml(urgenciaOp(o).nome) + '</span>' : '') + '</div>' +
-      (completo && o.obs ? '<div class="pcp-sub">Obs.: ' + escapeHtml(o.obs) + '</div>' : '') +
-      (completo && (o.turnos || []).length ? '<div class="pcp-sub">Turnos: ' + escapeHtml(o.turnos.join(', ')) + '</div>' : '') + '</div>';
+        (u.v < 3 ? '<span class="pcp-chip ' + u.cls + '">' + u.ico + escapeHtml(u.nome) + '</span>' : '') + '</div></div>';
+  }
+  // detalhe da quantidade (na ficha da OP): programado, produzido e saldo de cada produto
+  function pcpQtdDetHtml(r) {
+    return (r.itens || []).map(function(it) {
+      var pal = it.p ? emPaletes(it.p, it.plan) : null;
+      return '<div>' + ((r.itens || []).length > 1 ? '<b>' + escapeHtml(it.p ? phNomeSemMarca(it.p) : it.nome) + ':</b> ' : '') + 'programado ' + escapeHtml(qtdUnidade(it.plan, it.unidade)) + (pal !== null ? ' (' + escapeHtml(fmtPal(pal)) + ' pal)' : '') +
+        ' · produzido ' + escapeHtml(fmtInt(Math.round(Math.min(it.feito, it.plan)))) + ' · saldo <b>' + escapeHtml(fmtInt(Math.round(Math.max(0, it.falta)))) + '</b></div>';
+    }).join('') || '—';
+  }
+  // OPs concluídas no período (dia da produção)
+  function pcpConcluidasPeriodo(per) {
+    return mp.ordens.filter(function(o) {
+      if (o.status !== 'concluida') return false;
+      var d = dataProducaoOp(o);
+      if (!d || d < per.de || d > per.ate) return false;
+      var lid = o.linha || opLinha(o).id || '_sem';
+      if (pcpUi.fLinha && lid !== pcpUi.fLinha) return false;
+      if (pcpUi.fMarca && pcpMarcasOp(o).indexOf(pcpUi.fMarca) < 0) return false;
+      return true;
+    }).sort(function(a, b) { return String(dataProducaoOp(b)).localeCompare(String(dataProducaoOp(a))); });
+  }
+  function pcpConcluidasHtml(per) {
+    var l = pcpConcluidasPeriodo(per);
+    if (!l.length) return '<p class="empty-state">Nenhuma OP concluída no período com esses filtros.</p>';
+    return '<div class="pcp-tab-wrap"><table class="resumo-table pcp-tabela"><thead><tr><th scope="col">Concluída</th><th scope="col">Linha</th><th scope="col">OP</th><th scope="col">Programado</th><th scope="col">Produzido</th><th scope="col">Por</th></tr></thead><tbody>' +
+      l.map(function(o) {
+        var por = o.concluidoPor && (o.concluidoPor.nome || o.concluidoPor);
+        return '<tr class="pcp-tr" data-op="' + escapeHtml(o.id) + '" tabindex="0"><td>' + escapeHtml(formatDateBR(dataProducaoOp(o))) + '</td><td>' + escapeHtml(phLinhaNome(o.linha || opLinha(o).id) || '—') + '</td><td><b>' + escapeHtml('OP nº ' + (o.numero || '—')) + '</b></td>' +
+          '<td>' + escapeHtml(resumoItensOp(o.itens || [])) + '</td><td>' + escapeHtml(Array.isArray(o.produzido) && o.produzido.length ? resumoItensOp(o.produzido) : '—') + '</td><td>' + escapeHtml(por || '—') + '</td></tr>';
+      }).join('') + '</tbody></table></div>';
   }
   function pcpBlocoHtml(b) {
     var t = PCP_BLOCOS[b.bloco] || { nome: 'Parada', ico: '⛔' };
@@ -16697,13 +16772,19 @@
       (pcpPodeEditarOp() ? '<button type="button" class="btn btn-secondary btn-sm" data-pcpa="descartar">Descartar</button><button type="button" class="btn btn-primary btn-sm" data-pcpa="confirmar">Confirmar programação</button>'
         : '<span class="field-hint">Quem confirma: quem edita as OPs no PCP.</span>') + '</span></div>';
   }
-  function pcpKpisHtml(plano, ins, ocor) {
-    var ids = Object.keys(ocor.ops), ops = plano.ordens.filter(function(o) { return ids.indexOf(o.id) >= 0; });
-    var emProd = plano.ordens.filter(function(o) { return opEmProducao(o) && pcpPassaFiltro(o, plano, ins); }).length;
+  // contadores: planejadas, em execução, pausadas e concluídas separadas (a pausada não conta como "em execução")
+  function pcpKpisHtml(plano, ins, ocorTodas, per) {
+    var ids = Object.keys(ocorTodas.ops), ops = plano.ordens.filter(function(o) { return ids.indexOf(o.id) >= 0; });
+    var base = function(o) { return pcpPassaFiltro(o, plano, ins, true); };
+    var planejadas = ops.filter(function(o) { return !opEmProducao(o); }).length;
+    var exec = plano.ordens.filter(function(o) { return opExec(o).estado === 'rodando' && base(o); }).length;
+    var paus = plano.ordens.filter(function(o) { return opExec(o).estado === 'pausada' && base(o); }).length;
+    var concl = pcpConcluidasPeriodo(per).length;
     var risco = ops.filter(function(o) { return pcpEmRisco(plano.porId[o.id]); }).length;
     var insP = ops.filter(function(o) { var s = (ins.porOp[o.id] || {}).st; return s && s !== 'ok' && s !== 'comprado'; }).length;
-    var k = function(f, v, t, alerta) { var on = pcpUi.fSit === f; return '<button type="button" class="pcp-kpi' + (alerta && v ? ' alerta' : '') + (on ? ' on' : '') + '" data-pcpa="kpi" data-f="' + f + '" aria-pressed="' + on + '"><b>' + v + '</b><span>' + t + '</span></button>'; };
-    return '<div class="pcp-kpis">' + k('', ops.length, ops.length === 1 ? 'OP programada no período' : 'OPs programadas no período') + k('producao', emProd, 'em produção agora') +
+    var k = function(f, v, t, alerta) { var on = pcpUi.fSit === f || (f === 'execucao' && pcpUi.fSit === 'producao'); return '<button type="button" class="pcp-kpi' + (alerta && v ? ' alerta' : '') + (on ? ' on' : '') + '" data-pcpa="kpi" data-f="' + f + '" aria-pressed="' + on + '"><b>' + v + '</b><span>' + t + '</span></button>'; };
+    return '<div class="pcp-kpis">' + k('planejada', planejadas, planejadas === 1 ? 'planejada no período' : 'planejadas no período') + k('execucao', exec, 'em execução agora') +
+      k('pausada', paus, paus === 1 ? 'pausada' : 'pausadas', true) + k('concluida', concl, concl === 1 ? 'concluída no período' : 'concluídas no período') +
       k('risco', risco, 'em risco de atraso', true) + k('insumos', insP, 'com pendência de insumos', true) + '</div>';
   }
   function pcpAlertasLista(plano, ins) {
@@ -16774,12 +16855,14 @@
   }
   function renderPcpProg() {
     var vista = pcpVistaAtual(), plano = pcpPlanoM(vista), ins = pcpInsumosM(vista), per = pcpPeriodo(), ocor = pcpOcorrencias(plano, ins, per);
+    var ocorTodas = pcpUi.fSit ? pcpOcorrencias(plano, ins, per, true) : ocor;
     document.getElementById('pcp-barra').innerHTML = pcpBarraHtml(per);
     document.getElementById('pcp-rasc').innerHTML = pcpRascHtml();
-    document.getElementById('pcp-kpis').innerHTML = pcpKpisHtml(plano, ins, ocor);
+    document.getElementById('pcp-kpis').innerHTML = pcpKpisHtml(plano, ins, ocorTodas, per);
     document.getElementById('pcp-alertas').innerHTML = pcpAlertasHtml(pcpAlertasLista(plano, ins));
     var corpo = document.getElementById('pcp-corpo');
     if (!pcpLinhasOp().length) { corpo.innerHTML = '<p class="empty-state">Nenhuma linha recebe OP. Cadastre em Linhas e turnos.</p>'; return; }
+    if (pcpUi.fSit === 'concluida') { corpo.innerHTML = pcpConcluidasHtml(per); return; }
     corpo.innerHTML = pcpUi.modo === 'tabela' ? pcpTabelaHtml(plano, ins, ocor, per) : pcpUi.vis === 'mes' ? pcpMesHtml(plano, ins, ocor, per) : pcpUi.vis === 'dia' ? pcpDiaHtml(plano, ins, ocor, per) : pcpSemanaHtml(plano, ins, ocor, per);
   }
   function pcpLinhaCabHtml(x) {
@@ -16832,16 +16915,17 @@
     var ids = Object.keys(ocor.ops), ops = plano.ordens.filter(function(o) { return ids.indexOf(o.id) >= 0; });
     ops.sort(function(a, b) { var ra = plano.porId[a.id] || {}, rb = plano.porId[b.id] || {}; return String(ra.linha || 'zz').localeCompare(String(rb.linha || 'zz')) || (ra.pos || 0) - (rb.pos || 0); });
     if (!ops.length) return '<p class="empty-state">Nenhuma OP no período com esses filtros.</p>';
-    return '<div class="pcp-tab-wrap"><table class="resumo-table pcp-tabela"><thead><tr><th scope="col">Linha</th><th scope="col">Seq.</th><th scope="col">OP</th><th scope="col">Produto · marca</th><th scope="col">Quantidade</th><th scope="col">Início previsto</th><th scope="col">Término previsto</th><th scope="col">Prazo</th><th scope="col">Prog. / Prod. / Saldo</th><th scope="col">Situação</th><th scope="col">Insumos</th><th scope="col">Finalidade</th></tr></thead><tbody>' +
+    return '<div class="pcp-tab-wrap"><table class="resumo-table pcp-tabela"><thead><tr><th scope="col">Linha</th><th scope="col">Seq.</th><th scope="col">OP</th><th scope="col">Produto · marca</th><th scope="col">Saldo a produzir</th><th scope="col">Início previsto</th><th scope="col">Término previsto</th><th scope="col">Situação e alertas</th></tr></thead><tbody>' +
       ops.map(function(o) {
-        var r = plano.porId[o.id] || {}, x = ins.porOp[o.id] || {};
+        var r = plano.porId[o.id] || {}, x = ins.porOp[o.id] || {}, ex = opExec(o), t0 = ex.inicioEm ? Date.parse(ex.inicioEm) : NaN;
+        var emEx = (ex.estado === 'rodando' || ex.estado === 'pausada') && !isNaN(t0);
         return '<tr class="pcp-tr" data-op="' + escapeHtml(o.id) + '" tabindex="0"><td>' + escapeHtml(r.linha ? phLinhaNome(r.linha) : 'Sem linha') + '</td><td>' + (r.linha ? (r.pos + 1) + 'º' : '—') + '</td><td><b>' + escapeHtml(pcpNumOp(o)) + '</b>' + (o._rasc ? ' ✎' : '') + '</td>' +
           '<td>' + (r.itens || []).map(function(it) { return escapeHtml((it.p ? phNomeSemMarca(it.p) + ' · ' + phMarcaDoProduto(it.p) : it.nome)); }).join('<br>') + '</td>' +
-          '<td>' + (r.itens || []).map(function(it) { var pal = it.p ? emPaletes(it.p, it.plan) : null; return escapeHtml(qtdUnidade(it.plan, it.unidade) + (pal !== null ? ' (' + fmtPal(pal) + ' pal)' : '')); }).join('<br>') + '</td>' +
-          '<td>' + (r.inicio != null ? escapeHtml(pcpQuandoTxt(r.inicio)) : '<span class="pcp-semprev">' + escapeHtml(pcpMotivoTxt(r)) + '</span>') + (r.setupMin ? '<span class="est-sub">setup ' + r.setupMin + ' min</span>' : '') + '</td>' +
-          '<td>' + (r.fim != null ? escapeHtml(pcpQuandoTxt(r.fim)) : '—') + '</td><td>' + (o.dataLimite ? escapeHtml(pcpDataCurta(o.dataLimite)) : '—') + '</td>' +
-          '<td>' + escapeHtml(pcpProgTxt(r)) + '</td><td>' + pcpEstadoChip(o) + pcpRiscoChips(o, r) + '</td><td>' + pcpInsChip(x) + '</td><td>' + escapeHtml(PCP_FIN[o.finalidade] || '—') + '</td></tr>';
-      }).join('') + '</tbody></table></div>';
+          '<td>' + (r.itens || []).map(function(it) { var sd = Math.max(0, it.falta || 0), pal = it.p && sd > 0 ? emPaletes(it.p, sd) : null; return sd > 0 ? '<b>' + escapeHtml(qtdUnidade(sd, it.unidade)) + '</b>' + (pal !== null ? ' <span class="est-sub">' + escapeHtml(fmtPal(pal)) + ' pal</span>' : '') : 'apontado'; }).join('<br>') + '</td>' +
+          '<td>' + (emEx ? escapeHtml('começou ' + pcpQuandoTxt(t0)) : r.inicio != null ? escapeHtml(pcpQuandoTxt(r.inicio)) : '<span class="pcp-semprev">' + escapeHtml(pcpMotivoTxt(r)) + '</span>') + (r.setupMin && !emEx ? '<span class="est-sub">setup ' + r.setupMin + ' min</span>' : '') + '</td>' +
+          '<td>' + (r.fim != null && !r.pronto ? escapeHtml(pcpQuandoTxt(r.fim)) + (r.dias && r.dias.length > 1 ? '<span class="est-sub">' + r.dias.length + ' dias</span>' : '') : '—') + '</td>' +
+          '<td>' + pcpEstadoChip(o) + pcpRiscoChips(o, r) + pcpInsChip(x) + '</td></tr>';
+      }).join('') + '</tbody></table></div><p class="field-hint">Toque na OP para ver a quantidade programada, o produzido, a finalidade e os detalhes.</p>';
   }
 
   // ---------- detalhe da OP ----------
@@ -16877,14 +16961,24 @@
       if (o._rasc) acoes += '<button type="button" class="btn-text" data-ger="pcp-desfazer">Desfazer as mudanças do rascunho</button>';
       if (!emExec && !(r.feito > 0)) acoes += '<button type="button" class="btn-text danger" data-ger="pcp-excluir">' + (o._nova ? 'Apagar do rascunho' : 'Tirar da programação') + '</button>';
     } else if (pcpPodeEditarOp() && vista !== 'rascunho') acoes += '<span class="field-hint">Para mudar, veja o rascunho.</span>';
-    if (base && pcpPodeConfirmar() && o.status === 'aberta') acoes += '<button type="button" class="btn-text" data-ger="pcp-concluir">Concluir</button>';
+    if (base && !base.rascunho && pcpPodeAdmOp() && o.status === 'aberta' && !o._nova) {
+      if (ex.estado === 'planejada') acoes += '<button type="button" class="btn btn-primary btn-sm" data-ger="pcp-iniciar">▶ Iniciar</button>';
+      else if (ex.estado === 'rodando') acoes += '<button type="button" class="btn btn-secondary btn-sm" data-ger="pcp-pausar">⏸ Pausar</button>';
+      else if (ex.estado === 'pausada') acoes += '<button type="button" class="btn btn-primary btn-sm" data-ger="pcp-retomar">▶ Retomar</button>';
+      acoes += '<button type="button" class="btn-text" data-ger="pcp-concluir">Concluir</button>';
+    }
     var hist = (base && base.historico || []).slice().reverse();
     var html = '<div class="pcp-det">' + pcpCardHtml({ o: o, r: r, primeiro: true, ultimo: true }, ins, true) + (r.and ? opAndamentoHtml(r.and) : '') +
-      (emExec ? '<p class="field-hint warn">🔒 A OP está em produção: não muda de linha, dia nem sequência; a quantidade não pode ficar abaixo do já apontado.</p>' : '') +
+      (emExec ? '<p class="field-hint warn">🔒 A OP já começou: não muda de linha, dia nem sequência; a quantidade não pode ficar abaixo do já apontado.</p>' : '') +
       '<dl class="pcp-dl">' +
         '<dt>Linha</dt><dd>' + escapeHtml(r.linha ? phLinhaNome(r.linha) + ' · ' + (r.pos + 1) + 'º na sequência' : 'sem linha') + '</dd>' +
+        '<dt>Quantidade</dt><dd>' + pcpQtdDetHtml(r) + '</dd>' +
+        '<dt>Situação da OP</dt><dd>' + escapeHtml(ex.estado === 'rodando' ? 'em execução' : ex.estado === 'pausada' ? 'pausada' + (ex.motivo ? ' (' + ex.motivo + ')' : '') : ex.estado === 'concluida' ? 'concluída' : 'planejada') + (ex.inicioEm ? escapeHtml(' · começou ' + formatDateTimeBR(ex.inicioEm)) : '') + '<span class="est-sub">definida pelo PCP; parada de máquina não muda a situação da OP</span></dd>' +
+        '<dt>Finalidade</dt><dd>' + escapeHtml(PCP_FIN[o.finalidade] || 'não informada') + '</dd>' +
+        '<dt>Urgência</dt><dd>' + escapeHtml(urgenciaOp(o).nome) + '</dd>' +
+        (o.obs ? '<dt>Instruções</dt><dd>' + escapeHtml(o.obs) + '</dd>' : '') +
         '<dt>Programada</dt><dd>' + escapeHtml(o.data ? 'a partir de ' + PCP_DIAS[pcpDow(o.data)].toLowerCase() + ' ' + formatDateBR(o.data) + (hmOk(o.hora) ? ' às ' + o.hora : '') : '—') + '</dd>' +
-        '<dt>Previsão</dt><dd>' + (r.inicio != null ? escapeHtml('começa ' + pcpQuandoTxt(r.inicio) + ' · termina ' + pcpQuandoTxt(r.fim)) + (r.horas ? ' (' + escapeHtml(fmtDuracao(Math.max(1, Math.round(r.horas * 60)))) + ' de produção' + (r.setupMin ? ' + ' + r.setupMin + ' min de setup' : '') + ')' : '') : '<span class="pcp-semprev">sem previsão: ' + escapeHtml(pcpMotivoTxt(r)) + '</span>') + '</dd>' +
+        '<dt>Previsão</dt><dd>' + (r.inicio != null ? escapeHtml((emExec ? '' : 'começa ' + pcpQuandoTxt(r.inicio) + ' · ') + 'termina ' + pcpQuandoTxt(r.fim)) + (r.horas ? ' (' + (emExec ? 'faltam ' : '') + escapeHtml(fmtDuracao(Math.max(1, Math.round(r.horas * 60)))) + ' de produção' + (r.setupMin ? ' + ' + r.setupMin + ' min de setup' : '') + (ex.estado === 'pausada' ? ', se retomar agora' : '') + ')' : '') : '<span class="pcp-semprev">sem previsão: ' + escapeHtml(pcpMotivoTxt(r)) + '</span>') + '</dd>' +
         (r.inicioAtrasado ? '<dt>Início</dt><dd class="alerta">atrasado: o início programado (' + escapeHtml(pcpQuandoTxt(r.progIni)) + ') já passou e a OP não começou</dd>' : r.comecaDepois ? '<dt>Início</dt><dd>começa depois do programado por causa da fila da linha</dd>' : '') +
         '<dt>Prazo</dt><dd>' + (o.dataLimite ? escapeHtml(formatDateBR(o.dataLimite)) + (r.prazoVencido ? ' · <b class="alerta">vencido</b>' : r.prazoRisco ? ' · <b class="alerta">termina depois do prazo</b>' : r.fim != null ? ' · no prazo' : '') : 'sem prazo') + '</dd>' +
         '<dt>Turnos</dt><dd>' + escapeHtml((o.turnos || []).length ? o.turnos.join(', ') : 'todos os turnos da linha') + '</dd>' +
@@ -16903,6 +16997,16 @@
         else if (a === 'pcp-desfazer') { gerFechar(); mpGravar([{ op: 'update', col: MP_COL.ordens, id: id, data: { rasc: null } }]).then(function() { showToast('Mudanças do rascunho desfeitas nesta OP.'); }); }
         else if (a === 'pcp-excluir') pcpExcluirOp(ef);
         else if (a === 'pcp-concluir' && base) { gerFechar(); abrirOpConcluir(base); }
+        else if (a === 'pcp-pausar' && base) { gerFechar(); abrirPausaOp(base); }
+        else if (a === 'pcp-retomar' && base) { gerFechar(); pcpEvento(base, 'retomar', ''); }
+        else if (a === 'pcp-iniciar' && base) {
+          var lidI = opLinha(base).id, outraI = lidI ? pcpFilaLinha(lidI).find(function(y) { return y.id !== base.id && opExec(y).estado === 'rodando'; }) : null;
+          gerFechar();
+          if (!outraI) { pcpIniciar(base, false); return; }
+          gerAbrir({ titulo: 'Iniciar a OP nº ' + base.numero, botao: 'Pausar e iniciar',
+            html: '<p class="hint">A OP nº ' + escapeHtml(String(outraI.numero || '')) + ' está em execução na ' + escapeHtml(phLinhaNome(lidI)) + '. Ela fica pausada (troca de OP) e esta começa agora.</p>',
+            salvar: function() { pcpIniciar(base, true); } });
+        }
       }
     });
   }
@@ -17123,11 +17227,43 @@
     if (pz.length) return pz.map(function(p) { return p.inicio + '–' + p.fim; }).join(', ');
     return Number(t.pausa) ? t.pausa + ' min' : '—';
   }
+  // horas disponíveis para produzir em cada dia desta semana (união dos turnos, menos pausas e exceções)
+  function pcpDispSemana(lid) {
+    var hoje = pcpHoje(), seg = pcpAddDias(hoje, -((pcpDow(hoje) + 6) % 7)), horas = {};
+    pcpJanelas(lid, pcpMs(seg, '00:00'), pcpMs(pcpAddDias(seg, 8), '00:00'), [], []).forEach(function(x) {
+      var d = x.dia || pcpDiaOper(lid, x.ini); horas[d] = (horas[d] || 0) + (x.fim - x.ini) * x.f / 3600000;
+    });
+    var grupos = [];
+    for (var i = 0; i < 7; i++) {
+      var d = pcpAddDias(seg, i), h = Math.round((horas[d] || 0) * 10) / 10, g = grupos[grupos.length - 1];
+      if (g && g.h === h) g.ate = d; else grupos.push({ de: d, ate: d, h: h });
+    }
+    return grupos.map(function(g) { return PCP_DIAS[pcpDow(g.de)].toLowerCase() + (g.ate !== g.de ? ' a ' + PCP_DIAS[pcpDow(g.ate)].toLowerCase() : '') + ': ' + (g.h ? g.h.toLocaleString('pt-BR') + ' h' : 'sem produção'); }).join(' · ');
+  }
+  // pendências de configuração de todas as linhas, num lugar só
+  function pcpPendenciasCfg() {
+    var plano = pcpPlanoM('confirmada'), out = [];
+    pcpLinhasOp().forEach(function(l) {
+      var p = pcpPendLinha(l).map(function(x) { return x.txt; }), semCap = [];
+      plano.ordens.forEach(function(o) { var r = plano.porId[o.id] || {}; if (r.linha === l.id && r.semCap) r.semCap.forEach(function(n) { if (semCap.indexOf(n) < 0) semCap.push(n); }); });
+      if (semCap.length && !pcpPendLinha(l).some(function(x) { return x.k === 'capacidade'; })) p.push('sem capacidade para ' + semCap.join(', '));
+      var semHora = phTurnosDet(l.id).filter(function(t) { return !turnoTemHorario(t); }).map(function(t) { return t.nome; });
+      if (semHora.length && phTurnosDet(l.id).some(turnoTemHorario)) p.push('turno sem horário: ' + semHora.join(', '));
+      if (p.length) out.push({ l: l, p: p });
+    });
+    return out;
+  }
   function renderPcpLinhas() {
     var box = document.getElementById('pcp-linhas');
     if (!box) return;
     var mestre = pcpPodeEditarLinhas(), cfg = pcpPodeConfigurar(), exc = phCfgLinhas().excecoes || [];
     var h = '<p class="tagline">Cada linha com os <b>produtos</b> que roda (a OP só oferece esses), a <b>capacidade de planejamento</b> (separada da meta de desempenho) e os <b>turnos</b> com horário, dias e pausas. É daqui que sai a previsão de horários da programação.</p>';
+    var pendCfg = pcpPendenciasCfg();
+    h += '<section class="drivers-admin pcp-pendcfg" aria-label="Pendências de configuração"><div class="section-head"><h2 class="section-title">Pendências de configuração</h2><span class="count-chip">' + (pendCfg.length || '') + '</span></div>' +
+      (pendCfg.length ? '<p class="hint">Sem isso o app não calcula a previsão dessas linhas (não inventa horário nem capacidade).</p>' + pendCfg.map(function(c) {
+        return '<div class="driver-row"><span class="driver-name">' + escapeHtml(c.l.nome) + '<span class="driver-sub alerta">' + escapeHtml(c.p.join(' · ')) + '</span></span>' +
+          (mestre || cfg ? '<button type="button" class="btn-text" data-mp="pl-editar" data-linha="' + escapeHtml(c.l.id) + '">Configurar</button>' : '') + '</div>';
+      }).join('') + (cfg ? '' : '<p class="field-hint">Quem resolve: ' + escapeHtml(PCP_QUEM_CONFIG) + '.</p>') : '<p class="pcp-ok">✓ Nenhuma pendência de configuração.</p>') + '</section>';
     if (!cfg) h += '<p class="field-hint">Quem configura horários, exceções e capacidade: ' + escapeHtml(PCP_QUEM_CONFIG) + '. Nome, produtos e máquinas das linhas: só a senha mestre.</p>';
     else if (!mestre) h += '<p class="field-hint">Você configura horários, dias, pausas, exceções e capacidade. Nome, unidade, produtos, máquinas e a lista de linhas: só a senha mestre.</p>';
     // exceções do calendário
@@ -17150,7 +17286,8 @@
           (capProd.length ? ' · por produto: ' + escapeHtml(capProd.map(function(pid) { var p = findProduto(pid); return (p ? phNomeSemMarca(p) : pid) + ' ' + fmtInt(l.capProd[pid]) + '/h'; }).join(', ')) : '') +
           (meta ? ' <span class="field-hint">(meta de desempenho: ' + escapeHtml(fmtInt(meta)) + '/h — só referência)</span>' : '') + '</div>' : '') +
         '<div class="frete-sub">Produtos: ' + escapeHtml((l.produtos || []).length ? l.produtos.join(', ') : 'todos') + (usa ? ' · ' + produtosDaLinhaOp(l.id).length + ' no catálogo' : '') + '</div>' +
-        '<table class="resumo-table pcp-turnos"><thead><tr><th scope="col">Turno</th><th scope="col">Horário</th><th scope="col">Dias</th><th scope="col">Pausas</th></tr></thead><tbody>' +
+        (usa && ts.some(turnoTemHorario) ? '<div class="frete-sub">Disponível para produzir nesta semana: <b>' + escapeHtml(pcpDispSemana(l.id)) + '</b> <span class="field-hint">(união dos turnos, sem contar a troca de turno duas vezes)</span></div>' : '') +
+        '<table class="resumo-table pcp-turnos"><caption class="field-hint" style="text-align:left">Escala das pessoas (turnos)</caption><thead><tr><th scope="col">Turno</th><th scope="col">Horário</th><th scope="col">Dias</th><th scope="col">Pausas</th></tr></thead><tbody>' +
         (ts.length ? ts.map(function(t) {
           var ok = turnoTemHorario(t);
           return '<tr><td>' + escapeHtml(t.nome) + '</td><td>' + (ok ? escapeHtml(t.inicio + ' às ' + t.fim) + (pcpMin(t.fim) <= pcpMin(t.inicio) ? ' <small>(termina no dia seguinte)</small>' : '') : '<span class="alerta">sem horário</span>') + '</td><td>' + escapeHtml(ok ? pcpDiasTxt(t.dias) : '—') + '</td><td>' + escapeHtml(pcpPausasTxt(t)) + '</td></tr>';
@@ -17203,6 +17340,7 @@
     }
     function html() {
       var semProd = !l.maquinas.some(function(m) { return m.producao; }), meta = l.metaId ? mtVelocidade(l.metaId) : 0, prods = l.id ? produtosDaLinhaOp(l.id) : [];
+      var outrasComTurno = phLinhas().filter(function(x) { return x.id !== l.id && phTurnosDet(x.id).some(turnoTemHorario); });
       var temDesc = PCP_TURNOS_INFORMADOS.some(function(x) { return l.turnos.some(function(t) { return normNome(t.nome) === normNome(x.nome); }); });
       return (mestre ? '<label>Nome da linha <span class="req">*</span><input type="text" id="lp-nome" maxlength="40" value="' + escapeHtml(l.nome || '') + '" autocomplete="off" /></label>' +
           '<label class="check-row"><input type="checkbox" id="lp-op"' + (linhaUsaOp(l) || !l.id ? ' checked' : '') + ' /> Recebe ordem de produção (aparece no PCP)</label>' : '<p class="hint"><b>' + escapeHtml(l.nome) + '</b> · unidade: ' + escapeHtml(linhaUnidade(l)) + '</p>') +
@@ -17216,7 +17354,7 @@
         (mestre ? '<label>Produtos que roda <span class="opt">(um por linha, sem a marca; vazio = todos)</span><textarea id="lp-prod" rows="4" maxlength="800">' + escapeHtml(l.produtos.join('\n')) + '</textarea></label>' +
           '<p class="field-hint">No catálogo: ' + escapeHtml(nomesBase.join(', ')) + '.</p>' : '') +
         '<fieldset class="ph-grupo"><legend>Turnos e jornada</legend>' +
-          (temDesc || !l.turnos.length ? '<p class="field-hint">Horários informados no pedido (confira antes de salvar): ' + escapeHtml(PCP_TURNOS_INFORMADOS.map(function(x) { return x.nome + ' ' + x.inicio + '–' + x.fim; }).join(' · ')) + '. <button type="button" class="btn-text" data-ger="lp-desc">Preencher com esses horários</button></p>' : '') +
+          (temDesc || !l.turnos.length ? '<p class="field-hint">Turnos de referência, a confirmar (confira antes de salvar): ' + escapeHtml(PCP_TURNOS_INFORMADOS.map(function(x) { return x.nome + ' ' + x.inicio + '–' + x.fim; }).join(' · ')) + '. <button type="button" class="btn-text" data-ger="lp-desc">Preencher com esses horários</button></p>' : '') +
           (l.turnos.length ? l.turnos.map(function(t, i) {
             var travado = !mestre && t.existia;
             return '<div class="lp-turno"><div class="row-2"><label>Turno <span class="req">*</span><input type="text" id="lp-tn-' + i + '" maxlength="40" value="' + escapeHtml(t.nome) + '" placeholder="Ex.: DESC 1" autocomplete="off"' + (travado ? ' disabled' : '') + ' /></label>' +
@@ -17229,7 +17367,8 @@
               }).join('') + '<button type="button" class="btn-text" data-ger="lp-pausa" data-i="' + i + '">+ pausa com horário</button>' + (t.pausas.length ? '<span class="field-hint"> (com horário, vale o horário e não os minutos)</span>' : '') + '</div>' +
               (travado ? '' : '<button type="button" class="btn-text danger" data-ger="lp-turno-x" data-i="' + i + '">Tirar o turno</button>') + '</div>';
           }).join('') : '<p class="field-hint">Nenhum turno.</p>') + '<button type="button" class="btn-text" data-ger="lp-turno">+ turno</button>' +
-          '<p class="field-hint">O turno que passa da meia-noite termina no dia seguinte (ex.: 20:55 às 05:25) e pertence ao dia em que começa. Turnos que se sobrepõem contam uma vez só na previsão.</p></fieldset>' +
+          (outrasComTurno.length ? '<div class="lp-copiar"><label>Copiar os turnos de<select id="lp-copiar-de"><option value="">escolha a linha</option>' + outrasComTurno.map(function(x) { return '<option value="' + escapeHtml(x.id) + '">' + escapeHtml(x.nome) + '</option>'; }).join('') + '</select></label><button type="button" class="btn-text" data-ger="lp-copiar">Copiar</button></div>' : '') +
+          '<p class="field-hint">O turno que passa da meia-noite termina no dia seguinte (ex.: 20:55 às 05:20) e pertence ao dia em que começa. Os turnos são a escala das pessoas; a linha fica disponível na união deles: a sobreposição na troca de turno conta uma vez só.</p></fieldset>' +
         (mestre ? '<fieldset class="ph-grupo"><legend>Máquinas com contador <span class="opt">(lançamento da hora)</span></legend>' + l.maquinas.map(function(m, j) {
             return '<div class="pl-maq"><input type="text" id="lp-m-' + j + '" maxlength="40" value="' + escapeHtml(m.nome || '') + '" placeholder="Nome da máquina" aria-label="Nome da máquina" autocomplete="off" />' +
               '<select id="lp-mu-' + j + '" aria-label="Unidade do contador">' + phOpcoes(PH_UNIDADES, m.unidade || 'garrafas') + '</select>' +
@@ -17250,6 +17389,15 @@
         else if (a === 'lp-pausa') l.turnos[Number(b.dataset.i)].pausas.push({ inicio: '', fim: '' });
         else if (a === 'lp-pausa-x') l.turnos[Number(b.dataset.i)].pausas.splice(Number(b.dataset.k), 1);
         else if (a === 'lp-usar-meta') { var mv = l.metaId ? mtVelocidade(l.metaId) : 0; if (mv) l.porHora = Math.round(mv); }
+        else if (a === 'lp-copiar') {
+          var de = phLinha(v('lp-copiar-de'));
+          if (!de) return;
+          phTurnosDet(de.id).filter(turnoTemHorario).forEach(function(x) {
+            var cp = { inicio: x.inicio, fim: x.fim, dias: (x.dias || []).map(Number), pausa: Number(x.pausa) || 0, pausas: (x.pausas || []).map(function(p) { return { inicio: p.inicio || '', fim: p.fim || '' }; }) };
+            var t = l.turnos.find(function(y) { return normNome(y.nome) === normNome(x.nome); });
+            if (t) Object.assign(t, cp); else l.turnos.push(Object.assign({ nome: x.nome }, cp));
+          });
+        }
         else if (a === 'lp-desc') {
           PCP_TURNOS_INFORMADOS.forEach(function(x) {
             var t = l.turnos.find(function(y) { return normNome(y.nome) === normNome(x.nome); });
@@ -17380,14 +17528,14 @@
     if (pcpUi.vis === 'mes') { st.tipo = 'intervalo'; }
     gerAbrir({
       titulo: 'Exportar a programação em PDF', botao: 'Gerar PDF',
-      html: '<p class="hint">Documento para imprimir, em A4 deitado: por dia e linha, com a sequência, as quantidades, os horários previstos, o setup, as pendências e o resumo por produto.</p>' +
+      html: '<p class="hint">Para a liderança, em A4 deitado: cada linha na ordem da sequência, com o saldo a produzir em destaque, a previsão, o setup, as instruções e os alertas. Entram as OPs que rodam no período, inclusive as que continuam de antes.</p>' +
         '<fieldset class="ph-grupo"><legend>Período</legend><div class="ph-chips">' + [['dia', 'Um dia'], ['semana', 'Uma semana'], ['intervalo', 'Intervalo']].map(function(x) { return '<label class="ph-chip"><input type="radio" name="pdf-tipo" value="' + x[0] + '"' + (st.tipo === x[0] ? ' checked' : '') + ' /> ' + x[1] + '</label>'; }).join('') + '</div>' +
           '<div class="row-2"><label>De<input type="date" id="pdf-de" value="' + escapeHtml(st.de) + '" /></label><label>Até <span class="opt">(no intervalo)</span><input type="date" id="pdf-ate" value="' + escapeHtml(st.ate) + '" /></label></div></fieldset>' +
         '<fieldset class="ph-grupo"><legend>Linhas</legend><div class="ph-chips">' + pcpLinhasOp().map(function(l) { return '<label class="ph-chip"><input type="checkbox" class="pdf-linha" value="' + escapeHtml(l.id) + '"' + (!pcpUi.fLinha || pcpUi.fLinha === l.id ? ' checked' : '') + ' /> ' + escapeHtml(l.nome) + '</label>'; }).join('') + '</div></fieldset>' +
         (temRasc ? '<fieldset class="ph-grupo"><legend>Versão</legend><div class="ph-chips"><label class="ph-chip"><input type="radio" name="pdf-vista" value="confirmada" checked /> Programação confirmada</label><label class="ph-chip"><input type="radio" name="pdf-vista" value="rascunho" /> Rascunho (marcado como não confirmado)</label></div></fieldset>' : '') +
-        '<label class="check-row"><input type="checkbox" id="pdf-ins" /> Incluir os detalhes dos insumos</label>' +
+        '<label class="check-row"><input type="checkbox" id="pdf-ins" /> Incluir o detalhe dos insumos de cada OP</label>' +
         (pcpUi.fMarca || pcpUi.fSit ? '<label class="check-row"><input type="checkbox" id="pdf-filtros" checked /> Só o que passa nos filtros da tela (' + escapeHtml([pcpUi.fMarca, (PCP_SITS.find(function(x) { return x[0] === pcpUi.fSit; }) || [])[1]].filter(Boolean).join(', ')) + ')</label>' : '') +
-        '<p class="field-hint">Cargas vinculadas às OPs entram na etapa 3 do PCP.</p>',
+        '',
       salvar: function() {
         var tp = (document.querySelector('#ger-form-body input[name="pdf-tipo"]:checked') || {}).value || 'semana', de = gerVal('pdf-de'), ate = gerVal('pdf-ate');
         if (!de) return gerErro('Informe o dia.');
@@ -17413,23 +17561,27 @@
     pcpUi.fLinha = guardar.fLinha; pcpUi.fMarca = guardar.fMarca; pcpUi.fSit = guardar.fSit;
     return { vista: vista, plano: plano, ins: ins, dias: dias, ocor: ocor };
   }
+  // data e hora absolutas (papel impresso: sem "hoje" e "amanhã")
+  function pcpPdfQuando(ms) { var iso = pcpIso(ms); return PCP_DIAS[pcpDow(iso)].toLowerCase() + ' ' + pcpDataCurta(iso) + ' ' + pcpHoraTxt(ms); }
+  // PDF para execução (17/11/2026): por linha e sequência, saldo em destaque, sem linhas vazias nem resumo repetido;
+  // uma OP nunca é dividida entre páginas
   function pcpGerarPdf(opt) {
     var dados = pcpPdfDados(opt), logo = pcpLogoPng(), v = pcpVersoes()[0];
     return carregarPdfLib().then(function(PDFLib) {
       return PDFLib.PDFDocument.create().then(function(pdf) {
         return Promise.all([pdf.embedFont(PDFLib.StandardFonts.Helvetica), pdf.embedFont(PDFLib.StandardFonts.HelveticaBold), logo ? pdf.embedPng(dataUrlToBytes(logo)) : Promise.resolve(null)]).then(function(r) {
           var F = r[0], FB = r[1], img = r[2], rgb = PDFLib.rgb, degrees = PDFLib.degrees;
-          var W = 841.89, H = 595.28, M = 28, AZUL = rgb(0, 20 / 255, 137 / 255), VERDE = rgb(67 / 255, 176 / 255, 42 / 255), CINZA = rgb(0.33, 0.35, 0.41), LINHA = rgb(0.82, 0.83, 0.86), TINTA = rgb(0.11, 0.11, 0.14);
+          var W = 841.89, H = 595.28, M = 26, AZUL = rgb(0, 20 / 255, 137 / 255), VERDE = rgb(67 / 255, 176 / 255, 42 / 255), CINZA = rgb(0.36, 0.38, 0.44), LINHA = rgb(0.82, 0.83, 0.86), TINTA = rgb(0.1, 0.1, 0.13), VERM = rgb(168 / 255, 65 / 255, 46 / 255);
           var rasc = dados.vista === 'rascunho', emitido = formatDateTimeBR(new Date().toISOString());
-          var versaoTxt = rasc ? 'RASCUNHO - não confirmado (sobre a versão ' + (v ? v.versao : 0) + ')' : (v ? 'Versão ' + v.versao + ' confirmada em ' + formatDateTimeBR(v.em) + ' por ' + ((v.por && v.por.nome) || '-') : 'Programação confirmada (sem versão registrada)');
-          var linhasNomes = opt.linhas.map(phLinhaNome).join(', ');
-          var COLS = [{ t: 'Seq.', w: 30 }, { t: 'OP', w: 48 }, { t: 'Produto · marca', w: 170 }, { t: 'Quantidade', w: 92 }, { t: 'Início previsto', w: 66 }, { t: 'Fim previsto', w: 66 }, { t: 'Setup', w: 40 }, { t: 'Prazo', w: 44 }, { t: 'Situação e pendências', w: 140 }, { t: 'Observações', w: 89.89 }];
-          var pagina = null, y = 0, paginas = [];
-          function txtW(s, f, sz) { return f.widthOfTextAtSize(s, sz); }
-          function quebrar(s, f, sz, w) {
-            s = pcpPdfTxt(s);
-            if (!s) return [''];
-            var pal = s.split(' '), out = [], atual = '';
+          var versaoTxt = rasc ? 'RASCUNHO, não confirmado (sobre a versão ' + (v ? v.versao : 0) + ')' : (v ? 'Versão ' + v.versao + ' confirmada em ' + formatDateTimeBR(v.em) : 'Programação confirmada');
+          var largura = W - 2 * M, fixas = 26 + 44 + 178 + 116 + 86 + 150 + 38 + 40;
+          var COLS = [{ t: 'Seq.', w: 26 }, { t: 'OP', w: 44 }, { t: 'Produto · marca', w: 178, f: 'b' }, { t: 'Saldo a produzir', w: 116, f: 'b' }, { t: 'Total · produzido', w: 86, f: 'p' }, { t: 'Previsão', w: 150 }, { t: 'Setup', w: 38 }, { t: 'Prazo', w: 40 }, { t: 'Instruções e alertas', w: largura - fixas }];
+          var SZ = 8.6, LH = 10.6, pagina = null, y = 0, paginas = [];
+          function txtW(t, f, sz) { return f.widthOfTextAtSize(t, sz); }
+          function quebrar(t, f, sz, w) {
+            t = pcpPdfTxt(t);
+            if (!t) return [''];
+            var pal = t.split(' '), out = [], atual = '';
             pal.forEach(function(p) {
               while (txtW(p, f, sz) > w && p.length > 1) { var k = p.length - 1; while (k > 1 && txtW(p.slice(0, k), f, sz) > w) k--; if (atual) { out.push(atual); atual = ''; } out.push(p.slice(0, k)); p = p.slice(k); }
               var tent = atual ? atual + ' ' + p : p;
@@ -17438,122 +17590,111 @@
             if (atual) out.push(atual);
             return out;
           }
-          function escrever(s, x, yy, f, sz, cor) { pagina.drawText(pcpPdfTxt(s), { x: x, y: yy, size: sz, font: f, color: cor || TINTA }); }
+          function escrever(t, x, yy, f, sz, cor) { pagina.drawText(pcpPdfTxt(t), { x: x, y: yy, size: sz, font: f, color: cor || TINTA }); }
           function novaPagina() {
             pagina = pdf.addPage([W, H]); paginas.push(pagina);
             if (rasc) pagina.drawText('RASCUNHO', { x: 180, y: 150, size: 110, font: FB, color: rgb(0.93, 0.93, 0.95), rotate: degrees(24) });
-            var topo = H - M;
-            if (img) { var hh = 34, ww = hh * img.width / img.height; pagina.drawImage(img, { x: M, y: topo - hh, width: ww, height: hh }); }
-            escrever('Programação de Produção', M + 82, topo - 14, FB, 16, AZUL);
-            escrever('Período: ' + formatDateBR(opt.de) + (opt.ate !== opt.de ? ' a ' + formatDateBR(opt.ate) : '') + '   ·   Linhas: ' + linhasNomes, M + 82, topo - 28, F, 8.5, CINZA);
-            escrever(versaoTxt, M + 82, topo - 39, rasc ? FB : F, 8.5, rasc ? rgb(168 / 255, 65 / 255, 46 / 255) : CINZA);
-            var dir = 'Emitido em ' + emitido + ' por ' + quemSessao();
-            escrever(dir, W - M - txtW(pcpPdfTxt(dir), F, 8), topo - 14, F, 8, CINZA);
-            pagina.drawRectangle({ x: M, y: topo - 47, width: W - 2 * M, height: 1.6, color: VERDE });
-            y = topo - 60;
+            var topo = H - M, xt = M;
+            if (img) { var hh = 24, ww = hh * img.width / img.height; pagina.drawImage(img, { x: M, y: topo - hh, width: ww, height: hh }); xt = M + ww + 10; }
+            escrever('Programação de Produção', xt, topo - 11, FB, 13, AZUL);
+            var per = formatDateBR(opt.de) + (opt.ate !== opt.de ? ' a ' + formatDateBR(opt.ate) : '');
+            escrever(per + '   ·   ' + versaoTxt, xt, topo - 23, rasc ? FB : F, 8.5, rasc ? VERM : CINZA);
+            var dir = 'Emitido em ' + emitido;
+            escrever(dir, W - M - txtW(pcpPdfTxt(dir), F, 8), topo - 11, F, 8, CINZA);
+            pagina.drawRectangle({ x: M, y: topo - 30, width: largura, height: 1.4, color: VERDE });
+            y = topo - 38;
           }
           function cabTabela() {
             var x = M;
-            pagina.drawRectangle({ x: M, y: y - 13, width: W - 2 * M, height: 15, color: rgb(0.93, 0.94, 0.97) });
-            COLS.forEach(function(c) { escrever(c.t, x + 3, y - 9, FB, 7.5, AZUL); x += c.w; });
-            y -= 16;
+            pagina.drawRectangle({ x: M, y: y - 12, width: largura, height: 14, color: rgb(0.93, 0.94, 0.97) });
+            COLS.forEach(function(c) { escrever(c.t, x + 3, y - 8.5, FB, 7.6, AZUL); x += c.w; });
+            y -= 15;
           }
-          function garantir(alt, cab) { if (y - alt < M + 18) { novaPagina(); if (cab) cab(); return true; } return false; }
-          function faixa(txt, sz, cor, fundo) {
-            garantir(sz + 30);
-            if (fundo) pagina.drawRectangle({ x: M, y: y - sz - 4, width: W - 2 * M, height: sz + 7, color: fundo });
-            escrever(txt, M + 4, y - sz, FB, sz, cor || TINTA);
-            y -= sz + 9;
+          function faixaLinha(txt) {
+            pagina.drawRectangle({ x: M, y: y - 15, width: largura, height: 17, color: AZUL });
+            escrever(txt, M + 5, y - 11, FB, 10, rgb(1, 1, 1));
+            y -= 19;
           }
-          function linhaTabela(cel, opts) {
-            opts = opts || {};
-            var linhasCel = COLS.map(function(c, i) { return quebrar(cel[i] || '', i === 1 ? FB : F, 8, c.w - 6); });
-            var n = Math.max.apply(null, linhasCel.map(function(l) { return l.length; })), alt = n * 9.6 + 5;
-            if (garantir(alt, function() { faixa(opts.cont + ' (continuação)', 9, AZUL); cabTabela(); })) {}
-            if (opts.fundo) pagina.drawRectangle({ x: M, y: y - alt + 2, width: W - 2 * M, height: alt, color: opts.fundo });
+          // mede e desenha uma linha da tabela (com a linha extra dos insumos, se houver) sem dividir entre páginas
+          function medir(cel, extra) {
+            var linhasCel = COLS.map(function(c, i) { var f = c.f === 'b' || i === 1 ? FB : F; return quebrar(cel[i] || '', f, c.f === 'p' ? 7.6 : SZ, c.w - 6); });
+            var n = Math.max.apply(null, linhasCel.map(function(l) { return l.length; })), alt = n * LH + 5;
+            var ex = extra ? quebrar(extra, F, 7.6, largura - 80) : [], altEx = ex.length ? ex.length * 9.4 + 3 : 0;
+            return { linhasCel: linhasCel, alt: alt, ex: ex, altEx: altEx };
+          }
+          function desenhar(mm, fundo, lidNome) {
+            if (y - (mm.alt + mm.altEx) < M + 16) { novaPagina(); faixaLinha(lidNome + ' (continuação)'); cabTabela(); }
+            if (fundo) pagina.drawRectangle({ x: M, y: y - mm.alt - mm.altEx + 2, width: largura, height: mm.alt + mm.altEx, color: fundo });
             var x = M;
-            COLS.forEach(function(c, i) { linhasCel[i].forEach(function(t, k) { escrever(t, x + 3, y - 8 - k * 9.6, i === 1 ? FB : F, 8, opts.cor); }); x += c.w; });
-            y -= alt;
+            COLS.forEach(function(c, i) {
+              var f = c.f === 'b' || i === 1 ? FB : F, sz = c.f === 'p' ? 7.6 : SZ, cor = c.f === 'p' ? CINZA : i === 8 && mm.alerta ? VERM : TINTA;
+              mm.linhasCel[i].forEach(function(t, k) { escrever(t, x + 3, y - 8.5 - k * LH, f, sz, cor); });
+              x += c.w;
+            });
+            y -= mm.alt;
+            mm.ex.forEach(function(t, k) { escrever(t, M + 74, y - 7 - k * 9.4, F, 7.6, CINZA); });
+            y -= mm.altEx;
             pagina.drawLine({ start: { x: M, y: y + 1 }, end: { x: W - M, y: y + 1 }, thickness: 0.4, color: LINHA });
           }
-          function linhaLarga(txt, opts) {
-            opts = opts || {};
-            var l = quebrar(txt, F, 7.6, W - 2 * M - 90), alt = l.length * 9 + 4;
-            garantir(alt, function() { faixa(opts.cont + ' (continuação)', 9, AZUL); cabTabela(); });
-            l.forEach(function(t, k) { escrever(t, M + 84, y - 8 - k * 9, F, 7.6, opts.cor || CINZA); });
-            y -= alt;
+          function prevTxt(x) {
+            var rr = x.r, ex = opExec(x.o), t0 = ex.inicioEm ? Date.parse(ex.inicioEm) : NaN;
+            if (rr.inicio == null) return rr.motivo === 'anterior' ? 'após concluir a OP anterior' : 'sem previsão: ' + pcpMotivoTxt(rr);
+            if (rr.pronto) return 'quantidade apontada, aguarda a conclusão';
+            var emEx = (ex.estado === 'rodando' || ex.estado === 'pausada') && !isNaN(t0);
+            return (emEx ? (ex.estado === 'pausada' ? 'começou ' : 'em execução desde ') + pcpPdfQuando(t0) : 'início ' + pcpPdfQuando(rr.inicio)) + ' -> término ' + pcpPdfQuando(rr.fim) + (ex.estado === 'pausada' ? ' (se retomar agora)' : '');
           }
           novaPagina();
-          var resumo = {}, ordemLinhas = opt.linhas.slice(), algum = false;
-          dados.dias.forEach(function(d) {
-            faixa(PCP_DIAS_LONGOS[pcpDow(d)] + ', ' + formatDateBR(d), 11, rgb(1, 1, 1), AZUL);
-            ordemLinhas.forEach(function(lid) {
-              var l = phLinha(lid), lista = (dados.ocor.occ[lid] || {})[d] || [], bl = pcpBlocosDia(dados.plano, lid, d);
-              var turnos = phTurnosDet(lid).filter(turnoTemHorario).filter(function(t) { return (t.dias || []).map(Number).indexOf(pcpDow(d)) >= 0; });
-              var nomeL = (l ? l.nome : lid) + ' · ' + pcpDiaSemana(d) + ' ' + pcpDataCurta(d);
-              garantir(60);
-              faixa((l ? l.nome : lid) + (turnos.length ? '   —   ' + turnos.map(function(t) { return t.nome + ' ' + t.inicio + '-' + t.fim; }).join('  ·  ') : '   —   sem turno com horário neste dia'), 9.5, AZUL);
-              if (!lista.length && !bl.length) { linhaLarga('Nada programado.', { cont: nomeL }); y -= 4; return; }
-              algum = true;
-              cabTabela();
-              bl.forEach(function(b) { linhaTabela(['', '', ((PCP_BLOCOS[b.bloco] || {}).nome || 'Parada') + (b._nova ? ' (rascunho)' : ''), '', pcpDataCurta(b.iniData) + ' ' + b.iniHora, pcpDataCurta(b.fimData) + ' ' + b.fimHora, '', '', 'Linha parada', b.motivo || ''], { cont: nomeL, fundo: rgb(0.96, 0.96, 0.96) }); });
-              lista.forEach(function(x) {
-                var o = x.o, r = x.r, st = dados.ins.porOp[o.id] || {};
-                var prod = (r.itens || []).map(function(it) { return it.p ? phNomeSemMarca(it.p) + ' · ' + phMarcaDoProduto(it.p) : it.nome; }).join(' / ');
-                var qtd = (r.itens || []).map(function(it) { var pal = it.p ? emPaletes(it.p, it.plan) : null; return qtdUnidade(it.plan, it.unidade) + (pal !== null ? ' (' + fmtPal(pal) + ' pal)' : ''); }).join(' / ');
-                var pend = [];
-                if (o._nova) pend.push('nova no rascunho'); else if (o._rasc) pend.push('alterada no rascunho');
-                var ex = opExec(o); pend.push(ex.estado === 'rodando' ? 'em produção' : ex.estado === 'pausada' ? 'pausada' : 'planejada');
-                if (r.inicio == null) pend.push('sem previsão: ' + pcpMotivoTxt(r));
-                if (r.inicioAtrasado) pend.push('início atrasado'); else if (r.comecaDepois) pend.push('começa depois do programado');
-                if (r.prazoVencido) pend.push('prazo vencido'); else if (r.prazoRisco) pend.push('termina depois do prazo');
-                if (st.st && st.st !== 'ok' && st.st !== 'comprado') pend.push({ falta: 'falta insumo', 'sem-ficha': 'sem ficha técnica', 'sem-contagem': 'insumo sem contagem', antiga: 'contagem antiga' }[st.st] || st.st);
-                if (r.feito > 0) pend.push('produzido ' + fmtInt(Math.round(r.feito)) + ', saldo ' + fmtInt(Math.round(r.falta)));
-                var ini = x.ini != null ? (x.primeiro ? '' : '(cont.) ') + pcpHoraTxt(x.ini) : '-', fim = x.fim != null ? pcpHoraTxt(x.fim) + (x.ultimo ? '' : ' (segue)') : '-';
-                linhaTabela([r.pos != null ? (r.pos + 1) + 'º' : '', o._nova || !o.numero ? 'nova' : String(o.numero), prod, qtd, ini, fim, x.primeiro && r.setupMin ? r.setupMin + ' min' : '', o.dataLimite ? pcpDataCurta(o.dataLimite) : '', pend.join('; '), [PCP_FIN[o.finalidade] ? PCP_FIN[o.finalidade].replace(/^\S+\s/, '') : '', o.obs || ''].filter(Boolean).join('. ')], { cont: nomeL });
-                if (opt.insumos && x.primeiro && st.linhas) {
-                  var partes = st.linhas.map(function(li) { return li.nome + ': precisa ' + fmtMp(li.precisa, li.unidade) + ', disponível ' + (li.disponivel === null ? 'sem contagem' : fmtMp(li.disponivel, li.unidade)) + (li.falta > 0 ? ', FALTA ' + fmtMp(li.falta, li.unidade) : ''); });
-                  if (st.semFicha.length) partes.push('sem ficha técnica: ' + st.semFicha.join(', '));
-                  if (partes.length) linhaLarga('Insumos: ' + partes.join('  ·  '), { cont: nomeL });
-                }
-                if (x.primeiro) (r.itens || []).forEach(function(it) {
-                  var k = lid + '|' + it.produtoId, rr = resumo[k] = resumo[k] || { lid: lid, nome: it.p ? phNomeSemMarca(it.p) + ' · ' + phMarcaDoProduto(it.p) : it.nome, un: it.unidade, q: 0, p: it.p, ops: 0 };
-                  rr.q += it.plan; rr.ops++;
-                });
-              });
-              y -= 4;
+          var algum = false;
+          opt.linhas.forEach(function(lid) {
+            var l = phLinha(lid), nome = l ? l.nome : lid, porOp = {}, lista = [];
+            Object.keys(dados.ocor.occ[lid] || {}).sort().forEach(function(d) {
+              (dados.ocor.occ[lid][d] || []).forEach(function(x) { if (!porOp[x.o.id]) { porOp[x.o.id] = x; lista.push(x); } });
             });
-          });
-          // resumo por linha e produto (não soma unidades diferentes)
-          garantir(80);
-          faixa('Resumo por linha e produto (OPs que começam no período)', 11, rgb(1, 1, 1), AZUL);
-          var ks = Object.keys(resumo);
-          if (!ks.length) linhaLarga(algum ? 'Nenhuma OP começa no período (só continuações).' : 'Nada programado no período.', { cont: 'Resumo' });
-          ordemLinhas.forEach(function(lid) {
-            var doL = ks.filter(function(k) { return resumo[k].lid === lid; });
-            if (!doL.length) return;
-            garantir(40);
-            faixa(phLinhaNome(lid), 9.5, AZUL);
-            var porUn = {};
-            doL.forEach(function(k) {
-              var rr = resumo[k], pal = rr.p ? emPaletes(rr.p, rr.q) : null;
-              garantir(14);
-              escrever(rr.nome, M + 8, y - 9, F, 8.5);
-              var t = qtdUnidade(rr.q, rr.un) + (pal !== null ? '  (' + fmtPal(pal) + ' pal)' : '') + '  ·  ' + rr.ops + (rr.ops === 1 ? ' OP' : ' OPs');
-              escrever(t, M + 330, y - 9, F, 8.5);
-              y -= 12;
-              porUn[rr.un] = (porUn[rr.un] || 0) + rr.q;
+            lista.sort(function(a, b) { return (a.r.pos != null ? a.r.pos : 999) - (b.r.pos != null ? b.r.pos : 999); });
+            var di = pcpMs(opt.de, pcpCorteHm(lid)), df = pcpMs(pcpAddDias(opt.ate, 1), pcpCorteHm(lid));
+            var bl = dados.plano.blocos.filter(function(b) { if (b.linha !== lid || !b.iniData) return false; var a = pcpMs(b.iniData, b.iniHora || '00:00'), z = pcpMs(b.fimData, b.fimHora || '00:00'); return a < df && z > di; });
+            if (!lista.length && !bl.length) return;  // linha sem nada no período: não entra
+            algum = true;
+            var turnos = phTurnosDet(lid).filter(turnoTemHorario);
+            if (y - 70 < M + 16) novaPagina();
+            faixaLinha(nome + (turnos.length ? '   ·   ' + turnos.map(function(t) { return t.nome + ' ' + t.inicio + '-' + t.fim; }).join('  ·  ') : ''));
+            cabTabela();
+            bl.forEach(function(b) {
+              var mm = medir(['', '', ((PCP_BLOCOS[b.bloco] || {}).nome || 'Parada') + (b._nova ? ' (rascunho)' : ''), 'linha parada', '', pcpDataCurta(b.iniData) + ' ' + (b.iniHora || '') + ' -> ' + pcpDataCurta(b.fimData) + ' ' + (b.fimHora || ''), '', '', b.motivo || '']);
+              desenhar(mm, rgb(0.96, 0.96, 0.96), nome);
             });
-            garantir(14);
-            escrever('Total: ' + Object.keys(porUn).map(function(u) { return qtdUnidade(porUn[u], u); }).join('  +  '), M + 8, y - 9, FB, 8.5);
-            y -= 16;
+            lista.forEach(function(x) {
+              var o = x.o, rr = x.r, st = dados.ins.porOp[o.id] || {}, ex = opExec(o);
+              var prod = (rr.itens || []).map(function(it) { return it.p ? phNomeSemMarca(it.p) + ' · ' + phMarcaDoProduto(it.p) : it.nome; }).join(' / ');
+              var saldo = (rr.itens || []).map(function(it) { var sd = Math.max(0, it.falta || 0), pal = it.p && sd > 0 ? emPaletes(it.p, sd) : null; return sd > 0 ? qtdUnidade(sd, it.unidade) + (pal !== null ? ' (' + fmtPal(pal) + ' pal)' : '') : 'apontado'; }).join(' / ');
+              var total = (rr.itens || []).map(function(it) { return 'total ' + fmtInt(it.plan) + (it.feito > 0 ? ' · prod. ' + fmtInt(Math.round(Math.min(it.feito, it.plan))) : ''); }).join(' / ');
+              var al = [], alerta = false;
+              if (o.obs) al.push(o.obs);
+              if (o._nova) al.push('nova no rascunho'); else if (o._rasc) al.push('alterada no rascunho');
+              if (ex.estado === 'pausada') al.push('OP pausada' + (ex.motivo ? ': ' + ex.motivo : ''));
+              if (rr.inicioAtrasado) { al.push('início atrasado'); alerta = true; }
+              if (rr.prazoVencido) { al.push('prazo vencido'); alerta = true; } else if (rr.prazoRisco) { al.push('termina depois do prazo'); alerta = true; }
+              if (st.linhas) {
+                var faltas = st.linhas.filter(function(li) { return li.st === 'falta'; });
+                faltas.slice(0, 2).forEach(function(li) { al.push('falta ' + fmtMp(li.falta, li.unidade) + ' de ' + li.nome); });
+                if (faltas.length > 2) al.push('+' + (faltas.length - 2) + ' insumos em falta');
+                if (faltas.length) alerta = true;
+              }
+              if (st.semFicha && st.semFicha.length) { al.push('sem ficha técnica'); alerta = true; }
+              else if (st.st === 'sem-contagem') al.push('insumo sem contagem');
+              var extra = '';
+              if (opt.insumos && st.linhas && st.linhas.length) extra = 'Insumos: ' + st.linhas.map(function(li) { return li.nome + ' ' + fmtMp(li.precisa, li.unidade) + (li.falta > 0 ? ' (falta ' + fmtMp(li.falta, li.unidade) + ')' : ''); }).join('  ·  ');
+              var mm = medir([rr.pos != null ? (rr.pos + 1) + 'º' : '', o._nova || !o.numero ? 'nova' : String(o.numero), prod, saldo, total, prevTxt(x), rr.setupMin && ex.estado === 'planejada' ? rr.setupMin + ' min' : '', o.dataLimite ? pcpDataCurta(o.dataLimite) : '', al.join('; ')], extra);
+              mm.alerta = alerta;
+              desenhar(mm, null, nome);
+            });
+            y -= 8;
           });
-          garantir(30);
-          linhaLarga('Horários previstos pelo app com os turnos, as exceções, as paradas, a capacidade de planejamento e a sequência de cada linha (horário de Brasília). "Sem previsão" indica configuração pendente: o app não inventa horário.', { cont: 'Observação' });
+          if (!algum) escrever('Nenhuma OP programada no período para as linhas escolhidas.', M + 4, y - 12, F, 10, CINZA);
           paginas.forEach(function(pg, i) {
             var t = 'Página ' + (i + 1) + ' de ' + paginas.length;
-            pg.drawText(t, { x: W - M - F.widthOfTextAtSize(t, 8), y: M - 10, size: 8, font: F, color: CINZA });
-            pg.drawText(pcpPdfTxt('Levíssima · PCP · Programação de Produção' + (rasc ? ' · RASCUNHO' : '')), { x: M, y: M - 10, size: 8, font: F, color: CINZA });
+            pg.drawText(t, { x: W - M - F.widthOfTextAtSize(t, 7.5), y: M - 12, size: 7.5, font: F, color: CINZA });
+            pg.drawText(pcpPdfTxt('Levíssima · PCP · Programação de Produção' + (rasc ? ' · RASCUNHO' : '') + ' · horários de Brasília'), { x: M, y: M - 12, size: 7.5, font: F, color: CINZA });
           });
           return pdf.save().then(function(bytes) {
             triggerDownload(new Blob([bytes], { type: 'application/pdf' }), 'programacao-producao-' + opt.de + (opt.ate !== opt.de ? '_a_' + opt.ate : '') + (rasc ? '-rascunho' : '') + '.pdf');
@@ -18022,7 +18163,7 @@
   }
   function dataProducaoOp(o) { return (o && (o.dataProducao || isoLocal(o.concluidoEm))) || ''; }
   function abrirOpConcluir(o) {
-    if (!pcpPodeConfirmar()) { showToast('A conclusão da OP é do PCP (senha mestre e quem tem “Confirma a produção”).'); return; }
+    if (!pcpPodeAdmOp()) { showToast('A conclusão da OP é do PCP (senha mestre e quem tem “Configura o PCP”).'); return; }
     var and = opAndamento()[o.id], porHora = {}, est = 0;
     if (and) { and.itens.forEach(function(it) { porHora[it.produtoId] = it.feito; }); est = and.est || 0; }
     var temHora = Object.keys(porHora).some(function(k) { return porHora[k] > 0; }), dps = opDataProducaoSugerida(o);
@@ -18286,7 +18427,7 @@
       }
       if (pcpUi.vista === 'confirmada') pcpUi.vista = '';
     } else if (s.modo === 'op-concluir') {
-      if (!pcpPodeConfirmar()) return erroMpSheet('A conclusão da OP é do PCP.');
+      if (!pcpPodeAdmOp()) return erroMpSheet('A conclusão da OP é do PCP (senha mestre e quem tem “Configura o PCP”).');
       var prod = itensDoFormProdutos(), dp = document.getElementById('mp-op-dataprod').value || opDataProducaoSugerida(s.ordem).data;
       if (dp > todayIso()) return erroMpSheet('A data da produção não pode ser depois de hoje.');
       if (!prod.length) return erroMpSheet('Informe o que foi produzido.');
