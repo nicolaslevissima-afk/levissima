@@ -3,10 +3,11 @@
 
 Uso: python3 montar.py <pasta de saída (www)> [url anonKey]
 
-- Manutenção, Uniformes e EPI e Estoque de garrafões: o programa original, sem mudar o funcionamento,
+- Manutenção e Uniformes e EPI: o programa original, sem mudar o funcionamento,
   com a "ponte" (login + banco do LEVÍSSIMA) carregada antes de tudo e os textos que falavam do Claude
   trocados por textos do LEVÍSSIMA.
-- Checklist de empilhadeiras: módulo novo (empilhadeiras.html), escrito para o LEVÍSSIMA.
+- Checklist de empilhadeiras e Estoque de garrafões: módulos escritos para o LEVÍSSIMA (empilhadeiras.html e
+  garrafoes.html; o Garrafões foi refeito em 17/11/2026 e o programa antigo ficou em originais/garrafoes.html).
 - ponte.js: com a configuração do Supabase preenchida (se informada).
 - Fundo claro sempre (pedido de 16/10/2026): o tema escuro automático dos módulos fica desligado.
 """
@@ -262,15 +263,6 @@ MODULOS = {
              'nrsExtras: Array.isArray(f.nrsExtras) ? f.nrsExtras.filter(Boolean) : [],\n        rh: f.rh && typeof f.rh === "object" ? f.rh : null,'),
         ],
     },
-    'garrafoes': {
-        'titulo': ('<title>Estoque de garrafões novos</title>', '<title>Estoque de garrafões · LEVÍSSIMA</title>'),
-        'trocas': [
-            ('"Dados salvos com segurança e sincronizados entre seus dispositivos."',
-             '"Dados no banco do LEVÍSSIMA, sincronizados entre todos os aparelhos com acesso a este módulo."'),
-            ('msg.textContent="O download não está disponível nesta visualização.";',
-             'msg.textContent="O download não está disponível neste aparelho.";'),
-        ],
-    },
 }
 
 
@@ -308,10 +300,11 @@ def montar(saida, url=None, chave=None):
         i = s.lower().index('<head>') + len('<head>')
         s = s[:i] + cabeca(nome) + s[i:]
         open(os.path.join(pasta, nome + '.html'), 'w', encoding='utf-8').write(s)
-    # módulo novo
-    e = open(os.path.join(AQUI, 'empilhadeiras.html'), encoding='utf-8').read()
-    assert '<script src="ponte.js" data-modulo="empilhadeiras"></script>' in e
-    open(os.path.join(pasta, 'empilhadeiras.html'), 'w', encoding='utf-8').write(sem_tema_escuro(e))
+    # módulos escritos para o LEVÍSSIMA (Garrafões refeito em 17/11/2026; o programa antigo fica em originais/)
+    for nome in ('empilhadeiras', 'garrafoes'):
+        e = open(os.path.join(AQUI, nome + '.html'), encoding='utf-8').read()
+        assert '<script src="ponte.js" data-modulo="' + nome + '"></script>' in e, nome
+        open(os.path.join(pasta, nome + '.html'), 'w', encoding='utf-8').write(sem_tema_escuro(e))
     # ponte com a configuração
     p = open(os.path.join(AQUI, 'ponte.js'), encoding='utf-8').read()
     if url and chave:
