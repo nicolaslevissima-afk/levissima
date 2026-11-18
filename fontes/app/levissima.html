@@ -10910,8 +10910,11 @@
       console.error('conclude carga error', err);
       concludeSubmitting = false;
       submitConclude.disabled = false;
+      // acesso "Só inclui" na aba Cargas (ou no acesso inteiro): concluir altera a carga, então é recusado (18/11/2026)
+      var semNivel = err && (err.codigo === 'so_inclui' || /row-level security|permission denied|so_inclui/i.test(String(err.message || '')));
       errEl.textContent = err && err.etapa === 'foto'
         ? (err.codigo === 'grande' ? 'Uma foto do caminhão ficou grande demais. Tire de novo.' : 'Não foi possível enviar as fotos do caminhão. Verifique a internet e tente de novo — nada será duplicado.')
+        : semNivel ? 'Seu acesso na aba Cargas só inclui, e concluir o carregamento altera a carga. Peça para a diretoria mudar a aba Cargas para "Edita" em Cadastros › Acesso ao app; depois saia e entre de novo no app.'
         : 'Não foi possível concluir o carregamento. Verifique a conexão e tente de novo — nada será duplicado.';
       errEl.classList.remove('hidden');
     });
