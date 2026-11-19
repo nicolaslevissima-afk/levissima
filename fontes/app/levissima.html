@@ -24944,20 +24944,35 @@
     });
     return l.join(' · ');
   }
-  // assinatura com a senha de 4 números de quem tem a função (filtro: devolve um erro, ou nada se pode assinar)
-  // funcao: o nome do campo da equipe ('compras', 'nome') ou uma regra function(membro) (cargo)
-  // quem entrou com o próprio acesso e tem a função assina com um toque; num aparelho de outra pessoa, senha de 4 números
-  // (mestreAssina: a senha mestre assina como ela mesma, mesmo sem cadastro na equipe)
-  // direto: quem entrou com o próprio acesso pessoal e tem a função assina sem abrir a senha (pedido e cotação; 26/10/2026)
-  function ocAssinar(funcao, funcaoTexto, titulo, semCadastro, filtro, feito, mestreAssina, direto) {
-    var e = ocEu(), eu = null;
-    if (e && (typeof funcao === 'function' ? funcao(e.m) : !!e.m[funcao]) && !(filtro && filtro(e.m))) eu = e.m;
-    else if (!e && mestreAssina && session && session.ref === 'mestre') eu = { nome: quemSessao(), id: '' };
-    if (direto && eu && e && e.ref.indexOf('escritorio:') === 0) { feito(eu); return; }
-    openPinDialog({
-      funcao: typeof funcao === 'function' ? '' : funcao, permite: typeof funcao === 'function' ? funcao : null, funcaoTexto: funcaoTexto, titulo: titulo, hint: eu ? 'Confirme quem assina.' : 'Assine com a sua senha de 4 números.', semCadastro: semCadastro, eu: eu,
-      onOk: function(m) { var erro = filtro && m.id ? filtro(m) : null; if (erro) { showToast(erro); return; } feito(m); }
-    });
+  // Assinatura em Compras pelo usuário logado (pedido de 19/11/2026: sem a senha de 4 números em nenhuma etapa).
+  // O app reconhece quem entrou (acesso pessoal, diretoria ou senha mestre), em qualquer aparelho, e assina no nome
+  // dessa pessoa se ela pode fazer a etapa; se não pode, diz por quê. Senha de setor não identifica a pessoa.
+  // funcao: o campo da equipe ('nome') ou uma regra function(membro) (cargo); filtro: devolve um erro, ou nada
+  // mestreAssina: a senha mestre assina a etapa como ela mesma, mesmo sem cadastro na equipe ou sem o cargo da etapa
+  var ocAssinandoAte = 0; // toque duplo no botão não grava duas vezes
+  function ocQuemAssina() {
+    var e = ocEu();
+    if (e) return e.m;
+    return session && minhaRef() === 'mestre' ? { nome: quemSessao(), id: '' } : null;
+  }
+  function ocAssinar(funcao, funcaoTexto, titulo, semCadastro, filtro, feito, mestreAssina) {
+    function aviso(t) { if (ger) gerErro(t); else showToast(t); }
+    var eu = ocQuemAssina(), mestre = !!(session && minhaRef() === 'mestre');
+    if (!eu) { aviso('Para assinar em Compras, entre com o seu acesso pessoal: o app reconhece quem está logado e assina no seu nome.'); return; }
+    var pode = !!eu.id && (typeof funcao === 'function' ? funcao(eu) : !!eu[funcao]);
+    if (!pode && mestre && mestreAssina) pode = true;
+    if (!pode) { aviso('Você entrou como ' + ocNomeCurto(eu.nome) + ', que não ' + funcaoTexto + '. Quem pode assina com o próprio acesso.'); return; }
+    var erro = filtro && eu.id ? filtro(eu) : null;
+    if (erro) { aviso(erro); return; }
+    if (Date.now() < ocAssinandoAte) return;
+    ocAssinandoAte = Date.now() + 1500;
+    feito(eu);
+  }
+  // quem vai assinar, para mostrar na tela de cada etapa
+  function ocAssinaComoHtml() {
+    var eu = ocQuemAssina();
+    return '<p class="field-hint oc-assina-como">' + (eu ? '✍ Assina como <b>' + escapeHtml(eu.nome) + '</b> (o acesso com que você entrou).'
+      : '⚠ Para assinar, entre com o seu acesso pessoal: o app reconhece quem está logado.') + '</p>';
   }
   function falhaOc(err) { if (err && err.codigo === 'so_inclui') return; console.error('compras', err); showToast('Não foi possível salvar agora. Tente novamente.'); } // so_inclui: o aviso já apareceu
   // valor em reais digitado: "1.234,56", "395,50" ou "395.5"
@@ -25186,7 +25201,7 @@
         (edita ? '<p class="field-hint">Pedido por ' + escapeHtml(ocQuem(edita.pedido)) + '.</p>'
           : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-nome" maxlength="60" list="oc-nomes" autocomplete="off"' + (eu ? ' value="' + escapeHtml(eu.m.nome) + '" readonly' : '') + ' /></label>' +
         '<datalist id="oc-nomes">' + nomes.map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
-        '<p class="field-hint">' + (eu ? 'O pedido sai no seu nome (você entrou com o seu acesso). Você acompanha o pedido até a entrega; além de você, só quem assina as etapas vê.' : 'Quem está em Cadastros › Equipe assina com a senha de 4 números; os outros, só com o nome.') + '</p>'),
+        '<p class="field-hint">' + (eu ? 'O pedido sai no seu nome (você entrou com o seu acesso). Você acompanha o pedido até a entrega; além de você, só quem assina as etapas vê.' : 'Sem o seu acesso pessoal, o pedido sai só com o nome digitado. Para sair no seu nome e você acompanhar, entre com o seu acesso.') + '</p>'),
       depois: ocRenderItens,
       input: function(t) { if (t.closest('#oc-itens')) ocLerItens(); },
       change: function(t) {
@@ -25220,7 +25235,6 @@
         if (edita) return ocSalvarEdicao(edita.id, setor, document.getElementById('oc-urg').value, itens, gerVal('oc-obs'));
         if (!nome) return gerErro('Informe o seu nome.');
         var dados = { status: 'pedido', setor: setor, urgencia: document.getElementById('oc-urg').value, itens: itens, obs: gerVal('oc-obs') };
-        var membro = eu ? eu.m : membroPorNome(nome);
         function gravar(quem) {
           var agora = new Date().toISOString();
           dados.pedido = Object.assign({ ref: minhaRef() }, quem); dados.numero = ocProximoNumero(); dados.criadoEm = agora; dados.atualizadoEm = agora;
@@ -25240,8 +25254,8 @@
             .then(function() { btn.disabled = false; gerFechar(); showToast('Pedido enviado: OC nº ' + dados.numero + (gestao ? '. Pedido da gestão: autorizado na hora, agora é a cotação com compras' + (ocNomesCotacao() ? ' (' + ocNomesCotacao() + ')' : '') + '.' : '. Agora é com quem autoriza (' + setor + ').')); })
             .catch(function(err) { btn.disabled = false; if (err && err.codigo === 'grande') gerErro('Foto grande demais (máximo 8 MB).'); else if (err && !err.codigo && !/permission|42501|row-level/i.test(String(err.message || ''))) gerErro('Não foi possível enviar as fotos ou o pedido agora. Verifique a internet e tente de novo.'); else falhaOc(err); });
         }
-        if (membro) ocAssinar('nome', 'está na equipe', 'Assinar o pedido', '', function(m) { return m.id === membro.id ? null : 'Essa senha não é de ' + membro.nome + '.'; },
-          function(m) { gravar({ nome: m.nome, id: m.id, em: new Date().toISOString() }); }, false, true);
+        // 19/11/2026: sem senha de 4 números; sem o acesso pessoal, o pedido sai só com o nome digitado (sem identificação)
+        if (eu) gravar({ nome: eu.m.nome, id: eu.m.id, em: new Date().toISOString() });
         else gravar({ nome: nome, id: '', em: new Date().toISOString(), semSenha: true });
         return false;
       }
@@ -25359,14 +25373,14 @@
         '<button type="button" class="btn btn-secondary oc-reprovar" data-ger="reprovado">Reprovar</button></div>' +
         ((coord && ocPodeEditar(o)) || ocPodeCancelar(o) ? '<div class="frete-acoes oc-dec-extra">' + (coord && ocPodeEditar(o) ? '<button type="button" class="btn-text" data-ger="oc-editar">Editar o pedido antes de autorizar</button>' : '') +
           (ocPodeCancelar(o) ? '<button type="button" class="btn-text danger" data-ger="oc-cancelar">Cancelar a OC</button>' : '') + '</div>' : '') +
-        '<p class="field-hint">' + (coord ? 'Assina quem autoriza pedidos (Cadastros › Compras): ' + escapeHtml(ocCargosEtapa('coord')) + '.' : 'Assina a diretoria (Cadastros › Compras): ' + escapeHtml(ocNomesAprovacao()) + '.') + '</p>',
+        '<p class="field-hint">' + (coord ? 'Assina quem autoriza pedidos (Cadastros › Compras): ' + escapeHtml(ocCargosEtapa('coord')) + '.' : 'Assina a diretoria (Cadastros › Compras): ' + escapeHtml(ocNomesAprovacao()) + '.') + '</p>' + ocAssinaComoHtml(),
       acao: function(dec) {
         if (dec === 'oc-editar') { abrirPedidoCompra(ocPorId(o.id) || o); return; }
         if (dec === 'oc-cancelar') { abrirCancelarOc(ocPorId(o.id) || o); return; }
         var obs = gerVal('oc-dec-obs');
         if ((dec === 'reprovado' || dec === 'recotar') && !obs) { gerErro(dec === 'recotar' ? 'Escreva o que precisa mudar na cotação.' : 'Escreva o motivo da reprovação.'); return; }
-        var onde = coord ? [function(m) { return ocPodeEtapa(m, 'coord'); }, 'autoriza pedidos de compra (' + ocCargosEtapa('coord') + ')', 'Ninguém com senha de 4 números autoriza pedidos (Cadastros › Compras e Cadastros › Equipe).', function(m) { return ocAutoriza(m, o) ? null : (o.pedido && o.pedido.id === m.id && ocSubstituidos(m).length ? m.nome + ' não autoriza o próprio pedido no lugar do gestor.' : m.nome + ' não autoriza compras de ' + o.setor + '.'); }]
-          : [function(m) { return ocPodeEtapa(m, 'aprovacao'); }, 'aprova compras (' + ocNomesAprovacao() + ')', 'Ninguém com senha de 4 números aprova compras (Cadastros › Compras e Cadastros › Equipe).', null];
+        var onde = coord ? [function(m) { return ocPodeEtapa(m, 'coord'); }, 'autoriza pedidos de compra (' + ocCargosEtapa('coord') + ')', '', function(m) { return ocAutoriza(m, o) ? null : (o.pedido && o.pedido.id === m.id && ocSubstituidos(m).length ? m.nome + ' não autoriza o próprio pedido no lugar do gestor.' : m.nome + ' não autoriza compras de ' + o.setor + '.'); }]
+          : [function(m) { return ocPodeEtapa(m, 'aprovacao'); }, 'aprova compras (' + ocNomesAprovacao() + ')', '', null];
         ocAssinar(onde[0], onde[1], (dec === 'aprovado' ? (coord ? 'Autorizar' : 'Aprovar') : dec === 'recotar' ? 'Pedir nova cotação' : 'Reprovar') + ' · OC nº ' + o.numero, onde[2], onde[3], function(m) {
           var agora = new Date().toISOString(), ass = ocAss(m, { em: agora, decisao: dec === 'recotar' ? 'recotar' : dec, obs: obs }), dados = { atualizadoEm: agora };
           if (coord) { dados.coord = ass; dados.status = dec === 'aprovado' ? 'cotacao' : 'reprovada'; ocSubMarcar(dados, ass, m, 'coord', o, dec === 'aprovado' ? 'Autorizou o pedido' : 'Reprovou o pedido'); }
@@ -25404,7 +25418,7 @@
         '<label class="check"><input type="radio" name="oc-just" value="ok" checked /> Ok: seguir para quem pediu conferir (depois, a diretoria)</label>' +
         '<label class="check"><input type="radio" name="oc-just" value="recotar" /> Pedir mais cotações</label>' +
         '<label>Observação <span class="opt">(obrigatória para pedir mais cotações)</span><input type="text" id="oc-just-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Quem dá o ok é o Nicolas (a senha mestre ou a senha de 4 números dele)' + (ocNomesEtapa('justificativa') ? ' ou ' + escapeHtml(ocNomesEtapa('justificativa')) : '') + '.</p>',
+        '<p class="field-hint">Quem dá o ok é o Nicolas (com o acesso dele ou a senha mestre)' + (ocNomesEtapa('justificativa') ? ' ou ' + escapeHtml(ocNomesEtapa('justificativa')) : '') + '.</p>' + ocAssinaComoHtml(),
       salvar: function() {
         var dec = (document.querySelector('input[name="oc-just"]:checked') || {}).value || 'ok', obs = gerVal('oc-just-obs');
         if (dec === 'recotar' && obs.length < 3) return gerErro('Escreva o que falta (ex.: “cotar também na loja X”).');
@@ -25415,11 +25429,8 @@
           ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'ok' ? 'Ok dado: agora ' + ocNomePedido(o) + ' confere se a cotação está de acordo com o pedido.' : 'Pedido de mais cotações enviado para compras.'); }).catch(falhaOc);
         }
         if (session && session.role === 'admin' && session.ref === 'mestre') { gravar({ nome: quemSessao(), id: '' }); return false; }
-        openPinDialog({
-          permite: function(m) { return ehNicolas(m) || ocPodeEtapa(m, 'justificativa'); }, funcaoTexto: ocNomesEtapa('justificativa') ? 'é o Nicolas ou ' + ocNomesEtapa('justificativa') : 'é o Nicolas', titulo: 'Ok do Nicolas · OC nº ' + o.numero, hint: ocNomesEtapa('justificativa') ? 'Digite a sua senha de 4 números.' : 'Nicolas: digite a sua senha de 4 números.',
-          semCadastro: 'O Nicolas não tem senha de 4 números em Cadastros › Equipe com senha. Entre com a senha mestre para dar o ok.',
-          onOk: function(m) { gravar({ nome: m.nome, id: m.id }); }
-        });
+        ocAssinar(function(m) { return ehNicolas(m) || ocPodeEtapa(m, 'justificativa'); }, ocNomesEtapa('justificativa') ? 'é o Nicolas nem ' + ocNomesEtapa('justificativa') : 'é o Nicolas',
+          'Ok do Nicolas · OC nº ' + o.numero, '', null, function(m) { gravar({ nome: m.nome, id: m.id }); }, true);
         return false;
       }
     });
@@ -25460,7 +25471,7 @@
         if (cots.length < 3 && just.length < 5) return gerErro('Com menos de 3 cotações, escreva a justificativa (o Nicolas precisa dar o ok para seguir).');
         var esc = mapa[ger.escolhida];
         if (esc === undefined) return gerErro('Marque a cotação escolhida (uma que tenha fornecedor e valor).');
-        ocAssinar(function(m) { return ocPodeEtapa(m, 'cotacao'); }, 'lança cotação (' + ocQuemFaz('cotacao') + ')', 'Cotação · OC nº ' + o.numero, 'Ninguém com senha de 4 números lança cotação (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
+        ocAssinar(function(m) { return ocPodeEtapa(m, 'cotacao'); }, 'lança cotação (' + ocQuemFaz('cotacao') + ')', 'Cotação · OC nº ' + o.numero, '', null, function(m) {
           var agora = new Date().toISOString(), poucas = cots.length < 3;
           ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, ref: minhaRef(), em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs'), justificativa: poucas ? just : '' }, status: poucas ? 'justificativa' : 'revisao', atualizadoEm: agora })
             .then(function() { gerFechar(); showToast(poucas ? 'Cotação enviada: com menos de 3, espera o ok do Nicolas na justificativa.' : 'Cotação enviada: agora ' + ocNomePedido(o) + ' confere se está de acordo com o pedido.'); }).catch(falhaOc);
@@ -25471,7 +25482,7 @@
   }
   // ----- 4. quem pediu confere se a cotação está de acordo com o que pediu (pedido de 09/11/2026) -----
   // De acordo: segue para a diretoria. Não está de acordo: volta para a cotação, com o que precisa mudar. Assina quem
-  // fez o pedido (próprio acesso ou senha de 4 números) ou quem confere no lugar dele (Cadastros › Compras).
+  // fez o pedido (reconhecido pelo acesso com que entrou) ou quem confere no lugar dele (Cadastros › Compras).
   function abrirRevisaoOc(o) {
     var temId = !!(o.pedido && o.pedido.id), outros = ocOutrosNoLugar('revisao', o);
     gerAbrir({
@@ -25481,7 +25492,7 @@
         '<label class="check"><input type="radio" name="oc-rev" value="de-acordo" checked /> Está de acordo com o que pedi: seguir para a diretoria</label>' +
         '<label class="check"><input type="radio" name="oc-rev" value="nao" /> Não está de acordo: voltar para a cotação</label>' +
         '<label>Observação <span class="opt">(obrigatória se não estiver de acordo)</span><input type="text" id="oc-rev-obs" maxlength="200" autocomplete="off" placeholder="Ex.: o rolamento precisa ser 2RS, não ZZ" /></label>' +
-        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confere: com o próprio acesso ou com a senha de 4 números' + (outros ? '. Também podem conferir no lugar dele: ' + escapeHtml(outros) : '') + '.</p>'
+        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confere, com o próprio acesso' + (outros ? '. Também podem conferir no lugar dele: ' + escapeHtml(outros) : '') + '.</p>' + ocAssinaComoHtml()
           : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-rev-nome" maxlength="60" placeholder="' + escapeHtml(o.pedido ? o.pedido.nome : '') + '" autocomplete="off" /></label><p class="field-hint">O pedido foi feito por ' + escapeHtml(o.pedido ? o.pedido.nome : '—') + ': é ele (ou ela) quem confere.</p>'),
       salvar: function() {
         var dec = (document.querySelector('input[name="oc-rev"]:checked') || {}).value || 'de-acordo', obs = gerVal('oc-rev-obs');
@@ -25497,7 +25508,7 @@
         }
         if (temId) {
           ocAssinar(function(m) { return ocPodePorQuemPediu(m, 'revisao', o); }, 'é quem fez o pedido (' + o.pedido.nome + ')' + (outros ? ' ou ' + outros : ''), 'Conferir a cotação · OC nº ' + o.numero, '', null,
-            function(m) { gravar({ nome: m.nome, id: m.id }, m); }, false, true);
+            function(m) { gravar({ nome: m.nome, id: m.id }, m); }, false);
         } else {
           var nome = gerVal('oc-rev-nome');
           if (!nome) return gerErro('Informe o seu nome.');
@@ -25546,12 +25557,12 @@
         '<div class="row-2"><label>Nº do pedido no fornecedor <span class="opt">(opcional)</span><input type="text" id="oc-cp-num" maxlength="30" autocomplete="off" /></label>' +
         '<label>Previsão de chegada<input type="date" id="oc-cp-prev" value="' + escapeHtml(v.prazo ? addDiasIso(todayIso(), Number(v.prazo)) : '') + '" /></label></div>' +
         '<label>Observação <span class="opt">(opcional)</span><input type="text" id="oc-cp-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Marca como comprado: ' + escapeHtml(ocNomesCompra()) + ' (Cadastros › Compras). Depois, a compra aparece em “Para receber” para todos.</p>',
+        '<p class="field-hint">Marca como comprado: ' + escapeHtml(ocNomesCompra()) + ' (Cadastros › Compras). Depois, a compra aparece em “Para receber” para todos.</p>' + ocAssinaComoHtml(),
       salvar: function() {
         var forn = gerVal('oc-cp-forn'), valor = ocValor(gerVal('oc-cp-valor'));
         if (!forn) return gerErro('Informe o fornecedor da compra.');
         if (valor === null || valor <= 0) return gerErro('Informe o valor da compra.');
-        ocAssinar(ocPodeComprar, 'marca como comprado (' + ocNomesCompra() + ')', 'Comprado · OC nº ' + o.numero, 'Ninguém com senha de 4 números marca como comprado (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
+        ocAssinar(ocPodeComprar, 'marca como comprado (' + ocNomesCompra() + ')', 'Comprado · OC nº ' + o.numero, '', null, function(m) {
           var agora = new Date().toISOString();
           ocGravar(o.id, { compra: ocAss(m, { fornecedor: forn, valor: Math.round(valor * 100) / 100, pedidoFornecedor: gerVal('oc-cp-num'), previsao: gerVal('oc-cp-prev'), obs: gerVal('oc-cp-obs') }), status: 'comprado', atualizadoEm: agora })
             .then(function() { gerFechar(); showToast('OC nº ' + o.numero + ' comprada: agora aparece em “Para receber”.'); }).catch(falhaOc);
@@ -25572,11 +25583,11 @@
         '<label class="check-row"><input type="checkbox" id="oc-rc-conf" /> Conferi: chegou o que foi pedido, na quantidade certa</label>' +
         '<label>Nº da nota fiscal <span class="opt">(opcional)</span><input type="text" id="oc-rc-nf" maxlength="30" inputmode="numeric" autocomplete="off" /></label>' +
         '<label>Observação <span class="opt">(obrigatória se chegou diferente)</span><input type="text" id="oc-rc-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Recebe: ' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada com o próprio acesso ao app ou com a senha de 4 números. Depois vem a <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') e aí a entrega para ' + escapeHtml(ocNomePedido(o)) + ', que confirma no app.</p>',
+        '<p class="field-hint">Recebe: ' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada pelo acesso com que entrou no app. Depois vem a <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') e aí a entrega para ' + escapeHtml(ocNomePedido(o)) + ', que confirma no app.</p>' + ocAssinaComoHtml(),
       salvar: function() {
         var conf = document.getElementById('oc-rc-conf').checked, obs = gerVal('oc-rc-obs');
         if (!conf && !obs) return gerErro('Marque “Conferi” ou escreva o que chegou diferente.');
-        ocAssinar(function(m) { return ocPodeEtapa(m, 'recebimento'); }, 'dá o recebido (' + ocCargosEtapa('recebimento') + ')', 'Recebido · OC nº ' + o.numero, 'Ninguém com senha de 4 números dá o recebido (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
+        ocAssinar(function(m) { return ocPodeEtapa(m, 'recebimento'); }, 'dá o recebido (' + ocCargosEtapa('recebimento') + ')', 'Recebido · OC nº ' + o.numero, '', null, function(m) {
           var agora = new Date().toISOString();
           ocGravar(o.id, { recebimento: ocAss(m, { conforme: conf, nf: gerVal('oc-rc-nf'), obs: obs }), conferencia: null, status: 'recebido', atualizadoEm: agora })
             .then(function() { gerFechar(); showToast('Recebido por ' + m.nome + '. Agora é a conferência (' + ocQuemFaz('conferencia') + '); depois, a entrega para ' + ocNomePedido(o) + '.'); })
@@ -25604,11 +25615,11 @@
         '<label class="check"><input type="radio" name="oc-cf" value="diferenca" /> Com diferença, mas pode entregar</label>' +
         '<label class="check"><input type="radio" name="oc-cf" value="devolver" /> Com problema: devolver ao fornecedor (volta para “Para receber”)</label>' +
         '<label>Observação <span class="opt">(obrigatória com diferença ou problema)</span><input type="text" id="oc-cf-obs" maxlength="200" autocomplete="off" placeholder="Ex.: veio 3 em vez de 4; uma caixa amassada" /></label>' +
-        '<p class="field-hint">Faz a conferência (Cadastros › Compras): ' + escapeHtml(ocQuemFaz('conferencia')) + '.</p>',
+        '<p class="field-hint">Faz a conferência (Cadastros › Compras): ' + escapeHtml(ocQuemFaz('conferencia')) + '.</p>' + ocAssinaComoHtml(),
       salvar: function() {
         var res = (document.querySelector('input[name="oc-cf"]:checked') || {}).value || 'ok', obs = gerVal('oc-cf-obs');
         if (res !== 'ok' && obs.length < 3) return gerErro(res === 'devolver' ? 'Escreva o problema (o motivo da devolução).' : 'Escreva qual é a diferença.');
-        ocAssinar(function(m) { return ocPodeEtapa(m, 'conferencia'); }, 'faz a conferência (' + ocQuemFaz('conferencia') + ')', 'Conferência · OC nº ' + o.numero, 'Ninguém com senha de 4 números faz a conferência (Cadastros › Compras e Cadastros › Equipe).', null, function(m) {
+        ocAssinar(function(m) { return ocPodeEtapa(m, 'conferencia'); }, 'faz a conferência (' + ocQuemFaz('conferencia') + ')', 'Conferência · OC nº ' + o.numero, '', null, function(m) {
           var f = ocPorId(o.id) || o;
           if (f.status !== 'recebido') { gerErro('Esta OC já mudou de etapa: outra pessoa já fez a conferência.'); return; }
           var agora = new Date().toISOString(), ass = ocAss(m, { resultado: res, obs: obs }), dados = { atualizadoEm: agora };
@@ -25616,7 +25627,7 @@
           if (res === 'devolver') { dados.status = 'comprado'; dados.devolucoes = (f.devolucoes || []).concat([{ recebimento: f.recebimento || null, conferencia: ass }]).slice(-10); dados.recebimento = null; dados.conferencia = null; }
           else { dados.status = 'conferido'; dados.conferencia = ass; }
           ocGravar(o.id, dados).then(function() { gerFechar(); showToast(res === 'devolver' ? 'Devolução registrada: a OC nº ' + o.numero + ' voltou para “Para receber”.' : 'Conferido por ' + m.nome + '. Entregue para ' + ocNomePedido(o) + ', que confirma no app.'); }).catch(falhaOc);
-        }, true, true);
+        }, true);
         return false;
       }
     });
@@ -25629,7 +25640,7 @@
       html: ocResumoHtml(o) + (o.recebimento ? '<p class="hint">' + escapeHtml(ocRecebidoTexto(o)) + '.</p>' : '') + (o.conferencia ? '<p class="hint">' + escapeHtml(ocConferenciaTexto(o.conferencia)) + '.</p>' : '') +
         '<label class="check-row"><input type="checkbox" id="oc-conf" /> Recebi e conferi: veio o que foi pedido, na quantidade certa</label>' +
         '<label>Observação <span class="opt">(obrigatória se veio diferente)</span><input type="text" id="oc-ent-obs" maxlength="200" autocomplete="off" /></label>' +
-        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confirma: com o próprio acesso ou com a senha de 4 números' + (outros ? '. Também podem confirmar no lugar dele: ' + escapeHtml(outros) : '') + '.</p>'
+        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confirma, com o próprio acesso' + (outros ? '. Também podem confirmar no lugar dele: ' + escapeHtml(outros) : '') + '.</p>' + ocAssinaComoHtml()
           : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-ent-nome" maxlength="60" value="" placeholder="' + escapeHtml(o.pedido ? o.pedido.nome : '') + '" autocomplete="off" /></label><p class="field-hint">O pedido foi feito por ' + escapeHtml(o.pedido ? o.pedido.nome : '—') + ': é ele (ou ela) quem confirma a entrega.</p>'),
       salvar: function() {
         var conf = document.getElementById('oc-conf').checked, obs = gerVal('oc-ent-obs');
