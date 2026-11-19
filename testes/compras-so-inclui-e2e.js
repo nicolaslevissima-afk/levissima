@@ -1,6 +1,7 @@
 /* LEVÍSSIMA · teste: Compras (19/11/2026)
- * 1. Aba Compras "só inclui": quem pediu confirma a entrega (o caso da Renata) e compras lança a cotação; editar o pedido
- *    e cancelar continuam barrados. Também com todas as abas "só inclui" (so_inclui no login, caso do Gabriel).
+ * 1. Aba Compras "só inclui": quem pediu confirma a entrega (o caso da Renata) e compras lança a cotação. Desde a tarde de
+ *    19/11/2026 quem fez o pedido também cancela (com motivo) o próprio; o pedido de outra pessoa continua barrado.
+ *    Também com todas as abas "só inclui" (so_inclui no login, caso do Gabriel).
  * 2. Sem a etapa "Quem pediu confere": a cotação vai direto para a diretoria; ordem antiga em "revisao" aparece como
  *    aguardando a diretoria.
  * Rodar: python3 ferramentas/construir.py --modulos && node testes/compras-so-inclui-e2e.js
@@ -37,6 +38,7 @@ fake.USUARIOS.push(
   doc(b, 'compras-ordens', 'oc13', { numero: 13, status: 'revisao', setor: 'Qualidade', itens, pedido: ren, coord, criadoEm: agora,
     cotacao: { nome: 'Rita', id: 'equipe-rita', em: agora, escolhida: 0, cotacoes: [{ fornecedor: 'A', valor: 10 }, { fornecedor: 'B', valor: 11 }, { fornecedor: 'C', valor: 12 }] } });
   doc(b, 'compras-ordens', 'oc14', { numero: 14, status: 'pedido', setor: 'Manutenção', itens, pedido: gab, criadoEm: agora });
+  doc(b, 'compras-ordens', 'oc15', { numero: 15, status: 'pedido', setor: 'Manutenção', itens, pedido: gab, criadoEm: agora });
   const st = (id) => (b.docs.get('compras-ordens/' + id) || {}).data || {};
 
   async function entrar(senha) {
@@ -79,7 +81,9 @@ fake.USUARIOS.push(
   conf(st('oc9').status === 'fechada' && /Renata/.test((st('oc9').fechamento || {}).nome || ''), 'Renata confirma a entrega da OC nº 9 (status ' + st('oc9').status + ')');
   conf(!/só inclui/.test(await toast(pag)), 'sem o aviso "só inclui" na entrega (' + (await toast(pag)).trim() + ')');
   await tentarCancelar(pag, 'oc12');
-  conf(st('oc12').status === 'pedido' && /só inclui/.test(await toast(pag)), 'cancelar continua barrado com "só inclui" (aviso: ' + (await toast(pag)).trim() + ')');
+  conf(st('oc12').status === 'cancelada' && (st('oc12').cancelamento || {}).motivo === 'teste de cancelamento', 'quem pediu cancela o próprio pedido com "só inclui", com o motivo (aviso: ' + (await toast(pag)).trim() + ')');
+  await tentarCancelar(pag, 'oc15');
+  conf(st('oc15').status === 'pedido' && /só inclui/.test(await toast(pag)), 'pedido de outra pessoa: cancelar continua barrado com "só inclui" (aviso: ' + (await toast(pag)).trim() + ')');
   await ctx.close();
 
   // ---------- Rita (compras, aba "só inclui"): a cotação vai direto para a diretoria ----------
@@ -102,7 +106,7 @@ fake.USUARIOS.push(
   await confirmarEntrega(pag, 'oc11');
   conf(st('oc11').status === 'fechada', 'Gabriel confirma a entrega do pedido dele (status ' + st('oc11').status + ')');
   await tentarCancelar(pag, 'oc14');
-  conf(st('oc14').status === 'pedido' && /só inclui/.test(await toast(pag)), 'cancelar continua barrado (aviso: ' + (await toast(pag)).trim() + ')');
+  conf(st('oc14').status === 'cancelada', 'todas as abas "só inclui": quem pediu cancela o próprio pedido, com o motivo (aviso: ' + (await toast(pag)).trim() + ')');
   await ctx.close();
 
   const erros = amb.erros.filter((e) => !/favicon|manifest|service worker/i.test(e));

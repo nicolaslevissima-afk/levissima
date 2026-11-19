@@ -25016,7 +25016,7 @@
         return '<li><b>' + escapeHtml(fmtMp(it.quantidade, it.unidade)) + '</b> ' + escapeHtml(it.descricao) + (it.aplicacao ? '<small>aplicar em: ' + escapeHtml(it.aplicacao) + '</small>' : '') + ocItemExtrasHtml(it) + '</li>';
       }).join('') + '</ul>' +
       '<div class="frete-sub">Pedido por ' + escapeHtml(ocQuem(o.pedido)) + '</div>' +
-      (o.edicao ? '<div class="frete-sub">Alterado por ' + escapeHtml(ocQuem(o.edicao)) + ((o.edicoes || []).length > 1 ? ' (' + o.edicoes.length + ' alterações)' : '') + ', antes da cotação</div>' : '') +
+      (o.edicao ? '<div class="frete-sub">Alterado por ' + escapeHtml(ocQuem(o.edicao)) + ((o.edicoes || []).length > 1 ? ' (' + o.edicoes.length + ' alterações)' : '') + ', antes da cotação' + (o.edicao.motivo ? ': ' + escapeHtml(o.edicao.motivo) : '') + '</div>' : '') +
       (o.status === 'pedido' ? '<div class="frete-sub">Dá para editar até ir para a cotação.</div>' : '') +
       (ocAusenteTexto(o) ? '<div class="frete-sub oc-ausente">🔁 ' + escapeHtml(ocAusenteTexto(o)) + '</div>' : '') +
       (v ? '<div class="frete-sub">Cotação escolhida: <b>' + escapeHtml(fmtBRL(Number(v.valor) || 0)) + '</b> · ' + escapeHtml(v.fornecedor) + (v.prazo ? ' · entrega em ' + v.prazo + (Number(v.prazo) === 1 ? ' dia' : ' dias') : '') + '</div>' : '') +
@@ -25158,7 +25158,7 @@
         '<label>Motivo do cancelamento <span class="req">*</span><input type="text" id="oc-canc-motivo" maxlength="200" autocomplete="off" placeholder="Ex.: o item não é mais necessário" /></label>',
       salvar: function() {
         var motivo = gerVal('oc-canc-motivo').replace(/\s+/g, ' ');
-        if (!motivo) return gerErro('Escreva o motivo do cancelamento.');
+        if (motivo.length < 3) return gerErro('Escreva o motivo do cancelamento.');
         var f = ocPorId(o.id);
         if (!ocPodeCancelar(f)) return gerErro('Esta OC já foi aprovada para comprar (ou já foi encerrada): não dá mais para cancelar.');
         var quem = ocQuemSou(), agora = new Date().toISOString();
@@ -25193,6 +25193,7 @@
         '<label>Urgência<select id="oc-urg"><option value="normal">Normal</option><option value="urgente"' + (edita && edita.urgencia === 'urgente' ? ' selected' : '') + '>Urgente</option></select></label></div>' +
         '<div id="oc-itens"></div><button type="button" class="btn-text" data-ger="it-add">+ outro item</button>' +
         '<label>Justificativa ou observação <span class="opt">(opcional)</span><input type="text" id="oc-obs" maxlength="200" autocomplete="off" value="' + escapeHtml(edita ? edita.obs || '' : pre && pre.obs || '') + '" /></label>' +
+        (edita ? '<label>Motivo da alteração <span class="req">*</span><input type="text" id="oc-edit-motivo" maxlength="200" autocomplete="off" placeholder="Ex.: a quantidade estava errada; faltou um item" /></label>' : '') +
         (edita ? '<p class="field-hint">Pedido por ' + escapeHtml(ocQuem(edita.pedido)) + '.</p>'
           : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-nome" maxlength="60" list="oc-nomes" autocomplete="off"' + (eu ? ' value="' + escapeHtml(eu.m.nome) + '" readonly' : '') + ' /></label>' +
         '<datalist id="oc-nomes">' + nomes.map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
@@ -25227,7 +25228,7 @@
         });
         if (erro) return gerErro(erro);
         if (!itens.length) return gerErro('Informe ao menos um item: descrição, quantidade e onde vai aplicar.');
-        if (edita) return ocSalvarEdicao(edita.id, setor, document.getElementById('oc-urg').value, itens, gerVal('oc-obs'));
+        if (edita) { var motEd = gerVal('oc-edit-motivo').replace(/\s+/g, ' '); if (motEd.length < 3) return gerErro('Escreva o motivo da alteração.'); return ocSalvarEdicao(edita.id, setor, document.getElementById('oc-urg').value, itens, gerVal('oc-obs'), motEd); }
         if (!nome) return gerErro('Informe o seu nome.');
         var dados = { status: 'pedido', setor: setor, urgencia: document.getElementById('oc-urg').value, itens: itens, obs: gerVal('oc-obs') };
         function gravar(quem) {
@@ -25257,12 +25258,12 @@
     });
   }
   // grava a alteração do pedido (só se ele ainda espera a autorização); guarda quem alterou, quando e o que estava antes
-  function ocSalvarEdicao(id, setor, urgencia, itens, obs) {
+  function ocSalvarEdicao(id, setor, urgencia, itens, obs, motivo) {
     var f = ocPorId(id);
     if (!f || f.status !== 'pedido') return gerErro('Esta OC já foi para a cotação (ou foi encerrada): não dá mais para alterar.');
     var quem = ocQuemSou(), agora = new Date().toISOString();
     var antes = [ocItensTexto(f), f.setor !== setor ? 'setor ' + (f.setor || '—') : '', (f.urgencia || 'normal') !== urgencia ? 'urgência ' + (f.urgencia || 'normal') : '', (f.obs || '') !== obs ? 'obs.: ' + (f.obs || '—') : ''].filter(Boolean).join(' · ');
-    var reg = { nome: quem.nome, id: quem.id, ref: minhaRef(), em: agora };
+    var reg = { nome: quem.nome, id: quem.id, ref: minhaRef(), em: agora, motivo: motivo || '' };
     var btn = document.getElementById('btn-ger-submit'); btn.disabled = true;
     var envio = Promise.resolve();
     itens.forEach(function(it, ix) {
@@ -25642,7 +25643,7 @@
         ((o.devolucoes || []).length ? '<h3 class="q-plano-t">Devoluções ao fornecedor</h3><ol class="oc-tl">' + o.devolucoes.map(function(d) {
           var dc = d.conferencia || {}; return '<li class="neg"><b>Devolvido</b><span>' + escapeHtml(ocQuem(dc) + (dc.obs ? ': ' + dc.obs : '') + (d.recebimento ? ' · recebido antes por ' + d.recebimento.nome : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
         ((o.edicoes || []).length ? '<h3 class="q-plano-t">Alterações antes da cotação</h3><ol class="oc-tl">' + o.edicoes.map(function(e) {
-          return '<li class="ok"><b>Alterado</b><span>' + escapeHtml(ocQuem(e) + (e.antes ? ' · antes: ' + e.antes : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
+          return '<li class="ok"><b>Alterado</b><span>' + escapeHtml(ocQuem(e) + (e.motivo ? ' · motivo: ' + e.motivo : '') + (e.antes ? ' · antes: ' + e.antes : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
         (o.status === 'cancelada' ? '<p class="sup-aviso">' + escapeHtml(ocCanceladaTexto(o) + (o.canceladaEm ? ' — ' + formatDateTimeBR(o.canceladaEm) : '')) + '</p>' : '') +
         (ocPodeEditar(o) || ocPodeCancelar(o) ? '<div class="frete-acoes">' + (ocPodeEditar(o) ? '<button type="button" class="btn-text" data-ger="oc-editar">Editar pedido</button>' : '') + (ocPodeCancelar(o) ? '<button type="button" class="btn-text danger" data-ger="oc-cancelar">Cancelar a OC</button>' : '') + '</div>' : ''),
       acao: function(a) {
@@ -25695,7 +25696,7 @@
     function p(a, etapa, txt) { if (a && a.em && !l.some(function(x) { return x.em === a.em && x.etapa === etapa; })) l.push({ em: a.em, etapa: etapa, txt: txt, por: a.nome || '', sub: a.substituindo || null, obs: a.obs || a.motivo || '', oc: o }); }
     if (o.pedido) p(Object.assign({}, o.pedido, { em: o.pedido.em || o.criadoEm, obs: '' }), 'pedido', 'Pedido feito');
     if (o.coord && !o.coord.automatica) p(o.coord, 'coord', o.coord.decisao === 'reprovado' ? 'Pedido reprovado na autorização' : 'Pedido autorizado');
-    (o.edicoes || []).forEach(function(e) { p(Object.assign({}, e, { obs: '' }), 'edicao', 'Pedido alterado antes da cotação'); });
+    (o.edicoes || []).forEach(function(e) { p(Object.assign({}, e, { obs: e.motivo || '' }), 'edicao', 'Pedido alterado antes da cotação'); });
     if (o.cotacao) {
       p(o.cotacao, 'cotacao', 'Cotação lançada' + (v ? ': ' + v.fornecedor + ' ' + fmtBRL(Number(v.valor) || 0) : ''));
       if (o.cotacao.okNicolas) p(o.cotacao.okNicolas, 'justificativa', 'Ok com menos de 3 cotações');
@@ -34216,6 +34217,17 @@
       if (patch.status === 'cancelada') return false;
       return !Object.keys(patch).some(function(k) { return OC_CAMPOS_DO_PEDIDO.indexOf(k.split('.')[0]) >= 0; });
     }
+    // Compras (19/11/2026, tarde): quem fez o pedido cancela e edita o próprio pedido mesmo com a aba Compras "só inclui",
+    // sempre com o motivo. Não muda quem pediu, o número nem a data do pedido. O banco faz o mesmo (0059).
+    function ocDonoAltera(col, id, patch) {
+      if (col !== 'compras-ordens' || !patch || !session || session.role !== 'equipe' || nivelDaAba(ui.tab) === 'ver') return false;
+      var o = cache[col] && cache[col][id], p = o && o.pedido, r = minhaRef(), eid = r.indexOf('escritorio:') === 0 ? r.slice(11) : '';
+      if (!p || !r || !(p.ref === r || (eid && p.id === eid))) return false;
+      if (Object.keys(patch).some(function(k) { return ['pedido', 'numero', 'criadoEm'].indexOf(k.split('.')[0]) >= 0; })) return false;
+      if (patch.status === 'cancelada') return String((patch.cancelamento && patch.cancelamento.motivo) || '').trim().length >= 3;
+      if ('itens' in patch || 'setor' in patch || 'urgencia' in patch || 'obs' in patch) return String((patch.edicao && patch.edicao.motivo) || '').trim().length >= 3;
+      return false;
+    }
     function docRef(col, id) {
       id = id || novoId();
       return {
@@ -34234,7 +34246,7 @@
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },
         update: function(patch) {
-          var assina = ocSoAssinatura(col, patch);
+          var assina = ocSoAssinatura(col, patch) || ocDonoAltera(col, id, patch);
           if (soInclui() && !assina) return recusaSoInclui();
           var bn = assina ? null : barrarNivel(col, id, 'update'); if (bn) return bn;
           return rpc('doc_atualizar', { p_colecao: col, p_id: id, p_dados: separar(patch).dados })
