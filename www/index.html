@@ -2691,7 +2691,7 @@
 
     <section class="drivers-admin" id="marcas-admin">
       <div class="section-head"><h2 class="section-title">Marcas: cores e logos</h2></div>
-      <p class="hint">Cada produto aparece com o <b>logo da marca</b> na frente do nome e, quando lançado, destacado na <b>cor do produto</b>: no lançamento da carga, no quadro, na conclusão do carregamento (expedição), na dupla conferência e na ordem de carregamento. Envie o logo de cada marca (PNG ou JPG; o app guarda uma cópia pequena).</p>
+      <p class="hint">Cada produto aparece com o <b>logo da marca</b> na frente do nome e, quando lançado, destacado na <b>cor do produto</b>: no lançamento da carga, no quadro, na conclusão do carregamento (expedição), na conferência por código de barras e na ordem de carregamento. Envie o logo de cada marca (PNG ou JPG; o app guarda uma cópia pequena).</p>
       <div id="marcas-list"></div>
       <input type="file" id="f-marca-logo" accept="image/*" class="hidden" aria-label="Logo da marca" />
     </section>
@@ -2725,7 +2725,7 @@
       <p class="field-hint" id="pagers-status"></p>
       <p class="form-error hidden" id="pagers-error"></p>
       <button type="button" class="btn btn-secondary btn-sm" id="btn-save-pagers">Salvar pagers</button>
-      <p class="hint" style="margin-top:14px">A <b>dupla conferência por código de barras</b> (duas pessoas, sem divergência) é <b>obrigatória</b> para concluir o carregamento. Se a carga mudar depois, a conferência tem que ser refeita.</p>
+      <p class="hint" style="margin-top:14px">A <b>conferência por código de barras</b> (uma pessoa, sem divergência) é <b>obrigatória</b> para concluir o carregamento. Se a carga mudar depois, a conferência tem que ser refeita.</p>
     </section>
 
     <section class="drivers-admin" id="acesso-admin">
@@ -3274,7 +3274,7 @@
 <div class="sheet-overlay hidden" id="conf-overlay">
   <div class="sheet">
     <div class="sheet-header">
-      <h2 id="conf-title">Dupla conferência</h2>
+      <h2 id="conf-title">Conferência por código de barras</h2>
       <button class="icon-btn" id="btn-close-conf" aria-label="Fechar">✕</button>
     </div>
     <div id="conf-body">
@@ -10688,7 +10688,7 @@
     if (!duplaOk(carga) && !liberacaoDe(carga)) {
       // quem pode liberar (senha mestre ou a permissão "liberar_carga") escolhe: liberar sem leitura ou fazer a conferência
       if (podeLiberarCarga()) { abrirLiberacaoCarga(carga.id, function() { var c2 = findCarga(carga.id); if (c2) openCargaConclude(c2); }); return; }
-      showToast((duplaMudou(carga) ? 'A carga mudou depois da dupla conferência: refaça a conferência antes de concluir.' : 'Antes de concluir, faça a dupla conferência por código de barras (sem divergência).') +
+      showToast((duplaMudou(carga) ? 'A carga mudou depois da conferência: refaça a conferência antes de concluir.' : 'Antes de concluir, faça a conferência por código de barras (sem divergência).') +
         ' Sem a leitura, só conclui com a liberação de quem tem essa permissão.');
       abrirConferencia(carga.id); return;
     }
@@ -10700,7 +10700,7 @@
       (carga.numeroPager ? row('Pager', String(carga.numeroPager)) : '') +
       row('Faturamento', carga.faturamentoOk ? 'ok de ' + (nomePessoa(carga.faturamentoPor) || '—') : 'aguardando ok') +
       (liberacaoDe(carga) && !duplaOk(carga) ? row('Liberação', liberacaoTexto(carga)) :
-        row('Dupla conferência', duplaOk(carga) ? 'ok (' + nomePessoa(carga.dupla.r1.por) + ' e ' + nomePessoa(carga.dupla.r2.por) + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, ''))) +
+        row('Conferência', duplaOk(carga) ? 'ok (' + nomePessoa(carga.dupla.r1.por) + ')' : situacaoDupla(carga).txt.replace(/^[^A-Za-zÀ-ú0-9]+/, ''))) +
       (carga.obs ? row('Observações', carga.obs) : '');
     var devBox = document.getElementById('cgc-devolucao');
     if (carga.entregaAnterior) {
@@ -10852,8 +10852,8 @@
     if (mudancas.length && motivoAlt.length < 3) { errEl.textContent = 'Os produtos mudaram no carregamento: descreva o motivo da mudança.'; errEl.classList.remove('hidden'); document.getElementById('cgc-alt-motivo').focus(); return; }
     var dupC = (findCarga(cargaConcludeId) || {}).dupla || {};
     var espOut = esperadoConferencia({ clientes: clientesOut });
-    if (!liberacaoDe(findCarga(cargaConcludeId)) && (!dupC.r1 || !dupC.r2 || !lidosBatem(dupC.r1.lidos, espOut) || !lidosBatem(dupC.r2.lidos, espOut))) {
-      errEl.textContent = 'Os paletes não batem com a dupla conferência por código de barras. Corrija as quantidades ou refaça a conferência.';
+    if (!liberacaoDe(findCarga(cargaConcludeId)) && (!dupC.r1 || !lidosBatem(dupC.r1.lidos, espOut))) {
+      errEl.textContent = 'Os paletes não batem com a conferência por código de barras. Corrija as quantidades ou refaça a conferência.';
       errEl.classList.remove('hidden'); return;
     }
     if (!sigCgcMotorista.isSatisfied()) { errEl.textContent = (findCarga(cargaConcludeId) || {}).retira ? 'Colete a assinatura de quem retirou antes de concluir.' : 'Colete a assinatura do motorista antes de concluir.'; errEl.classList.remove('hidden'); return; }
@@ -14195,12 +14195,13 @@
     });
   });
 
-  // ---------- dupla conferência do carregamento por código de barras ----------
+  // ---------- conferência do carregamento por código de barras ----------
   // Cada palete carregado é lido pela câmera (ou por um leitor de código de barras ligado ao celular/computador):
   // o código diz o produto (Cadastros › Produtos › Códigos de barras) e o app compara com os paletes do pedido.
-  // São duas conferências, feitas por pessoas diferentes (cada uma com a senha de 4 números de conferente).
-  // Fica gravado na carga em "dupla": { r1: { lidos, log, por, porId, em, ok, divergencias }, r2: {…} }.
-  // A dupla conferência é obrigatória para concluir o carregamento (16/10/2026) e só vale enquanto os paletes lidos
+  // Desde 19/11/2026 é UMA conferência (antes eram duas, por pessoas diferentes), feita com a senha de 4 números de
+  // conferente. Fica gravada na carga em "dupla": { r1: { lidos, log, por, porId, em, ok, divergencias } } (o nome do
+  // campo ficou; cargas antigas podem ter também r2, que não conta mais).
+  // A conferência é obrigatória para concluir o carregamento (16/10/2026) e só vale enquanto os paletes lidos
   // batem com os da carga: se a carga for editada depois (ou os paletes mudarem na conclusão), tem que refazer.
   var ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js';
   var conf = { cargaId: null, rodada: 1, lidos: {}, log: [], pendente: null, stream: null, detector: null, zxing: null, loop: null, pausaAte: 0, ultimo: null };
@@ -14220,39 +14221,37 @@
     });
     return m;
   }
-  // Os paletes lidos nas duas conferências ainda batem com os da carga?
+  // Os paletes lidos na conferência ainda batem com os da carga?
   function lidosBatem(lidos, esp) {
     var ks = Object.keys(esp).concat(Object.keys(lidos || {}));
     return ks.every(function(k) { return ((lidos || {})[k] || 0) === (esp[k] || 0); });
   }
   function duplaMudou(c) {
     var d = (c && c.dupla) || {};
-    if (!(d.r1 && d.r2 && d.r1.ok && d.r2.ok)) return false;
-    var esp = esperadoConferencia(c);
-    return !lidosBatem(d.r1.lidos, esp) || !lidosBatem(d.r2.lidos, esp);
+    if (!(d.r1 && d.r1.ok)) return false;
+    return !lidosBatem(d.r1.lidos, esperadoConferencia(c));
   }
   function situacaoDupla(c) {
     var d = c.dupla || {};
-    if (d.r1 && d.r2 && duplaMudou(c)) return { cls: 'pend', txt: '⚠ A carga mudou depois da dupla conferência · refazer', feita: true, divergencia: true };
-    if (d.r1 && d.r2) return (d.r1.ok && d.r2.ok) ? { cls: 'ok', txt: '✓ Dupla conferência: ' + nomePessoa(d.r1.por) + ' e ' + nomePessoa(d.r2.por), feita: true }
-      : { cls: 'pend', txt: '⚠ Dupla conferência com divergência', feita: true, divergencia: true };
-    if (d.r1) return { cls: 'pend', txt: d.r1.ok ? '◐ 1ª conferência ok (' + nomePessoa(d.r1.por) + ') · falta a 2ª' : '⚠ 1ª conferência com divergência · falta a 2ª', feita: false };
-    return { cls: 'pend', txt: '○ Dupla conferência por código de barras', feita: false };
+    if (d.r1 && duplaMudou(c)) return { cls: 'pend', txt: '⚠ A carga mudou depois da conferência · refazer', feita: true, divergencia: true };
+    if (d.r1) return d.r1.ok ? { cls: 'ok', txt: '✓ Conferência: ' + nomePessoa(d.r1.por), feita: true }
+      : { cls: 'pend', txt: '⚠ Conferência com divergência', feita: true, divergencia: true };
+    return { cls: 'pend', txt: '○ Conferência por código de barras', feita: false };
   }
-  function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r2 && d.r1.ok && d.r2.ok) && !duplaMudou(c); }
+  function duplaOk(c) { var d = c && c.dupla; return !!(d && d.r1 && d.r1.ok) && !duplaMudou(c); }
   function duplaCardHtml(c, id) {
     if (c.status === 'concluida') return '';
     if (liberacaoDe(c) && !duplaOk(c)) return '<span class="fat-badge lib">✓ ' + escapeHtml(liberacaoTexto(c, true)) + '</span>';
     var s = situacaoDupla(c);
     return '<button type="button" class="fat-badge ' + (duplaOk(c) ? 'ok' : 'pend') + '" data-action="conf-barras" data-id="' + id + '">' + escapeHtml(s.txt) +
-      (duplaOk(c) ? '' : '<span class="fat-badge-cta">' + (c.dupla && c.dupla.r1 ? 'Fazer a 2ª' : 'Conferir') + '</span>') + '</button>';
+      (duplaOk(c) ? '' : '<span class="fat-badge-cta">' + (c.dupla && c.dupla.r1 ? 'Refazer' : 'Conferir') + '</span>') + '</button>';
   }
   function duplaDetailRow(c, id, row) {
     var d = c.dupla || {}, s = situacaoDupla(c);
-    var txt = d.r1 ? '1ª: ' + nomePessoa(d.r1.por) + ' (' + formatDateTimeBR(d.r1.em) + (d.r1.ok ? ', ok' : ', com divergência') + ')' : 'pendente';
-    if (d.r2) txt += ' · 2ª: ' + nomePessoa(d.r2.por) + ' (' + formatDateTimeBR(d.r2.em) + (d.r2.ok ? ', ok' : ', com divergência') + ')';
-    var botao = c.status === 'concluida' ? '' : '<button type="button" class="btn-text" data-action="conf-barras" data-id="' + id + '">' + (s.feita ? 'Ver' : d.r1 ? 'Fazer a 2ª' : 'Conferir') + '</button>';
-    return row('Dupla conferência', escapeHtml(txt) + botao, duplaOk(c) ? 'ok' : (s.divergencia ? 'ask' : '')) + liberacaoDetailRow(c, id, row);
+    var txt = d.r1 ? nomePessoa(d.r1.por) + ' (' + formatDateTimeBR(d.r1.em) + (d.r1.ok ? ', ok' : ', com divergência') + ')' : 'pendente';
+    if (d.r2) txt += ' · 2ª (antiga): ' + nomePessoa(d.r2.por) + ' (' + formatDateTimeBR(d.r2.em) + (d.r2.ok ? ', ok' : ', com divergência') + ')';
+    var botao = c.status === 'concluida' ? '' : '<button type="button" class="btn-text" data-action="conf-barras" data-id="' + id + '">' + (s.feita ? 'Ver' : 'Conferir') + '</button>';
+    return row('Conferência', escapeHtml(txt) + botao, duplaOk(c) ? 'ok' : (s.divergencia ? 'ask' : '')) + liberacaoDetailRow(c, id, row);
   }
 
   // ----- folha da conferência -----
@@ -14261,20 +14260,19 @@
     if (!c) return;
     var d = c.dupla || {};
     conf.cargaId = id;
-    conf.rodada = !d.r1 ? 1 : !d.r2 ? 2 : 0; // 0 = as duas já feitas (só ver)
+    conf.rodada = !d.r1 ? 1 : 0; // 0 = já feita (só ver ou refazer)
     conf.lidos = {}; conf.log = []; conf.pendente = null; conf.ultimo = null; conf.confirmarDivergencia = false; confirmarRefazer = false;
-    document.getElementById('conf-title').textContent = conf.rodada === 0 ? 'Dupla conferência' : (conf.rodada === 1 ? '1ª conferência' : '2ª conferência (outra pessoa)') + ' · código de barras';
+    document.getElementById('conf-title').textContent = 'Conferência por código de barras';
     document.getElementById('conf-hint').innerHTML = conf.rodada === 0
-      ? 'As duas conferências já foram feitas. Para refazer, toque em <b>Refazer a conferência</b>.'
-      : 'Aponte a câmera para o código de barras de <b>cada palete</b> carregado (ou use o leitor de código de barras). Cada leitura conta 1 palete do produto. ' +
-        (conf.rodada === 2 ? 'A 2ª conferência tem que ser feita por <b>outra pessoa</b>.' : '');
+      ? 'A conferência já foi feita. Para refazer, toque em <b>Refazer a conferência</b>.'
+      : 'Aponte a câmera para o código de barras de <b>cada palete</b> carregado (ou use o leitor de código de barras). Cada leitura conta 1 palete do produto.';
     document.getElementById('conf-leitura').classList.toggle('hidden', conf.rodada === 0);
     var porSenha = membrosCom('conferente').length > 0;
     document.getElementById('conf-nome-label').classList.toggle('hidden', porSenha || conf.rodada === 0);
     setVal('conf-nome', '');
     setVal('conf-codigo', '');
     document.getElementById('conf-erro').classList.add('hidden');
-    document.getElementById('btn-conf-finalizar').textContent = conf.rodada === 0 ? 'Refazer a conferência' : 'Finalizar a ' + conf.rodada + 'ª conferência';
+    document.getElementById('btn-conf-finalizar').textContent = conf.rodada === 0 ? 'Refazer a conferência' : 'Finalizar a conferência';
     document.getElementById('conf-overlay').classList.remove('hidden');
     renderConferencia();
     if (conf.rodada !== 0) setTimeout(function() { var i = document.getElementById('conf-codigo'); if (i && !('ontouchstart' in window)) i.focus(); }, 60);
@@ -14292,12 +14290,12 @@
     Object.keys(conf.lidos).forEach(function(k) { if (ids.indexOf(k) < 0) ids.push(k); });
     var mostrar = conf.rodada === 0 ? null : conf.lidos;
     var tab = '<table class="resumo-table conf-tab"><thead><tr><th scope="col">Produto</th><th scope="col">Pedido</th>' +
-      (conf.rodada === 0 ? '<th scope="col">1ª</th><th scope="col">2ª</th>' : '<th scope="col">Lidos</th><th scope="col"></th>') + '</tr></thead><tbody>' +
+      (conf.rodada === 0 ? '<th scope="col">Lidos</th>' : '<th scope="col">Lidos</th><th scope="col"></th>') + '</tr></thead><tbody>' +
       ids.map(function(pid) {
         var p = findProduto(pid), nome = p ? p.nome : pid, e = esp[pid] || 0;
         if (conf.rodada === 0) {
-          var a = ((d.r1 || {}).lidos || {})[pid] || 0, b = ((d.r2 || {}).lidos || {})[pid] || 0;
-          return '<tr><td>' + produtoTagHtml(nome) + '</td><td>' + fmtInt(e) + '</td><td class="' + (a === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(a) + '</td><td class="' + (b === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(b) + '</td></tr>';
+          var a = ((d.r1 || {}).lidos || {})[pid] || 0;
+          return '<tr><td>' + produtoTagHtml(nome) + '</td><td>' + fmtInt(e) + '</td><td class="' + (a === e ? 'conf-ok' : 'conf-dif') + '">' + fmtInt(a) + '</td></tr>';
         }
         var l = mostrar[pid] || 0, cls = l === e ? 'conf-ok' : l > e ? 'conf-dif' : '';
         return '<tr><td>' + produtoTagHtml(nome) + (p && !(p.codigosBarras || []).length ? '<span class="est-sub">sem código de barras cadastrado</span>' : '') + '</td><td>' + fmtInt(e) + '</td>' +
@@ -14364,27 +14362,20 @@
   function gravarRodada(quem) {
     var c = findCarga(conf.cargaId);
     if (!c) return;
-    var d = Object.assign({}, c.dupla || {}), r1 = d.r1;
-    if (conf.rodada === 2 && r1 && ((quem.id && r1.porId && quem.id === r1.porId) || normNome(quem.nome) === normNome(r1.por))) {
-      var er = document.getElementById('conf-erro');
-      er.textContent = 'A 2ª conferência tem que ser feita por outra pessoa (a 1ª foi de ' + nomePessoa(r1.por) + ').';
-      er.classList.remove('hidden');
-      return;
-    }
     var div = conferir(conf.lidos, esperadoConferencia(c));
-    d['r' + conf.rodada] = { lidos: Object.assign({}, conf.lidos), log: conf.log.slice(-400), por: quem.nome, porId: quem.id || '', em: new Date().toISOString(), ok: !div.length, divergencias: div };
-    var rodada = conf.rodada;
+    // uma conferência só (19/11/2026): grava a rodada 1 e descarta uma 2ª antiga, se houver
+    var d = { r1: { lidos: Object.assign({}, conf.lidos), log: conf.log.slice(-400), por: quem.nome, porId: quem.id || '', em: new Date().toISOString(), ok: !div.length, divergencias: div } };
     setCargaFields(conf.cargaId, { dupla: d }).then(function() {
-      showToast(rodada + 'ª conferência registrada' + (div.length ? ' com divergência: ' + div.join('; ') + '.' : ': tudo certo.'));
+      showToast('Conferência registrada' + (div.length ? ' com divergência: ' + div.join('; ') + '.' : ': tudo certo.'));
       fecharConferencia();
-    }).catch(function(e) { console.error('dupla conferência', e); showToast('Não foi possível gravar a conferência. Tente de novo.'); });
+    }).catch(function(e) { console.error('conferência', e); showToast('Não foi possível gravar a conferência. Tente de novo.'); });
   }
   function finalizarConferencia() {
     var c = findCarga(conf.cargaId), er = document.getElementById('conf-erro');
     if (!c) return;
     er.classList.add('hidden');
     if (conf.rodada === 0) {
-      if (!confirmarRefazer) { confirmarRefazer = true; er.textContent = 'Refazer apaga as duas conferências desta carga. Toque de novo em "Refazer a conferência" para confirmar.'; er.classList.remove('hidden'); return; }
+      if (!confirmarRefazer) { confirmarRefazer = true; er.textContent = 'Refazer apaga a conferência desta carga. Toque de novo em "Refazer a conferência" para confirmar.'; er.classList.remove('hidden'); return; }
       confirmarRefazer = false;
       setCargaFields(conf.cargaId, { dupla: {} }).then(function() { var id = conf.cargaId; fecharConferencia(); abrirConferencia(id); });
       return;
@@ -14401,7 +14392,7 @@
     conf.confirmarDivergencia = false;
     if (membrosCom('conferente').length) {
       openPinDialog({
-        titulo: conf.rodada + 'ª conferência', funcao: 'conferente', funcaoTexto: 'confere o carregamento',
+        titulo: 'Conferência', funcao: 'conferente', funcaoTexto: 'confere o carregamento',
         semCadastro: 'Ninguém da conferência está cadastrado. Cadastre em Cadastros › Equipe com senha.',
         hint: 'Digite a sua senha de 4 números: o seu nome fica na conferência.',
         onOk: function(m) { gravarRodada({ id: m.id, nome: m.nome }); }
@@ -28198,7 +28189,7 @@
   // LIBERAÇÃO DE CARGA SEM LEITURA DO CÓDIGO DE BARRAS E SEM FOTOS DO CAMINHÃO (pedido de 19/10/2026)
   // Só a senha mestre e quem tem a permissão "liberar_carga" (Cadastros › Equipe com senha › Acesso ao app).
   // A liberação fica registrada na carga (excecao: quem, quando, motivo) pela função carga_excecao (migração 0016);
-  // a expedição conclui sem a dupla conferência e sem as fotos, e o motorista sai sem as fotos do caminhão lonado.
+  // a expedição conclui sem a conferência por código de barras e sem as fotos, e o motorista sai sem as fotos do caminhão lonado.
   function podeLiberarCarga() {
     return mode === 'db' && !!session && ((session.role === 'admin' && !session.soInclui) || (session.role === 'equipe' && temPermissao('liberar_carga')));
   }
@@ -28230,7 +28221,7 @@
     gerAbrir({
       titulo: 'Liberar a carga ' + cargaCode(c), botao: 'Liberar',
       html: '<p class="hint">' + (done ? 'O motorista vai poder sair <b>sem as fotos do caminhão lonado</b>.'
-          : 'A carga vai poder ser concluída <b>sem a dupla conferência por código de barras</b> e <b>sem as fotos do caminhão</b> (antes de lonar, na expedição, e lonado, no app do motorista).') +
+          : 'A carga vai poder ser concluída <b>sem a conferência por código de barras</b> e <b>sem as fotos do caminhão</b> (antes de lonar, na expedição, e lonado, no app do motorista).') +
         ' A liberação fica registrada na carga com o seu nome, a data e o motivo, e aparece na ordem de carregamento.</p>' +
         (done ? '' : '<p class="field-hint">Para fazer a conferência normal, toque em Cancelar e depois em “Conferir”.</p>') +
         '<label>Motivo <span class="req">*</span><textarea id="lib-motivo" rows="2" maxlength="300" placeholder="Ex.: leitor de código de barras com defeito"></textarea></label>',
@@ -28251,7 +28242,7 @@
   function desfazerLiberacaoCarga(cargaId) {
     db.rpc('carga_excecao', { p_carga: cargaId, p_acao: 'desfazer', p_motivo: '' }).then(function(novo) {
       if (novo && db.aplicarLocal) db.aplicarLocal('cargas', cargaId, novo);
-      showToast('Liberação desfeita: a carga volta a pedir a dupla conferência e as fotos.');
+      showToast('Liberação desfeita: a carga volta a pedir a conferência e as fotos.');
       if (document.getElementById('carga-detail-overlay') && !document.getElementById('carga-detail-overlay').classList.contains('hidden')) openCargaDetail(cargaId);
     }).catch(function(e) { console.error('desfazer liberação', e); showToast('Não foi possível desfazer agora.'); });
   }
