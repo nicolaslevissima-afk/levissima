@@ -24660,14 +24660,14 @@
   // ---------- Ordem de compra com assinatura em cada etapa (pedido de 16/10/2026) ----------
   // 1. Pedido (qualquer pessoa): descrição do item, quantidade e onde vai aplicar.
   // 2. Autorização antes da cotação: coordenador, supervisor ou gerente (cargo em Cadastros › Equipe; pedido de 17/10/2026).
-  // 3. Cotação (assistente de compras).
-  // 4. Quem pediu confere se a cotação está de acordo com o que pediu; se não, volta para a cotação (09/11/2026).
-  // 5. Aprovação da diretoria (Nicolas ou André: cargo diretor ou "Aprova compras").
-  // 6. Comprado: compras ou diretoria marca que comprou (fornecedor, valor, nº do pedido, previsão) — 20/10/2026.
-  // 7. Recebido: qualquer pessoa recebe a mercadoria, identificada pelo próprio acesso ou pela senha de 4 números.
-  // 8. Conferência do que chegou (09/11/2026): libera para entregar (certo ou com diferença) ou devolve ao fornecedor.
-  // 9. Entregue: quem fez o pedido confere e confirma que recebeu.
-  // Quem assina as etapas 2, 3, 3b, 5 a 8 (e a 4 e a 9 no lugar de quem pediu) é escolhido por cargo em Cadastros ›
+  // 3. Cotação (assistente de compras). Vai direto para a diretoria: a conferência da cotação por quem pediu
+  //    (09/11/2026) saiu em 19/11/2026; ordens antigas guardam a assinatura dela (campo "revisao") só no histórico.
+  // 4. Aprovação da diretoria (Nicolas ou André: cargo diretor ou "Aprova compras").
+  // 5. Comprado: compras ou diretoria marca que comprou (fornecedor, valor, nº do pedido, previsão) — 20/10/2026.
+  // 6. Recebido: qualquer pessoa recebe a mercadoria, identificada pelo acesso com que entrou.
+  // 7. Conferência do que chegou (09/11/2026): libera para entregar (certo ou com diferença) ou devolve ao fornecedor.
+  // 8. Entregue: quem fez o pedido confere e confirma que recebeu.
+  // Quem assina as etapas 2, 3, 3b, 4 a 7 (e a 8 no lugar de quem pediu) é escolhido por cargo em Cadastros ›
   // Compras: o que cada cargo faz (09/11/2026). Sem nada escolhido, vale o padrão (o de cima).
   // Cada pessoa vê só os pedidos que fez ou em que assinou; compras e diretoria veem todos; coordenador, supervisor
   // e gerente, os do setor deles; e todos veem a lista "Para receber" (o que foi comprado e está para chegar). A mesma
@@ -24676,17 +24676,16 @@
   var OC_COL = 'compras-ordens';
   var ordensCompra = [];
   var OC_ETAPAS = [
-    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coord./superv.' }, { k: 'cotacao', nome: 'Cotação' }, { k: 'revisao', nome: 'Quem pediu confere' },
+    { k: 'pedido', nome: 'Pedido' }, { k: 'coord', nome: 'Coord./superv.' }, { k: 'cotacao', nome: 'Cotação' },
     { k: 'aprovacao', nome: 'Diretoria' }, { k: 'compra', nome: 'Comprado' }, { k: 'recebimento', nome: 'Recebido' }, { k: 'conferencia', nome: 'Conferência' }, { k: 'fechamento', nome: 'Entregue' }
   ];
   var OC_STATUS = {
     pedido: { txt: 'Aguardando coordenador ou supervisor', cls: 'confirmar', etapa: 1 }, cotacao: { txt: 'Em cotação', cls: 'apagar', etapa: 2 },
     justificativa: { txt: 'Menos de 3 cotações: aguardando o ok do Nicolas', cls: 'aprovar', etapa: 2 },
-    revisao: { txt: 'Cotação pronta: quem pediu confere', cls: 'confirmar', etapa: 3 },
-    aprovacao: { txt: 'Aguardando diretoria', cls: 'aprovar', etapa: 4 }, compra: { txt: 'Aprovada: aguardando a compra', cls: 'apagar', etapa: 5 },
-    comprado: { txt: 'Comprado: aguardando chegar', cls: 'apagar', etapa: 6 }, recebido: { txt: 'Recebido: aguardando a conferência', cls: 'confirmar', etapa: 7 },
-    conferido: { txt: 'Conferido: entregar a quem pediu', cls: 'confirmar', etapa: 8 },
-    fechada: { txt: 'Entregue', cls: 'pago', etapa: 9 }, reprovada: { txt: 'Reprovada', cls: 'falta', etapa: -1 }, cancelada: { txt: 'Cancelada', cls: '', etapa: -1 }
+    aprovacao: { txt: 'Aguardando diretoria', cls: 'aprovar', etapa: 3 }, compra: { txt: 'Aprovada: aguardando a compra', cls: 'apagar', etapa: 4 },
+    comprado: { txt: 'Comprado: aguardando chegar', cls: 'apagar', etapa: 5 }, recebido: { txt: 'Recebido: aguardando a conferência', cls: 'confirmar', etapa: 6 },
+    conferido: { txt: 'Conferido: entregar a quem pediu', cls: 'confirmar', etapa: 7 },
+    fechada: { txt: 'Entregue', cls: 'pago', etapa: 8 }, reprovada: { txt: 'Reprovada', cls: 'falta', etapa: -1 }, cancelada: { txt: 'Cancelada', cls: '', etapa: -1 }
   };
   var OC_UNIDADES = ['un', 'cx', 'pct', 'kg', 'L', 'm', 'par', 'jogo', 'rolo', 'serviço'];
   var ocUi = { filtro: 'abertas', confirmar: null };
@@ -24699,7 +24698,8 @@
   function subscribeCompras() {
     if (!ehEscritorio()) return;
     db.collection(OC_COL).onSnapshot(function(snap) {
-      ordensCompra = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
+      // "revisao" (quem pediu conferia a cotação) saiu em 19/11/2026: o que ainda chegar assim vai para a diretoria
+      ordensCompra = snap.docs.map(function(d) { var o = Object.assign({ id: d.id }, d.data()); if (o.status === 'revisao') o.status = 'aprovacao'; return o; });
       if (session) { renderCompras(); renderTabComprasBadge(); if (ui.tab === 'inicio') renderInicio(); }
     }, function(err) { console.error(OC_COL, err); });
     db.collection(OC_PERM_COL).onSnapshot(function(snap) {
@@ -24722,7 +24722,7 @@
   }
   function ocPorId(id) { return ordensCompra.find(function(o) { return o.id === id; }) || null; }
   function ocProximoNumero() { return ordensCompra.reduce(function(m, o) { return Math.max(m, Number(o.numero) || 0); }, 0) + 1; }
-  function ocAbertas() { return ocVisiveis().filter(function(o) { return ['pedido', 'cotacao', 'justificativa', 'revisao', 'aprovacao', 'compra', 'comprado', 'recebido', 'conferido'].indexOf(o.status) >= 0; }); }
+  function ocAbertas() { return ocVisiveis().filter(function(o) { return ['pedido', 'cotacao', 'justificativa', 'aprovacao', 'compra', 'comprado', 'recebido', 'conferido'].indexOf(o.status) >= 0; }); }
   // ----- quem faz cada etapa: o que cada cargo faz (Cadastros › Compras; pedido de 09/11/2026) -----
   // Funções: os cargos de Cadastros › Equipe, "sem cargo" e as marcas "Autoriza compras", "Compras" e "Aprova compras"
   // (quem tem mais de uma soma as etapas). Sem nada salvo, vale o padrão (o mesmo de antes). A mesma regra vale no banco
@@ -24735,7 +24735,6 @@
     { k: 'coord', nome: 'Autorizar o pedido', sub: 'antes da cotação; só dos setores marcados no cadastro da pessoa, ou de todos se estiver em branco' },
     { k: 'cotacao', nome: 'Lançar a cotação' },
     { k: 'justificativa', nome: 'Ok com menos de 3 cotações', sub: 'o Nicolas sempre pode' },
-    { k: 'revisao', nome: 'Conferir a cotação no lugar de quem pediu', sub: 'quem fez o pedido sempre confere o dele' },
     { k: 'aprovacao', nome: 'Aprovar a compra (diretoria)' },
     { k: 'compra', nome: 'Marcar como comprado' },
     { k: 'recebimento', nome: 'Dar o recebido' },
@@ -24743,11 +24742,11 @@
     { k: 'entrega', nome: 'Confirmar a entrega no lugar de quem pediu', sub: 'quem fez o pedido sempre confirma o dele' }
   ];
   var OC_PERM_PADRAO = {
-    coord: ['gerente', 'coordenador', 'supervisor', 'marca:coordenador'], cotacao: ['marca:compras'], justificativa: [], revisao: [],
+    coord: ['gerente', 'coordenador', 'supervisor', 'marca:coordenador'], cotacao: ['marca:compras'], justificativa: [],
     aprovacao: ['diretor', 'marca:aprovaCompra'], compra: ['diretor', 'marca:compras', 'marca:aprovaCompra'], recebimento: null, // null: todo mundo
     conferencia: ['diretor', 'gerente', 'coordenador', 'supervisor', 'marca:compras', 'marca:aprovaCompra'], entrega: []
   };
-  var OC_ETAPA_DO_STATUS = { pedido: 'coord', cotacao: 'cotacao', justificativa: 'justificativa', revisao: 'revisao', aprovacao: 'aprovacao', compra: 'compra', recebido: 'conferencia', conferido: 'entrega' };
+  var OC_ETAPA_DO_STATUS = { pedido: 'coord', cotacao: 'cotacao', justificativa: 'justificativa', aprovacao: 'aprovacao', compra: 'compra', recebido: 'conferencia', conferido: 'entrega' };
   function ocPermPadrao(etapa) { var p = OC_PERM_PADRAO[etapa]; return p === null ? ocPermFuncoes().map(function(f) { return f[0]; }) : (p || []).slice(); }
   function ocPermLista(etapa) { var e = ocPermDoc && ocPermDoc.etapas; return e && Array.isArray(e[etapa]) ? e[etapa] : ocPermPadrao(etapa); }
   function ocFuncoesDe(m) {
@@ -24763,12 +24762,12 @@
   // ----- substituto na ausência do gestor (pedido de 09/11/2026) -----
   // O gestor informa o período e quem fica no lugar (coleção compras-ausencias). No período, as autorizações e as
   // conferências dele caem para o substituto: autorizar o pedido (dos setores do gestor), conferir o que chegou e,
-  // no lugar de quem pediu, conferir a cotação e confirmar a entrega (as que o gestor pode e as dos pedidos do próprio
+  // no lugar de quem pediu, confirmar a entrega (as que o gestor pode e as dos pedidos do próprio
   // gestor). A aprovação da diretoria, a cotação e a compra não passam. A assinatura guarda "no lugar de quem" e a
   // ordem guarda o histórico (substituicoes) para o gestor ver na volta. O banco aplica a mesma regra (0047).
   var OC_AUS_COL = 'compras-ausencias';
   var ocAusencias = [];
-  var OC_SUB_ETAPAS = ['coord', 'revisao', 'conferencia', 'entrega'];
+  var OC_SUB_ETAPAS = ['coord', 'conferencia', 'entrega'];
   var OC_AUS_MOTIVOS = [['ferias', 'Férias'], ['afastamento', 'Afastamento'], ['outro', 'Outro motivo']];
   function ocNomeCurto(n) { return String(n || '').split(' · ')[0].trim(); } // "Paulo · Coordenador" → "Paulo" (sem o cargo)
   // último dia em que a ausência valeu (encerrada antes: o dia em que foi encerrada)
@@ -24863,9 +24862,8 @@
     var e = ocEu();
     return !!(e && ocAutoriza(e.m, o));
   }
-  // Cancelar (com motivo): no pedido, na cotação, na conferência de quem pediu e na aprovação da diretoria; depois de
-  // aprovada para comprar, não.
-  var OC_CANCELA = ['pedido', 'cotacao', 'justificativa', 'revisao', 'aprovacao'];
+  // Cancelar (com motivo): no pedido, na cotação e na aprovação da diretoria; depois de aprovada para comprar, não.
+  var OC_CANCELA = ['pedido', 'cotacao', 'justificativa', 'aprovacao'];
   function ocPodeCancelar(o) { return !!o && OC_CANCELA.indexOf(o.status) >= 0 && ocVeCompleta(o); }
   function ocQuemSou() { var e = ocEu(); return e ? { nome: e.m.nome, id: e.m.id || '' } : { nome: quemSessao() || 'Escritório', id: '' }; }
   function ocPodeComprar(m) { return ocPodeEtapa(m, 'compra'); }
@@ -24903,7 +24901,7 @@
       if (ped === m.id) return null; // o próprio pedido não se autoriza no lugar do gestor
       return subs.find(function(g) { return ocPodeEtapaPropria(g, 'coord') && coordenaSetor(g, o.setor); }) || null;
     }
-    if (etapa === 'revisao' || etapa === 'entrega') {
+    if (etapa === 'entrega') {
       if (ped === m.id || ocPodeEtapaPropria(m, etapa)) return null;
       return subs.find(function(g) { return ped === g.id || ocPodeEtapaPropria(g, etapa); }) || null;
     }
@@ -24912,7 +24910,7 @@
   }
   // autoriza o pedido (etapa 2): pelo próprio cargo e setor, ou no lugar de um gestor ausente
   function ocAutoriza(m, o) { return !!m && ((ocPodeEtapaPropria(m, 'coord') && coordenaSetor(m, o.setor)) || !!ocNoLugarDe(m, 'coord', o)); }
-  // confere a cotação / confirma a entrega: quem pediu, quem pode no lugar dele (Cadastros › Compras) ou o substituto
+  // confirma a entrega: quem pediu, quem pode no lugar dele (Cadastros › Compras) ou o substituto
   function ocPodePorQuemPediu(m, etapa, o) { return !!m && ((!!o.pedido && !!m.id && o.pedido.id === m.id) || ocPodeEtapaPropria(m, etapa) || !!ocNoLugarDe(m, etapa, o)); }
   function ocOutrosNoLugar(etapa, o) {
     var l = [];
@@ -24940,7 +24938,7 @@
       if (!g) return;
       var quem = ocNomeCurto(g.nome), sub = ocNomeCurto(a.substitutoNome);
       if (o.status === 'pedido' && ocPodeEtapaPropria(g, 'coord') && coordenaSetor(g, o.setor)) l.push(quem + ' está ausente até ' + dataCurta(a.ate) + ': ' + sub + ' autoriza no lugar');
-      else if ((o.status === 'revisao' || o.status === 'conferido') && o.pedido && o.pedido.id === g.id) l.push(quem + ' (quem pediu) está ausente até ' + dataCurta(a.ate) + ': ' + sub + ' responde no lugar');
+      else if (o.status === 'conferido' && o.pedido && o.pedido.id === g.id) l.push(quem + ' (quem pediu) está ausente até ' + dataCurta(a.ate) + ': ' + sub + ' responde no lugar');
     });
     return l.join(' · ');
   }
@@ -24989,7 +24987,8 @@
   // ----- tela -----
   function ocPassosHtml(o) {
     var st = OC_STATUS[o.status] || {}, et = st.etapa;
-    var parou = et === -1 ? (o.aprovacao && o.aprovacao.decisao === 'reprovado' ? 4 : o.coord && o.coord.decisao === 'reprovado' ? 1 : -1) : -1;
+    var iAprov = OC_ETAPAS.findIndex(function(e) { return e.k === 'aprovacao'; });
+    var parou = et === -1 ? (o.aprovacao && o.aprovacao.decisao === 'reprovado' ? iAprov : o.coord && o.coord.decisao === 'reprovado' ? 1 : -1) : -1;
     return '<ol class="oc-passos">' + OC_ETAPAS.map(function(e, i) {
       var cls = parou === i ? 'neg' : (et === OC_ETAPAS.length || i < et || (et === -1 && i < parou)) ? 'feito' : i === et ? 'agora' : '';
       return '<li class="' + cls + '"><span>' + (cls === 'feito' ? '✓' : cls === 'neg' ? '✕' : (i + 1)) + '</span>' + escapeHtml(e.nome) + '</li>';
@@ -25002,7 +25001,6 @@
     if (ocPodeEditar(o)) acoes.push('<button class="btn-text" data-oc="editar" data-id="' + id + '">Editar pedido</button>');
     if (o.status === 'cotacao') acoes.push('<button class="btn-text" data-oc="cotar" data-id="' + id + '"><b>Lançar cotação</b> (' + escapeHtml(ocQuemFaz('cotacao')) + ')</button>');
     if (o.status === 'justificativa') acoes.push('<button class="btn-text" data-oc="just" data-id="' + id + '"><b>Ok da justificativa</b> (' + escapeHtml(ocNomesEtapa('justificativa', ehNicolas) || 'Nicolas') + ')</button>');
-    if (o.status === 'revisao') acoes.push('<button class="btn-text" data-oc="revisar" data-id="' + id + '"><b>Conferir a cotação</b> (quem pediu: ' + escapeHtml(ocNomePedido(o)) + ')</button>');
     if (o.status === 'aprovacao') acoes.push('<button class="btn-text" data-oc="nicolas" data-id="' + id + '"><b>Aprovar ou reprovar</b> (diretoria: ' + escapeHtml(ocNomesAprovacao()) + ')</button>');
     if (o.status === 'compra') acoes.push('<button class="btn-text" data-oc="comprado" data-id="' + id + '"><b>Marcar como comprado</b> (' + escapeHtml(ocNomesCompra()) + ')</button>');
     if (o.status === 'comprado') acoes.push('<button class="btn-text" data-oc="recebido" data-id="' + id + '"><b>Dar o recebido</b> (' + escapeHtml(ocCargosEtapa('recebimento')) + ')</button>');
@@ -25066,7 +25064,6 @@
     { k: 'abertas', nome: 'Abertas', f: function(o) { return OC_STATUS[o.status] && OC_STATUS[o.status].etapa > 0 && o.status !== 'fechada'; } },
     { k: 'pedido', nome: 'Coord./superv.', f: function(o) { return o.status === 'pedido'; } },
     { k: 'cotacao', nome: 'Cotação', f: function(o) { return o.status === 'cotacao' || o.status === 'justificativa'; } },
-    { k: 'revisao', nome: 'Quem pediu confere', f: function(o) { return o.status === 'revisao'; } },
     { k: 'aprovacao', nome: 'Diretoria', f: function(o) { return o.status === 'aprovacao'; } },
     { k: 'compra', nome: 'Comprar', f: function(o) { return o.status === 'compra'; } },
     { k: 'comprado', nome: 'Para receber', f: function(o) { return o.status === 'comprado'; }, todos: true },
@@ -25086,12 +25083,12 @@
     var filtro = OC_FILTROS.find(function(f) { return f.k === ocUi.filtro; }) || OC_FILTROS[0];
     var base = filtro.todos ? ordensCompra : vis;
     var lista = base.filter(filtro.f).sort(function(a, b) { return (b.urgencia === 'urgente') - (a.urgencia === 'urgente') || (Number(b.numero) || 0) - (Number(a.numero) || 0); });
-    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · <b>autorização</b> (' + escapeHtml(ocCargosEtapa('coord')) + ') → 3 · <b>cotação</b> (' + escapeHtml(ocQuemFaz('cotacao')) + ') → 4 · <b>quem pediu confere</b> se a cotação está de acordo → 5 · aprovação da <b>diretoria</b> (' + escapeHtml(ocNomesAprovacao()) + ') → 6 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 7 · <b>recebido</b> (' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada) → 8 · <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') → 9 · <b>entregue</b> a quem pediu, que confirma. Até ir para a cotação, o pedido pode ser <b>editado</b>; dá para <b>cancelar</b> até a aprovação da diretoria. Quem faz cada etapa: Cadastros › Compras.</p>' +
+    box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · <b>autorização</b> (' + escapeHtml(ocCargosEtapa('coord')) + ') → 3 · <b>cotação</b> (' + escapeHtml(ocQuemFaz('cotacao')) + ') → 4 · aprovação da <b>diretoria</b> (' + escapeHtml(ocNomesAprovacao()) + ') → 5 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 6 · <b>recebido</b> (' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada) → 7 · <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') → 8 · <b>entregue</b> a quem pediu, que confirma. Até ir para a cotação, o pedido pode ser <b>editado</b>; dá para <b>cancelar</b> até a aprovação da diretoria. Quem faz cada etapa: Cadastros › Compras.</p>' +
       (tudo ? '' : '<p class="hint oc-so-meus">Você vê os pedidos que fez ou em que assinou' + (ocEu() && ocPodeEtapa(ocEu().m, 'coord') ? ' e os do seu setor' : '') + ', e os que estão numa etapa que você assina. Em <b>Para receber</b> estão as compras que vão chegar.</p>') +
       ocAusAvisosHtml() +
       '<div class="est-cards">' +
         supCard('c-entrada', tudo ? 'Pedido de compra' : 'Meus pedidos', fmtInt(ocAbertas().length), (ocAbertas().length === 1 ? 'ordem aberta' : 'ordens abertas') + (urg ? ' · <b>' + urg + (urg === 1 ? ' urgente' : ' urgentes') + '</b>' : ''), '<button type="button" class="btn btn-primary btn-sm" data-oc="novo">+ Novo pedido</button>') +
-        supCard('c-saldo' + (n('pedido') + n('revisao') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('revisao') + n('aprovacao')), n('pedido') + ' com coordenador/supervisor · ' + n('revisao') + ' com quem pediu · ' + n('aprovacao') + ' com a diretoria') +
+        supCard('c-saldo' + (n('pedido') + n('aprovacao') ? ' alerta' : ''), 'Aprovações', fmtInt(n('pedido') + n('aprovacao')), n('pedido') + ' com coordenador/supervisor · ' + n('aprovacao') + ' com a diretoria') +
         supCard('c-futuro' + (nReceber ? ' alerta' : ''), 'Compra e recebimento', fmtInt(n('compra') + nReceber + n('recebido') + n('conferido')), n('compra') + ' para comprar · ' + nReceber + ' para receber · ' + n('recebido') + ' para conferir · ' + n('conferido') + ' para entregar') +
       '</div>' +
       ocAusSecaoHtml() +
@@ -25104,12 +25101,12 @@
     carregarFotosCanhoto(box);
   }
   // selo da aba: o que espera a assinatura de quem está usando (com acesso pessoal: só as etapas que ele assina, pelo
-  // Cadastros › Compras; a cotação para conferir e a entrega esperam quem pediu); acesso sem pessoa ligada: tudo o que
+  // Cadastros › Compras; a entrega espera quem pediu); acesso sem pessoa ligada: tudo o que
   // está esperando assinatura
   function ocEsperando() {
     var e = ocEu(), m = e ? e.m : null, mestre = !!session && session.ref === 'mestre', adm = !!session && session.role === 'admin';
     return ocVisiveis().filter(function(o) {
-      if ((o.status === 'revisao' || o.status === 'conferido') && (ocMinha(o) || (!!m && !!o.pedido && ocSubstituidos(m).some(function(g) { return o.pedido.id === g.id; })))) return true;
+      if (o.status === 'conferido' && (ocMinha(o) || (!!m && !!o.pedido && ocSubstituidos(m).some(function(g) { return o.pedido.id === g.id; })))) return true;
       if (!m && !adm) return ['pedido', 'cotacao', 'justificativa', 'aprovacao', 'compra', 'recebido'].indexOf(o.status) >= 0;
       if (o.status === 'pedido') return !!m && ocAutoriza(m, o);
       if (o.status === 'justificativa') return mestre || ehNicolas(m) || ocPodeEtapa(m, 'justificativa');
@@ -25137,7 +25134,6 @@
     else if (a === 'cotar' && o) abrirCotacao(o);
     else if (a === 'just' && o) abrirJustificativaOc(o);
     else if (a === 'comprado' && o) abrirCompradoOc(o);
-    else if (a === 'revisar' && o) abrirRevisaoOc(o);
     else if (a === 'recebido' && o) abrirRecebidoOc(o);
     else if (a === 'conferir' && o) abrirConferenciaOc(o);
     else if (a === 'entrega' && o) abrirEntregaOc(o);
@@ -25149,17 +25145,16 @@
     else if (a === 'aus-encerrar') ocAusEncerrar(ocAusPorId(b.dataset.id), b);
   });
   function ocCanceladaTexto(o) {
-    var c = o.cancelamento || {}, et = c.etapa && OC_STATUS[c.etapa] ? ' (' + ({ pedido: 'no pedido', cotacao: 'na cotação', justificativa: 'na cotação', revisao: 'na conferência de quem pediu', aprovacao: 'na aprovação da diretoria' }[c.etapa] || '') + ')' : '';
+    var c = o.cancelamento || {}, et = c.etapa && (OC_STATUS[c.etapa] || c.etapa === 'revisao') ? ' (' + ({ pedido: 'no pedido', cotacao: 'na cotação', justificativa: 'na cotação', revisao: 'na conferência de quem pediu', aprovacao: 'na aprovação da diretoria' }[c.etapa] || '') + ')' : '';
     return 'Cancelada' + (c.nome || o.canceladaPor ? ' por ' + (c.nome || o.canceladaPor) : '') + et + (c.motivo ? ': ' + c.motivo : '');
   }
   // cancelar com motivo (04/11/2026): no pedido, na cotação ou na aprovação da diretoria
   function abrirCancelarOc(o) {
     if (!ocPodeCancelar(o)) { showToast('Esta OC já foi aprovada para comprar: não dá mais para cancelar.'); return; }
-    // (cancela no pedido, na cotação, na conferência de quem pediu ou na aprovação da diretoria)
     gerAbrir({
       titulo: 'Cancelar · OC nº ' + o.numero, botao: 'Cancelar a OC',
       html: ocResumoHtml(o) +
-        '<p class="hint">A OC sai das abertas e fica em <b>Reprovadas e canceladas</b>, com o seu nome, a data e o motivo. Dá para cancelar no pedido, na cotação, na conferência de quem pediu ou na aprovação da diretoria.</p>' +
+        '<p class="hint">A OC sai das abertas e fica em <b>Reprovadas e canceladas</b>, com o seu nome, a data e o motivo. Dá para cancelar no pedido, na cotação ou na aprovação da diretoria.</p>' +
         '<label>Motivo do cancelamento <span class="req">*</span><input type="text" id="oc-canc-motivo" maxlength="200" autocomplete="off" placeholder="Ex.: o item não é mais necessário" /></label>',
       salvar: function() {
         var motivo = gerVal('oc-canc-motivo').replace(/\s+/g, ' ');
@@ -25415,7 +25410,7 @@
       titulo: 'Justificativa · OC nº ' + o.numero, botao: 'Salvar',
       html: ocResumoHtml(o) + ocCotacoesHtml(o) +
         '<p class="hint">Só ' + (c.cotacoes || []).length + ((c.cotacoes || []).length === 1 ? ' cotação' : ' cotações') + '. Justificativa de ' + escapeHtml(c.nome || '—') + ': <b>' + escapeHtml(c.justificativa || '—') + '</b></p>' +
-        '<label class="check"><input type="radio" name="oc-just" value="ok" checked /> Ok: seguir para quem pediu conferir (depois, a diretoria)</label>' +
+        '<label class="check"><input type="radio" name="oc-just" value="ok" checked /> Ok: seguir para a diretoria</label>' +
         '<label class="check"><input type="radio" name="oc-just" value="recotar" /> Pedir mais cotações</label>' +
         '<label>Observação <span class="opt">(obrigatória para pedir mais cotações)</span><input type="text" id="oc-just-obs" maxlength="200" autocomplete="off" /></label>' +
         '<p class="field-hint">Quem dá o ok é o Nicolas (com o acesso dele ou a senha mestre)' + (ocNomesEtapa('justificativa') ? ' ou ' + escapeHtml(ocNomesEtapa('justificativa')) : '') + '.</p>' + ocAssinaComoHtml(),
@@ -25424,9 +25419,9 @@
         if (dec === 'recotar' && obs.length < 3) return gerErro('Escreva o que falta (ex.: “cotar também na loja X”).');
         function gravar(quem) {
           var agora = new Date().toISOString(), ass = { nome: quem.nome, id: quem.id || '', ref: minhaRef(), em: agora, obs: obs };
-          var dados = dec === 'ok' ? { status: 'revisao', cotacao: Object.assign({}, c, { okNicolas: ass }), atualizadoEm: agora }
+          var dados = dec === 'ok' ? { status: 'aprovacao', cotacao: Object.assign({}, c, { okNicolas: ass }), atualizadoEm: agora }
             : { status: 'cotacao', recotacoes: (o.recotacoes || []).concat([{ nome: quem.nome, em: agora, obs: obs }]), atualizadoEm: agora };
-          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'ok' ? 'Ok dado: agora ' + ocNomePedido(o) + ' confere se a cotação está de acordo com o pedido.' : 'Pedido de mais cotações enviado para compras.'); }).catch(falhaOc);
+          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'ok' ? 'Ok dado: a OC nº ' + o.numero + ' segue para a diretoria (' + ocNomesAprovacao() + ').' : 'Pedido de mais cotações enviado para compras.'); }).catch(falhaOc);
         }
         if (session && session.role === 'admin' && session.ref === 'mestre') { gravar({ nome: quemSessao(), id: '' }); return false; }
         ocAssinar(function(m) { return ehNicolas(m) || ocPodeEtapa(m, 'justificativa'); }, ocNomesEtapa('justificativa') ? 'é o Nicolas nem ' + ocNomesEtapa('justificativa') : 'é o Nicolas',
@@ -25441,9 +25436,9 @@
     while (ant.length < 3) ant.push({ fornecedor: '', valor: '', prazo: '', pagamento: '', obs: '' });
     var rec = (o.recotacoes || []).slice(-1)[0];
     gerAbrir({
-      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para quem pediu conferir', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
+      titulo: 'Cotação · OC nº ' + o.numero, botao: 'Enviar para a diretoria', cot: ant, escolhida: o.cotacao ? o.cotacao.escolhida || 0 : 0,
       html: ocResumoHtml(o) + (rec ? '<p class="sup-aviso">⚠ Nova cotação pedida por ' + escapeHtml(rec.nome) + ': ' + escapeHtml(rec.obs || '') + '</p>' : '') +
-        '<p class="hint"><b>Mínimo de 3 cotações</b> (até 4). Marque a escolhida (o menor preço vem marcado). Com menos de 3, escreva a justificativa: a OC só segue depois do <b>ok do Nicolas</b>. Depois, <b>' + escapeHtml(ocNomePedido(o)) + '</b> (quem pediu) confere se está de acordo com o pedido, e aí vai para a diretoria.</p><div id="oc-cots"></div>' +
+        '<p class="hint"><b>Mínimo de 3 cotações</b> (até 4). Marque a escolhida (o menor preço vem marcado). Com menos de 3, escreva a justificativa: a OC só segue depois do <b>ok do Nicolas</b>. Depois vai para a <b>diretoria</b> (' + escapeHtml(ocNomesAprovacao()) + ').</p><div id="oc-cots"></div>' +
         '<button type="button" class="btn-text" data-ger="cot-add" id="oc-cot-add">+ outra cotação</button>' +
         '<label>Justificativa <span class="opt">(obrigatória com menos de 3 cotações)</span><input type="text" id="oc-cot-just" maxlength="240" autocomplete="off" value="' + escapeHtml((o.cotacao && o.cotacao.justificativa) || '') + '" placeholder="Ex.: só um fornecedor tem a peça original" /></label>' +
         '<datalist id="oc-forns">' + nomesFornecedoresCadastro().map(function(n2) { return '<option value="' + escapeHtml(n2) + '"></option>'; }).join('') + '</datalist>' +
@@ -25473,48 +25468,9 @@
         if (esc === undefined) return gerErro('Marque a cotação escolhida (uma que tenha fornecedor e valor).');
         ocAssinar(function(m) { return ocPodeEtapa(m, 'cotacao'); }, 'lança cotação (' + ocQuemFaz('cotacao') + ')', 'Cotação · OC nº ' + o.numero, '', null, function(m) {
           var agora = new Date().toISOString(), poucas = cots.length < 3;
-          ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, ref: minhaRef(), em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs'), justificativa: poucas ? just : '' }, status: poucas ? 'justificativa' : 'revisao', atualizadoEm: agora })
-            .then(function() { gerFechar(); showToast(poucas ? 'Cotação enviada: com menos de 3, espera o ok do Nicolas na justificativa.' : 'Cotação enviada: agora ' + ocNomePedido(o) + ' confere se está de acordo com o pedido.'); }).catch(falhaOc);
+          ocGravar(o.id, { cotacao: { nome: m.nome, id: m.id, ref: minhaRef(), em: agora, cotacoes: cots, escolhida: esc, obs: gerVal('oc-cot-obs'), justificativa: poucas ? just : '' }, status: poucas ? 'justificativa' : 'aprovacao', atualizadoEm: agora })
+            .then(function() { gerFechar(); showToast(poucas ? 'Cotação enviada: com menos de 3, espera o ok do Nicolas na justificativa.' : 'Cotação enviada: a OC nº ' + o.numero + ' segue para a diretoria (' + ocNomesAprovacao() + ').'); }).catch(falhaOc);
         }, false, true);
-        return false;
-      }
-    });
-  }
-  // ----- 4. quem pediu confere se a cotação está de acordo com o que pediu (pedido de 09/11/2026) -----
-  // De acordo: segue para a diretoria. Não está de acordo: volta para a cotação, com o que precisa mudar. Assina quem
-  // fez o pedido (reconhecido pelo acesso com que entrou) ou quem confere no lugar dele (Cadastros › Compras).
-  function abrirRevisaoOc(o) {
-    var temId = !!(o.pedido && o.pedido.id), outros = ocOutrosNoLugar('revisao', o);
-    gerAbrir({
-      titulo: 'Conferir a cotação · OC nº ' + o.numero, botao: 'Salvar',
-      html: ocResumoHtml(o) + ocCotacoesHtml(o) +
-        '<p class="hint">Confira se a cotação escolhida é do que foi pedido (item, quantidade, especificação). Depois ela vai para a <b>diretoria</b>.</p>' +
-        '<label class="check"><input type="radio" name="oc-rev" value="de-acordo" checked /> Está de acordo com o que pedi: seguir para a diretoria</label>' +
-        '<label class="check"><input type="radio" name="oc-rev" value="nao" /> Não está de acordo: voltar para a cotação</label>' +
-        '<label>Observação <span class="opt">(obrigatória se não estiver de acordo)</span><input type="text" id="oc-rev-obs" maxlength="200" autocomplete="off" placeholder="Ex.: o rolamento precisa ser 2RS, não ZZ" /></label>' +
-        (temId ? '<p class="field-hint">Quem fez o pedido (' + escapeHtml(o.pedido.nome) + ') confere, com o próprio acesso' + (outros ? '. Também podem conferir no lugar dele: ' + escapeHtml(outros) : '') + '.</p>' + ocAssinaComoHtml()
-          : '<label>Seu nome <span class="req">*</span><input type="text" id="oc-rev-nome" maxlength="60" placeholder="' + escapeHtml(o.pedido ? o.pedido.nome : '') + '" autocomplete="off" /></label><p class="field-hint">O pedido foi feito por ' + escapeHtml(o.pedido ? o.pedido.nome : '—') + ': é ele (ou ela) quem confere.</p>'),
-      salvar: function() {
-        var dec = (document.querySelector('input[name="oc-rev"]:checked') || {}).value || 'de-acordo', obs = gerVal('oc-rev-obs');
-        if (dec === 'nao' && obs.length < 3) return gerErro('Escreva o que não está de acordo (o que precisa mudar na cotação).');
-        function gravar(quem, m) {
-          var f = ocPorId(o.id) || o;
-          if (f.status !== 'revisao') { gerErro('Esta OC já mudou de etapa.'); return; }
-          var agora = new Date().toISOString(), ass = Object.assign(quem, { ref: minhaRef(), em: agora, decisao: dec, obs: obs }), dados = { revisao: ass, atualizadoEm: agora };
-          if (m) ocSubMarcar(dados, ass, m, 'revisao', f, dec === 'de-acordo' ? 'Conferiu a cotação: de acordo' : 'Não concordou com a cotação');
-          if (dec === 'de-acordo') dados.status = 'aprovacao';
-          else { dados.status = 'cotacao'; dados.recotacoes = (f.recotacoes || []).concat([{ nome: quem.nome, em: agora, obs: 'Quem pediu: ' + obs }]); }
-          ocGravar(o.id, dados).then(function() { gerFechar(); showToast(dec === 'de-acordo' ? 'Conferido: a OC nº ' + o.numero + ' segue para a diretoria (' + ocNomesAprovacao() + ').' : 'Voltou para a cotação com o que precisa mudar.'); }).catch(falhaOc);
-        }
-        if (temId) {
-          ocAssinar(function(m) { return ocPodePorQuemPediu(m, 'revisao', o); }, 'é quem fez o pedido (' + o.pedido.nome + ')' + (outros ? ' ou ' + outros : ''), 'Conferir a cotação · OC nº ' + o.numero, '', null,
-            function(m) { gravar({ nome: m.nome, id: m.id }, m); }, false);
-        } else {
-          var nome = gerVal('oc-rev-nome');
-          if (!nome) return gerErro('Informe o seu nome.');
-          if (o.pedido && normNome(nome) !== normNome(o.pedido.nome)) return gerErro('Quem confere a cotação é quem fez o pedido: ' + o.pedido.nome + '.');
-          gravar({ nome: nome, id: '', semSenha: true });
-        }
         return false;
       }
     });
@@ -25677,12 +25633,12 @@
         '<h3 class="q-plano-t">Assinaturas</h3><ol class="oc-tl">' +
           linha('1 · Pedido', o.pedido) + linha('2 · Coordenador/supervisor', o.coord) +
           linha('3 · Cotação', o.cotacao, v ? ' · escolhida ' + v.fornecedor + ' ' + fmtBRL(Number(v.valor) || 0) : '') +
-          linha('4 · Quem pediu conferiu', o.revisao, o.revisao ? (o.revisao.decisao === 'de-acordo' ? ' · de acordo' : ' · não estava de acordo') : '') +
-          linha('5 · Diretoria', o.aprovacao) +
-          linha('6 · Comprado', c, c ? [c.fornecedor ? ' · ' + c.fornecedor : '', c.valor ? ' ' + fmtBRL(Number(c.valor) || 0) : '', c.pedidoFornecedor ? ' · nº ' + c.pedidoFornecedor : '', c.previsao ? ' · previsão ' + formatDateBR(c.previsao) : ''].join('') : '') +
-          linha('7 · Recebido', r, r ? (r.nf ? ' · NF ' + r.nf : '') + (r.conforme ? ' · conferido' : ' · com diferença') : '') +
-          linha('8 · Conferência', o.conferencia, o.conferencia ? (o.conferencia.resultado === 'ok' ? ' · chegou certo' : ' · com diferença') : '') +
-          linha('9 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>' +
+          (o.revisao ? linha('Quem pediu conferiu a cotação (etapa antiga)', o.revisao, o.revisao.decisao === 'de-acordo' ? ' · de acordo' : ' · não estava de acordo') : '') +
+          linha('4 · Diretoria', o.aprovacao) +
+          linha('5 · Comprado', c, c ? [c.fornecedor ? ' · ' + c.fornecedor : '', c.valor ? ' ' + fmtBRL(Number(c.valor) || 0) : '', c.pedidoFornecedor ? ' · nº ' + c.pedidoFornecedor : '', c.previsao ? ' · previsão ' + formatDateBR(c.previsao) : ''].join('') : '') +
+          linha('6 · Recebido', r, r ? (r.nf ? ' · NF ' + r.nf : '') + (r.conforme ? ' · conferido' : ' · com diferença') : '') +
+          linha('7 · Conferência', o.conferencia, o.conferencia ? (o.conferencia.resultado === 'ok' ? ' · chegou certo' : ' · com diferença') : '') +
+          linha('8 · Entrega', o.fechamento, o.fechamento ? (o.fechamento.conforme ? ' · conferido' : ' · com diferença') : '') + '</ol>' +
         ((o.devolucoes || []).length ? '<h3 class="q-plano-t">Devoluções ao fornecedor</h3><ol class="oc-tl">' + o.devolucoes.map(function(d) {
           var dc = d.conferencia || {}; return '<li class="neg"><b>Devolvido</b><span>' + escapeHtml(ocQuem(dc) + (dc.obs ? ': ' + dc.obs : '') + (d.recebimento ? ' · recebido antes por ' + d.recebimento.nome : '')) + '</span></li>'; }).join('') + '</ol>' : '') +
         ((o.edicoes || []).length ? '<h3 class="q-plano-t">Alterações antes da cotação</h3><ol class="oc-tl">' + o.edicoes.map(function(e) {
@@ -25719,7 +25675,6 @@
     if (!g) return '';
     if (ocPodeEtapaPropria(g, 'coord')) l.push('autorizar os pedidos' + (String(g.setores || '').trim() ? ' de ' + String(g.setores).split(/[,;\n]+/).map(function(x) { return x.trim(); }).filter(Boolean).join(', ') : ' (todos os setores)'));
     if (ocPodeEtapaPropria(g, 'conferencia')) l.push('conferir o que chegou');
-    if (ocPodeEtapaPropria(g, 'revisao')) l.push('conferir a cotação no lugar de quem pediu');
     if (ocPodeEtapaPropria(g, 'entrega')) l.push('confirmar a entrega no lugar de quem pediu');
     l.push('responder pelos pedidos que ' + ocNomeCurto(g.nome) + ' fez (conferir a cotação e confirmar a entrega)');
     return l.join('; ');
@@ -25967,7 +25922,7 @@
         }).join('') + '</div></fieldset>';
     }).join('') + '</div>';
     h += '<h3 class="q-plano-t">Quem pode cada etapa hoje</h3><ul class="ocp-quem">' + OC_PERM_ETAPAS.map(function(e) {
-      var nomes = ocNomesEtapa(e.k, e.k === 'justificativa' ? ehNicolas : null), sempre = e.k === 'revisao' || e.k === 'entrega' ? 'quem fez o pedido' : '';
+      var nomes = ocNomesEtapa(e.k, e.k === 'justificativa' ? ehNicolas : null), sempre = e.k === 'entrega' ? 'quem fez o pedido' : '';
       var soMestre = ['aprovacao', 'compra', 'recebimento', 'conferencia'].indexOf(e.k) >= 0;
       return '<li data-ocp-quem="' + e.k + '"><b>' + escapeHtml(e.nome) + (e.sub ? ' <small class="opt">(' + escapeHtml(e.sub) + ')</small>' : '') + '</b><span>' +
         (nomes ? escapeHtml(nomes) + (sempre ? ' e ' + sempre : '') : sempre ? escapeHtml(sempre) : '<span class="ninguem">⚠ ninguém da equipe' + (soMestre ? ' (só a senha mestre)' : ': os pedidos vão parar nesta etapa') + '</span>') + '</span></li>';
@@ -27040,7 +26995,7 @@
     var ocEsp = 0, ocAprov = 0, ocComprar = 0, ocReceber = 0, ocConferir = 0, ocEntregar = 0;
     try {
       ocEsp = ocEsperando().length;
-      ocVisiveis().forEach(function(o) { if (o.status === 'pedido' || o.status === 'revisao' || o.status === 'aprovacao' || o.status === 'justificativa') ocAprov++; else if (o.status === 'compra') ocComprar++; else if (o.status === 'recebido') ocConferir++; else if (o.status === 'conferido') ocEntregar++; });
+      ocVisiveis().forEach(function(o) { if (o.status === 'pedido' || o.status === 'aprovacao' || o.status === 'justificativa') ocAprov++; else if (o.status === 'compra') ocComprar++; else if (o.status === 'recebido') ocConferir++; else if (o.status === 'conferido') ocEntregar++; });
       ocReceber = ordensCompra.filter(function(o) { return o.status === 'comprado'; }).length;
     } catch (e) {}
     tiles.push({ tab: 'compras', t: 'Compras', v: ocEsp, u: ocEsp === 1 ? 'ordem esperando assinatura' : 'ordens esperando assinatura', s: ocAprov + ' para aprovar · ' + ocComprar + ' para comprar · ' + ocReceber + ' para receber · ' + ocConferir + ' para conferir · ' + ocEntregar + ' para entregar', alerta: ocAprov > 0 });
@@ -32623,7 +32578,7 @@
       ordensCompra.forEach(function(o) {
         if (!ocMinha(o) || !vistas[o.id] || vistas[o.id] === o.status) return;
         var st = OC_STATUS[o.status] || { txt: o.status };
-        l.push({ ico: '🛒', txt: 'Seu pedido de compra OC nº ' + o.numero + ' — ' + st.txt + (o.status === 'conferido' ? ' (confirme a entrega)' : o.status === 'revisao' ? ' (confira se está de acordo)' : ''), ir: 'compras', filtro: o.status === 'conferido' || o.status === 'revisao' ? o.status : 'abertas' });
+        l.push({ ico: '🛒', txt: 'Seu pedido de compra OC nº ' + o.numero + ' — ' + st.txt + (o.status === 'conferido' ? ' (confirme a entrega)' : ''), ir: 'compras', filtro: o.status === 'conferido' ? o.status : 'abertas' });
       });
       var euAus = ocAusEu();
       if (euAus) ocAusencias.forEach(function(a) {
@@ -32631,7 +32586,7 @@
         if (a.substitutoId === euAus.id && sit === 'ativa') l.push({ ico: '🔁', txt: 'Você está substituindo ' + ocNomeCurto(a.gestorNome) + ' nas compras até ' + formatDateBR(a.ate) + ': as autorizações e conferências caem para você', ir: 'compras', filtro: 'abertas' });
         if (a.gestorId === euAus.id && sit === 'passada' && !a.vistoEm && diasAte(ocAusFim(a)) >= -60) l.push({ ico: '👋', txt: 'Você voltou: veja o histórico de compras da sua ausência (' + ocAusPeriodo(a) + ')', ir: 'compras', filtro: 'abertas', ausHist: a.id });
       });
-      var esp = ocEsperando().filter(function(o) { return !((o.status === 'conferido' || o.status === 'revisao') && ocMinha(o) && vistas[o.id] !== o.status); });
+      var esp = ocEsperando().filter(function(o) { return !(o.status === 'conferido' && ocMinha(o) && vistas[o.id] !== o.status); });
       if (esp.length) l.push({ ico: '✍️', txt: esp.length + (esp.length === 1 ? ' pedido de compra espera a sua assinatura' : ' pedidos de compra esperam a sua assinatura') + ' (OC nº ' + esp.slice(0, 4).map(function(o) { return o.numero; }).join(', ') + (esp.length > 4 ? '…' : '') + ')', ir: 'compras', filtro: 'abertas' });
     }
     if (tem('brindes') && eu === 'mestre') {
@@ -34252,6 +34207,15 @@
       var e3 = new Error('nivel'); e3.codigo = 'so_inclui'; return Promise.reject(e3);
     }
     function jaExiste(col, id) { return !!(cache[col] && cache[col][id] !== undefined); }
+    // Compras (19/11/2026): assinar uma etapa da ordem (autorizar, cotar, aprovar, comprar, receber, conferir, confirmar a
+    // entrega) é a assinatura de quem pode, não "alterar": vale também com a aba Compras "só inclui" (e com todas as abas
+    // "só inclui"). Editar o pedido e cancelar continuam barrados; "só visualiza" também. O banco faz o mesmo (0058).
+    var OC_CAMPOS_DO_PEDIDO = ['setor', 'urgencia', 'itens', 'obs', 'edicao', 'edicoes', 'cancelamento', 'canceladaEm', 'canceladaPor', 'numero', 'pedido', 'criadoEm'];
+    function ocSoAssinatura(col, patch) {
+      if (col !== 'compras-ordens' || !patch || !session || session.role !== 'equipe' || nivelDaAba(ui.tab) === 'ver') return false;
+      if (patch.status === 'cancelada') return false;
+      return !Object.keys(patch).some(function(k) { return OC_CAMPOS_DO_PEDIDO.indexOf(k.split('.')[0]) >= 0; });
+    }
     function docRef(col, id) {
       id = id || novoId();
       return {
@@ -34270,8 +34234,9 @@
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },
         update: function(patch) {
-          if (soInclui()) return recusaSoInclui();
-          var bn = barrarNivel(col, id, 'update'); if (bn) return bn;
+          var assina = ocSoAssinatura(col, patch);
+          if (soInclui() && !assina) return recusaSoInclui();
+          var bn = assina ? null : barrarNivel(col, id, 'update'); if (bn) return bn;
           return rpc('doc_atualizar', { p_colecao: col, p_id: id, p_dados: separar(patch).dados })
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },

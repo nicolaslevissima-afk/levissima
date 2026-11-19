@@ -29,7 +29,7 @@ const USUARIOS = [
 function b64u(o) { return Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 function tokenDe(u) {
   return b64u({ alg: 'none', typ: 'JWT' }) + '.' + b64u({ sub: 'uid-' + u.ref.replace(/[^a-z0-9]/gi, ''), role: 'authenticated',
-    app_metadata: { papel: u.papel, nome: u.nome, ref: u.ref, modulos: u.modulos || [] } }) + '.teste';
+    app_metadata: { papel: u.papel, nome: u.nome, ref: u.ref, modulos: u.modulos || [], so_inclui: u.so_inclui === true, so_ver: u.so_ver === true } }) + '.teste';
 }
 function lerToken(t) {
   try { return JSON.parse(Buffer.from(String(t).split('.')[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8')); } catch (e) { return {}; }
