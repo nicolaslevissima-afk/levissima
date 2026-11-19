@@ -1,8 +1,9 @@
--- LEVÍSSIMA · testes das regras do Garrafões no banco (0056 + 0057): perfis, gravação direta bloqueada, lote por
--- fabricação, marcas por modelo, sucata por litragem, venda e troca com assinatura, entrada com foto da nota,
+-- LEVÍSSIMA · testes das regras do Garrafões no banco (0056 + 0057 + 0060): perfis, gravação direta bloqueada, lote
+-- (mês/ano, até o mês seguinte ao atual), marcas por modelo, sucata por litragem, venda e troca com assinatura, entrada com foto da nota,
 -- retirada, recebimento vinculado, contagem, exclusão com recálculo, idempotência e origem.
 -- Rodar: createdb t && psql -d t -f testes/garrafoes-banco.sql -f supabase/migrations/0056_garrafoes_estoque.sql
---        -f supabase/migrations/0057_garrafoes_fabricacao_assinatura.sql -f testes/garrafoes-sql.sql
+--        -f supabase/migrations/0057_garrafoes_fabricacao_assinatura.sql -f supabase/migrations/0060_garrafoes_lote.sql
+--        -f testes/garrafoes-sql.sql
 -- Termina com 'TODOS OS TESTES PASSARAM'.
 \set ON_ERROR_STOP on
 create schema teste;
@@ -43,6 +44,7 @@ declare r jsonb; hoje text := to_char((now() at time zone 'America/Sao_Paulo')::
   fab1 text := to_char((now() at time zone 'America/Sao_Paulo')::date, 'YYYY-MM');
   fab0 text := to_char((now() at time zone 'America/Sao_Paulo')::date - 40, 'YYYY-MM');
   futuro text := to_char((now() at time zone 'America/Sao_Paulo')::date + 62, 'YYYY-MM'); n int;
+  prox text := to_char(date_trunc('month', (now() at time zone 'America/Sao_Paulo')::date) + interval '1 month', 'YYYY-MM');
 begin
   -- perfis (0056)
   perform teste.como('escritorio:gestora'); if public.garrafoes_eu() ->> 'perfil' <> 'gestao' then raise exception 'gestora'; end if;
@@ -73,7 +75,15 @@ begin
   -- marcas por modelo e fabricação válida
   perform teste.erro(format($q$select public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADA000005','tipo','entrada','modelo','20LR','data','%s','foto',teste.jpg(),'linhas',jsonb_build_array(jsonb_build_object('marca','AGS','fabricacao','%s','qtd',5))))$q$, hoje, fab1), 'Montico ou Angioplast');
   perform teste.erro(format($q$select public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADA000005','tipo','entrada','modelo','20L','data','%s','foto',teste.jpg(),'linhas',jsonb_build_array(jsonb_build_object('marca','Angioplast','fabricacao','%s','qtd',5))))$q$, hoje, fab1), 'AGS ou Montico');
-  perform teste.erro(format($q$select public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADA000005','tipo','entrada','modelo','20L','data','%s','foto',teste.jpg(),'linhas',jsonb_build_array(jsonb_build_object('marca','AGS','fabricacao','%s','qtd',5))))$q$, hoje, futuro), 'não pode ser depois da data');
+  perform teste.erro(format($q$select public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADA000005','tipo','entrada','modelo','20L','data','%s','foto',teste.jpg(),'linhas',jsonb_build_array(jsonb_build_object('marca','AGS','fabricacao','%s','qtd',5))))$q$, hoje, futuro), 'no máximo um mês depois do mês atual');
+  -- 0060: o lote do mês seguinte ao atual vale (sem depender da data da movimentação); desfeito logo depois
+  begin
+    perform public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADAPROX01','tipo','entrada','modelo','10L','data',hoje,'foto',teste.jpg(),
+          'linhas', jsonb_build_array(jsonb_build_object('marca','AGS','fabricacao',prox,'qtd',5))));
+    if teste.saldo('10L','N|AGS|' || prox) <> 5 then raise exception 'lote do mês seguinte deveria valer'; end if;
+    raise exception 'desfaz';
+  exception when others then if sqlerrm <> 'desfaz' then raise; end if;
+  end;
   perform teste.erro(format($q$select public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADA000005','tipo','entrada','modelo','20L','data','%s','foto','data:image/png;base64,AAAA','linhas',jsonb_build_array(jsonb_build_object('marca','AGS','fabricacao','%s','qtd',5))))$q$, hoje, fab1), 'Falta a foto da nota');
   perform public.garrafoes_registrar(jsonb_build_object('id','op-ENTRADA000006','tipo','entrada','modelo','20LR','data',hoje,'foto',teste.jpg(),
         'linhas', jsonb_build_array(jsonb_build_object('marca','Angioplast','fabricacao',fab0,'qtd',24))));

@@ -2,10 +2,10 @@
  * Usa um Postgres local (sem Supabase): a página do módulo roda no Chromium com uma "ponte" de teste que chama as
  * funções do banco como o usuário logado (claims do JWT), e lê modulo_docs com as regras de leitura (RLS).
  * Confere: cartões Novos AGS | Novos Montico | Sucatas (20 L com rosca: Montico | Angioplast, sem sucata), perfis,
- * contagem (fabricação encontrada e sucata total), entrada com foto da nota pela câmera (sem galeria; câmera negada
- * bloqueia), clique duplo sem duplicar, venda dividida por fabricação com assinatura do cliente na tela (Confirmar só
+ * contagem (lote encontrado e sucata total), entrada com foto da nota pela câmera (sem galeria; câmera negada
+ * bloqueia), lote até o mês seguinte ao atual, clique duplo sem duplicar, venda dividida por lote com assinatura do cliente na tela (Confirmar só
  * depois da assinatura; assinatura apagada se os itens mudarem; cancelar não grava), troca do exemplo do pedido
- * (15 sucatas de 20 L → 3 novos Montico fab. 11/2026), retirada (AGS, Montico ou Outro), recebimento vinculado,
+ * (15 sucatas de 20 L → 3 novos Montico lote 11/2026), retirada (AGS, Montico ou Outro), recebimento vinculado,
  * consulta da assinatura e da foto, exclusão (efeitos, conjunto, bloqueio de negativo), CSV, parâmetros e celular.
  * Rodar (com Postgres local em PGHOST/PGPORT, usuário postgres):
  *   python3 ferramentas/construir.py --modulos && node testes/garrafoes-e2e.js
@@ -88,7 +88,7 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
   // banco do teste: simulação do Supabase + as migrações 0056 e 0057
   psql('postgres', 'drop database if exists ' + BANCO + ';');
   psql('postgres', 'create database ' + BANCO + ';');
-  for (const f of ['testes/garrafoes-banco.sql', 'supabase/migrations/0056_garrafoes_estoque.sql', 'supabase/migrations/0057_garrafoes_fabricacao_assinatura.sql']) {
+  for (const f of ['testes/garrafoes-banco.sql', 'supabase/migrations/0056_garrafoes_estoque.sql', 'supabase/migrations/0057_garrafoes_fabricacao_assinatura.sql', 'supabase/migrations/0060_garrafoes_lote.sql']) {
     const r = psql(BANCO, fs.readFileSync(path.join(RAIZ, f), 'utf8'));
     if (r.erro) { console.error('banco:', f, r.erro); process.exit(1); }
   }
@@ -204,7 +204,7 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await campo('just', 'Saldo inicial pela contagem do depósito');
     await page.click('[data-act="revisar"]');
     const resumoCont = await page.textContent('.resumo');
-    ok(/Registrado/.test(resumoCont) && /AGS · fab\. 09\/2026/.test(resumoCont) && /ajuste de \+200/.test(resumoCont), 'resumo da contagem mostra marca, fabricação, registrado, contado e efeito');
+    ok(/Registrado/.test(resumoCont) && /AGS · lote 09\/2026/.test(resumoCont) && /ajuste de \+200/.test(resumoCont), 'resumo da contagem mostra marca, lote, registrado, contado e efeito');
     await page.click('[data-act="confirmar"]');
     await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'));
     await esperarTexto('#area-topo', '200');
@@ -222,6 +222,11 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await page.click('[data-act="abrir"][data-tipo="entrada"]');
     ok(await page.locator('input[type="file"]').count() === 0 && await page.locator('[data-f="obs"]').count() === 0, 'entrada sem campo de arquivo (galeria) e sem Observação');
     await page.click('[data-seg="marca"][data-v="Montico"]');
+    const mm = (k) => { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + k); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+    ok(await page.$eval('[data-f="fab"]', (e) => e.max) === mm(1) && /Lote \(mês\/ano\)/.test(await page.textContent('#painel-form')) && !/abricação/.test(await page.textContent('#painel-form')), 'entrada: campo "Lote (mês/ano)" até o mês seguinte ao atual (' + mm(1) + '), sem "fabricação"');
+    await campo('fab', mm(2));
+    await page.click('[data-act="revisar"]');
+    ok(/fora do período/.test(await page.textContent('#painel-form .erro-caixa')), 'lote dois meses à frente é recusado');
     await campo('fab', '2026-11');
     await campo('qtd', '100');
     ok(/Validade 11\/2029/.test(await page.textContent('#d-lote')), 'validade calculada na hora: 11/2026 → 11/2029');
@@ -238,7 +243,7 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     ok(await page.locator('.foto-prev').count() === 1, 'foto tirada pela câmera, com prévia e opção de refazer');
     await page.click('[data-act="revisar"]');
     const resEnt = await page.textContent('.resumo');
-    ok(/100 unidades novas Montico de 20 L, fabricação 11\/2026 \(validade 11\/2029\)/.test(resEnt) && /Foto da nota/.test(resEnt), 'resumo da entrada: marca, fabricação, validade e foto');
+    ok(/100 unidades novas Montico de 20 L, lote 11\/2026 \(validade 11\/2029\)/.test(resEnt) && /Foto da nota/.test(resEnt), 'resumo da entrada: marca, lote, validade (3 anos depois do lote) e foto');
     await page.dblclick('[data-act="confirmar"]');
     await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'));
     await page.waitForTimeout(500);
@@ -325,7 +330,7 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await semRolagemLateral('troca');
     await page.click('[data-act="revisar"]');
     const resumoTroca = await page.textContent('.resumo');
-    ok(/Recebimento: 15 sucatas de 20 L \(10 vencido; 5 quebrado ou trincado\)/.test(resumoTroca) && /Entrega: 3 unidades Montico, fab\. 11\/2026/.test(resumoTroca), 'resumo da troca: sucata por litragem e motivo, novos por marca e fabricação');
+    ok(/Recebimento: 15 sucatas de 20 L \(10 vencido; 5 quebrado ou trincado\)/.test(resumoTroca) && /Entrega: 3 unidades Montico, lote 11\/2026/.test(resumoTroca), 'resumo da troca: sucata por litragem e motivo, novos por marca e fabricação');
     ok(await page.$eval('[data-act="confirmar"]', (b) => b.disabled), 'troca também espera a assinatura do cliente');
     await assinar();
     await page.click('[data-act="confirmar"]');
@@ -385,7 +390,7 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await page.screenshot({ path: path.join(SHOTS, 'garrafoes-detalhe-assinatura.png'), fullPage: true });
     await page.click('[data-act="excluir-ini"]');
     const efeitos = await page.textContent('#modal-c');
-    ok(/Sucata \(20 L\): 56 → 41/.test(efeitos) && /Novos Montico · fab\. 11\/2026 \(20 L\): 107 → 110/.test(efeitos), 'confirmação mostra o efeito da exclusão nos saldos');
+    ok(/Sucata \(20 L\): 56 → 41/.test(efeitos) && /Novos Montico · lote 11\/2026 \(20 L\): 107 → 110/.test(efeitos), 'confirmação mostra o efeito da exclusão nos saldos');
     await page.click('[data-act="excluir-ok"]');
     await page.waitForFunction(() => document.querySelector('#modal').hidden);
     s20 = saldos('20L');
@@ -415,7 +420,7 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await page.click('[data-act="csv"][data-qual="saldos"]');
     await page.waitForFunction(() => (window.__baixados || []).length === 3);
     const csvs = await page.evaluate(() => window.__baixados);
-    ok(/^﻿Operação;Data da movimentação;Registrado em;Tipo;Modelo;Marca;Fabricação;Validade/.test(csvs[0].data) && /Assinatura do cliente;Foto da nota/.test(csvs[0].data) && /Contagem Teste/.test(csvs[0].data), 'CSV de novos com marca, fabricação, validade, assinatura e foto');
+    ok(/^﻿Operação;Data da movimentação;Registrado em;Tipo;Modelo;Marca;Lote;Validade/.test(csvs[0].data) && /Assinatura do cliente;Foto da nota/.test(csvs[0].data) && /Contagem Teste/.test(csvs[0].data), 'CSV de novos com marca, fabricação, validade, assinatura e foto');
     ok(/Quem recolheu/.test(csvs[1].data) && /Saldo \(unidades\)/.test(csvs[2].data), 'CSV da sucata e dos saldos');
     await page.fill('#c-validade', '4');
     await page.click('#form-cfg button[type="submit"]');
