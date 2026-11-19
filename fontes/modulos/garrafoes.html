@@ -12,8 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Estoque de garrafões (refeito em 17/11/2026): novos por marca e lote, sucata por fabricante.
-   Mesmas cores e letras do módulo anterior (água, âmbar, vermelho e verde). */
+/* Estoque de garrafões (refeito em 17/11/2026; 19/11/2026: lote = fabricação, sucata só por litragem,
+   assinatura do cliente na tela e foto da nota pela câmera). Mesmas cores e letras do módulo anterior. */
 :root{
   --bg:#EDF3F6; --surface:#FFFFFF; --ink:#0D2B3E; --muted:#587080; --line:#D2DFE6;
   --water:#2A86B5; --water-soft:#CFE6F1; --water-deep:#0F5E8A;
@@ -72,7 +72,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .periodo{font-size:.9rem;color:var(--muted);margin-top:8px}
 
 .acoes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:4px 0 12px}
-.acoes.n2{grid-template-columns:repeat(2,1fr)} .acoes.n3{grid-template-columns:repeat(3,1fr)}
+.acoes.n1{grid-template-columns:1fr} .acoes.n2{grid-template-columns:repeat(2,1fr)} .acoes.n3{grid-template-columns:repeat(3,1fr)}
 .acao{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:11px 12px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;min-height:68px}
 .acao b{font-weight:600;font-size:1rem;line-height:1.2}
 .acao span{font-size:.82rem;color:var(--muted);line-height:1.25}
@@ -187,6 +187,33 @@ textarea{min-height:44px;resize:vertical}
   .linha.ret{grid-template-columns:1fr 1fr auto}
   .perfil-l{grid-template-columns:1fr}
 }
+
+/* 19/11/2026: cartões Novos AGS | Novos Montico | Sucatas, assinatura na tela e foto da nota pela câmera */
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.cards3.n2{grid-template-columns:1fr 1fr}
+.marca.suc{border-color:#E8D3AE;background:#FFF8EC;cursor:pointer}
+.marca.suc:hover{border-color:var(--amber)}
+.marca.suc .num{color:#7A4C0B}
+.campo-foto{display:flex;flex-direction:column;gap:6px}
+.btn-foto{display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px dashed var(--water);background:var(--water-soft);color:var(--water-deep);border-radius:12px;padding:16px;font-weight:600;cursor:pointer;min-height:64px}
+.foto-prev{max-width:min(100%,360px);border-radius:10px;border:1px solid var(--line);display:block}
+.cam-video{width:100%;max-height:62vh;background:#000;border-radius:12px;display:block;object-fit:contain}
+.assin-topo{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:14px}
+.assin{display:block;width:100%;height:190px;border:1.5px dashed var(--muted);border-radius:12px;background:#fff;touch-action:none;cursor:crosshair}
+.assin.ok{border-style:solid;border-color:var(--green)}
+.aviso-ass{font-size:.8rem;color:var(--muted);margin:4px 0 0}
+.aviso-troca{background:var(--amber-soft);color:#7A4C0B;border-radius:10px;padding:8px 12px;font-weight:500;margin:10px 0 0}
+.img-doc{display:block;max-width:100%;border:1px solid var(--line);border-radius:10px;background:#fff;margin:6px 0}
+.img-doc.foto{max-height:240px;cursor:zoom-in}
+.img-doc.foto.grande{max-height:none;cursor:zoom-out}
+.anexo{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+@media (max-width:440px){
+  .cards3{gap:6px}
+  .cards3 .marca{padding:8px 9px}
+  .cards3 .marca .num{font-size:1.55rem}
+  .cards3 .marca .nome{font-size:.78rem;line-height:1.2}
+  .cards3 .marca .det{font-size:.72rem}
+}
 </style>
 </head>
 <body>
@@ -196,6 +223,7 @@ textarea{min-height:44px;resize:vertical}
   <div id="principal"><p class="carregando">Carregando o estoque…</p></div>
 </div>
 <div id="modal" class="modal" hidden><div class="modal-c" id="modal-c" role="dialog" aria-modal="true" aria-labelledby="modal-t"></div></div>
+<div id="cam" class="modal" hidden><div class="modal-c" id="cam-c" role="dialog" aria-modal="true" aria-labelledby="cam-t"></div></div>
 <div id="toast" class="toast" role="status" hidden></div>
 
 <script>
@@ -203,19 +231,25 @@ textarea{min-height:44px;resize:vertical}
   'use strict';
 
   /* ===================== constantes ===================== */
+  // 19/11/2026: lote dos novos = fabricação (mês/ano); sucata só por litragem (20 L e 10 L); 20 L com rosca sem troca.
   var MODELOS = {
-    '20L': { nome: '20 litros', curto: '20 L' },
-    '20LR': { nome: '20 litros com rosca', curto: '20 L com rosca' },
-    '10L': { nome: '10 litros', curto: '10 L' }
+    '20L': { nome: '20 L', longo: '20 litros', curto: '20 L' },
+    '20LR': { nome: '20 L com rosca', longo: '20 litros com rosca', curto: '20 L com rosca' },
+    '10L': { nome: '10 L', longo: '10 litros', curto: '10 L' }
   };
   var ORDEM = ['20L', '20LR', '10L'];
-  var MARCAS = ['AGS', 'Montico'];
+  var MARCAS_DE = { '20L': ['AGS', 'Montico'], '20LR': ['Montico', 'Angioplast'], '10L': ['AGS', 'Montico'] };
   var MOTIVOS = ['Quebrado ou trincado', 'Vencido', 'Vazamento', 'Contaminado ou sujo', 'Outro'];
+  var RECOLHE = ['AGS', 'Montico', 'Outro'];
   var PERFIS = { consulta: 'Só consulta', entradas: 'Contagem e entradas', entregas: 'Entregas', gestao: 'Gestão' };
-  var TIPOS = { entrada: 'Entrada de novos', saida: 'Saída de novos', troca: 'Troca com cliente', retirada: 'Retirada pelo fabricante', contagem: 'Contagem física' };
+  var TIPOS = { entrada: 'Entrada de novos', saida: 'Saída / Venda', troca: 'Troca com cliente', retirada: 'Retirada de sucata', contagem: 'Contagem física' };
   var PROPORCAO = 5; // sugestão: 5 sucatas para 1 novo
   var PADRAO = { validadeAnos: 3, produtos: { '20L': { minimo: 20, ideal: 100 }, '20LR': { minimo: 20, ideal: 100 }, '10L': { minimo: 20, ideal: 100 } } };
   var PASSO_HIST = 150;
+  var AVISO_ASSIN = 'Assinatura manuscrita feita na tela do aparelho (não é assinatura com certificado digital).';
+
+  function marcas(m) { return MARCAS_DE[m] || []; }
+  function temSucata(m) { return m !== '20LR'; }
 
   /* ===================== utilidades ===================== */
   function $(id) { return document.getElementById(id); }
@@ -237,18 +271,17 @@ textarea{min-height:44px;resize:vertical}
     return 'op-' + s;
   }
   function refCurta(id) { return String(id || '').replace(/^op-/, '').slice(0, 6).toUpperCase(); }
-  function normCod(s) { return String(s || '').trim().replace(/\s+/g, ' ').toUpperCase(); }
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem('garrafoes2.' + k); localStorage.setItem('garrafoes2.' + k, v); } catch (e) { return null; } return null; }
   var toastT = null;
-  function toast(t) { var el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { el.hidden = true; }, 3600); }
+  function toast(t) { var el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { el.hidden = true; }, 3800); }
   function msgErro(e) {
     var c = e && e.code;
-    if (c === 'unavailable') return 'Sem conexão com o banco agora. Os dados continuam no formulário: confira a internet e toque em confirmar de novo (não duplica).';
+    if (c === 'unavailable') return 'Sem conexão com o banco agora. Nada foi gravado e os dados continuam no formulário: confira a internet e toque em confirmar de novo (não duplica).';
     if (c === 'not_granted') return 'O seu acesso não permite esta operação.';
     if (c === 'not_found') return 'Registro não encontrado (pode ter sido excluído).';
     var m = e && e.message ? String(e.message) : '';
-    if (/Could not find the function|does not exist|schema cache/i.test(m)) return 'O banco do LEVÍSSIMA ainda não recebeu a atualização deste módulo (migração 0056). Avise a diretoria.';
-    return m || 'Não foi possível gravar agora. Tente de novo.';
+    if (/Could not find the function|does not exist|schema cache/i.test(m)) return 'O banco do LEVÍSSIMA ainda não recebeu a atualização deste módulo. Avise a diretoria.';
+    return m || 'Não foi possível gravar agora. Nada foi gravado; tente de novo.';
   }
 
   /* ===================== estado ===================== */
@@ -259,15 +292,18 @@ textarea{min-height:44px;resize:vertical}
     loc: { ops: {}, del: {} },               // gravados aqui antes de o tempo real trazer
     modelo: ORDEM.indexOf(ls('modelo')) >= 0 ? ls('modelo') : '20L',
     aba: 'novos',
-    fil: { novos: { de: '', ate: '', tipo: '', marca: '', lote: '' }, sucata: { de: '', ate: '', tipo: '', fab: '' }, lotes: { marca: '', zerados: false } },
+    fil: { novos: { de: '', ate: '', tipo: '', marca: '', lote: '' }, sucata: { de: '', ate: '', tipo: '' }, lotes: { marca: '', zerados: false } },
     limite: PASSO_HIST,
-    acessos: null, acessosErro: '', antigos: null
+    acessos: null, acessosErro: '', antigos: null, pendenteForm: false,
+    msgCfg: null, msgCsv: null                // avisos da Gestão (sobrevivem ao redesenho)
   };
   var F = null;      // formulário aberto
-  var M = null;      // janela de detalhes aberta: { id, excluir: bool, conjunto, motivo, erro, enviando }
+  var M = null;      // janela de detalhes: { id, excluir, motivo, erro, enviando, assin, foto, carregando }
+  var CAM = { stream: null, foto: null, estado: '', erro: '' };
 
   function pode(acao) {
     var p = S.perfil;
+    if ((acao === 'troca' || acao === 'retirada') && !temSucata(S.modelo)) return false;
     if (p === 'gestao') return true;
     if (acao === 'entrada' || acao === 'contagem') return p === 'entradas';
     if (acao === 'saida' || acao === 'troca' || acao === 'retirada') return p === 'entregas';
@@ -305,30 +341,28 @@ textarea{min-height:44px;resize:vertical}
     l.sort(function (a, b) { return (b.data || '').localeCompare(a.data || '') || (b.registradoEm || '').localeCompare(a.registradoEm || ''); });
     return l;
   }
-  function chave(l) { return l.classe === 'novo' ? 'N|' + l.lote : 'S|' + l.fabricante; }
+  function chave(l) { return l.classe === 'novo' ? 'N|' + l.marca + '|' + l.fabricacao : 'S'; }
   function linhas(op) { return Array.isArray(op && op.linhas) ? op.linhas : []; }
-  // C: tudo o que a tela precisa, calculado uma vez por desenho
   function calcular() {
-    var ops = listaOps(), saldos = {}, lotes = {};
+    var ops = listaOps(), saldos = {};
     ORDEM.forEach(function (m) { saldos[m] = {}; });
     ops.forEach(function (op) {
       var s = saldos[op.modelo]; if (!s) return;
-      linhas(op).forEach(function (l) {
-        var k = chave(l); s[k] = (s[k] || 0) + (Number(l.qtd) || 0);
-        if (l.classe === 'novo' && l.lote && !lotes[l.lote]) lotes[l.lote] = { id: l.lote, modelo: op.modelo, marca: l.marca, codigo: l.codigo, fabricacao: l.fabricacao };
-      });
+      linhas(op).forEach(function (l) { var k = chave(l); s[k] = (s[k] || 0) + (Number(l.qtd) || 0); });
     });
-    return { ops: ops, saldos: saldos, lotes: lotes };
+    return { ops: ops, saldos: saldos };
   }
+  // lotes de novos = marca + fabricação
   function lotesDe(C, modelo, marca, soComSaldo) {
     var s = C.saldos[modelo] || {};
-    return Object.keys(C.lotes).map(function (id) { var l = C.lotes[id]; return Object.assign({ saldo: s['N|' + id] || 0 }, l); })
-      .filter(function (l) { return l.modelo === modelo && (!marca || l.marca === marca) && (!soComSaldo || l.saldo > 0); })
-      .sort(function (a, b) { return (a.fabricacao || '').localeCompare(b.fabricacao || '') || String(a.codigo).localeCompare(String(b.codigo), 'pt-BR', { numeric: true }); });
+    return Object.keys(s).filter(function (k) { return k.indexOf('N|') === 0; }).map(function (k) {
+      var p = k.split('|'); return { k: k, marca: p[1], fabricacao: p[2], saldo: s[k] || 0 };
+    }).filter(function (l) { return (!marca || l.marca === marca) && (!soComSaldo || l.saldo > 0); })
+      .sort(function (a, b) { return a.fabricacao.localeCompare(b.fabricacao) || a.marca.localeCompare(b.marca); });
   }
   function totalNovos(C, modelo, marca) { return lotesDe(C, modelo, marca, false).reduce(function (t, l) { return t + l.saldo; }, 0); }
-  function sucata(C, modelo, fab) { return (C.saldos[modelo] || {})['S|' + fab] || 0; }
-  function loteNome(C, id) { var l = C.lotes[id]; return l ? l.codigo : '?'; }
+  function sucata(C, modelo) { return (C.saldos[modelo] || {}).S || 0; }
+  function loteTxt(marca, fab) { return marca + ' · fab. ' + mesBR(fab); }
   function recebimentosDe(C, idRetirada) { return C.ops.filter(function (o) { return o.tipo === 'entrada' && o.vinculo === idRetirada; }); }
 
   /* ===================== desenho ===================== */
@@ -339,6 +373,7 @@ textarea{min-height:44px;resize:vertical}
     if (S.erro) { el.innerHTML = '<div class="bloco"><h2>Não foi possível abrir o estoque</h2><p class="nota">' + esc(msgErro(S.erro)) + '</p></div>'; return; }
     if (!S.pronto || !S.carregou.ops) { el.innerHTML = '<p class="carregando">Carregando o estoque…</p>'; return; }
     if (!S.perfil) { el.innerHTML = '<div class="bloco"><h2>Sem acesso</h2><p class="nota">Seu acesso não abre o módulo Garrafões. Peça à diretoria (Cadastros › Acesso ao app).</p></div>'; return; }
+    if (S.aba === 'sucata' && !temSucata(S.modelo)) S.aba = 'novos';
     var C = calcular();
     if (!$('area-topo')) {
       el.innerHTML = '<div id="area-topo"></div><div id="area-acoes"></div><section id="painel-form" class="painel-form" hidden></section>' +
@@ -347,8 +382,11 @@ textarea{min-height:44px;resize:vertical}
     $('area-topo').innerHTML = topoHtml(C);
     $('area-acoes').innerHTML = acoesHtml();
     $('abas').innerHTML = abasHtml();
-    $('area-aba').innerHTML = abaHtml(C);
-    if (F) { var foco = document.activeElement; if (!foco || !$('painel-form').contains(foco)) renderForm(C); else atualizarDerivados(C); }
+    // na Gestão, não redesenha enquanto alguém digita nos parâmetros
+    var fa = document.activeElement;
+    if (!(S.aba === 'config' && fa && /^(INPUT|SELECT|TEXTAREA)$/.test(fa.tagName) && $('area-aba').contains(fa))) $('area-aba').innerHTML = abaHtml(C);
+    // na revisão (assinatura do cliente) o formulário não é redesenhado por fora: o saldo é conferido de novo ao gravar
+    if (F && !F.revisao) { var foco = document.activeElement; if (!foco || !$('painel-form').contains(foco)) renderForm(C); else atualizarDerivados(C); }
     if (M) renderModal(C);
   }
   function renderProdutos() {
@@ -378,48 +416,38 @@ textarea{min-height:44px;resize:vertical}
     else { cls = 'ok'; st = 'Estoque de novos ok'; }
     var avisos = lotesDe(C, m, '', true).map(function (l) {
       var s = situacao(l.fabricacao);
-      if (s === 'vencido') return '<li class="grave">Lote ' + esc(l.codigo) + ' (' + esc(l.marca) + ') vencido em ' + mesBR(validade(l.fabricacao)) + ': ' + un(l.saldo) + '</li>';
-      if (s === 'perto') return '<li>Lote ' + esc(l.codigo) + ' (' + esc(l.marca) + ') vence em ' + mesBR(validade(l.fabricacao)) + ': ' + un(l.saldo) + '</li>';
+      if (s === 'vencido') return '<li class="grave">' + esc(l.marca) + ' fab. ' + mesBR(l.fabricacao) + ' vencido em ' + mesBR(validade(l.fabricacao)) + ': ' + un(l.saldo) + '</li>';
+      if (s === 'perto') return '<li>' + esc(l.marca) + ' fab. ' + mesBR(l.fabricacao) + ' vence em ' + mesBR(validade(l.fabricacao)) + ': ' + un(l.saldo) + '</li>';
       return '';
     }).join('');
-    var marcas = MARCAS.map(function (b) {
-      var ls_ = lotesDe(C, m, b, true);
-      return '<button type="button" class="marca" data-act="ver-lotes" data-marca="' + b + '"><span class="nome">' + b + '</span><span class="num">' + fmt(totalNovos(C, m, b)) + '</span>' +
-        '<span class="det">' + (ls_.length ? ls_.length + (ls_.length === 1 ? ' lote' : ' lotes') + ' · ver lotes' : 'sem lotes com saldo') + '</span></button>';
-    }).join('');
-    // sucata: saldo por fabricante e o movimento do mês
-    var mes = mesAtual(), ent = 0, sai = 0;
-    C.ops.forEach(function (op) {
-      if (op.modelo !== m || (op.data || '').slice(0, 7) !== mes || op.tipo === 'contagem') return;
-      linhas(op).forEach(function (l) { if (l.classe === 'sucata') { if (l.qtd > 0) ent += l.qtd; else sai -= l.qtd; } });
+    var cards = marcas(m).map(function (b) {
+      var n = lotesDe(C, m, b, true).length;
+      return '<button type="button" class="marca" data-act="ver-lotes" data-marca="' + b + '"><span class="nome">Novos ' + b + '</span><span class="num">' + fmt(totalNovos(C, m, b)) + '</span>' +
+        '<span class="det">' + (n ? n + (n === 1 ? ' fabricação' : ' fabricações') : 'sem saldo') + '</span></button>';
     });
-    var suc = MARCAS.map(function (b) {
-      return '<div class="marca suc"><span class="nome">Sucata ' + b + '</span><span class="num">' + fmt(sucata(C, m, b)) + '</span><span class="det">unidades</span></div>';
-    }).join('');
+    if (temSucata(m)) cards.push('<button type="button" class="marca suc" data-act="aba" data-aba="sucata"><span class="nome">Sucatas</span><span class="num">' + fmt(sucata(C, m)) + '</span><span class="det">total de ' + esc(MODELOS[m].curto) + '</span></button>');
     return '<section class="bloco" aria-labelledby="t-novos"><div class="hero">' + gaugeSvg(tot / Math.max(1, c.ideal), m) +
       '<div><div class="rotulo" id="t-novos">Novos · ' + esc(MODELOS[m].curto) + '</div><p class="big num">' + fmt(tot) + '<small>unid.</small></p>' +
       '<span class="status ' + cls + '">' + esc(st) + '</span></div></div>' +
-      '<div class="marcas">' + marcas + '</div>' + (avisos ? '<ul class="avisos">' + avisos + '</ul>' : '') + '</section>' +
-      '<section class="bloco" aria-labelledby="t-suc"><div class="bloco-topo"><div class="rotulo" id="t-suc">Sucata · ' + esc(MODELOS[m].curto) + '</div>' +
-      '<button type="button" class="link" data-act="aba" data-aba="sucata">histórico da sucata</button></div>' +
-      '<div class="marcas" style="margin-top:0">' + suc + '</div>' +
-      '<p class="periodo">Em ' + nomeMes(mes) + ': ' + fmt(ent) + ' recebidas em trocas · ' + fmt(sai) + ' retiradas pelo fabricante</p></section>';
+      '<div class="cards3' + (cards.length === 2 ? ' n2' : '') + '">' + cards.join('') + '</div>' + (avisos ? '<ul class="avisos">' + avisos + '</ul>' : '') + '</section>';
   }
   function acoesHtml() {
     var b = [
-      ['entrada', '+ Entrada de novos', 'Compra recebida do fornecedor', 'novo'],
-      ['saida', '− Saída de novos', 'Baixa do estoque, por lote', 'novo'],
+      ['entrada', '+ Entrada de novos', 'Recebimento com foto da nota', 'novo'],
+      ['saida', '− Saída / Venda', 'Cliente assina o recebimento', 'novo'],
       ['troca', '⇄ Troca com cliente', 'Recebe sucata, entrega novos', ''],
-      ['retirada', 'Retirada pelo fabricante', 'Saída da sucata para reciclagem', ''],
+      ['retirada', 'Retirada de sucata', 'Quem recolheu e quantos', ''],
       ['contagem', 'Contagem física', 'Acertar pelo físico, com ajuste', '']
     ].filter(function (x) { return pode(x[0]); });
     if (!b.length) return '<p class="so-consulta">Seu acesso é só de consulta: vê os saldos e o histórico. Para registrar, fale com a gestão do módulo.</p>';
     return '<div class="acoes n' + b.length + '" role="group" aria-label="Registrar">' + b.map(function (x) {
       return '<button type="button" class="acao ' + x[3] + '" data-act="abrir" data-tipo="' + x[0] + '" aria-pressed="' + !!(F && F.tipo === x[0]) + '"><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span></button>';
-    }).join('') + '</div>';
+    }).join('') + '</div>' + (S.modelo === '20LR' ? '<p class="nota" style="margin-top:-4px">O 20 L com rosca não tem troca com cliente nem sucata.</p>' : '');
   }
   function abasHtml() {
-    var a = [['novos', 'Histórico de novos'], ['sucata', 'Histórico da sucata'], ['lotes', 'Lotes e validade']];
+    var a = [['novos', 'Histórico de novos']];
+    if (temSucata(S.modelo)) a.push(['sucata', 'Histórico da sucata']);
+    a.push(['lotes', 'Lotes e validade']);
     if (S.perfil === 'gestao') a.push(['config', 'Gestão']);
     return a.map(function (x) { return '<button type="button" class="aba" role="tab" data-act="aba" data-aba="' + x[0] + '" aria-selected="' + (S.aba === x[0]) + '">' + x[1] + '</button>'; }).join('');
   }
@@ -433,8 +461,9 @@ textarea{min-height:44px;resize:vertical}
   /* ---------- históricos ---------- */
   function tipoTxt(op) {
     if (op.tipo === 'troca') return 'Troca com ' + (op.cliente || 'cliente');
-    if (op.tipo === 'retirada') return 'Retirada por ' + (op.recolhidoPor || 'fabricante');
-    if (op.tipo === 'entrada' && op.vinculo) return 'Entrada de novos (recebidos do fabricante)';
+    if (op.tipo === 'saida') return 'Venda para ' + (op.cliente || 'cliente');
+    if (op.tipo === 'retirada') return 'Retirada por ' + (op.recolhidoPor || '—');
+    if (op.tipo === 'entrada' && op.vinculo) return 'Entrada de novos (em troca de sucata)';
     if (op.tipo === 'contagem') return 'Ajuste da contagem física';
     return TIPOS[op.tipo] || op.tipo;
   }
@@ -442,83 +471,81 @@ textarea{min-height:44px;resize:vertical}
   function filtrosPeriodoHtml(f, aba) {
     return '<label>De<input type="date" data-filtro="' + aba + '.de" value="' + esc(f.de) + '"></label><label>Até<input type="date" data-filtro="' + aba + '.ate" value="' + esc(f.ate) + '"></label>';
   }
-  function itemHist(op, l, C) {
+  function itemHist(op, l) {
     var q = Number(l.qtd) || 0, det = [];
-    if (l.classe === 'novo') det.push(esc(l.marca) + ' · lote ' + esc(l.codigo || loteNome(C, l.lote)));
-    else det.push('Sucata ' + esc(l.fabricante) + (l.motivo ? ' · ' + esc(l.motivo === 'Outro' ? 'Outro: ' + (l.motivoDesc || '') : l.motivo) : ''));
+    if (l.classe === 'novo') det.push(esc(loteTxt(l.marca, l.fabricacao)));
+    else det.push('Sucata' + (l.motivo ? ' · ' + esc(l.motivo === 'Outro' ? 'Outro: ' + (l.motivoDesc || '') : l.motivo) : ''));
     if (op.tipo === 'contagem') det.push('registrado ' + fmt(l.registrado) + ', contado ' + fmt(l.contado));
+    if (op.assinada) det.push('assinada');
+    if (op.fotoNota) det.push('com foto da nota');
     det.push(esc((op.por && op.por.nome) || '—') + ' · registrado ' + esc(dataHoraBR(op.registradoEm)));
     det.push('ref. ' + refCurta(op.id));
     return '<button type="button" class="hi" data-act="op" data-id="' + esc(op.id) + '"><span class="t">' + dataBR(op.data) + ' · ' + esc(tipoTxt(op)) + '</span>' +
       '<span class="q ' + (q > 0 ? 'mais' : q < 0 ? 'menos' : 'zero') + '">' + sinal(q) + '</span><span class="d">' + det.join(' · ') + '</span></button>';
   }
-  function listaHistHtml(itens, C) {
+  function listaHistHtml(itens) {
     if (!itens.length) return '<div class="hist"><p class="vazio">Nenhuma movimentação com esses filtros.</p></div>';
     var vis = itens.slice(0, S.limite);
-    return '<div class="hist">' + vis.map(function (x) { return itemHist(x.op, x.l, C); }).join('') + '</div>' +
+    return '<div class="hist">' + vis.map(function (x) { return itemHist(x.op, x.l); }).join('') + '</div>' +
       (itens.length > vis.length ? '<button type="button" class="btn sec ver-mais" data-act="ver-mais">Mostrar mais (' + fmt(itens.length - vis.length) + ')</button>' : '');
   }
   function histNovosHtml(C) {
     var f = S.fil.novos, m = S.modelo, itens = [], ent = 0, sai = 0, aj = 0;
+    if (f.marca && marcas(m).indexOf(f.marca) < 0) f.marca = '';
     C.ops.forEach(function (op) {
       if (op.modelo !== m || !noPeriodo(op, f) || (f.tipo && op.tipo !== f.tipo)) return;
       linhas(op).forEach(function (l) {
-        if (l.classe !== 'novo' || (f.marca && l.marca !== f.marca) || (f.lote && l.lote !== f.lote)) return;
+        if (l.classe !== 'novo' || (f.marca && l.marca !== f.marca) || (f.lote && chave(l) !== f.lote)) return;
         if (op.tipo === 'contagem') { aj += l.qtd; if (!l.qtd && f.tipo !== 'contagem') return; } else if (l.qtd > 0) ent += l.qtd; else sai -= l.qtd;
         itens.push({ op: op, l: l });
       });
     });
     var lotes = lotesDe(C, m, f.marca, false);
+    var tipos = ['entrada', 'saida'].concat(temSucata(m) ? ['troca'] : []).concat(['contagem']);
     return '<div class="filtros">' + filtrosPeriodoHtml(f, 'novos') +
-      '<label>Tipo<select data-filtro="novos.tipo"><option value="">Todos</option>' + ['entrada', 'saida', 'troca', 'contagem'].map(function (t) { return '<option value="' + t + '"' + (f.tipo === t ? ' selected' : '') + '>' + (t === 'contagem' ? 'Ajustes de contagem' : TIPOS[t]) + '</option>'; }).join('') + '</select></label>' +
-      '<label>Marca<select data-filtro="novos.marca"><option value="">Todas</option>' + MARCAS.map(function (b) { return '<option' + (f.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
-      '<label>Lote<select data-filtro="novos.lote"><option value="">Todos</option>' + lotes.map(function (l) { return '<option value="' + l.id + '"' + (f.lote === l.id ? ' selected' : '') + '>' + esc(l.codigo) + (f.marca ? '' : ' (' + l.marca + ')') + '</option>'; }).join('') + '</select></label></div>' +
-      '<dl class="resumo-periodo"><div><dt>Entradas</dt><dd class="mais">' + fmt(ent) + '</dd></div><div><dt>Saídas (inclui trocas)</dt><dd class="menos">' + fmt(sai) + '</dd></div><div><dt>Ajustes de contagem</dt><dd>' + sinal(aj) + '</dd></div></dl>' +
-      listaHistHtml(itens, C);
+      '<label>Tipo<select data-filtro="novos.tipo"><option value="">Todos</option>' + tipos.map(function (t) { return '<option value="' + t + '"' + (f.tipo === t ? ' selected' : '') + '>' + (t === 'contagem' ? 'Ajustes de contagem' : t === 'saida' ? 'Vendas' : TIPOS[t]) + '</option>'; }).join('') + '</select></label>' +
+      '<label>Marca<select data-filtro="novos.marca"><option value="">Todas</option>' + marcas(m).map(function (b) { return '<option' + (f.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
+      '<label>Fabricação<select data-filtro="novos.lote"><option value="">Todas</option>' + lotes.map(function (l) { return '<option value="' + esc(l.k) + '"' + (f.lote === l.k ? ' selected' : '') + '>' + mesBR(l.fabricacao) + (f.marca ? '' : ' (' + l.marca + ')') + '</option>'; }).join('') + '</select></label></div>' +
+      '<dl class="resumo-periodo"><div><dt>Entradas</dt><dd class="mais">' + fmt(ent) + '</dd></div><div><dt>Saídas (vendas' + (temSucata(m) ? ' e trocas' : '') + ')</dt><dd class="menos">' + fmt(sai) + '</dd></div><div><dt>Ajustes de contagem</dt><dd>' + sinal(aj) + '</dd></div></dl>' +
+      listaHistHtml(itens);
   }
   function histSucataHtml(C) {
-    var f = S.fil.sucata, m = S.modelo, itens = [], ent = {}, sai = {}, aj = {};
-    MARCAS.forEach(function (b) { ent[b] = 0; sai[b] = 0; aj[b] = 0; });
+    var f = S.fil.sucata, m = S.modelo, itens = [], ent = 0, sai = 0, aj = 0;
     C.ops.forEach(function (op) {
       if (op.modelo !== m || !noPeriodo(op, f) || (f.tipo && op.tipo !== f.tipo)) return;
       linhas(op).forEach(function (l) {
-        if (l.classe !== 'sucata' || (f.fab && l.fabricante !== f.fab)) return;
-        if (op.tipo === 'contagem') { aj[l.fabricante] += l.qtd; if (!l.qtd && f.tipo !== 'contagem') return; } else if (l.qtd > 0) ent[l.fabricante] += l.qtd; else sai[l.fabricante] -= l.qtd;
+        if (l.classe !== 'sucata') return;
+        if (op.tipo === 'contagem') { aj += l.qtd; if (!l.qtd && f.tipo !== 'contagem') return; } else if (l.qtd > 0) ent += l.qtd; else sai -= l.qtd;
         itens.push({ op: op, l: l });
       });
     });
-    var resumo = MARCAS.filter(function (b) { return !f.fab || f.fab === b; }).map(function (b) {
-      return '<div><dt>' + b + ': recebidas em trocas</dt><dd class="mais">' + fmt(ent[b]) + '</dd></div><div><dt>' + b + ': retiradas</dt><dd class="menos">' + fmt(sai[b]) + '</dd></div>' +
-        (aj[b] ? '<div><dt>' + b + ': ajustes de contagem</dt><dd>' + sinal(aj[b]) + '</dd></div>' : '');
-    }).join('');
     return '<div class="filtros">' + filtrosPeriodoHtml(f, 'sucata') +
-      '<label>Tipo<select data-filtro="sucata.tipo"><option value="">Todos</option>' + ['troca', 'retirada', 'contagem'].map(function (t) { return '<option value="' + t + '"' + (f.tipo === t ? ' selected' : '') + '>' + (t === 'contagem' ? 'Ajustes de contagem' : TIPOS[t]) + '</option>'; }).join('') + '</select></label>' +
-      '<label>Fabricante<select data-filtro="sucata.fab"><option value="">Todos</option>' + MARCAS.map(function (b) { return '<option' + (f.fab === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label></div>' +
-      '<dl class="resumo-periodo">' + resumo + '</dl>' + listaHistHtml(itens, C);
+      '<label>Tipo<select data-filtro="sucata.tipo"><option value="">Todos</option>' + ['troca', 'retirada', 'contagem'].map(function (t) { return '<option value="' + t + '"' + (f.tipo === t ? ' selected' : '') + '>' + (t === 'contagem' ? 'Ajustes de contagem' : TIPOS[t]) + '</option>'; }).join('') + '</select></label></div>' +
+      '<dl class="resumo-periodo"><div><dt>Sucata em estoque</dt><dd>' + fmt(sucata(C, m)) + '</dd></div><div><dt>Recebidas em trocas</dt><dd class="mais">' + fmt(ent) + '</dd></div><div><dt>Retiradas</dt><dd class="menos">' + fmt(sai) + '</dd></div>' +
+      (aj ? '<div><dt>Ajustes de contagem</dt><dd>' + sinal(aj) + '</dd></div>' : '') + '</dl>' + listaHistHtml(itens);
   }
   function lotesHtml(C) {
     var f = S.fil.lotes, m = S.modelo;
-    var secoes = MARCAS.filter(function (b) { return !f.marca || f.marca === b; }).map(function (b) {
+    if (f.marca && marcas(m).indexOf(f.marca) < 0) f.marca = '';
+    var secoes = marcas(m).filter(function (b) { return !f.marca || f.marca === b; }).map(function (b) {
       var l = lotesDe(C, m, b, !f.zerados);
-      return '<div class="cfg"><h2>' + b + ' · ' + fmt(totalNovos(C, m, b)) + ' novos</h2>' + (l.length ? '<div class="box-rol"><table class="tlotes"><thead><tr><th>Lote</th><th>Fabricação</th><th>Validade</th><th class="q">Saldo</th></tr></thead><tbody>' +
-        l.map(function (x) { return '<tr><td><b>' + esc(x.codigo) + '</b></td><td>' + mesBR(x.fabricacao) + '</td><td>' + tagValidade(x.fabricacao) + '</td><td class="q"><b>' + fmt(x.saldo) + '</b></td></tr>'; }).join('') +
-        '</tbody></table></div>' : '<p class="vazio">Nenhum lote ' + (f.zerados ? '' : 'com saldo ') + 'desta marca em ' + esc(MODELOS[m].curto) + '.</p>') + '</div>';
+      return '<div class="cfg"><h2>Novos ' + b + ' · ' + fmt(totalNovos(C, m, b)) + '</h2>' + (l.length ? '<div class="box-rol"><table class="tlotes"><thead><tr><th>Fabricação (lote)</th><th>Validade</th><th class="q">Saldo</th></tr></thead><tbody>' +
+        l.map(function (x) { return '<tr><td><b>' + mesBR(x.fabricacao) + '</b></td><td>' + tagValidade(x.fabricacao) + '</td><td class="q"><b>' + fmt(x.saldo) + '</b></td></tr>'; }).join('') +
+        '</tbody></table></div>' : '<p class="vazio">Nenhuma fabricação ' + (f.zerados ? '' : 'com saldo ') + 'de ' + b + ' em ' + esc(MODELOS[m].curto) + '.</p>') + '</div>';
     }).join('');
-    return '<div class="filtros"><label>Marca<select data-filtro="lotes.marca"><option value="">As duas</option>' + MARCAS.map(function (b) { return '<option' + (f.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
-      '<label class="campo" style="flex-direction:row;align-items:center;gap:8px;align-self:end"><input type="checkbox" data-filtro="lotes.zerados"' + (f.zerados ? ' checked' : '') + ' style="width:auto"> Mostrar lotes zerados</label></div>' + secoes +
-      '<p class="nota">Validade de ' + cfg().validadeAnos + ' anos a partir da fabricação. Na saída, o app sugere o lote que vence primeiro; a baixa é feita no lote escolhido.</p>';
+    return '<div class="filtros"><label>Marca<select data-filtro="lotes.marca"><option value="">Todas</option>' + marcas(m).map(function (b) { return '<option' + (f.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
+      '<label class="campo" style="flex-direction:row;align-items:center;gap:8px;align-self:end"><input type="checkbox" data-filtro="lotes.zerados"' + (f.zerados ? ' checked' : '') + ' style="width:auto"> Mostrar fabricações zeradas</label></div>' + secoes +
+      '<p class="nota">O lote é a fabricação (mês/ano). Validade de ' + cfg().validadeAnos + ' anos a partir da fabricação. Na venda e na troca, o app sugere a fabricação que vence primeiro; a baixa é feita nas fabricações escolhidas.</p>';
   }
 
-  /* ---------- gestão (só quem gerencia o módulo) ---------- */
-  function gestaoHtml(C) {
-    var c = cfg();
-    var perfis;
+  /* ---------- gestão ---------- */
+  function gestaoHtml() {
+    var c = cfg(), perfis;
     if (S.acessosErro) perfis = '<p class="msg erro">' + esc(S.acessosErro) + '</p>';
     else if (!S.acessos) perfis = '<p class="nota">Carregando os acessos…</p>';
     else if (!S.acessos.length) perfis = '<p class="nota">Nenhum acesso com o módulo Garrafões.</p>';
     else perfis = S.acessos.map(function (a) {
-      var tipo = a.papel === 'setor' ? 'senha de setor' : 'pessoa';
-      return '<div class="perfil-l"><div><div class="n">' + esc(a.nome || a.ref) + '</div><div class="s">' + tipo + '</div></div>' +
+      return '<div class="perfil-l"><div><div class="n">' + esc(a.nome || a.ref) + '</div><div class="s">' + (a.papel === 'setor' ? 'senha de setor' : 'pessoa') + '</div></div>' +
         (a.gerencia ? '<div><span class="chip">Gestão</span> <span class="s">(Gerencia em Cadastros)</span></div>'
           : '<select data-perfil-ref="' + esc(a.ref) + '" aria-label="Perfil de ' + esc(a.nome || a.ref) + '">' + ['consulta', 'entradas', 'entregas'].map(function (p) { return '<option value="' + p + '"' + (a.perfil === p ? ' selected' : '') + '>' + PERFIS[p] + '</option>'; }).join('') + '</select>') + '</div>';
     }).join('');
@@ -529,17 +556,17 @@ textarea{min-height:44px;resize:vertical}
         '<span class="d">excluído por ' + esc((x.excluidoPor && x.excluidoPor.nome) || '—') + ' em ' + esc(dataHoraBR(x.excluidoEm)) + (x.motivo ? ' · motivo: ' + esc(x.motivo) : '') + ' · ref. ' + refCurta(x.id) + '</span></div>';
     }).join('') + '</div>' : '<p class="nota">Nenhum lançamento excluído.</p>';
     var antigos = S.antigos == null ? 'Carregando…' : S.antigos.length ? fmt(S.antigos.length) + (S.antigos.length === 1 ? ' lançamento guardado' : ' lançamentos guardados') + ' (não entram no saldo).' : 'Nenhum lançamento do controle anterior.';
-    return '<div class="cfg"><h2>Perfis de acesso</h2><p class="nota" style="margin-top:0">Quem só “Usa” o módulo fica com o perfil escolhido aqui. <b>Contagem e entradas</b>: entradas de novos e contagens físicas. <b>Entregas</b>: saídas de novos, trocas com cliente e retiradas de sucata. A gestão é quem tem “Gerencia” no módulo Garrafões em Cadastros › Acesso ao app.</p>' + perfis + '</div>' +
+    return '<div class="cfg"><h2>Perfis de acesso</h2><p class="nota" style="margin-top:0">Quem só “Usa” o módulo fica com o perfil escolhido aqui. <b>Contagem e entradas</b>: entradas de novos com foto da nota e contagens físicas. <b>Entregas</b>: vendas com assinatura, trocas com cliente e retiradas de sucata. A gestão é quem tem “Gerencia” no módulo Garrafões em Cadastros › Acesso ao app.</p>' + perfis + '</div>' +
       '<div class="cfg"><h2>Parâmetros</h2><form id="form-cfg"><div class="campos">' +
       ORDEM.map(function (m) {
         return '<label>Mínimo de novos · ' + esc(MODELOS[m].curto) + '<span class="dica">Abaixo disso, o app avisa</span><input type="number" min="0" step="1" inputmode="numeric" id="c-min-' + m + '" value="' + c.produtos[m].minimo + '" required></label>' +
           '<label>Capacidade · ' + esc(MODELOS[m].curto) + '<span class="dica">Nível do garrafão no topo</span><input type="number" min="1" step="1" inputmode="numeric" id="c-ideal-' + m + '" value="' + c.produtos[m].ideal + '" required></label>';
       }).join('') +
       '<label>Validade dos garrafões (anos)<span class="dica">Contada a partir da fabricação</span><input type="number" min="1" max="10" step="1" inputmode="numeric" id="c-validade" value="' + c.validadeAnos + '" required></label>' +
-      '</div><div class="linha-botoes"><button class="btn" type="submit">Salvar parâmetros</button><span class="msg" id="msg-cfg" role="status"></span></div></form></div>' +
-      '<div class="cfg"><h2>Exportar (CSV)</h2><p class="nota" style="margin-top:0">Todos os modelos, com responsáveis, horários de registro e as referências das operações vinculadas.</p><div class="linha-botoes" style="margin-top:0">' +
+      '</div><div class="linha-botoes"><button class="btn" type="submit">Salvar parâmetros</button><span class="msg' + (S.msgCfg ? ' ' + S.msgCfg[0] : '') + '" id="msg-cfg" role="status">' + (S.msgCfg ? esc(S.msgCfg[1]) : '') + '</span></div></form></div>' +
+      '<div class="cfg"><h2>Exportar (CSV)</h2><p class="nota" style="margin-top:0">Todos os modelos, com responsáveis, horários de registro, assinaturas e fotos registradas e as referências das operações vinculadas.</p><div class="linha-botoes" style="margin-top:0">' +
       '<button type="button" class="btn sec" data-act="csv" data-qual="novos">Movimentações de novos</button><button type="button" class="btn sec" data-act="csv" data-qual="sucata">Movimentações da sucata</button>' +
-      '<button type="button" class="btn sec" data-act="csv" data-qual="saldos">Saldos atuais</button><button type="button" class="btn sec" data-act="csv" data-qual="excluidos">Excluídos</button></div><p class="msg" id="msg-csv" role="status"></p></div>' +
+      '<button type="button" class="btn sec" data-act="csv" data-qual="saldos">Saldos atuais</button><button type="button" class="btn sec" data-act="csv" data-qual="excluidos">Excluídos</button></div><p class="msg' + (S.msgCsv ? ' ' + S.msgCsv[0] : '') + '" id="msg-csv" role="status">' + (S.msgCsv ? esc(S.msgCsv[1]) : '') + '</p></div>' +
       '<div class="cfg"><h2>Lançamentos excluídos</h2>' + exclHtml + '</div>' +
       '<div class="cfg"><h2>Controle anterior</h2><p class="nota" style="margin-top:0">' + esc(antigos) + ' O saldo deste módulo começa pela contagem física.</p>' +
       (S.antigos && S.antigos.length ? '<button type="button" class="btn sec" data-act="csv" data-qual="antigos">Baixar o controle anterior (.csv)</button>' : '') + '</div>';
@@ -547,16 +574,16 @@ textarea{min-height:44px;resize:vertical}
 
   /* ===================== formulários ===================== */
   function abrirForm(tipo) {
-    if (!pode(tipo)) { toast('Seu perfil não registra esta operação.'); return; }
+    if (!pode(tipo)) { toast('Esta operação não está disponível aqui.'); return; }
     if (F && F.tipo === tipo) { fecharForm(); return; }
     if (F && F.enviando) return;
     F = {
       tipo: tipo, id: novoId(), modelo: S.modelo, data: hoje(), obs: '', erro: '', revisao: false, enviando: false,
-      marca: '', codigo: '', fabricacao: '', qtd: '', vinculo: '',
-      saida: {},
-      cliente: '', total: '', sucata: [{ fabricante: '', motivo: '', desc: '', qtd: '' }], novos: [{ marca: '', lote: '', qtd: '' }],
-      recolhido: '', recolhidoOutro: '', ret: [{ fabricante: '', qtd: '' }], contra: '',
-      alvo: '', contado: {}, achados: [], just: ''
+      marca: marcas(S.modelo).length === 1 ? marcas(S.modelo)[0] : '', fab: '', qtd: '', vinculo: '', foto: '',
+      saida: {}, cliente: '', total: '',
+      sucata: [{ motivo: '', desc: '', qtd: '' }], novos: [{ marca: '', lote: '', qtd: '' }],
+      recolhido: '', recolhidoOutro: '', contra: '',
+      alvo: temSucata(S.modelo) ? '' : 'novos', contado: {}, achados: [], just: '', ass: null, avisoAss: ''
     };
     render();
     renderForm();
@@ -568,28 +595,33 @@ textarea{min-height:44px;resize:vertical}
   }
   function campoData() { return '<label>Data da movimentação<input type="date" data-f="data" value="' + esc(F.data) + '" max="' + hoje() + '" required></label>'; }
   function campoObs() { return '<label class="largo">Observação <span class="dica">opcional</span><textarea data-f="obs" maxlength="500" rows="2">' + esc(F.obs) + '</textarea></label>'; }
-  function opcoesLotes(C, marca, sel, mostrarZero) {
-    var l = lotesDe(C, F.modelo, marca, !mostrarZero);
-    return '<option value="">' + (l.length ? 'Escolha o lote' : 'Sem lotes com saldo') + '</option>' + l.map(function (x, i) {
-      return '<option value="' + x.id + '"' + (sel === x.id ? ' selected' : '') + '>' + esc(x.codigo) + ' · fab. ' + mesBR(x.fabricacao) + ' · val. ' + mesBR(validade(x.fabricacao)) + ' · ' + fmt(x.saldo) + ' disp.' + (i === 0 ? ' (vence primeiro)' : '') + '</option>';
+  function campoCliente(C) {
+    return '<label>Cliente<input type="text" data-f="cliente" value="' + esc(F.cliente) + '" maxlength="120" list="dl-clientes" autocomplete="off" required>' +
+      '<datalist id="dl-clientes">' + clientesConhecidos(C).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></label>';
+  }
+  function opcoesLotes(C, marca, sel) {
+    var l = lotesDe(C, F.modelo, marca, true);
+    return '<option value="">' + (l.length ? 'Escolha a fabricação' : 'Sem saldo desta marca') + '</option>' + l.map(function (x, i) {
+      return '<option value="' + esc(x.k) + '"' + (sel === x.k ? ' selected' : '') + '>' + mesBR(x.fabricacao) + ' · val. ' + mesBR(validade(x.fabricacao)) + ' · ' + fmt(x.saldo) + ' disp.' + (i === 0 ? ' · vence primeiro' : '') + '</option>';
     }).join('');
   }
+  function precisaAssinatura(t) { return t === 'saida' || t === 'troca'; }
   function formHtml(C) {
     var t = F.tipo, h = '<h2>' + esc(TIPOS[t]) + ' · ' + esc(MODELOS[F.modelo].curto) + '</h2>', sub = '';
-    if (t === 'entrada') sub = 'Garrafões novos recebidos, um lote por vez. A validade é calculada pela fabricação.';
-    if (t === 'saida') sub = 'Escolha a marca e informe quanto saiu de cada lote. Pode dividir entre vários lotes.';
-    if (t === 'troca') sub = 'O cliente entrega sucatas e recebe novos. Tudo é gravado junto, numa operação só.';
-    if (t === 'retirada') sub = 'O fabricante recolhe a sucata para reciclagem. Baixa só a sucata informada.';
+    if (t === 'entrada') sub = 'Novos recebidos: marca, fabricação (o lote), quantidade e a foto da nota tirada agora pela câmera.';
+    if (t === 'saida') sub = 'Informe o cliente e quanto sai de cada fabricação. No fim, o cliente assina o recebimento na tela.';
+    if (t === 'troca') sub = 'O cliente entrega sucatas e recebe novos. Tudo é gravado junto, depois da assinatura do cliente.';
+    if (t === 'retirada') sub = 'Sucata recolhida para reciclagem. Baixa o saldo de sucata de ' + MODELOS[F.modelo].curto + ', seja quem for que recolheu.';
     if (t === 'contagem') sub = 'Informe o que foi contado. A diferença vira um ajuste registrado; o histórico é mantido.';
-    h += '<p class="sub">' + sub + '</p>';
+    h += '<p class="sub">' + esc(sub) + '</p>';
     if (F.erro) h += '<div class="erro-caixa" role="alert">' + esc(F.erro) + '</div>';
-    if (F.revisao) return h + revisaoHtml(C);
+    if (F.revisao) return h + revisaoHtml();
     if (t === 'entrada') h += formEntrada(C);
     else if (t === 'saida') h += formSaida(C);
     else if (t === 'troca') h += formTroca(C);
     else if (t === 'retirada') h += formRetirada(C);
     else h += formContagem(C);
-    return h + '<div class="linha-botoes"><button type="button" class="btn" data-act="revisar">Revisar</button><button type="button" class="btn sec" data-act="fechar">Cancelar</button></div>';
+    return h + '<div class="linha-botoes"><button type="button" class="btn" data-act="revisar">' + (precisaAssinatura(t) ? 'Revisar e colher a assinatura' : 'Revisar') + '</button><button type="button" class="btn sec" data-act="fechar">Cancelar</button></div>';
   }
   function renderForm(C) {
     var p = $('painel-form'); if (!p) return;
@@ -599,122 +631,104 @@ textarea{min-height:44px;resize:vertical}
     p.hidden = false;
     p.innerHTML = formHtml(C);
     atualizarDerivados(C);
+    if (F.revisao && precisaAssinatura(F.tipo)) iniciarAssinatura();
     if (chaveFoco) { var el = p.querySelector('[data-f="' + chaveFoco + '"]'); if (el) { el.focus(); try { if (el.setSelectionRange && el.type === 'text') el.setSelectionRange(el.value.length, el.value.length); } catch (e) {} } }
   }
 
-  // ---- entrada ----
-  function loteExistente(C) {
-    if (!F.marca || !normCod(F.codigo)) return null;
-    var cod = normCod(F.codigo);
-    return lotesDe(C, F.modelo, F.marca, false).filter(function (l) { return l.codigo === cod; })[0] || null;
-  }
+  // ---- entrada (com foto da nota) ----
   function retiradasPendentes(C) {
     var lim = new Date(); lim.setDate(lim.getDate() - 180);
     var limIso = lim.getFullYear() + '-' + p2(lim.getMonth() + 1) + '-' + p2(lim.getDate());
     return C.ops.filter(function (o) { return o.tipo === 'retirada' && o.modelo === F.modelo && o.contrapartida === 'novos' && (o.data || '') >= limIso; });
   }
   function formEntrada(C) {
-    var lista = lotesDe(C, F.modelo, F.marca, false);
-    var pend = retiradasPendentes(C);
+    var pend = temSucata(F.modelo) ? retiradasPendentes(C) : [];
     return '<div class="campos">' + campoData() +
-      '<div class="campo largo">Marca' + seg('marca', MARCAS, F.marca) + '</div>' +
-      '<label>Lote<input type="text" data-f="codigo" value="' + esc(F.codigo) + '" maxlength="40" autocomplete="off" list="dl-lotes" placeholder="Identificação do lote" required>' +
-      '<datalist id="dl-lotes">' + lista.map(function (l) { return '<option value="' + esc(l.codigo) + '">'; }).join('') + '</datalist><span class="info-lote" id="d-lote"></span></label>' +
-      '<label>Mês/ano de fabricação<input type="month" data-f="fabricacao" value="' + esc(F.fabricacao) + '" max="' + mesAtual() + '" required><span class="info-lote" id="d-validade"></span></label>' +
+      '<div class="campo largo">Marca' + seg('marca', marcas(F.modelo), F.marca) + '</div>' +
+      '<label>Fabricação (mês/ano)<input type="month" data-f="fab" value="' + esc(F.fab) + '" max="' + mesAtual() + '" required><span class="info-lote" id="d-lote"></span></label>' +
       '<label>Quantidade (unidades)<input type="number" data-f="qtd" value="' + esc(F.qtd) + '" min="1" step="1" inputmode="numeric" required></label>' +
-      (pend.length || F.vinculo ? '<label class="largo">Novos recebidos em troca de sucata? <span class="dica">vincule à retirada do fabricante, se for o caso</span><select data-f="vinculo"><option value="">Não: compra comum</option>' +
+      (pend.length || F.vinculo ? '<label class="largo">Novos recebidos em troca de sucata? <span class="dica">vincule à retirada, se for o caso</span><select data-f="vinculo"><option value="">Não: compra comum</option>' +
         pend.map(function (o) {
           var rec = recebimentosDe(C, o.id).reduce(function (t, e) { return t + linhas(e).reduce(function (a, l) { return a + (l.qtd || 0); }, 0); }, 0);
           var suc = linhas(o).reduce(function (t, l) { return t - (l.qtd || 0); }, 0);
           return '<option value="' + esc(o.id) + '"' + (F.vinculo === o.id ? ' selected' : '') + '>Retirada de ' + dataBR(o.data) + ' por ' + esc(o.recolhidoPor) + ' · ' + fmt(suc) + ' sucatas · ' + (rec ? fmt(rec) + ' novos já recebidos' : 'aguardando novos') + ' · ref. ' + refCurta(o.id) + '</option>';
         }).join('') + '</select></label>' : '') +
-      campoObs() + '</div>';
+      '<div class="campo largo campo-foto">Foto da nota do recebimento <span class="dica">obrigatória · só foto tirada agora pela câmera (não aceita galeria nem arquivo)</span>' +
+      (F.foto ? '<img class="foto-prev" src="' + F.foto + '" alt="Foto da nota"><div><button type="button" class="btn sec" data-act="foto">Tirar a foto de novo</button></div>'
+        : '<button type="button" class="btn-foto" data-act="foto">📷 Tirar foto da nota</button>') + '</div></div>';
   }
-  // ---- saída ----
+  // ---- saída / venda ----
   function formSaida(C) {
-    var h = '<div class="campos">' + campoData() + '<div class="campo largo">Marca' + seg('marca', MARCAS, F.marca) + '</div></div>';
-    if (!F.marca) return h + '<p class="nota">Escolha a marca para ver os lotes com saldo.</p><div class="campos">' + campoObs() + '</div>';
+    var h = '<div class="campos">' + campoData() + campoCliente(C) + '<div class="campo largo">Marca' + seg('marca', marcas(F.modelo), F.marca) + '</div></div>';
+    if (!F.marca) return h + '<p class="nota">Escolha a marca para ver as fabricações com saldo.</p>';
     var l = lotesDe(C, F.modelo, F.marca, true);
-    if (!l.length) return h + '<p class="nota">Nenhum lote de ' + esc(F.marca) + ' com saldo em ' + esc(MODELOS[F.modelo].curto) + '.</p>';
-    h += '<div class="grupo"><div class="grupo-topo"><h3>Lotes de ' + esc(F.marca) + '</h3><span class="soma" id="d-total"></span></div><div class="box-rol"><table class="tlotes"><thead><tr><th>Lote</th><th>Fabricação</th><th>Validade</th><th class="q">Disponível</th><th class="q">Sai</th></tr></thead><tbody>' +
+    if (!l.length) return h + '<p class="nota">Nenhuma fabricação de ' + esc(F.marca) + ' com saldo em ' + esc(MODELOS[F.modelo].curto) + '.</p>';
+    return h + '<div class="grupo"><div class="grupo-topo"><h3>Fabricações de ' + esc(F.marca) + '</h3><span class="soma" id="d-total"></span></div><div class="box-rol"><table class="tlotes"><thead><tr><th>Fabricação</th><th>Validade</th><th class="q">Disponível</th><th class="q">Sai</th></tr></thead><tbody>' +
       l.map(function (x, i) {
-        return '<tr' + (i === 0 ? ' class="sug"' : '') + '><td><b>' + esc(x.codigo) + '</b>' + (i === 0 ? '<br><span class="tag az">sugerido: vence primeiro</span>' : '') + '</td><td>' + mesBR(x.fabricacao) + '</td><td>' + tagValidade(x.fabricacao) + '</td><td class="q">' + fmt(x.saldo) + '</td>' +
-          '<td class="q"><input type="number" min="0" max="' + x.saldo + '" step="1" inputmode="numeric" data-f="saida.' + x.id + '" value="' + esc(F.saida[x.id] || '') + '" aria-label="Quantidade do lote ' + esc(x.codigo) + '"></td></tr>';
-      }).join('') + '</tbody></table></div></div><div class="campos" style="margin-top:12px">' + campoObs() + '</div>';
-    return h;
+        return '<tr' + (i === 0 ? ' class="sug"' : '') + '><td><b>' + mesBR(x.fabricacao) + '</b>' + (i === 0 ? '<br><span class="tag az">sugerida: vence primeiro</span>' : '') + '</td><td>' + tagValidade(x.fabricacao) + '</td><td class="q">' + fmt(x.saldo) + '</td>' +
+          '<td class="q"><input type="number" min="0" max="' + x.saldo + '" step="1" inputmode="numeric" data-f="saida.' + esc(x.k) + '" value="' + esc(F.saida[x.k] || '') + '" aria-label="Quantidade da fabricação ' + mesBR(x.fabricacao) + '"></td></tr>';
+      }).join('') + '</tbody></table></div></div>';
   }
-  // ---- troca ----
+  // ---- troca (20 L e 10 L) ----
   function formTroca(C) {
-    var h = '<div class="campos">' + campoData() +
-      '<label>Cliente<input type="text" data-f="cliente" value="' + esc(F.cliente) + '" maxlength="120" list="dl-clientes" autocomplete="off" required>' +
-      '<datalist id="dl-clientes">' + clientesConhecidos(C).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></label></div>';
+    var h = '<div class="campos">' + campoData() + campoCliente(C) + '</div>';
     h += '<div class="grupo"><div class="grupo-topo"><h3>Sucatas recebidas</h3><span class="soma" id="d-soma"></span></div>' +
-      '<div class="campos" style="margin-bottom:10px"><label>Total de sucatas recebidas<input type="number" data-f="total" value="' + esc(F.total) + '" min="1" step="1" inputmode="numeric" required></label></div>' +
+      '<div class="campos" style="margin-bottom:10px"><label>Quantidade de sucatas recebidas<input type="number" data-f="total" value="' + esc(F.total) + '" min="1" step="1" inputmode="numeric" required></label></div>' +
       F.sucata.map(function (s, i) {
-        return '<div class="linha"><label>Fabricante<select data-f="sucata.' + i + '.fabricante"><option value="">Escolha</option>' + MARCAS.map(function (b) { return '<option' + (s.fabricante === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
-          '<label class="mot">Motivo<select data-f="sucata.' + i + '.motivo"><option value="">Escolha</option>' + MOTIVOS.map(function (mo) { return '<option' + (s.motivo === mo ? ' selected' : '') + '>' + mo + '</option>'; }).join('') + '</select></label>' +
+        return '<div class="linha ret"><label class="mot">Motivo<select data-f="sucata.' + i + '.motivo"><option value="">Escolha</option>' + MOTIVOS.map(function (mo) { return '<option' + (s.motivo === mo ? ' selected' : '') + '>' + mo + '</option>'; }).join('') + '</select></label>' +
           '<label>Quantidade<input type="number" data-f="sucata.' + i + '.qtd" value="' + esc(s.qtd) + '" min="1" step="1" inputmode="numeric"></label>' +
-          (F.sucata.length > 1 ? '<button type="button" class="x" data-act="tirar" data-lista="sucata" data-i="' + i + '" aria-label="Tirar esta linha">×</button>' : '<span></span>') +
+          (F.sucata.length > 1 ? '<button type="button" class="x" data-act="tirar" data-lista="sucata" data-i="' + i + '" aria-label="Tirar este motivo">×</button>' : '<span></span>') +
           (s.motivo === 'Outro' ? '<label class="desc">Descreva o motivo<input type="text" data-f="sucata.' + i + '.desc" value="' + esc(s.desc) + '" maxlength="120"></label>' : '') + '</div>';
       }).join('') +
-      '<button type="button" class="mais-linha" data-act="mais" data-lista="sucata">+ Outro fabricante ou motivo</button></div>';
+      '<button type="button" class="mais-linha" data-act="mais" data-lista="sucata">+ Outro motivo</button></div>';
     h += '<div class="grupo"><div class="grupo-topo"><h3>Novos entregues</h3><span class="soma" id="d-total-novos"></span></div><div id="d-sugestao"></div>' +
       F.novos.map(function (n, i) {
-        return '<div class="linha nov"><label>Marca<select data-f="novos.' + i + '.marca"><option value="">Escolha</option>' + MARCAS.map(function (b) { return '<option' + (n.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
-          '<label class="lotesel">Lote<select data-f="novos.' + i + '.lote"' + (n.marca ? '' : ' disabled') + '>' + (n.marca ? opcoesLotes(C, n.marca, n.lote) : '<option value="">Escolha a marca</option>') + '</select></label>' +
+        return '<div class="linha nov"><label>Marca<select data-f="novos.' + i + '.marca"><option value="">Escolha</option>' + marcas(F.modelo).map(function (b) { return '<option' + (n.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
+          '<label class="lotesel">Fabricação<select data-f="novos.' + i + '.lote"' + (n.marca ? '' : ' disabled') + '>' + (n.marca ? opcoesLotes(C, n.marca, n.lote) : '<option value="">Escolha a marca</option>') + '</select></label>' +
           '<label>Quantidade<input type="number" data-f="novos.' + i + '.qtd" value="' + esc(n.qtd) + '" min="1" step="1" inputmode="numeric"></label>' +
           (F.novos.length > 1 ? '<button type="button" class="x" data-act="tirar" data-lista="novos" data-i="' + i + '" aria-label="Tirar esta linha">×</button>' : '<span></span>') + '</div>';
       }).join('') +
-      '<button type="button" class="mais-linha" data-act="mais" data-lista="novos">+ Outro lote ou marca</button></div><div class="campos" style="margin-top:12px">' + campoObs() + '</div>';
+      '<button type="button" class="mais-linha" data-act="mais" data-lista="novos">+ Outra marca ou fabricação</button></div>';
     return h;
   }
   function clientesConhecidos(C) {
-    var v = {}; C.ops.forEach(function (o) { if (o.tipo === 'troca' && o.cliente) v[o.cliente] = 1; });
-    return Object.keys(v).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); }).slice(0, 200);
+    var v = {}; C.ops.forEach(function (o) { if ((o.tipo === 'troca' || o.tipo === 'saida') && o.cliente) v[o.cliente] = 1; });
+    return Object.keys(v).sort(function (a, b) { return a.localeCompare(b, 'pt-BR'); }).slice(0, 300);
   }
-  // ---- retirada ----
+  // ---- retirada (20 L e 10 L) ----
   function formRetirada(C) {
-    var outro = F.recolhido === 'Outro';
     return '<div class="campos">' + campoData() +
-      '<div class="campo largo">Quem recolheu' + seg('recolhido', ['AGS', 'Montico', 'Outro'], F.recolhido) + '</div>' +
-      (outro ? '<label class="largo">Nome de quem recolheu<input type="text" data-f="recolhidoOutro" value="' + esc(F.recolhidoOutro) + '" maxlength="80"></label>' : '') + '</div>' +
-      '<div class="grupo"><div class="grupo-topo"><h3>Sucata retirada</h3><span class="soma" id="d-total-ret"></span></div>' +
-      F.ret.map(function (r, i) {
-        return '<div class="linha ret"><label>Fabricante da sucata<select data-f="ret.' + i + '.fabricante"><option value="">Escolha</option>' + MARCAS.map(function (b) { return '<option value="' + b + '"' + (r.fabricante === b ? ' selected' : '') + '>' + b + ' (' + fmt(sucata(C, F.modelo, b)) + ' em estoque)</option>'; }).join('') + '</select></label>' +
-          '<label>Quantidade<input type="number" data-f="ret.' + i + '.qtd" value="' + esc(r.qtd) + '" min="1" step="1" inputmode="numeric"></label>' +
-          (F.ret.length > 1 ? '<button type="button" class="x" data-act="tirar" data-lista="ret" data-i="' + i + '" aria-label="Tirar esta linha">×</button>' : '<span></span>') + '</div>';
-      }).join('') +
-      '<button type="button" class="mais-linha" data-act="mais" data-lista="ret">+ Sucata de outro fabricante</button></div>' +
-      '<div class="grupo"><div class="campo">O fabricante vai entregar novos em troca desta sucata?' +
+      '<div class="campo largo">Marca que recolheu' + seg('recolhido', RECOLHE, F.recolhido) + '</div>' +
+      (F.recolhido === 'Outro' ? '<label class="largo">Nome de quem recolheu<input type="text" data-f="recolhidoOutro" value="' + esc(F.recolhidoOutro) + '" maxlength="80"></label>' : '') +
+      '<label>Quantidade (unidades)<input type="number" data-f="qtd" value="' + esc(F.qtd) + '" min="1" step="1" inputmode="numeric"><span class="info-lote">Sucata de ' + esc(MODELOS[F.modelo].curto) + ' em estoque: ' + fmt(sucata(C, F.modelo)) + '</span></label></div>' +
+      '<div class="grupo"><div class="campo">Quem recolheu vai entregar novos em troca desta sucata?' +
       seg('contra', [['novos', 'Sim, vai entregar novos'], ['sem', 'Não (comprou ou levou sem troca)']], F.contra) +
-      '<span class="dica">Os novos só entram no estoque quando chegarem: registre a entrada de novos vinculada a esta retirada.</span></div></div>' +
+      '<span class="dica">Os novos só entram no estoque quando chegarem: registre a entrada de novos (com a foto da nota) vinculada a esta retirada.</span></div></div>' +
       '<div class="campos" style="margin-top:12px">' + campoObs() + '</div>';
   }
   // ---- contagem ----
   function linhasContagem(C) {
-    if (F.alvo === 'sucata') return MARCAS.map(function (b) { return { k: 'S|' + b, fabricante: b, nome: 'Sucata ' + b, registrado: sucata(C, F.modelo, b) }; });
-    var out = lotesDe(C, F.modelo, '', false).filter(function (l) { return l.saldo !== 0 || F.contado['N|' + l.id] != null; })
-      .map(function (l) { return { k: 'N|' + l.id, lote: l.id, marca: l.marca, codigo: l.codigo, fabricacao: l.fabricacao, nome: l.marca + ' · lote ' + l.codigo, registrado: l.saldo }; });
-    return out;
+    if (F.alvo === 'sucata') return [{ k: 'S', nome: 'Sucata de ' + MODELOS[F.modelo].curto, registrado: sucata(C, F.modelo) }];
+    return lotesDe(C, F.modelo, '', false).filter(function (l) { return l.saldo !== 0 || F.contado[l.k] != null; })
+      .map(function (l) { return { k: l.k, marca: l.marca, fabricacao: l.fabricacao, nome: loteTxt(l.marca, l.fabricacao), registrado: l.saldo }; });
   }
   function difHtml(d) { return d == null ? '<span class="dif-zero">—</span>' : d === 0 ? '<span class="dif-zero">sem diferença</span>' : '<span class="' + (d > 0 ? 'dif-mais' : 'dif-menos') + '">' + sinal(d) + '</span>'; }
   function formContagem(C) {
-    var h = '<div class="campos">' + campoData() + '<div class="campo largo">O que foi contado' + seg('alvo', [['novos', 'Novos (por lote)'], ['sucata', 'Sucata (por fabricante)']], F.alvo) + '</div></div>';
+    var h = '<div class="campos">' + campoData() + (temSucata(F.modelo) ? '<div class="campo largo">O que foi contado' + seg('alvo', [['novos', 'Novos (por marca e fabricação)'], ['sucata', 'Sucata (total)']], F.alvo) + '</div>' : '') + '</div>';
     if (!F.alvo) return h;
     var l = linhasContagem(C);
-    h += '<div class="grupo"><p class="nota" style="margin-top:0">Deixe em branco o que não foi contado. Zero quer dizer que não há nenhum.</p><div class="box-rol"><table class="tlotes"><thead><tr><th>' + (F.alvo === 'novos' ? 'Marca e lote' : 'Fabricante') + '</th>' + (F.alvo === 'novos' ? '<th>Fabricação</th>' : '') + '<th class="q">Registrado</th><th class="q">Contado</th><th class="q">Diferença</th></tr></thead><tbody>' +
+    h += '<div class="grupo"><p class="nota" style="margin-top:0">Deixe em branco o que não foi contado. Zero quer dizer que não há nenhum.</p><div class="box-rol"><table class="tlotes"><thead><tr><th>' + (F.alvo === 'novos' ? 'Marca e fabricação' : 'Estoque') + '</th><th class="q">Registrado</th><th class="q">Contado</th><th class="q">Diferença</th></tr></thead><tbody>' +
       l.map(function (x) {
-        return '<tr><td><b>' + esc(x.nome) + '</b></td>' + (F.alvo === 'novos' ? '<td>' + mesBR(x.fabricacao) + '</td>' : '') + '<td class="q">' + fmt(x.registrado) + '</td>' +
-          '<td class="q"><input type="number" min="0" step="1" inputmode="numeric" data-f="contado.' + x.k + '" value="' + esc(F.contado[x.k] == null ? '' : F.contado[x.k]) + '" aria-label="Contado: ' + esc(x.nome) + '"></td><td class="q" id="d-dif-' + x.k.replace(/[^A-Za-z0-9]/g, '_') + '"></td></tr>';
-      }).join('') + (l.length ? '' : '<tr><td colspan="5" class="vazio">Nenhum lote com saldo registrado. Use “lote encontrado” abaixo.</td></tr>') + '</tbody></table></div>';
+        return '<tr><td><b>' + esc(x.nome) + '</b></td><td class="q">' + fmt(x.registrado) + '</td>' +
+          '<td class="q"><input type="number" min="0" step="1" inputmode="numeric" data-f="contado.' + esc(x.k) + '" value="' + esc(F.contado[x.k] == null ? '' : F.contado[x.k]) + '" aria-label="Contado: ' + esc(x.nome) + '"></td><td class="q" id="d-dif-' + x.k.replace(/[^A-Za-z0-9]/g, '_') + '"></td></tr>';
+      }).join('') + (l.length ? '' : '<tr><td colspan="4" class="vazio">Nenhum saldo registrado. Use “fabricação encontrada” abaixo.</td></tr>') + '</tbody></table></div>';
     if (F.alvo === 'novos') {
       h += F.achados.map(function (a, i) {
-        return '<div class="linha nov" style="margin-top:8px"><label>Marca<select data-f="achados.' + i + '.marca"><option value="">Escolha</option>' + MARCAS.map(function (b) { return '<option' + (a.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
-          '<label class="lotesel">Lote encontrado<input type="text" data-f="achados.' + i + '.codigo" value="' + esc(a.codigo) + '" maxlength="40" autocomplete="off"></label>' +
+        return '<div class="linha nov" style="margin-top:8px"><label>Marca<select data-f="achados.' + i + '.marca"><option value="">Escolha</option>' + marcas(F.modelo).map(function (b) { return '<option' + (a.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
+          '<label class="lotesel">Fabricação encontrada<input type="month" data-f="achados.' + i + '.fab" value="' + esc(a.fab) + '" max="' + mesAtual() + '"></label>' +
           '<label>Contado<input type="number" data-f="achados.' + i + '.contado" value="' + esc(a.contado) + '" min="0" step="1" inputmode="numeric"></label>' +
-          '<button type="button" class="x" data-act="tirar" data-lista="achados" data-i="' + i + '" aria-label="Tirar este lote">×</button>' +
-          '<label class="desc">Mês/ano de fabricação<input type="month" data-f="achados.' + i + '.fabricacao" value="' + esc(a.fabricacao) + '" max="' + mesAtual() + '"></label></div>';
-      }).join('') + '<button type="button" class="mais-linha" data-act="mais" data-lista="achados" style="margin-top:8px">+ Lote encontrado que não está na lista</button>';
+          '<button type="button" class="x" data-act="tirar" data-lista="achados" data-i="' + i + '" aria-label="Tirar esta fabricação">×</button></div>';
+      }).join('') + '<button type="button" class="mais-linha" data-act="mais" data-lista="achados" style="margin-top:8px">+ Fabricação encontrada que não está na lista</button>';
     }
     h += '</div><div class="campos" style="margin-top:12px"><label class="largo">Justificativa <span class="dica" id="d-just">obrigatória quando houver diferença</span><textarea data-f="just" maxlength="500" rows="2">' + esc(F.just) + '</textarea></label>' + campoObs() + '</div>';
     return h;
@@ -726,17 +740,13 @@ textarea{min-height:44px;resize:vertical}
     C = C || calcular();
     var el;
     if (F.tipo === 'entrada') {
-      var ex = loteExistente(C), inpFab = document.querySelector('[data-f="fabricacao"]');
       if ((el = $('d-lote'))) {
-        if (ex) { el.className = 'info-lote'; el.textContent = 'Lote já cadastrado: fabricação ' + mesBR(ex.fabricacao) + ', saldo ' + fmt(ex.saldo) + '.'; }
-        else if (F.marca && normCod(F.codigo)) { el.className = 'info-lote novo'; el.textContent = 'Lote novo para ' + F.marca + ' em ' + MODELOS[F.modelo].curto + '.'; }
-        else el.textContent = '';
+        if (F.marca && /^\d{4}-\d{2}$/.test(F.fab)) {
+          var sd = (C.saldos[F.modelo] || {})['N|' + F.marca + '|' + F.fab];
+          el.className = 'info-lote' + (sd == null ? ' novo' : '');
+          el.textContent = 'Validade ' + mesBR(validade(F.fab)) + (situacao(F.fab) === 'vencido' ? ' (já vencido)' : '') + ' · ' + (sd == null ? 'fabricação nova para ' + F.marca : 'soma ao lote existente (saldo ' + fmt(sd) + ')') + '.';
+        } else el.textContent = '';
       }
-      if (inpFab) {
-        if (ex) { F.fabricacao = ex.fabricacao; inpFab.value = ex.fabricacao; inpFab.readOnly = true; }
-        else if (inpFab.readOnly) { inpFab.readOnly = false; }
-      }
-      if ((el = $('d-validade'))) el.textContent = F.fabricacao ? 'Validade: ' + mesBR(validade(F.fabricacao)) + (situacao(F.fabricacao) === 'vencido' ? ' (já vencido)' : '') : '';
     } else if (F.tipo === 'saida') {
       var tot = 0; Object.keys(F.saida).forEach(function (k) { tot += inteiro(F.saida[k]) || 0; });
       if ((el = $('d-total'))) el.textContent = 'Total: ' + un(tot);
@@ -757,9 +767,6 @@ textarea{min-height:44px;resize:vertical}
             (exato && F.novos.length === 1 && String(F.novos[0].qtd) !== String(s) ? '<button type="button" data-act="usar-sugestao" data-v="' + s + '">Usar ' + fmt(s) + '</button>' : '') + '</div>';
         } else el.innerHTML = '';
       }
-    } else if (F.tipo === 'retirada') {
-      var tr = F.ret.reduce(function (t, r) { return t + (inteiro(r.qtd) || 0); }, 0);
-      if ((el = $('d-total-ret'))) el.textContent = tr ? 'Total: ' + un(tr) : '';
     } else if (F.tipo === 'contagem' && F.alvo) {
       var temDif = false;
       linhasContagem(C).forEach(function (x) {
@@ -772,155 +779,251 @@ textarea{min-height:44px;resize:vertical}
     }
   }
 
-  // monta o pedido para o servidor e o resumo; devolve { erro } ou { p, resumo }
+  // monta o pedido para o servidor e o resumo; devolve { erro } ou { p, resumo (html), resumoTxt (o que o cliente assina) }
   function montar(C) {
-    var t = F.tipo, m = F.modelo, mc = MODELOS[m].curto, p = { id: F.id, tipo: t, modelo: m, data: F.data, obs: F.obs.trim() }, r = [];
+    var t = F.tipo, m = F.modelo, mc = MODELOS[m].curto, p = { id: F.id, tipo: t, modelo: m, data: F.data }, r = [], txt = [];
     if (!/^\d{4}-\d{2}-\d{2}$/.test(F.data || '')) return { erro: 'Informe a data da movimentação.' };
     if (F.data > hoje()) return { erro: 'A data da movimentação não pode ser depois de hoje.' };
     if (t === 'entrada') {
-      var q = inteiro(F.qtd), cod = normCod(F.codigo);
-      if (!F.marca) return { erro: 'Escolha a marca.' };
-      if (!cod) return { erro: 'Informe o lote.' };
-      if (!/^\d{4}-\d{2}$/.test(F.fabricacao || '')) return { erro: 'Informe o mês e o ano de fabricação.' };
-      if (F.fabricacao > F.data.slice(0, 7)) return { erro: 'A fabricação não pode ser depois da data da entrada.' };
+      var q = inteiro(F.qtd);
+      if (marcas(m).indexOf(F.marca) < 0) return { erro: 'Escolha a marca.' };
+      if (!/^\d{4}-\d{2}$/.test(F.fab || '')) return { erro: 'Informe o mês e o ano de fabricação.' };
+      if (F.fab > F.data.slice(0, 7)) return { erro: 'A fabricação não pode ser depois da data da entrada.' };
       if (!q || q < 1) return { erro: 'Informe a quantidade em unidades (número inteiro maior que zero).' };
-      var ex = loteExistente(C);
-      if (ex && ex.fabricacao !== F.fabricacao) return { erro: 'O lote ' + cod + ' da ' + F.marca + ' já está cadastrado com fabricação ' + mesBR(ex.fabricacao) + '.' };
-      p.linhas = [{ marca: F.marca, codigo: cod, fabricacao: F.fabricacao, qtd: q }];
+      if (!F.foto) return { erro: 'Tire a foto da nota do recebimento antes de concluir.' };
+      p.linhas = [{ marca: F.marca, fabricacao: F.fab, qtd: q }];
+      p.foto = F.foto;
       if (F.vinculo) {
         p.vinculo = F.vinculo;
         var ret = C.ops.filter(function (o) { return o.id === F.vinculo; })[0];
         if (ret && F.data < ret.data) return { erro: 'O recebimento não pode ter data anterior à retirada vinculada (' + dataBR(ret.data) + ').' };
       }
-      r.push('<p><b>Entrada:</b> ' + un(q) + ' novas ' + esc(F.marca) + ' de ' + mc + ', lote <b>' + esc(cod) + '</b> (fabricação ' + mesBR(F.fabricacao) + ', validade ' + mesBR(validade(F.fabricacao)) + ').' + (ex ? ' Lote já cadastrado: passa de ' + fmt(ex.saldo) + ' para ' + fmt(ex.saldo + q) + '.' : ' Lote novo.') + '</p>');
-      if (F.vinculo) r.push('<p>Recebidos do fabricante em troca da retirada de sucata ref. ' + refCurta(F.vinculo) + '.</p>');
+      var sd = (C.saldos[m] || {})['N|' + F.marca + '|' + F.fab];
+      r.push('<p><b>Entrada:</b> ' + un(q) + ' novas ' + esc(F.marca) + ' de ' + mc + ', fabricação <b>' + mesBR(F.fab) + '</b> (validade ' + mesBR(validade(F.fab)) + ').' + (sd != null ? ' Soma ao lote existente: ' + fmt(sd) + ' → ' + fmt(sd + q) + '.' : ' Fabricação nova.') + '</p>');
+      r.push('<p>Foto da nota: tirada agora.</p>');
+      if (F.vinculo) r.push('<p>Recebidos em troca da retirada de sucata ref. ' + refCurta(F.vinculo) + '.</p>');
     } else if (t === 'saida') {
-      if (!F.marca) return { erro: 'Escolha a marca.' };
-      var ls_ = lotesDe(C, m, F.marca, true), tot = 0, partes = [];
-      p.linhas = [];
-      for (var i = 0; i < ls_.length; i++) {
-        var raw = F.saida[ls_[i].id]; if (raw == null || String(raw).trim() === '' || String(raw).trim() === '0') continue;
-        var qq = inteiro(raw);
-        if (qq == null) return { erro: 'Quantidade inválida no lote ' + ls_[i].codigo + ' (use números inteiros).' };
-        if (qq > ls_[i].saldo) return { erro: 'O lote ' + ls_[i].codigo + ' tem ' + un(ls_[i].saldo) + ' disponível(is).' };
-        p.linhas.push({ marca: F.marca, lote: ls_[i].id, qtd: qq }); tot += qq; partes.push('lote <b>' + esc(ls_[i].codigo) + '</b>: ' + fmt(qq));
-      }
-      if (!p.linhas.length) return { erro: 'Informe a quantidade que saiu de ao menos um lote.' };
-      r.push('<p><b>Saída:</b> ' + un(tot) + ' novas ' + esc(F.marca) + ' de ' + mc + ' — ' + partes.join('; ') + '.</p>');
-    } else if (t === 'troca') {
       var cli = F.cliente.trim(); if (!cli) return { erro: 'Informe o cliente.' };
-      var total = inteiro(F.total); if (!total) return { erro: 'Informe o total de sucatas recebidas.' };
-      p.cliente = cli; p.totalSucata = total; p.linhas = [];
-      var soma = 0, porFab = {}, porMot = [];
+      if (marcas(m).indexOf(F.marca) < 0) return { erro: 'Escolha a marca.' };
+      var ls_ = lotesDe(C, m, F.marca, true), tot = 0, partes = [], partesT = [];
+      p.cliente = cli; p.linhas = [];
+      for (var i = 0; i < ls_.length; i++) {
+        var raw = F.saida[ls_[i].k]; if (raw == null || String(raw).trim() === '' || String(raw).trim() === '0') continue;
+        var qq = inteiro(raw);
+        if (qq == null) return { erro: 'Quantidade inválida na fabricação ' + mesBR(ls_[i].fabricacao) + ' (use números inteiros).' };
+        if (qq > ls_[i].saldo) return { erro: 'A fabricação ' + mesBR(ls_[i].fabricacao) + ' tem ' + un(ls_[i].saldo) + ' disponível(is).' };
+        p.linhas.push({ marca: F.marca, fabricacao: ls_[i].fabricacao, qtd: qq }); tot += qq;
+        partes.push('fab. <b>' + mesBR(ls_[i].fabricacao) + '</b>: ' + fmt(qq)); partesT.push(fmt(qq) + ' fab. ' + mesBR(ls_[i].fabricacao));
+      }
+      if (!p.linhas.length) return { erro: 'Informe quanto sai de ao menos uma fabricação.' };
+      r.push('<p><b>Cliente:</b> ' + esc(cli) + '</p>');
+      r.push('<p><b>Entrega:</b> ' + un(tot) + ' novas ' + esc(F.marca) + ' de ' + mc + ' — ' + partes.join('; ') + '.</p>');
+      txt.push('Cliente: ' + cli + '.', 'Recebo ' + tot + ' garrafões novos ' + F.marca + ' de ' + mc + ' (' + partesT.join('; ') + ').', 'Data: ' + dataBR(F.data) + '.');
+    } else if (t === 'troca') {
+      var cli2 = F.cliente.trim(); if (!cli2) return { erro: 'Informe o cliente.' };
+      var total = inteiro(F.total); if (!total) return { erro: 'Informe a quantidade de sucatas recebidas.' };
+      p.cliente = cli2; p.totalSucata = total; p.linhas = [];
+      var soma = 0, porMot = [];
       for (var a = 0; a < F.sucata.length; a++) {
         var s = F.sucata[a], qs = inteiro(s.qtd);
-        if (!s.fabricante) return { erro: 'Escolha o fabricante de cada linha de sucata.' };
         if (!s.motivo) return { erro: 'Escolha o motivo de cada linha de sucata.' };
         if (s.motivo === 'Outro' && String(s.desc || '').trim().length < 3) return { erro: 'Descreva o motivo “Outro”.' };
-        if (!qs) return { erro: 'Informe a quantidade de cada linha de sucata.' };
-        soma += qs; porFab[s.fabricante] = (porFab[s.fabricante] || 0) + qs;
-        porMot.push(fmt(qs) + ' ' + esc(s.fabricante) + ' ' + esc(s.motivo === 'Outro' ? 'outro: ' + s.desc.trim() : s.motivo.toLowerCase()));
-        p.linhas.push({ classe: 'sucata', fabricante: s.fabricante, motivo: s.motivo, motivoDesc: s.motivo === 'Outro' ? s.desc.trim() : undefined, qtd: qs });
+        if (!qs) return { erro: 'Informe a quantidade de cada motivo.' };
+        soma += qs;
+        porMot.push(fmt(qs) + ' ' + (s.motivo === 'Outro' ? 'outro: ' + s.desc.trim() : s.motivo.toLowerCase()));
+        p.linhas.push({ classe: 'sucata', motivo: s.motivo, motivoDesc: s.motivo === 'Outro' ? s.desc.trim() : undefined, qtd: qs });
       }
-      if (soma !== total) return { erro: 'A soma dos motivos (' + fmt(soma) + ') não bate com o total de sucatas recebidas (' + fmt(total) + ').' };
-      var totN = 0, partesN = [], pedido = {};
+      if (soma !== total) return { erro: 'A soma dos motivos (' + fmt(soma) + ') não bate com a quantidade de sucatas recebidas (' + fmt(total) + ').' };
+      var totN = 0, partesN = [], partesNT = [], pedido = {};
       for (var b = 0; b < F.novos.length; b++) {
         var n = F.novos[b], qn = inteiro(n.qtd);
         if (!n.marca) return { erro: 'Escolha a marca de cada linha de novos.' };
-        if (!n.lote) return { erro: 'Escolha o lote de cada linha de novos.' };
+        if (!n.lote) return { erro: 'Escolha a fabricação de cada linha de novos.' };
         if (!qn) return { erro: 'Informe a quantidade de cada linha de novos.' };
         pedido[n.lote] = (pedido[n.lote] || 0) + qn;
-        var lt = C.lotes[n.lote], sd = (C.saldos[m] || {})['N|' + n.lote] || 0;
-        if (pedido[n.lote] > sd) return { erro: 'O lote ' + (lt ? lt.codigo : '') + ' tem ' + un(sd) + ' disponível(is).' };
-        totN += qn; partesN.push(un(qn) + ' ' + esc(n.marca) + ', lote <b>' + esc(lt ? lt.codigo : '?') + '</b>');
-        p.linhas.push({ classe: 'novo', marca: n.marca, lote: n.lote, qtd: qn });
+        var sdl = (C.saldos[m] || {})[n.lote] || 0, fabN = n.lote.split('|')[2];
+        if (pedido[n.lote] > sdl) return { erro: 'Os novos ' + n.marca + ' da fabricação ' + mesBR(fabN) + ' têm ' + un(sdl) + ' disponível(is).' };
+        totN += qn; partesN.push(un(qn) + ' ' + esc(n.marca) + ', fab. <b>' + mesBR(fabN) + '</b>'); partesNT.push(qn + ' ' + n.marca + ' fab. ' + mesBR(fabN));
+        p.linhas.push({ classe: 'novo', marca: n.marca, fabricacao: fabN, qtd: qn });
       }
-      r.push('<p><b>Cliente:</b> ' + esc(cli) + '</p>');
-      r.push('<p><b>Recebimento:</b> ' + Object.keys(porFab).map(function (f) { return fmt(porFab[f]) + ' sucatas ' + esc(f); }).join(' e ') + ' de ' + mc + ' (' + porMot.join('; ') + ').</p>');
+      r.push('<p><b>Cliente:</b> ' + esc(cli2) + '</p>');
+      r.push('<p><b>Recebimento:</b> ' + fmt(total) + ' sucatas de ' + mc + ' (' + esc(porMot.join('; ')) + ').</p>');
       r.push('<p><b>Entrega:</b> ' + partesN.join('; ') + ' — ' + un(totN) + ' novas de ' + mc + '.</p>');
       r.push('<p class="nota" style="margin:4px 0 0">Proporção desta troca: ' + fmt(total) + ' sucatas para ' + fmt(totN) + ' novos' + (totN ? ' (' + (total / totN).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) + ' para 1)' : '') + '.</p>');
+      txt.push('Cliente: ' + cli2 + '.', 'Entrego ' + total + ' sucatas de ' + mc + '.', 'Recebo ' + totN + ' garrafões novos de ' + mc + ' (' + partesNT.join('; ') + ').', 'Data: ' + dataBR(F.data) + '.');
     } else if (t === 'retirada') {
       var rec = F.recolhido === 'Outro' ? F.recolhidoOutro.trim() : F.recolhido;
       if (!rec || rec.length < 2) return { erro: 'Informe quem recolheu.' };
-      if (!F.contra) return { erro: 'Informe se o fabricante vai entregar novos em troca.' };
-      p.recolhidoPor = rec; p.contrapartida = F.contra; p.linhas = [];
-      var pf = {};
-      for (var c2 = 0; c2 < F.ret.length; c2++) {
-        var x = F.ret[c2], qr = inteiro(x.qtd);
-        if (!x.fabricante) return { erro: 'Escolha o fabricante da sucata de cada linha.' };
-        if (!qr) return { erro: 'Informe a quantidade de cada linha.' };
-        pf[x.fabricante] = (pf[x.fabricante] || 0) + qr;
-        if (pf[x.fabricante] > sucata(C, m, x.fabricante)) return { erro: 'A sucata ' + x.fabricante + ' tem ' + un(sucata(C, m, x.fabricante)) + ' em estoque.' };
-        p.linhas.push({ fabricante: x.fabricante, qtd: qr });
-      }
-      r.push('<p><b>Retirada:</b> ' + Object.keys(pf).map(function (f) { return fmt(pf[f]) + ' sucatas ' + esc(f); }).join(' e ') + ' de ' + mc + ', recolhidas por <b>' + esc(rec) + '</b>.</p>');
-      r.push('<p>' + (F.contra === 'novos' ? 'O fabricante vai entregar novos: o estoque de novos só muda quando a entrada for registrada.' : 'Sem novos em contrapartida.') + '</p>');
+      var qr = inteiro(F.qtd); if (!qr) return { erro: 'Informe a quantidade de sucata retirada.' };
+      if (qr > sucata(C, m)) return { erro: 'A sucata de ' + mc + ' tem ' + un(sucata(C, m)) + ' em estoque.' };
+      if (!F.contra) return { erro: 'Informe se quem recolheu vai entregar novos em troca.' };
+      p.recolhidoPor = rec; p.contrapartida = F.contra; p.qtd = qr;
+      if (F.obs.trim()) p.obs = F.obs.trim();
+      r.push('<p><b>Retirada:</b> ' + un(qr) + ' de sucata de ' + mc + ', recolhidas por <b>' + esc(rec) + '</b>. Sucata em estoque: ' + fmt(sucata(C, m)) + ' → ' + fmt(sucata(C, m) - qr) + '.</p>');
+      r.push('<p>' + (F.contra === 'novos' ? 'Vai entregar novos: o estoque de novos só muda quando a entrada (com a foto da nota) for registrada.' : 'Sem novos em contrapartida.') + '</p>');
+      if (p.obs) r.push('<p><b>Observação:</b> ' + esc(p.obs) + '</p>');
     } else if (t === 'contagem') {
       if (!F.alvo) return { erro: 'Escolha o que foi contado.' };
       p.alvo = F.alvo; p.linhas = [];
-      var dif = false, linhasR = [];
+      var dif = false, linhasR = [], invalido = false;
       linhasContagem(C).forEach(function (x) {
         var cv = F.contado[x.k]; if (cv == null || String(cv).trim() === '') return;
-        var ci = inteiro(cv); if (ci == null) { p.linhas = null; return; }
+        var ci = inteiro(cv); if (ci == null) { invalido = true; return; }
         var d = ci - x.registrado; if (d) dif = true;
-        p.linhas && p.linhas.push(F.alvo === 'novos' ? { lote: x.lote, registrado: x.registrado, contado: ci } : { fabricante: x.fabricante, registrado: x.registrado, contado: ci });
+        p.linhas.push(F.alvo === 'novos' ? { marca: x.marca, fabricacao: x.fabricacao, registrado: x.registrado, contado: ci } : { registrado: x.registrado, contado: ci });
         linhasR.push('<tr><td>' + esc(x.nome) + '</td><td class="q">' + fmt(x.registrado) + '</td><td class="q">' + fmt(ci) + '</td><td class="q">' + difHtml(d) + '</td><td>' + (d ? 'ajuste de ' + sinal(d) : 'só confirma') + '</td></tr>');
       });
-      if (!p.linhas) return { erro: 'Use números inteiros (zero ou mais) nas quantidades contadas.' };
+      if (invalido) return { erro: 'Use números inteiros (zero ou mais) nas quantidades contadas.' };
       if (F.alvo === 'novos') {
         for (var e = 0; e < F.achados.length; e++) {
-          var ac = F.achados[e], ca = inteiro(ac.contado), cc = normCod(ac.codigo);
-          if (!ac.marca || !cc) return { erro: 'Informe a marca e o lote de cada lote encontrado.' };
-          if (!/^\d{4}-\d{2}$/.test(ac.fabricacao || '')) return { erro: 'Informe a fabricação do lote ' + cc + '.' };
-          if (ac.fabricacao > F.data.slice(0, 7)) return { erro: 'A fabricação do lote ' + cc + ' não pode ser depois da data da contagem.' };
-          if (ca == null) return { erro: 'Informe quantos foram contados no lote ' + cc + '.' };
-          var ja = lotesDe(C, m, ac.marca, false).filter(function (l) { return l.codigo === cc; })[0];
-          if (ja && (ja.saldo !== 0 || F.contado['N|' + ja.id] != null)) return { erro: 'O lote ' + cc + ' (' + ac.marca + ') já está na lista: informe a contagem nele.' };
-          if (ja && ja.fabricacao !== ac.fabricacao) return { erro: 'O lote ' + cc + ' da ' + ac.marca + ' já está cadastrado com fabricação ' + mesBR(ja.fabricacao) + '.' };
+          var ac = F.achados[e], ca = inteiro(ac.contado);
+          if (marcas(m).indexOf(ac.marca) < 0) return { erro: 'Escolha a marca de cada fabricação encontrada.' };
+          if (!/^\d{4}-\d{2}$/.test(ac.fab || '')) return { erro: 'Informe o mês e o ano de cada fabricação encontrada.' };
+          if (ac.fab > F.data.slice(0, 7)) return { erro: 'A fabricação ' + mesBR(ac.fab) + ' não pode ser depois da data da contagem.' };
+          if (ca == null) return { erro: 'Informe quantos foram contados de ' + ac.marca + ' fab. ' + mesBR(ac.fab) + '.' };
+          var kk = 'N|' + ac.marca + '|' + ac.fab, reg = (C.saldos[m] || {})[kk] || 0;
+          if (reg !== 0 || F.contado[kk] != null) return { erro: ac.marca + ' fab. ' + mesBR(ac.fab) + ' já está na lista: informe a contagem nela.' };
+          if (p.linhas.some(function (x) { return x.marca === ac.marca && x.fabricacao === ac.fab; })) return { erro: ac.marca + ' fab. ' + mesBR(ac.fab) + ' aparece duas vezes.' };
           if (ca) dif = true;
-          p.linhas.push(ja ? { lote: ja.id, registrado: 0, contado: ca } : { marca: ac.marca, codigo: cc, fabricacao: ac.fabricacao, registrado: 0, contado: ca });
-          linhasR.push('<tr><td>' + esc(ac.marca) + ' · lote ' + esc(cc) + ' (fab. ' + mesBR(ac.fabricacao) + ')</td><td class="q">0</td><td class="q">' + fmt(ca) + '</td><td class="q">' + difHtml(ca) + '</td><td>' + (ca ? 'ajuste de ' + sinal(ca) : 'só confirma') + '</td></tr>');
+          p.linhas.push({ marca: ac.marca, fabricacao: ac.fab, registrado: 0, contado: ca });
+          linhasR.push('<tr><td>' + esc(loteTxt(ac.marca, ac.fab)) + '</td><td class="q">0</td><td class="q">' + fmt(ca) + '</td><td class="q">' + difHtml(ca) + '</td><td>' + (ca ? 'ajuste de ' + sinal(ca) : 'só confirma') + '</td></tr>');
         }
       }
-      if (!p.linhas.length) return { erro: 'Informe a quantidade contada de ao menos um ' + (F.alvo === 'novos' ? 'lote' : 'fabricante') + ' (zero se não houver nenhum).' };
+      if (!p.linhas.length) return { erro: 'Informe a quantidade contada de ao menos uma linha (zero se não houver nenhum).' };
       if (dif && F.just.trim().length < 3) return { erro: 'Explique na justificativa por que a contagem deu diferente do registrado.' };
       p.justificativa = F.just.trim();
+      if (F.obs.trim()) p.obs = F.obs.trim();
       r.push('<p><b>Contagem de ' + (F.alvo === 'novos' ? 'novos' : 'sucata') + ' de ' + mc + '</b> em ' + dataBR(F.data) + ':</p><div class="box-rol"><table class="tlotes"><thead><tr><th></th><th class="q">Registrado</th><th class="q">Contado</th><th class="q">Diferença</th><th>Efeito</th></tr></thead><tbody>' + linhasR.join('') + '</tbody></table></div>');
       if (p.justificativa) r.push('<p><b>Justificativa:</b> ' + esc(p.justificativa) + '</p>');
+      if (p.obs) r.push('<p><b>Observação:</b> ' + esc(p.obs) + '</p>');
     }
-    if (p.obs) r.push('<p><b>Observação:</b> ' + esc(p.obs) + '</p>');
     r.push('<p class="nota" style="margin:6px 0 0">Data da movimentação: ' + dataBR(F.data) + '. Registrado por ' + esc(S.nome || 'você') + ' ao confirmar.</p>');
-    if (!p.obs) delete p.obs;
-    return { p: p, resumo: r.join('') };
+    return { p: p, resumo: r.join(''), resumoTxt: txt.join(' ') };
   }
   function revisaoHtml() {
-    return '<div class="resumo">' + F.resumo + '</div><div class="linha-botoes"><button type="button" class="btn" data-act="confirmar"' + (F.enviando ? ' disabled' : '') + '>' + (F.enviando ? 'Gravando…' : 'Confirmar') + '</button>' +
-      '<button type="button" class="btn sec" data-act="voltar"' + (F.enviando ? ' disabled' : '') + '>Voltar e corrigir</button></div>';
+    var h = '<div class="resumo">' + F.resumo + '</div>';
+    if (precisaAssinatura(F.tipo)) {
+      h += '<div class="assin-topo"><b>Assinatura do cliente' + (F.tipo === 'troca' ? ' (recebimento dos novos)' : ' (recebimento)') + '</b><button type="button" class="link" data-act="limpar-assin">Limpar</button></div>' +
+        (F.avisoAss ? '<p class="aviso-troca" role="alert">' + esc(F.avisoAss) + '</p>' : '') +
+        '<canvas id="assin-cv" class="assin' + (F.ass ? ' ok' : '') + '" aria-label="Espaço para o cliente assinar com o dedo ou o mouse"></canvas>' +
+        '<p class="aviso-ass">O cliente assina com o dedo (ou o mouse) confirmando o recebimento acima. ' + esc(AVISO_ASSIN) + '</p>';
+    }
+    var falta = precisaAssinatura(F.tipo) && !F.ass;
+    return h + '<div class="linha-botoes"><button type="button" class="btn" data-act="confirmar" id="btn-confirmar"' + (F.enviando || falta ? ' disabled' : '') + '>' + (F.enviando ? 'Gravando…' : 'Confirmar') + '</button>' +
+      '<button type="button" class="btn sec" data-act="voltar"' + (F.enviando ? ' disabled' : '') + '>Voltar e corrigir</button><button type="button" class="btn sec" data-act="fechar"' + (F.enviando ? ' disabled' : '') + '>Cancelar</button></div>' +
+      (falta ? '<p class="nota" id="d-falta-assin">Confirmar libera depois da assinatura do cliente.</p>' : '');
   }
   function revisar() {
     var C = calcular(), r = montar(C);
     if (r.erro) { F.erro = r.erro; renderForm(C); return; }
     F.erro = ''; F.revisao = true; F.payload = r.p; F.resumo = r.resumo;
+    F.avisoAss = '';
+    // a assinatura vale para o resumo exato: se cliente, marca, fabricação ou quantidade mudaram, apaga e pede de novo
+    if (F.ass && F.ass.resumo !== r.resumoTxt) { F.ass = null; F.avisoAss = 'Os itens mudaram depois da assinatura: a assinatura anterior foi apagada. Peça para o cliente assinar de novo.'; }
+    F.resumoTxt = r.resumoTxt;
     renderForm(C);
   }
   function confirmar() {
     if (!F || F.enviando || !F.payload) return;
+    if (precisaAssinatura(F.tipo)) {
+      if (!F.ass || F.ass.resumo !== F.resumoTxt) { F.ass = null; renderForm(); return; }
+      F.payload.assinatura = { imagem: F.ass.img, resumo: F.ass.resumo };
+    }
     F.enviando = true; renderForm();
     var tipo = F.tipo, id = F.id;
     S.db.rpc('garrafoes_registrar', { p: F.payload }).then(function (doc) {
       if (doc && typeof doc === 'object') { delete doc.repetida; delete doc.id; S.loc.ops[id] = doc; }
       F = null;
-      toast(TIPOS[tipo] + ' registrada.');
+      toast(TIPOS[tipo] + ': registrado.');
       render(); renderForm();
     }, function (e) {
       if (!F) return;
-      F.enviando = false; F.revisao = false; F.erro = msgErro(e);
+      F.enviando = false; F.erro = msgErro(e);
       renderForm();
     });
   }
 
+  /* ===================== assinatura na tela ===================== */
+  function iniciarAssinatura() {
+    var cv = $('assin-cv'); if (!cv || !F) return;
+    var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+    cv.width = Math.max(1, Math.round(r.width * dpr)); cv.height = Math.max(1, Math.round(r.height * dpr));
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0D2B3E'; ctx.fillStyle = '#0D2B3E';
+    if (F.ass && F.ass.img) { var im = new Image(); im.onload = function () { ctx.drawImage(im, 0, 0, r.width, r.height); }; im.src = F.ass.img; }
+    var desenhando = false, ult = null, traco = F.ass ? 999 : 0;
+    function pos(e) { var b = cv.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; }
+    cv.onpointerdown = function (e) { e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch (x) {} desenhando = true; ult = pos(e); ctx.beginPath(); ctx.arc(ult.x, ult.y, 1.1, 0, 6.3); ctx.fill(); };
+    cv.onpointermove = function (e) {
+      if (!desenhando) return; e.preventDefault();
+      var pt = pos(e); ctx.beginPath(); ctx.moveTo(ult.x, ult.y); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+      traco += Math.abs(pt.x - ult.x) + Math.abs(pt.y - ult.y); ult = pt;
+    };
+    cv.onpointerup = cv.onpointercancel = cv.onpointerleave = function () {
+      if (!desenhando) return; desenhando = false;
+      if (traco < 60) return; // rabisco curto demais ainda não vale como assinatura
+      F.ass = { img: exportarAssinatura(cv), resumo: F.resumoTxt }; F.avisoAss = '';
+      cv.classList.add('ok');
+      var b = $('btn-confirmar'); if (b && !F.enviando) b.disabled = false;
+      var f = $('d-falta-assin'); if (f) f.hidden = true;
+    };
+  }
+  function exportarAssinatura(cv) {
+    var w = 600, h = Math.round(w * cv.height / cv.width), o = document.createElement('canvas');
+    o.width = w; o.height = h;
+    var c = o.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, w, h); c.drawImage(cv, 0, 0, w, h);
+    return o.toDataURL('image/png');
+  }
+
+  /* ===================== foto da nota pela câmera (sem galeria) ===================== */
+  function abrirCamera() {
+    CAM.foto = null; CAM.erro = ''; CAM.estado = 'abrindo'; $('cam').hidden = false; renderCam();
+    if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      CAM.estado = 'erro'; CAM.erro = 'Este aparelho não libera a câmera para o app. Use o app LEVÍSSIMA atualizado ou o navegador Chrome. A entrada só conclui com a foto da nota tirada pela câmera.'; renderCam(); return;
+    }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }).then(function (st) {
+      if ($('cam').hidden) { st.getTracks().forEach(function (t) { t.stop(); }); return; }
+      CAM.stream = st; CAM.estado = 'video'; renderCam();
+      var v = $('cam-video'); v.srcObject = st; var pl = v.play(); if (pl && pl.catch) pl.catch(function () {});
+    }, function (e) {
+      var n = e && e.name;
+      CAM.estado = 'erro';
+      CAM.erro = n === 'NotAllowedError' || n === 'SecurityError' ? 'O app está sem permissão para usar a câmera. Permita a câmera para o LEVÍSSIMA (nas configurações do aparelho ou do navegador) e tente de novo.'
+        : n === 'NotFoundError' || n === 'OverconstrainedError' ? 'Nenhuma câmera encontrada neste aparelho.'
+        : n === 'NotReadableError' ? 'A câmera está sendo usada por outro app. Feche o outro app e tente de novo.'
+        : 'Não foi possível abrir a câmera (' + (n || 'erro') + ').';
+      CAM.erro += ' Sem a foto da nota a entrada não é concluída.';
+      renderCam();
+    });
+  }
+  function pararCamera() { if (CAM.stream) { CAM.stream.getTracks().forEach(function (t) { t.stop(); }); CAM.stream = null; } }
+  function fecharCamera() { pararCamera(); $('cam').hidden = true; $('cam-c').innerHTML = ''; CAM.estado = ''; }
+  function renderCam() {
+    var h = '<div class="modal-topo"><h2 id="cam-t">Foto da nota</h2><button type="button" class="x" data-act="cam-fechar" aria-label="Fechar">×</button></div>';
+    if (CAM.estado === 'abrindo') h += '<p class="nota">Abrindo a câmera…</p>';
+    else if (CAM.estado === 'video') h += '<video id="cam-video" class="cam-video" autoplay playsinline muted></video><p class="nota">Enquadre a nota inteira, com boa luz.</p><div class="linha-botoes"><button type="button" class="btn" data-act="cam-foto">Fotografar</button><button type="button" class="btn sec" data-act="cam-fechar">Cancelar</button></div>';
+    else if (CAM.estado === 'preview') h += '<img class="img-doc" src="' + CAM.foto + '" alt="Foto da nota tirada agora"><div class="linha-botoes"><button type="button" class="btn" data-act="cam-usar">Usar esta foto</button><button type="button" class="btn sec" data-act="cam-refazer">Refazer</button></div>';
+    else if (CAM.estado === 'erro') h += '<div class="erro-caixa" role="alert">' + esc(CAM.erro) + '</div><div class="linha-botoes"><button type="button" class="btn" data-act="cam-refazer">Tentar de novo</button><button type="button" class="btn sec" data-act="cam-fechar">Fechar</button></div>';
+    $('cam-c').innerHTML = h;
+  }
+  function fotografar() {
+    var v = $('cam-video'); if (!v || !v.videoWidth) { toast('A câmera ainda está abrindo. Tente de novo.'); return; }
+    var w = v.videoWidth, h = v.videoHeight, k = Math.min(1, 1600 / Math.max(w, h)), c = document.createElement('canvas');
+    c.width = Math.round(w * k); c.height = Math.round(h * k);
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    CAM.foto = c.toDataURL('image/jpeg', 0.72);
+    pararCamera(); CAM.estado = 'preview'; renderCam();
+  }
+
   /* ===================== detalhes, vínculos e exclusão ===================== */
-  function abrirOp(id) { M = { id: id, excluir: false, motivo: '', erro: '', enviando: false }; $('modal').hidden = false; renderModal(); }
+  function abrirOp(id) {
+    M = { id: id, excluir: false, motivo: '', erro: '', enviando: false, assin: null, foto: null };
+    $('modal').hidden = false; renderModal();
+    var op = todasOps()[id];
+    if (op && op.assinada) S.db.doc('g-assin/' + id).get().then(function (s) { if (M && M.id === id) { M.assin = s.exists ? s.data() : { erro: 'Assinatura não encontrada.' }; renderModal(); } }, function () { if (M && M.id === id) { M.assin = { erro: 'Não foi possível carregar a assinatura agora.' }; renderModal(); } });
+    if (op && op.fotoNota) S.db.doc('g-fotos/' + id).get().then(function (s) { if (M && M.id === id) { M.foto = s.exists ? s.data() : { erro: 'Foto não encontrada.' }; renderModal(); } }, function () { if (M && M.id === id) { M.foto = { erro: 'Não foi possível carregar a foto agora.' }; renderModal(); } });
+  }
   function fecharModal() { if (M && M.enviando) return; M = null; $('modal').hidden = true; $('modal-c').innerHTML = ''; }
   function efeitosExclusao(C, ids) {
     var porModelo = {}, out = [];
@@ -930,10 +1033,28 @@ textarea{min-height:44px;resize:vertical}
     });
     Object.keys(porModelo).forEach(function (k) {
       var m = k.split('~')[0], ch = k.slice(m.length + 1), atual = (C.saldos[m] || {})[ch] || 0, novo = atual - porModelo[k];
-      var nome = ch.indexOf('S|') === 0 ? 'Sucata ' + ch.slice(2) : (function () { var l = C.lotes[ch.slice(2)]; return l ? l.marca + ' · lote ' + l.codigo : 'lote'; })();
+      var nome = ch === 'S' ? 'Sucata' : 'Novos ' + loteTxt(ch.split('|')[1], ch.split('|')[2]);
       out.push({ nome: nome + ' (' + MODELOS[m].curto + ')', atual: atual, novo: novo });
     });
     return out;
+  }
+  function anexosHtml(op) {
+    var h = '';
+    if (op.assinada) {
+      h += '<div class="anexo"><b>Assinatura do cliente</b>';
+      if (!M.assin) h += '<p class="nota">Carregando…</p>';
+      else if (M.assin.erro) h += '<p class="msg erro">' + esc(M.assin.erro) + '</p>';
+      else h += '<img class="img-doc" src="' + M.assin.imagem + '" alt="Assinatura do cliente"><p class="nota" style="margin:4px 0">' + esc(M.assin.resumo || '') + '</p><p class="aviso-ass">Assinado em ' + esc(dataHoraBR(M.assin.em)) + ' · registrado por ' + esc((M.assin.por && M.assin.por.nome) || '—') + '. ' + esc(M.assin.aviso || AVISO_ASSIN) + '</p>';
+      h += '</div>';
+    }
+    if (op.fotoNota) {
+      h += '<div class="anexo"><b>Foto da nota do recebimento</b>';
+      if (!M.foto) h += '<p class="nota">Carregando…</p>';
+      else if (M.foto.erro) h += '<p class="msg erro">' + esc(M.foto.erro) + '</p>';
+      else h += '<img class="img-doc foto" data-act="zoom" src="' + M.foto.imagem + '" alt="Foto da nota"><p class="aviso-ass">Tirada em ' + esc(dataHoraBR(M.foto.em)) + ' por ' + esc((M.foto.por && M.foto.por.nome) || '—') + '. Toque na foto para ampliar.</p>';
+      h += '</div>';
+    }
+    return h;
   }
   function renderModal(C) {
     if (!M) return;
@@ -951,36 +1072,35 @@ textarea{min-height:44px;resize:vertical}
     dl.push(['Referência', refCurta(op.id) + ' (' + op.id + ')']);
     var lin = '<div class="box-rol"><table class="tlotes"><thead><tr><th>Efeito</th>' + (op.tipo === 'contagem' ? '<th class="q">Registrado</th><th class="q">Contado</th>' : '') + '<th class="q">Quantidade</th></tr></thead><tbody>' +
       linhas(op).map(function (l) {
-        var n = l.classe === 'novo' ? 'Novos ' + esc(l.marca) + ' · lote ' + esc(l.codigo || loteNome(C, l.lote)) + (l.fabricacao ? ' (fab. ' + mesBR(l.fabricacao) + ')' : '') : 'Sucata ' + esc(l.fabricante) + (l.motivo ? ' · ' + esc(l.motivo === 'Outro' ? 'Outro: ' + (l.motivoDesc || '') : l.motivo) : '');
+        var n = l.classe === 'novo' ? 'Novos ' + esc(loteTxt(l.marca, l.fabricacao)) + ' (val. ' + mesBR(validade(l.fabricacao)) + ')' : 'Sucata' + (l.motivo ? ' · ' + esc(l.motivo === 'Outro' ? 'Outro: ' + (l.motivoDesc || '') : l.motivo) : '');
         return '<tr><td>' + n + '</td>' + (op.tipo === 'contagem' ? '<td class="q">' + fmt(l.registrado) + '</td><td class="q">' + fmt(l.contado) + '</td>' : '') + '<td class="q ' + (l.qtd > 0 ? 'mais' : l.qtd < 0 ? 'menos' : 'zero') + '"><b>' + sinal(l.qtd) + '</b></td></tr>';
       }).join('') + '</tbody></table></div>';
-    // vínculos
     var vinc = '';
     if (op.tipo === 'retirada' && op.contrapartida === 'novos') {
       var rs = recebimentosDe(C, op.id);
-      vinc = '<p><b>Novos recebidos do fabricante:</b> ' + (rs.length ? rs.map(function (e) { return '<button type="button" class="link" data-act="op" data-id="' + esc(e.id) + '">' + dataBR(e.data) + ': ' + linhas(e).map(function (l) { return fmt(l.qtd) + ' ' + esc(l.marca) + ' lote ' + esc(l.codigo); }).join(', ') + '</button>'; }).join('; ') : 'aguardando o recebimento (registrado na entrada de novos).') + '</p>';
+      vinc = '<p><b>Novos recebidos em troca:</b> ' + (rs.length ? rs.map(function (e) { return '<button type="button" class="link" data-act="op" data-id="' + esc(e.id) + '">' + dataBR(e.data) + ': ' + linhas(e).map(function (l) { return fmt(l.qtd) + ' ' + esc(loteTxt(l.marca, l.fabricacao)); }).join(', ') + '</button>'; }).join('; ') : 'aguardando o recebimento (registrado na entrada de novos).') + '</p>';
     }
     if (op.tipo === 'entrada' && op.vinculo) {
       var rt = C.ops.filter(function (o) { return o.id === op.vinculo; })[0];
       vinc = '<p><b>Vinculada à retirada de sucata:</b> ' + (rt ? '<button type="button" class="link" data-act="op" data-id="' + esc(rt.id) + '">' + dataBR(rt.data) + ' por ' + esc(rt.recolhidoPor) + ' (ref. ' + refCurta(rt.id) + ')</button>' : 'ref. ' + refCurta(op.vinculo) + ' (não encontrada)') + '</p>';
     }
     var h = '<div class="modal-topo"><h2 id="modal-t">' + esc(tipoTxt(op)) + '</h2><button type="button" class="x" data-act="fechar-modal" aria-label="Fechar">×</button></div>' +
-      '<dl class="dl">' + dl.map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') + '</dl>' + lin + vinc;
+      '<dl class="dl">' + dl.map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') + '</dl>' + lin + vinc + anexosHtml(op);
     if (S.perfil === 'gestao') {
       if (!M.excluir) h += '<div class="linha-botoes"><button type="button" class="btn sec" data-act="excluir-ini" style="color:var(--red);border-color:var(--red)">Excluir…</button></div>';
       else {
         var ids = [op.id], extra = '';
         if (op.tipo === 'retirada') {
           var lig = recebimentosDe(C, op.id);
-          if (lig.length) { ids = ids.concat(lig.map(function (e) { return e.id; })); extra = '<p><b>Esta retirada tem ' + lig.length + ' recebimento(s) de novos vinculado(s).</b> Para não deixar um lançamento sem a sua referência, o conjunto inteiro será excluído:</p><ul>' + lig.map(function (e) { return '<li>Entrada de ' + dataBR(e.data) + ': ' + linhas(e).map(function (l) { return fmt(l.qtd) + ' ' + esc(l.marca) + ' lote ' + esc(l.codigo); }).join(', ') + '</li>'; }).join('') + '</ul>'; }
+          if (lig.length) { ids = ids.concat(lig.map(function (e) { return e.id; })); extra = '<p><b>Esta retirada tem ' + lig.length + ' recebimento(s) de novos vinculado(s).</b> Para não deixar um lançamento sem a sua referência, o conjunto inteiro será excluído:</p><ul>' + lig.map(function (e) { return '<li>Entrada de ' + dataBR(e.data) + ': ' + linhas(e).map(function (l) { return fmt(l.qtd) + ' ' + esc(loteTxt(l.marca, l.fabricacao)); }).join(', ') + '</li>'; }).join('') + '</ul>'; }
         }
         var ef = efeitosExclusao(C, ids), neg = ef.filter(function (x) { return x.novo < 0; });
         h += '<div class="grupo"><h3>Excluir este lançamento?</h3>' + extra + '<p>Efeito nos saldos:</p><ul>' + ef.map(function (x) { return '<li>' + esc(x.nome) + ': ' + fmt(x.atual) + ' → <b class="' + (x.novo < 0 ? 'menos' : '') + '">' + (x.novo < 0 ? '−' + fmt(-x.novo) : fmt(x.novo)) + '</b></li>'; }).join('') + '</ul>' +
-          (neg.length ? '<div class="erro-caixa">Não dá para excluir: o saldo ficaria negativo. Exclua ou corrija antes os lançamentos que usaram esse saldo (saídas, trocas ou retiradas mais recentes).</div>' : '') +
+          (neg.length ? '<div class="erro-caixa">Não dá para excluir: o saldo ficaria negativo. Exclua ou corrija antes os lançamentos que usaram esse saldo (vendas, trocas ou retiradas mais recentes).</div>' : '') +
           '<label>Motivo da exclusão <span class="dica">opcional</span><input type="text" id="m-motivo" maxlength="300" value="' + esc(M.motivo) + '"></label>' +
           (M.erro ? '<div class="erro-caixa" style="margin-top:10px" role="alert">' + esc(M.erro) + '</div>' : '') +
           '<div class="linha-botoes"><button type="button" class="btn perigo" data-act="excluir-ok" data-n="' + ids.length + '"' + (neg.length || M.enviando ? ' disabled' : '') + '>' + (M.enviando ? 'Excluindo…' : ids.length > 1 ? 'Excluir o conjunto (' + ids.length + ')' : 'Excluir') + '</button><button type="button" class="btn sec" data-act="excluir-nao"' + (M.enviando ? ' disabled' : '') + '>Cancelar</button></div>' +
-          '<p class="nota">O conteúdo excluído fica guardado na Gestão, com quem excluiu e quando, e deixa de contar no saldo.</p></div>';
+          '<p class="nota">O conteúdo excluído fica guardado na Gestão, com quem excluiu e quando, e deixa de contar no saldo. Assinaturas e fotos continuam guardadas.</p></div>';
       }
     }
     el.innerHTML = h;
@@ -1001,31 +1121,30 @@ textarea{min-height:44px;resize:vertical}
     return '﻿' + [cab].concat(linhasCsv).map(function (l) { return l.map(c).join(';'); }).join('\r\n');
   }
   function baixar(nome, texto) {
-    var msg = $('msg-csv');
+    function aviso(cls, txt) { S.msgCsv = [cls, txt]; var msg = $('msg-csv'); if (msg) { msg.className = 'msg ' + cls; msg.textContent = txt; } }
     window.claude.use('downloads').then(function (dl) { return dl.save({ filename: nome, data: texto }); })
-      .then(function () { if (msg) { msg.className = 'msg ok'; msg.textContent = 'Planilha salva: ' + nome; } },
-        function (e) { if (msg && !(e && e.code === 'declined')) { msg.className = 'msg erro'; msg.textContent = 'Não foi possível baixar o arquivo neste aparelho.'; } });
+      .then(function () { aviso('ok', 'Planilha salva: ' + nome); },
+        function (e) { if (!(e && e.code === 'declined')) aviso('erro', 'Não foi possível baixar o arquivo neste aparelho.'); });
   }
   function exportar(qual) {
-    var C = calcular(), d = hoje(), lin = [];
-    var ordem = C.ops.slice().reverse();
+    var C = calcular(), d = hoje(), lin = [], ordem = C.ops.slice().reverse();
     function base(op) { return [op.id, dataBR(op.data), dataHoraBR(op.registradoEm), TIPOS[op.tipo] || op.tipo, MODELOS[op.modelo] ? MODELOS[op.modelo].curto : op.modelo]; }
     function resp(op) { return (op.por && op.por.nome) || ''; }
     if (qual === 'novos') {
-      ordem.forEach(function (op) { linhas(op).forEach(function (l) { if (l.classe !== 'novo') return; lin.push(base(op).concat([l.marca, l.codigo, mesBR(l.fabricacao), mesBR(validade(l.fabricacao)), l.qtd > 0 ? l.qtd : '', l.qtd < 0 ? -l.qtd : '', op.tipo === 'contagem' ? l.registrado : '', op.tipo === 'contagem' ? l.contado : '', resp(op), op.cliente || '', op.vinculo || '', op.origem ? op.origem.sistema + ':' + op.origem.ref : '', op.justificativa || '', op.obs || ''])); }); });
-      baixar('garrafoes-novos-' + d + '.csv', csvTexto(['Operação', 'Data da movimentação', 'Registrado em', 'Tipo', 'Modelo', 'Marca', 'Lote', 'Fabricação', 'Validade', 'Entrada', 'Saída', 'Registrado (contagem)', 'Contado (contagem)', 'Responsável', 'Cliente', 'Retirada vinculada', 'Origem', 'Justificativa', 'Observação'], lin));
+      ordem.forEach(function (op) { linhas(op).forEach(function (l) { if (l.classe !== 'novo') return; lin.push(base(op).concat([l.marca, mesBR(l.fabricacao), mesBR(validade(l.fabricacao)), l.qtd > 0 ? l.qtd : '', l.qtd < 0 ? -l.qtd : '', op.tipo === 'contagem' ? l.registrado : '', op.tipo === 'contagem' ? l.contado : '', resp(op), op.cliente || '', op.assinada ? 'Sim' : '', op.fotoNota ? 'Sim' : '', op.vinculo || '', op.origem ? op.origem.sistema + ':' + op.origem.ref : '', op.justificativa || '', op.obs || ''])); }); });
+      baixar('garrafoes-novos-' + d + '.csv', csvTexto(['Operação', 'Data da movimentação', 'Registrado em', 'Tipo', 'Modelo', 'Marca', 'Fabricação', 'Validade', 'Entrada', 'Saída', 'Registrado (contagem)', 'Contado (contagem)', 'Responsável', 'Cliente', 'Assinatura do cliente', 'Foto da nota', 'Retirada vinculada', 'Origem', 'Justificativa', 'Observação'], lin));
     } else if (qual === 'sucata') {
-      ordem.forEach(function (op) { linhas(op).forEach(function (l) { if (l.classe !== 'sucata') return; lin.push(base(op).concat([l.fabricante, l.qtd > 0 ? l.qtd : '', l.qtd < 0 ? -l.qtd : '', l.motivo ? (l.motivo === 'Outro' ? 'Outro: ' + (l.motivoDesc || '') : l.motivo) : '', op.tipo === 'contagem' ? l.registrado : '', op.tipo === 'contagem' ? l.contado : '', resp(op), op.cliente || '', op.recolhidoPor || '', op.tipo === 'retirada' ? (op.contrapartida === 'novos' ? 'Sim' : 'Não') : '', op.tipo === 'retirada' ? recebimentosDe(C, op.id).map(function (e) { return e.id; }).join(' ') : '', op.justificativa || '', op.obs || ''])); }); });
-      baixar('garrafoes-sucata-' + d + '.csv', csvTexto(['Operação', 'Data da movimentação', 'Registrado em', 'Tipo', 'Modelo', 'Fabricante', 'Entrada', 'Saída', 'Motivo', 'Registrado (contagem)', 'Contado (contagem)', 'Responsável', 'Cliente', 'Quem recolheu', 'Novos em troca', 'Recebimentos vinculados', 'Justificativa', 'Observação'], lin));
+      ordem.forEach(function (op) { linhas(op).forEach(function (l) { if (l.classe !== 'sucata') return; lin.push(base(op).concat([l.qtd > 0 ? l.qtd : '', l.qtd < 0 ? -l.qtd : '', l.motivo ? (l.motivo === 'Outro' ? 'Outro: ' + (l.motivoDesc || '') : l.motivo) : '', op.tipo === 'contagem' ? l.registrado : '', op.tipo === 'contagem' ? l.contado : '', resp(op), op.cliente || '', op.recolhidoPor || '', op.tipo === 'retirada' ? (op.contrapartida === 'novos' ? 'Sim' : 'Não') : '', op.tipo === 'retirada' ? recebimentosDe(C, op.id).map(function (e) { return e.id; }).join(' ') : '', op.justificativa || '', op.obs || ''])); }); });
+      baixar('garrafoes-sucata-' + d + '.csv', csvTexto(['Operação', 'Data da movimentação', 'Registrado em', 'Tipo', 'Modelo', 'Entrada', 'Saída', 'Motivo', 'Registrado (contagem)', 'Contado (contagem)', 'Responsável', 'Cliente', 'Quem recolheu', 'Novos em troca', 'Recebimentos vinculados', 'Justificativa', 'Observação'], lin));
     } else if (qual === 'saldos') {
       ORDEM.forEach(function (m) {
-        lotesDe(C, m, '', false).filter(function (l) { return l.saldo !== 0; }).forEach(function (l) { lin.push([MODELOS[m].curto, 'Novos', l.marca, l.codigo, mesBR(l.fabricacao), mesBR(validade(l.fabricacao)), l.saldo]); });
-        MARCAS.forEach(function (b) { lin.push([MODELOS[m].curto, 'Sucata', b, '', '', '', sucata(C, m, b)]); });
+        lotesDe(C, m, '', false).filter(function (l) { return l.saldo !== 0; }).forEach(function (l) { lin.push([MODELOS[m].curto, 'Novos', l.marca, mesBR(l.fabricacao), mesBR(validade(l.fabricacao)), l.saldo]); });
+        if (temSucata(m)) lin.push([MODELOS[m].curto, 'Sucata', '', '', '', sucata(C, m)]);
       });
-      baixar('garrafoes-saldos-' + d + '.csv', csvTexto(['Modelo', 'Estoque', 'Marca/fabricante', 'Lote', 'Fabricação', 'Validade', 'Saldo (unidades)'], lin));
+      baixar('garrafoes-saldos-' + d + '.csv', csvTexto(['Modelo', 'Estoque', 'Marca', 'Fabricação', 'Validade', 'Saldo (unidades)'], lin));
     } else if (qual === 'excluidos') {
-      Object.keys(S.excl).forEach(function (id) { var x = S.excl[id], op = x.op || {}; linhas(op).forEach(function (l) { lin.push([id, dataHoraBR(x.excluidoEm), (x.excluidoPor && x.excluidoPor.nome) || '', x.motivo || '', (x.conjunto || []).join(' '), dataBR(op.data), TIPOS[op.tipo] || op.tipo, MODELOS[op.modelo] ? MODELOS[op.modelo].curto : op.modelo, l.classe === 'novo' ? 'Novos' : 'Sucata', l.marca || l.fabricante, l.codigo || '', l.qtd, (op.por && op.por.nome) || '', op.cliente || op.recolhidoPor || '']); }); });
-      baixar('garrafoes-excluidos-' + d + '.csv', csvTexto(['Operação', 'Excluído em', 'Excluído por', 'Motivo', 'Conjunto', 'Data da movimentação', 'Tipo', 'Modelo', 'Estoque', 'Marca/fabricante', 'Lote', 'Quantidade', 'Registrado por', 'Cliente/quem recolheu'], lin));
+      Object.keys(S.excl).forEach(function (id) { var x = S.excl[id], op = x.op || {}; linhas(op).forEach(function (l) { lin.push([id, dataHoraBR(x.excluidoEm), (x.excluidoPor && x.excluidoPor.nome) || '', x.motivo || '', (x.conjunto || []).join(' '), dataBR(op.data), TIPOS[op.tipo] || op.tipo, MODELOS[op.modelo] ? MODELOS[op.modelo].curto : op.modelo, l.classe === 'novo' ? 'Novos' : 'Sucata', l.marca || l.fabricante || '', l.fabricacao ? mesBR(l.fabricacao) : '', l.qtd, (op.por && op.por.nome) || '', op.cliente || op.recolhidoPor || '']); }); });
+      baixar('garrafoes-excluidos-' + d + '.csv', csvTexto(['Operação', 'Excluído em', 'Excluído por', 'Motivo', 'Conjunto', 'Data da movimentação', 'Tipo', 'Modelo', 'Estoque', 'Marca', 'Fabricação', 'Quantidade', 'Registrado por', 'Cliente/quem recolheu'], lin));
     } else if (qual === 'antigos') {
       (S.antigos || []).forEach(function (x) { lin.push([x.id, dataBR(x.data), x.tipo || '', x.produto || '', x.qtd, x.usados || '', x.fornecedor || '', x.recebedor || '', x.fabricacao ? mesBR(x.fabricacao) : '', x.destino || x.cliente || '', x.motivo || '', x.obs || '']); });
       baixar('garrafoes-controle-anterior-' + d + '.csv', csvTexto(['Id', 'Data', 'Tipo', 'Produto', 'Quantidade', 'Usados recebidos', 'Fornecedor', 'Responsável', 'Fabricação', 'Cliente/destino', 'Motivo', 'Observação'], lin));
@@ -1050,15 +1169,16 @@ textarea{min-height:44px;resize:vertical}
     ev.preventDefault();
     var msg = $('msg-cfg'), n = { validadeAnos: Math.min(10, Math.max(1, parseInt($('c-validade').value, 10) || 3)), produtos: {} };
     ORDEM.forEach(function (m) { n.produtos[m] = { minimo: Math.max(0, parseInt($('c-min-' + m).value, 10) || 0), ideal: Math.max(1, parseInt($('c-ideal-' + m).value, 10) || 1) }; });
-    msg.className = 'msg'; msg.textContent = 'Salvando…';
-    S.db.doc('config/geral').set(n, { merge: true }).then(function () { msg.className = 'msg ok'; msg.textContent = 'Parâmetros salvos.'; }, function (e) { msg.className = 'msg erro'; msg.textContent = msgErro(e); });
+    function aviso(cls, txt) { S.msgCfg = [cls, txt]; msg = $('msg-cfg'); if (msg) { msg.className = 'msg ' + cls; msg.textContent = txt; } }
+    aviso('', 'Salvando…');
+    S.db.doc('config/geral').set(n, { merge: true }).then(function () { aviso('ok', 'Parâmetros salvos.'); }, function (e) { aviso('erro', msgErro(e)); });
   }
 
   /* ===================== eventos ===================== */
   function setCaminho(obj, caminho, v) {
-    var p = caminho.split('.'), o = obj;
-    // chaves de contagem têm "|" (N|lt-…) e podem ter pontos? não: ids são hex
-    if (p[0] === 'contado' || p[0] === 'saida') { o[p[0]][p.slice(1).join('.')] = v; return; }
+    var p = caminho.split('.');
+    if (p[0] === 'contado' || p[0] === 'saida') { obj[p[0]][p.slice(1).join('.')] = v; return; }
+    var o = obj;
     for (var i = 0; i < p.length - 1; i++) o = o[/^\d+$/.test(p[i]) ? Number(p[i]) : p[i]];
     o[p[p.length - 1]] = v;
   }
@@ -1078,22 +1198,29 @@ textarea{min-height:44px;resize:vertical}
     if (a === 'modelo') {
       var m = b.getAttribute('data-m'); if (m === S.modelo) return;
       if (F) { toast('Conclua ou cancele o formulário aberto para trocar de modelo.'); return; }
-      S.modelo = m; ls('modelo', m); S.fil.novos.lote = ''; S.limite = PASSO_HIST; render(); return;
+      S.modelo = m; ls('modelo', m); S.fil.novos.lote = ''; S.fil.novos.marca = ''; S.fil.lotes.marca = ''; S.limite = PASSO_HIST; render(); return;
     }
     if (a === 'abrir') { abrirForm(b.getAttribute('data-tipo')); return; }
     if (a === 'fechar') { fecharForm(); return; }
     if (a === 'revisar') { revisar(); return; }
     if (a === 'voltar') { if (F && !F.enviando) { F.revisao = false; renderForm(); } return; }
     if (a === 'confirmar') { confirmar(); return; }
+    if (a === 'limpar-assin') { if (F && !F.enviando) { F.ass = null; renderForm(); } return; }
+    if (a === 'foto') { abrirCamera(); return; }
+    if (a === 'cam-foto') { fotografar(); return; }
+    if (a === 'cam-refazer') { pararCamera(); abrirCamera(); return; }
+    if (a === 'cam-usar') { if (F && CAM.foto) { F.foto = CAM.foto; F.erro = ''; } fecharCamera(); renderForm(); return; }
+    if (a === 'cam-fechar') { fecharCamera(); return; }
+    if (a === 'zoom') { b.classList.toggle('grande'); return; }
     if (a === 'mais' && F) {
       var lista = b.getAttribute('data-lista');
-      var novo = lista === 'sucata' ? { fabricante: '', motivo: '', desc: '', qtd: '' } : lista === 'novos' ? { marca: '', lote: '', qtd: '' } : lista === 'ret' ? { fabricante: '', qtd: '' } : { marca: '', codigo: '', fabricacao: '', contado: '' };
+      var novo = lista === 'sucata' ? { motivo: '', desc: '', qtd: '' } : lista === 'novos' ? { marca: '', lote: '', qtd: '' } : { marca: '', fab: '', contado: '' };
       if (F[lista].length >= 12) { toast('Linhas demais numa operação só.'); return; }
       F[lista].push(novo); renderForm(); return;
     }
     if (a === 'tirar' && F) { F[b.getAttribute('data-lista')].splice(Number(b.getAttribute('data-i')), 1); renderForm(); return; }
     if (a === 'usar-sugestao' && F) { F.novos[0].qtd = b.getAttribute('data-v'); renderForm(); return; }
-    if (a === 'aba') { S.aba = b.getAttribute('data-aba'); S.limite = PASSO_HIST; if (S.aba === 'config') carregarGestao(); render(); var ab = $('abas'); if (ab && b.closest('#area-topo')) ab.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    if (a === 'aba') { S.aba = b.getAttribute('data-aba'); S.limite = PASSO_HIST; S.msgCfg = S.msgCsv = null; if (S.aba === 'config') carregarGestao(); render(); var ab = $('abas'); if (ab && b.closest('#area-topo')) ab.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     if (a === 'ver-lotes') { S.aba = 'lotes'; S.fil.lotes.marca = b.getAttribute('data-marca'); render(); var ab2 = $('abas'); if (ab2) ab2.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     if (a === 'ver-mais') { S.limite += PASSO_HIST; render(); return; }
     if (a === 'op') { abrirOp(b.getAttribute('data-id')); return; }
@@ -1108,7 +1235,6 @@ textarea{min-height:44px;resize:vertical}
     if (t.hasAttribute('data-f') && F) {
       setCaminho(F, t.getAttribute('data-f'), t.value);
       var f = t.getAttribute('data-f');
-      // uma linha de sucata só: acompanha o total
       if (f === 'total' && F.sucata.length === 1) { F.sucata[0].qtd = t.value; var q = document.querySelector('[data-f="sucata.0.qtd"]'); if (q) q.value = t.value; }
       if (F.erro) { F.erro = ''; var cx = document.querySelector('#painel-form .erro-caixa'); if (cx) cx.remove(); }
       atualizarDerivados();
@@ -1122,7 +1248,7 @@ textarea{min-height:44px;resize:vertical}
       setCaminho(F, t.getAttribute('data-f'), t.value);
       if (t.tagName === 'SELECT') {
         var f = t.getAttribute('data-f');
-        if (/^novos\.\d+\.marca$/.test(f)) { var i = Number(f.split('.')[1]); F.novos[i].lote = ''; var sug = lotesDe(calcular(), F.modelo, t.value, true)[0]; if (sug) F.novos[i].lote = sug.id; }
+        if (/^novos\.\d+\.marca$/.test(f)) { var i = Number(f.split('.')[1]); F.novos[i].lote = ''; var sug = lotesDe(calcular(), F.modelo, t.value, true)[0]; if (sug) F.novos[i].lote = sug.k; }
         renderForm();
       } else atualizarDerivados();
       return;
@@ -1136,9 +1262,9 @@ textarea{min-height:44px;resize:vertical}
     if (t.hasAttribute('data-perfil-ref')) { mudarPerfil(t.getAttribute('data-perfil-ref'), t.value, t); return; }
   });
   document.addEventListener('submit', function (ev) { if (ev.target && ev.target.id === 'form-cfg') salvarCfg(ev); });
-  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && M) fecharModal(); });
-  // o formulário não é redesenhado enquanto alguém digita; ao sair do campo, atualiza com os dados novos
+  document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { if (!$('cam').hidden) fecharCamera(); else if (M) fecharModal(); } });
   document.addEventListener('focusout', function () { setTimeout(function () { if (F && !F.revisao && S.pendenteForm && !$('painel-form').contains(document.activeElement)) { S.pendenteForm = false; renderForm(); } }, 0); });
+  window.addEventListener('pagehide', pararCamera);
 
   /* ===================== dados ao vivo ===================== */
   function aoMudarOps(snap) {

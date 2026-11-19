@@ -1,10 +1,12 @@
-/* LEVÍSSIMA · teste: módulo Garrafões refeito (pedido de 17/11/2026), no celular, contra as funções reais da 0056.
+/* LEVÍSSIMA · teste: módulo Garrafões (pedido de 19/11/2026), no celular, contra as funções reais da 0056 + 0057.
  * Usa um Postgres local (sem Supabase): a página do módulo roda no Chromium com uma "ponte" de teste que chama as
  * funções do banco como o usuário logado (claims do JWT), e lê modulo_docs com as regras de leitura (RLS).
- * Confere: perfis (consulta, entradas, entregas, gestão), contagem inicial com lote encontrado, entrada (lote novo e
- * existente, fabricação diferente), clique duplo sem duplicar, saída dividida por lote com sugestão do que vence
- * primeiro, troca com dois fabricantes e motivos (5:1 só sugestão), retirada com contrapartida, recebimento vinculado,
- * exclusão (efeitos, conjunto, bloqueio de negativo), exportação CSV, parâmetros e tela sem rolagem lateral.
+ * Confere: cartões Novos AGS | Novos Montico | Sucatas (20 L com rosca: Montico | Angioplast, sem sucata), perfis,
+ * contagem (fabricação encontrada e sucata total), entrada com foto da nota pela câmera (sem galeria; câmera negada
+ * bloqueia), clique duplo sem duplicar, venda dividida por fabricação com assinatura do cliente na tela (Confirmar só
+ * depois da assinatura; assinatura apagada se os itens mudarem; cancelar não grava), troca do exemplo do pedido
+ * (15 sucatas de 20 L → 3 novos Montico fab. 11/2026), retirada (AGS, Montico ou Outro), recebimento vinculado,
+ * consulta da assinatura e da foto, exclusão (efeitos, conjunto, bloqueio de negativo), CSV, parâmetros e celular.
  * Rodar (com Postgres local em PGHOST/PGPORT, usuário postgres):
  *   python3 ferramentas/construir.py --modulos && node testes/garrafoes-e2e.js
  */
@@ -52,6 +54,7 @@ const PONTE = `(function(){
     get: function(){ return window.__pgLer(c, '').then(function(j){ return snapCol(JSON.parse(j)); }); } }; }
   function docRef(p){ var i = p.lastIndexOf('/'), c = p.slice(0, i), id = p.slice(i + 1);
     return { onSnapshot: function(cb){ var s = { caminho: c, id: id, cb: cb }; subs.push(s); ler(s); return function(){}; },
+      get: function(){ return window.__pgLer(c, id).then(function(j){ var rows = JSON.parse(j); return { exists: rows.length > 0, id: id, data: function(){ return rows[0] ? rows[0].dados : undefined; } }; }); },
       set: function(d, o){ return window.__pgSet(c, id, JSON.stringify(d), !!(o && o.merge)).then(chk); } }; }
   var db = { collection: colRef, doc: docRef, rpc: function(n, p){ return window.__pgRpc(n, JSON.stringify(p || {})).then(chk); } };
   var user = { nome: function(){ return window.__pgNome(); }, nivel: function(){ return Promise.resolve('usar'); } };
@@ -76,15 +79,16 @@ function setDoc(caminho, id, dados, merge) {
   const r = comoUsuario("insert into public.modulo_docs (modulo, caminho, id, dados) values ('garrafoes', :'c', :'i', :'d'::jsonb) on conflict (modulo, caminho, id) do update set dados = " + (merge ? 'public.modulo_docs.dados || excluded.dados' : 'excluded.dados') + ', atualizado_em = now() returning dados;', { c: caminho, i: id, d: dados });
   return r.erro ? { erro: r.erro } : { dados: JSON.parse(r.saida || '{}') };
 }
-function saldos(modelo) { return JSON.parse(psql(BANCO, "select public.garrafoes_saldos_0056(:'m');", { m: modelo }).saida); }
-function lote(modelo, marca, cod) { return 'lt-' + require('crypto').createHash('md5').update(modelo + '|' + marca + '|' + cod).digest('hex'); }
+function saldos(modelo) { return JSON.parse(psql(BANCO, "select public.garrafoes_saldos_0057(:'m');", { m: modelo }).saida); }
+// imagens de apoio para gravar direto pelo banco (o banco confere o formato e o tamanho, não o conteúdo)
+const JPG = 'data:image/jpeg;base64,' + '/9j/'.repeat(1600), PNG = 'data:image/png;base64,' + 'iVBO'.repeat(500);
 function contar(sql) { return Number(psql(BANCO, sql).saida); }
 
 (async () => {
-  // banco do teste: simulação do Supabase + a migração 0056
+  // banco do teste: simulação do Supabase + as migrações 0056 e 0057
   psql('postgres', 'drop database if exists ' + BANCO + ';');
   psql('postgres', 'create database ' + BANCO + ';');
-  for (const f of ['testes/garrafoes-banco.sql', 'supabase/migrations/0056_garrafoes_estoque.sql']) {
+  for (const f of ['testes/garrafoes-banco.sql', 'supabase/migrations/0056_garrafoes_estoque.sql', 'supabase/migrations/0057_garrafoes_fabricacao_assinatura.sql']) {
     const r = psql(BANCO, fs.readFileSync(path.join(RAIZ, f), 'utf8'));
     if (r.erro) { console.error('banco:', f, r.erro); process.exit(1); }
   }
@@ -97,8 +101,9 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
   await new Promise((r) => srv.on('listening', r));
   const URL_ = 'http://127.0.0.1:' + srv.address().port + '/modulos/garrafoes.html';
 
-  const browser = await chromium.launch();
-  const ctx = await browser.newContext(Object.assign({}, devices['Pixel 5'], { locale: 'pt-BR', timezoneId: 'America/Sao_Paulo' }));
+  // câmera de teste do Chromium (imagem gerada), sem pedir permissão
+  const browser = await chromium.launch({ args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
+  const ctx = await browser.newContext(Object.assign({}, devices['Pixel 5'], { locale: 'pt-BR', timezoneId: 'America/Sao_Paulo', permissions: ['camera'] }));
   await ctx.route('**/*', (route) => {
     const u = route.request().url();
     if (u.endsWith('/modulos/ponte.js')) return route.fulfill({ status: 200, contentType: 'application/javascript', body: PONTE });
@@ -122,19 +127,59 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await page.click('[data-act="confirmar"]');
     await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'), null, { timeout: 8000 });
   }
+  async function tirarFoto(refazer) {
+    await page.click('[data-act="foto"]');
+    for (let i = 0; i < (refazer ? 2 : 1); i++) {
+      await page.waitForFunction(() => { const v = document.getElementById('cam-video'); return v && v.videoWidth > 0; }, null, { timeout: 8000 });
+      await page.click('[data-act="cam-foto"]');
+      await page.waitForSelector('[data-act="cam-usar"]');
+      if (refazer && i === 0) { ok(/Refazer/.test(await page.textContent('#cam-c')), 'prévia da foto com Refazer e Usar esta foto'); await page.click('[data-act="cam-refazer"]'); }
+    }
+    await page.click('[data-act="cam-usar"]');
+    await page.waitForSelector('.foto-prev');
+  }
+  async function assinar() {
+    const cv = page.locator('#assin-cv');
+    await cv.scrollIntoViewIfNeeded();
+    const b = await cv.boundingBox();
+    await page.mouse.move(b.x + 24, b.y + b.height * 0.6);
+    await page.mouse.down();
+    for (let i = 1; i <= 12; i++) await page.mouse.move(b.x + 24 + i * 18, b.y + b.height * (i % 2 ? 0.35 : 0.7), { steps: 4 });
+    await page.mouse.up();
+    await page.waitForTimeout(100);
+  }
   async function semRolagemLateral(rotulo) { const r = await page.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]); ok(r[0] <= r[1] + 1, 'sem rolagem lateral no celular: ' + rotulo + ' (' + r[0] + ' ≤ ' + r[1] + ')'); }
   const hoje = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
 
   try {
-    console.log('Perfis');
+    console.log('Perfis e cartões');
     await abrirComo('conta');
     ok(await page.locator('.so-consulta').count() === 1, 'acesso sem perfil escolhido fica só com consulta');
     ok(await page.locator('[data-act="abrir"]').count() === 0, 'consulta não vê botões de registro');
     ok(await page.locator('[data-aba="config"]').count() === 0, 'consulta não vê a aba Gestão');
+    const cartoes = await page.$$eval('#area-topo .cards3 .marca .nome', (e) => e.map((x) => x.textContent));
+    ok(cartoes.join('|') === 'Novos AGS|Novos Montico|Sucatas', '20 L: três cartões lado a lado (' + cartoes.join(' | ') + ')');
+    ok(await page.locator('#area-topo .bloco').count() === 1 && !/fabricante/i.test(await page.textContent('#principal')), 'sem bloco separado de sucata e sem "fabricante"');
     await semRolagemLateral('consulta');
 
     await abrirComo('gestora');
-    ok(await page.locator('[data-act="abrir"]').count() === 5, 'gestão vê as 5 operações');
+    ok(await page.locator('[data-act="abrir"]').count() === 5, 'gestão vê as 5 operações no 20 L');
+    await page.click('[data-act="modelo"][data-m="20LR"]');
+    await page.waitForFunction(() => /20 L com rosca/.test(document.querySelector('#area-topo').textContent));
+    const cartoesR = await page.$$eval('#area-topo .cards3 .marca .nome', (e) => e.map((x) => x.textContent));
+    ok(cartoesR.join('|') === 'Novos Montico|Novos Angioplast', '20 L com rosca: Novos Montico | Novos Angioplast, sem sucata (' + cartoesR.join(' | ') + ')');
+    const botoesR = await page.$$eval('[data-act="abrir"]', (b) => b.map((x) => x.dataset.tipo));
+    ok(botoesR.join(',') === 'entrada,saida,contagem', '20 L com rosca: só entrada, venda e contagem (' + botoesR + ')');
+    ok(await page.locator('[data-aba="sucata"]').count() === 0, '20 L com rosca: sem histórico de sucata');
+    await page.click('[data-act="abrir"][data-tipo="contagem"]');
+    ok(await page.locator('[data-seg="alvo"]').count() === 0, '20 L com rosca: contagem só de novos');
+    await page.click('[data-act="fechar"]');
+    await page.screenshot({ path: path.join(SHOTS, 'garrafoes-20lr.png') });
+    await page.click('[data-act="modelo"][data-m="10L"]');
+    await page.waitForFunction(() => /10 L/.test(document.querySelector('#area-topo').textContent));
+    ok((await page.$$eval('#area-topo .cards3 .marca .nome', (e) => e.map((x) => x.textContent))).join('|') === 'Novos AGS|Novos Montico|Sucatas', '10 L: Novos AGS | Novos Montico | Sucatas');
+    await page.click('[data-act="modelo"][data-m="20L"]');
+    await page.waitForFunction(() => /Novos · 20 L</.test(document.querySelector('#area-topo').innerHTML));
     await page.click('[data-aba="config"]');
     await page.waitForSelector('[data-perfil-ref="escritorio:conta"]');
     await page.selectOption('[data-perfil-ref="escritorio:conta"]', 'entradas');
@@ -152,114 +197,169 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await page.click('[data-seg="alvo"][data-v="novos"]');
     await page.click('[data-act="mais"][data-lista="achados"]');
     await escolher('achados.0.marca', 'AGS');
-    await campo('achados.0.codigo', 'l-100');
-    await campo('achados.0.fabricacao', '2026-09');
+    await campo('achados.0.fab', '2026-09');
     await campo('achados.0.contado', '200');
     await page.click('[data-act="revisar"]');
     ok(/justificativa/i.test(await page.textContent('#painel-form .erro-caixa')), 'contagem com diferença pede justificativa');
     await campo('just', 'Saldo inicial pela contagem do depósito');
     await page.click('[data-act="revisar"]');
     const resumoCont = await page.textContent('.resumo');
-    ok(/Registrado/.test(resumoCont) && /ajuste de \+200/.test(resumoCont), 'resumo da contagem mostra registrado, contado, diferença e efeito');
+    ok(/Registrado/.test(resumoCont) && /AGS · fab\. 09\/2026/.test(resumoCont) && /ajuste de \+200/.test(resumoCont), 'resumo da contagem mostra marca, fabricação, registrado, contado e efeito');
     await page.click('[data-act="confirmar"]');
     await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'));
     await esperarTexto('#area-topo', '200');
-    ok(saldos('20L')['N|' + lote('20L', 'AGS', 'L-100')] === 200, 'contagem criou o lote L-100 (AGS) com 200 no banco');
+    ok(saldos('20L')['N|AGS|2026-09'] === 200, 'contagem criou AGS fab. 09/2026 com 200 no banco');
 
     await page.click('[data-act="abrir"][data-tipo="contagem"]');
     await page.click('[data-seg="alvo"][data-v="sucata"]');
-    await campo('contado.S|AGS', '91');
-    await campo('contado.S|Montico', '0');
+    ok(await page.locator('[data-f^="contado."]').count() === 1, 'contagem da sucata: um número só (total da litragem)');
+    await campo('contado.S', '91');
     await campo('just', 'Contagem do pátio de sucata');
     await revisarConfirmar();
-    ok(saldos('20L')['S|AGS'] === 91 && saldos('20L')['S|Montico'] === 0, 'contagem da sucata por fabricante (zero permitido)');
+    ok(saldos('20L').S === 91, 'sucata de 20 L contada: 91');
 
-    console.log('Entrada de novos');
+    console.log('Entrada de novos com foto da nota');
     await page.click('[data-act="abrir"][data-tipo="entrada"]');
+    ok(await page.locator('input[type="file"]').count() === 0 && await page.locator('[data-f="obs"]').count() === 0, 'entrada sem campo de arquivo (galeria) e sem Observação');
     await page.click('[data-seg="marca"][data-v="Montico"]');
-    await campo('codigo', 'M-7');
-    await campo('fabricacao', '2026-10');
+    await campo('fab', '2026-11');
     await campo('qtd', '100');
+    ok(/Validade 11\/2029/.test(await page.textContent('#d-lote')), 'validade calculada na hora: 11/2026 → 11/2029');
     await page.click('[data-act="revisar"]');
-    ok(/Lote novo/.test(await page.textContent('.resumo')) && /validade 10\/2029/.test(await page.textContent('.resumo')), 'resumo da entrada com validade calculada (3 anos)');
+    ok(/foto da nota/i.test(await page.textContent('#painel-form .erro-caixa')), 'sem a foto da nota não avança');
+    // câmera negada: explica e bloqueia
+    await page.evaluate(() => { window.__gum = navigator.mediaDevices.getUserMedia; navigator.mediaDevices.getUserMedia = () => Promise.reject(Object.assign(new Error('negada'), { name: 'NotAllowedError' })); });
+    await page.click('[data-act="foto"]');
+    await esperarTexto('#cam-c', 'sem permissão');
+    ok(/não é concluída/.test(await page.textContent('#cam-c')) && await page.locator('[data-act="cam-usar"]').count() === 0, 'câmera sem permissão: explica e não deixa seguir');
+    await page.click('#cam-c [data-act="cam-fechar"]');
+    await page.evaluate(() => { navigator.mediaDevices.getUserMedia = window.__gum; });
+    await tirarFoto(true);
+    ok(await page.locator('.foto-prev').count() === 1, 'foto tirada pela câmera, com prévia e opção de refazer');
+    await page.click('[data-act="revisar"]');
+    const resEnt = await page.textContent('.resumo');
+    ok(/100 unidades novas Montico de 20 L, fabricação 11\/2026 \(validade 11\/2029\)/.test(resEnt) && /Foto da nota/.test(resEnt), 'resumo da entrada: marca, fabricação, validade e foto');
     await page.dblclick('[data-act="confirmar"]');
     await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'));
     await page.waitForTimeout(500);
     ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'tipo'='entrada'") === 1, 'clique duplo no confirmar não duplica a entrada');
-    // mesmo lote: fabricação travada; fabricação diferente recusada
-    await page.click('[data-act="abrir"][data-tipo="entrada"]');
-    await page.click('[data-seg="marca"][data-v="Montico"]');
-    await campo('codigo', 'm-7');
-    ok(await page.$eval('[data-f="fabricacao"]', (e) => e.readOnly && e.value === '2026-10'), 'lote já cadastrado: fabricação preenchida e travada');
-    ok(/já cadastrado/.test(await page.textContent('#d-lote')), 'avisa que o lote já existe e mostra o saldo');
-    await campo('qtd', '20');
-    await revisarConfirmar();
-    ok(saldos('20L')['N|' + lote('20L', 'Montico', 'M-7')] === 120 && contar("select count(*) from modulo_docs where caminho='g-lotes'") === 2, 'nova entrada no mesmo lote soma sem duplicar o cadastro');
-    ok(await page.locator('[data-act="abrir"][data-tipo="saida"]').count() === 0, 'contagem e entradas não registra saída');
+    ok(contar("select count(*) from modulo_docs where caminho='g-fotos' and dados->>'imagem' like 'data:image/jpeg;base64,%'") === 1, 'foto da nota gravada junto com a entrada');
+    ok(saldos('20L')['N|Montico|2026-11'] === 100, 'saldo Montico fab. 11/2026: 100');
+    ok(await page.locator('[data-act="abrir"][data-tipo="saida"]').count() === 0, 'contagem e entradas não registra venda');
 
-    console.log('Saída, troca e retirada (perfil Entregas)');
+    console.log('Venda com assinatura do cliente (perfil Entregas)');
     await abrirComo('entrega');
     const botoesEnt = await page.$$eval('[data-act="abrir"]', (b) => b.map((x) => x.dataset.tipo));
-    ok(botoesEnt.join(',') === 'saida,troca,retirada', 'entregas: saída, troca e retirada (' + botoesEnt + ')');
-    // segundo lote AGS mais novo, para a sugestão
-    quem = 'conta'; rpc('garrafoes_registrar', { p: { id: 'op-TESTEAGS00000001', tipo: 'entrada', modelo: '20L', data: hoje, linhas: [{ marca: 'AGS', codigo: 'L-200', fabricacao: '2026-11', qtd: 50 }] } }); quem = 'entrega';
+    ok(botoesEnt.join(',') === 'saida,troca,retirada', 'entregas: venda, troca e retirada (' + botoesEnt + ')');
+    // segunda fabricação AGS, mais nova, para a sugestão
+    quem = 'conta'; const seed = rpc('garrafoes_registrar', { p: { id: 'op-TESTEAGS00000001', tipo: 'entrada', modelo: '20L', data: hoje, linhas: [{ marca: 'AGS', fabricacao: '2026-11', qtd: 50 }], foto: JPG } }); quem = 'entrega';
+    ok(!seed.erro, 'entrada de apoio gravada' + (seed.erro ? ': ' + seed.erro : ''));
     await page.waitForTimeout(700);
     await page.click('[data-act="abrir"][data-tipo="saida"]');
+    await campo('cliente', 'Mercado Bom Preço');
     await page.click('[data-seg="marca"][data-v="AGS"]');
     const sug = await page.textContent('.tlotes tr.sug');
-    ok(/L-100/.test(sug) && /vence primeiro/.test(sug), 'saída sugere o lote que vence primeiro (L-100)');
-    await campo('saida.' + lote('20L', 'AGS', 'L-100'), '30');
-    await campo('saida.' + lote('20L', 'AGS', 'L-200'), '5');
-    ok(/35 unidades/.test(await page.textContent('#d-total')), 'total da saída dividida entre lotes antes de confirmar');
-    await revisarConfirmar();
-    ok(saldos('20L')['N|' + lote('20L', 'AGS', 'L-100')] === 170 && saldos('20L')['N|' + lote('20L', 'AGS', 'L-200')] === 45, 'baixa exatamente nos lotes escolhidos');
-    // saída acima do disponível
-    await page.click('[data-act="abrir"][data-tipo="saida"]');
-    await page.click('[data-seg="marca"][data-v="AGS"]');
-    await campo('saida.' + lote('20L', 'AGS', 'L-200'), '46');
+    ok(/09\/2026/.test(sug) && /vence primeiro/.test(sug) && /09\/2029/.test(sug), 'venda mostra fabricação, validade e saldo, sugerindo a que vence primeiro');
+    await campo('saida.N|AGS|2026-09', '30');
+    await campo('saida.N|AGS|2026-11', '5');
+    ok(/35 unidades/.test(await page.textContent('#d-total')), 'total da venda dividida entre fabricações');
     await page.click('[data-act="revisar"]');
-    ok(/45 unidades disponível/.test(await page.textContent('#painel-form .erro-caixa')), 'saída acima do saldo do lote é recusada');
+    await page.waitForSelector('#assin-cv');
+    ok(await page.$eval('[data-act="confirmar"]', (b) => b.disabled), 'Confirmar travado até o cliente assinar');
+    ok(/não é assinatura com certificado digital/.test(await page.textContent('#painel-form')), 'avisa que é assinatura manuscrita na tela, não certificado digital');
+    ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'tipo'='saida'") === 0, 'nada muda no estoque antes da assinatura e da confirmação');
+    await assinar();
+    ok(!(await page.$eval('[data-act="confirmar"]', (b) => b.disabled)), 'depois da assinatura, Confirmar libera');
+    await page.screenshot({ path: path.join(SHOTS, 'garrafoes-venda-assinatura.png'), fullPage: true });
+    await semRolagemLateral('venda com assinatura');
+    await page.click('[data-act="confirmar"]');
+    await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'), null, { timeout: 8000 });
+    let s20 = saldos('20L');
+    ok(s20['N|AGS|2026-09'] === 170 && s20['N|AGS|2026-11'] === 45, 'baixa exatamente nas fabricações escolhidas (170 e 45)');
+    const assin = JSON.parse(psql(BANCO, "select dados from modulo_docs where caminho='g-assin'").saida || '{}');
+    ok(/^data:image\/png;base64,/.test(assin.imagem || '') && /Mercado Bom Preço/.test(assin.resumo || '') && /35 garrafões novos AGS/.test(assin.resumo || '') && /certificado digital/.test(assin.aviso || ''), 'assinatura guardada com o resumo exato que o cliente assinou');
+    // assinatura presa ao resumo: mudou a quantidade, apaga
+    await page.click('[data-act="abrir"][data-tipo="saida"]');
+    await campo('cliente', 'Padaria Teste');
+    await page.click('[data-seg="marca"][data-v="AGS"]');
+    await campo('saida.N|AGS|2026-11', '2');
+    await page.click('[data-act="revisar"]');
+    await page.waitForSelector('#assin-cv');
+    await assinar();
+    await page.click('[data-act="voltar"]');
+    await campo('saida.N|AGS|2026-11', '3');
+    await page.click('[data-act="revisar"]');
+    await page.waitForSelector('#assin-cv');
+    ok(/assinatura anterior foi apagada/.test(await page.textContent('#painel-form')) && await page.$eval('[data-act="confirmar"]', (b) => b.disabled), 'itens mudaram depois de assinar: assinatura apagada, pede de novo');
+    await assinar();
+    await page.click('[data-act="limpar-assin"]');
+    ok(await page.$eval('[data-act="confirmar"]', (b) => b.disabled), 'Limpar apaga a assinatura e trava o Confirmar');
+    await page.click('[data-act="fechar"]');
+    ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'tipo'='saida'") === 1, 'cancelar não grava nenhuma movimentação');
+    // venda acima do disponível
+    await page.click('[data-act="abrir"][data-tipo="saida"]');
+    await campo('cliente', 'Cliente X');
+    await page.click('[data-seg="marca"][data-v="AGS"]');
+    await campo('saida.N|AGS|2026-11', '46');
+    await page.click('[data-act="revisar"]');
+    ok(/45 unidades disponível/.test(await page.textContent('#painel-form .erro-caixa')), 'venda acima do saldo da fabricação é recusada');
     await page.click('[data-act="fechar"]');
 
+    console.log('Troca: exemplo do pedido (15 sucatas de 20 L → 3 novos Montico fab. 11/2026)');
     await page.click('[data-act="abrir"][data-tipo="troca"]');
-    await campo('cliente', 'Mercado Bom Preço');
-    await campo('total', '27');
-    ok(await page.$eval('[data-f="sucata.0.qtd"]', (e) => e.value) === '27', 'uma linha de sucata acompanha o total');
-    await escolher('sucata.0.fabricante', 'AGS');
+    ok(await page.locator('[data-f$=".fabricante"]').count() === 0, 'sucata da troca sem fabricante');
+    await campo('cliente', 'Cliente Exemplo');
+    await campo('total', '15');
     await escolher('sucata.0.motivo', 'Vencido');
-    await campo('sucata.0.qtd', '20');
+    await campo('sucata.0.qtd', '10');
     await page.click('[data-act="mais"][data-lista="sucata"]');
-    await escolher('sucata.1.fabricante', 'Montico');
-    await escolher('sucata.1.motivo', 'Outro');
-    await campo('sucata.1.desc', 'Rótulo derretido');
-    await campo('sucata.1.qtd', '7');
-    ok(/27 de 27/.test(await page.textContent('#d-soma')), 'soma dos motivos confere com o total');
-    ok(/5,4/.test(await page.textContent('#d-sugestao')) && await page.locator('[data-act="usar-sugestao"]').count() === 0, 'proporção 5:1 não exata: só informa, não arredonda');
+    await escolher('sucata.1.motivo', 'Quebrado ou trincado');
+    await campo('sucata.1.qtd', '5');
+    ok(/15 de 15/.test(await page.textContent('#d-soma')), 'quantidade por motivo confere com o total');
+    ok(/15 sucatas → 3 unidades/.test(await page.textContent('#d-sugestao')), 'sugestão 5 para 1: 15 → 3 (editável)');
     await escolher('novos.0.marca', 'Montico');
-    ok(await page.$eval('[data-f="novos.0.lote"]', (e) => e.value) === lote('20L', 'Montico', 'M-7'), 'ao escolher a marca dos novos, sugere o lote que vence primeiro');
-    await campo('novos.0.qtd', '5');
+    ok(await page.$eval('[data-f="novos.0.lote"]', (e) => e.value) === 'N|Montico|2026-11' && /val\. 11\/2029/.test(await page.$eval('[data-f="novos.0.lote"]', (e) => e.selectedOptions[0].textContent)), 'fabricação sugerida com validade e saldo');
+    await page.click('[data-act="usar-sugestao"]');
+    ok(await page.$eval('[data-f="novos.0.qtd"]', (e) => e.value) === '3', 'usar a sugestão preenche 3');
     await page.screenshot({ path: path.join(SHOTS, 'garrafoes-troca.png'), fullPage: true });
+    await semRolagemLateral('troca');
     await page.click('[data-act="revisar"]');
     const resumoTroca = await page.textContent('.resumo');
-    ok(/Recebimento: 20 sucatas AGS e 7 sucatas Montico de 20 L/.test(resumoTroca) && /Entrega: 5 unidades Montico, lote M-7/.test(resumoTroca), 'resumo da troca: fabricante da sucata e marca do novo independentes');
+    ok(/Recebimento: 15 sucatas de 20 L \(10 vencido; 5 quebrado ou trincado\)/.test(resumoTroca) && /Entrega: 3 unidades Montico, fab\. 11\/2026/.test(resumoTroca), 'resumo da troca: sucata por litragem e motivo, novos por marca e fabricação');
+    ok(await page.$eval('[data-act="confirmar"]', (b) => b.disabled), 'troca também espera a assinatura do cliente');
+    await assinar();
     await page.click('[data-act="confirmar"]');
-    await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'));
-    let s20 = saldos('20L');
-    ok(s20['S|AGS'] === 111 && s20['S|Montico'] === 7 && s20['N|' + lote('20L', 'Montico', 'M-7')] === 115, 'troca gravou a entrada da sucata e a saída dos novos juntas');
-    ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'tipo'='troca'") === 1, 'troca é uma operação só');
+    await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'), null, { timeout: 8000 });
+    s20 = saldos('20L');
+    ok(s20.S === 106, 'sucata de 20 L: +15 (91 → 106)');
+    ok(s20['N|Montico|2026-11'] === 97, 'Montico 20 L fab. 11/2026: −3 (100 → 97)');
+    ok(s20['N|AGS|2026-09'] === 170 && s20['N|AGS|2026-11'] === 45, 'AGS não muda');
+    ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'tipo'='troca'") === 1 && contar("select count(*) from modulo_docs where caminho='g-assin'") === 2, 'troca é uma operação só, com a assinatura');
+    await esperarTexto('#area-topo', '106');
 
+    console.log('Retirada de sucata');
     await page.click('[data-act="abrir"][data-tipo="retirada"]');
+    const quemRec = await page.$$eval('[data-seg="recolhido"]', (b) => b.map((x) => x.dataset.v));
+    ok(quemRec.join(',') === 'AGS,Montico,Outro', 'marca que recolheu: AGS, Montico ou Outro');
+    await page.click('[data-seg="recolhido"][data-v="Outro"]');
+    ok(await page.locator('[data-f="recolhidoOutro"]').count() === 1, '"Outro" pede o nome de quem recolheu');
     await page.click('[data-seg="recolhido"][data-v="Montico"]');
-    await escolher('ret.0.fabricante', 'AGS');
-    await campo('ret.0.qtd', '50');
+    await campo('qtd', '50');
     await page.click('[data-seg="contra"][data-v="novos"]');
     await page.click('[data-act="revisar"]');
-    ok(/recolhidas por Montico/.test(await page.textContent('.resumo')) && /só muda quando a entrada for registrada/.test(await page.textContent('.resumo')), 'retirada: quem recolheu separado do fabricante; novos só na entrada');
+    ok(/recolhidas por Montico/.test(await page.textContent('.resumo')) && /106 → 56/.test(await page.textContent('.resumo')), 'retirada baixa o saldo geral da sucata de 20 L');
     await page.click('[data-act="confirmar"]');
     await page.waitForFunction(() => !document.querySelector('[data-act="confirmar"]'));
     s20 = saldos('20L');
-    ok(s20['S|AGS'] === 61 && s20['N|' + lote('20L', 'Montico', 'M-7')] === 115, 'retirada baixou só a sucata informada, sem mexer nos novos');
+    ok(s20.S === 56 && s20['N|Montico|2026-11'] === 97, 'retirada baixou só a sucata, sem mexer nos novos');
     await semRolagemLateral('entregas');
+    // 20 L com rosca: sem troca e sem retirada, nem pela tela nem pelo banco
+    await page.click('[data-act="modelo"][data-m="20LR"]');
+    await page.waitForFunction(() => /20 L com rosca/.test(document.querySelector('#area-topo').textContent));
+    ok((await page.$$eval('[data-act="abrir"]', (b) => b.map((x) => x.dataset.tipo))).join(',') === 'saida', '20 L com rosca no perfil Entregas: só venda');
+    const trocaR = rpc('garrafoes_registrar', { p: { id: 'op-TESTE20LR0000001', tipo: 'troca', modelo: '20LR', data: hoje, cliente: 'X', totalSucata: 5, linhas: [{ classe: 'sucata', motivo: 'Vencido', qtd: 5 }], assinatura: { imagem: PNG, resumo: 'x' } } });
+    ok(trocaR.erro && /não tem troca nem sucata/.test(trocaR.erro), 'banco recusa troca no 20 L com rosca');
+    await page.click('[data-act="modelo"][data-m="20L"]');
 
     console.log('Recebimento vinculado');
     await abrirComo('conta');
@@ -267,68 +367,75 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     const opRet = psql(BANCO, "select id from modulo_docs where caminho='g-ops' and dados->>'tipo'='retirada'").saida;
     await escolher('vinculo', opRet);
     await page.click('[data-seg="marca"][data-v="Montico"]');
-    await campo('codigo', 'M-8');
-    await campo('fabricacao', '2026-11');
+    await campo('fab', '2026-11');
     await campo('qtd', '10');
+    ok(/soma ao lote existente \(saldo 97\)/.test(await page.textContent('#d-lote')), 'mesma marca e fabricação: soma ao lote existente');
+    await tirarFoto(false);
     await revisarConfirmar();
-    ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'vinculo'='" + opRet + "'") === 1, 'entrada de novos vinculada à retirada (identificador comum)');
+    ok(contar("select count(*) from modulo_docs where caminho='g-ops' and dados->>'vinculo'='" + opRet + "'") === 1 && saldos('20L')['N|Montico|2026-11'] === 107, 'entrada de novos vinculada à retirada, com foto');
 
-    console.log('Histórico, exclusão e exportação (gestão)');
+    console.log('Consulta, exclusão e exportação (gestão)');
     await abrirComo('gestora');
     await page.click('[data-aba="sucata"]');
-    ok(await page.locator('.hi').count() >= 4, 'histórico da sucata separado (trocas, retiradas e contagem)');
-    await page.click('.hi:has-text("Troca com Mercado Bom Preço")');
-    await page.waitForSelector('#modal:not([hidden]) [data-act="excluir-ini"]');
-    ok(/Mercado Bom Preço/.test(await page.textContent('#modal-c')), 'detalhe da troca mostra o cliente');
+    ok(await page.locator('.hi').count() >= 3, 'histórico da sucata (troca, retirada e contagem)');
+    await page.click('.hi:has-text("Troca com Cliente Exemplo")');
+    await page.waitForSelector('#modal:not([hidden]) .anexo img');
+    const modalTroca = await page.textContent('#modal-c');
+    ok(/Cliente Exemplo/.test(modalTroca) && /Assinatura do cliente/.test(modalTroca) && /Recebo 3 garrafões novos de 20 L/.test(modalTroca) && /certificado digital/.test(modalTroca), 'detalhe da troca: cliente, itens, assinatura e o resumo assinado');
+    await page.screenshot({ path: path.join(SHOTS, 'garrafoes-detalhe-assinatura.png'), fullPage: true });
     await page.click('[data-act="excluir-ini"]');
     const efeitos = await page.textContent('#modal-c');
-    ok(/Sucata AGS \(20 L\): 61 → 41/.test(efeitos) && /Montico · lote M-7 \(20 L\): 115 → 120/.test(efeitos), 'confirmação mostra o efeito da exclusão nos saldos');
+    ok(/Sucata \(20 L\): 56 → 41/.test(efeitos) && /Novos Montico · fab\. 11\/2026 \(20 L\): 107 → 110/.test(efeitos), 'confirmação mostra o efeito da exclusão nos saldos');
     await page.click('[data-act="excluir-ok"]');
     await page.waitForFunction(() => document.querySelector('#modal').hidden);
     s20 = saldos('20L');
-    ok(s20['S|AGS'] === 41 && s20['S|Montico'] === 0 && s20['N|' + lote('20L', 'Montico', 'M-7')] === 120, 'excluir a troca desfez a sucata recebida e a saída dos novos');
-    ok(contar("select count(*) from modulo_docs where caminho='g-excluidas'") === 1, 'conteúdo excluído guardado com quem e quando');
-    // retirada com recebimento: conjunto
+    ok(s20.S === 41 && s20['N|Montico|2026-11'] === 110, 'excluir a troca desfez a sucata recebida e a saída dos novos');
+    ok(contar("select count(*) from modulo_docs where caminho='g-excluidas'") === 1 && contar("select count(*) from modulo_docs where caminho='g-assin'") === 2, 'excluído guardado; assinatura continua guardada');
     await page.click('[data-aba="sucata"]');
     await page.click('.hi:has-text("Retirada por Montico")');
     await page.click('[data-act="excluir-ini"]');
     ok(/recebimento\(s\) de novos vinculado/.test(await page.textContent('#modal-c')) && /Excluir o conjunto \(2\)/.test(await page.textContent('[data-act="excluir-ok"]')), 'retirada com recebimento vinculado: exclusão do conjunto');
     await page.click('[data-act="excluir-ok"]');
     await page.waitForFunction(() => document.querySelector('#modal').hidden);
-    ok(saldos('20L')['S|AGS'] === 91 && !saldos('20L')['N|' + lote('20L', 'Montico', 'M-8')], 'conjunto excluído: sucata devolvida e novos recebidos retirados');
-    // exclusão que deixaria negativo: a contagem inicial do L-100 (já saíram 30)
+    ok(saldos('20L').S === 91 && saldos('20L')['N|Montico|2026-11'] === 100, 'conjunto excluído: sucata devolvida e novos recebidos retirados');
     await page.click('[data-aba="novos"]');
+    await page.click('.hi:has-text("Entrada de novos") >> nth=-1');
+    await page.waitForSelector('#modal:not([hidden]) .anexo img.foto');
+    ok(/Foto da nota do recebimento/.test(await page.textContent('#modal-c')), 'detalhe da entrada mostra a foto da nota');
+    await page.click('[data-act="fechar-modal"]');
     await page.click('.hi:has-text("Ajuste da contagem física")');
     await page.click('[data-act="excluir-ini"]');
     ok(await page.$eval('[data-act="excluir-ok"]', (b) => b.disabled) && /negativo/.test(await page.textContent('#modal-c')), 'exclusão que deixaria saldo negativo fica bloqueada');
     await page.click('[data-act="fechar-modal"]');
-    // operacional não exclui: sem botão
+    await page.click('[data-aba="lotes"]');
+    ok(/Novos AGS · 215/.test(await page.textContent('#area-aba')) && /09\/2026/.test(await page.textContent('#area-aba')), 'lotes e validade por marca e fabricação');
     await page.click('[data-aba="config"]');
     await page.click('[data-act="csv"][data-qual="novos"]');
     await page.click('[data-act="csv"][data-qual="sucata"]');
     await page.click('[data-act="csv"][data-qual="saldos"]');
     await page.waitForFunction(() => (window.__baixados || []).length === 3);
     const csvs = await page.evaluate(() => window.__baixados);
-    ok(/^﻿Operação;Data da movimentação;Registrado em;Tipo;Modelo;Marca;Lote/.test(csvs[0].data) && /Contagem Teste/.test(csvs[0].data), 'CSV de novos com responsável e lote');
+    ok(/^﻿Operação;Data da movimentação;Registrado em;Tipo;Modelo;Marca;Fabricação;Validade/.test(csvs[0].data) && /Assinatura do cliente;Foto da nota/.test(csvs[0].data) && /Contagem Teste/.test(csvs[0].data), 'CSV de novos com marca, fabricação, validade, assinatura e foto');
     ok(/Quem recolheu/.test(csvs[1].data) && /Saldo \(unidades\)/.test(csvs[2].data), 'CSV da sucata e dos saldos');
     await page.fill('#c-validade', '4');
     await page.click('#form-cfg button[type="submit"]');
     await esperarTexto('#msg-cfg', 'salvos');
     ok(psql(BANCO, "select dados->>'validadeAnos' from modulo_docs where caminho='config'").saida === '4', 'gestão salva os parâmetros (validade)');
-    await page.screenshot({ path: path.join(SHOTS, 'garrafoes-gestao.png'), fullPage: true });
+    await page.fill('#c-validade', '3');
+    await page.click('#form-cfg button[type="submit"]');
+    await page.waitForTimeout(400);
 
     await abrirComo('entrega');
+    await page.screenshot({ path: path.join(SHOTS, 'garrafoes-celular.png') });
     await page.click('[data-aba="novos"]');
     await page.click('.hi >> nth=0');
     await page.waitForSelector('#modal:not([hidden])');
     ok(await page.locator('[data-act="excluir-ini"]').count() === 0, 'perfil operacional não vê Excluir');
     await page.click('[data-act="fechar-modal"]');
-    // tentativa direta pelo banco (fora da tela) também é recusada
     const direto = rpc('garrafoes_excluir', { p_id: opRet });
     ok(direto.erro && /Só a gestão/.test(direto.erro), 'excluir pelo banco sem ser gestão é recusado');
     const gravaDireto = setDoc('g-ops', 'op-DIRETO0000000001', '{}', false);
     ok(gravaDireto.erro && /row-level security/.test(gravaDireto.erro), 'gravar direto na tabela é recusado');
-    await page.screenshot({ path: path.join(SHOTS, 'garrafoes-celular.png'), fullPage: true });
     ok(errosJs.length === 0, 'sem erros de JavaScript na página' + (errosJs.length ? ': ' + errosJs.join(' | ') : ''));
   } catch (e) {
     falhou++; console.log('  ✗ ERRO: ' + (e && e.stack || e));
