@@ -271,6 +271,11 @@
   .mod-painel #mod-frames { height: 100%; }
   .mod-frame { display: block; width: 100%; height: 100%; border: 0; background: #fff; border-radius: 0; }
   .mod-frame.hidden { display: none; }
+  /* tela cheia do módulo (23/11/2026): o quadro cobre o app inteiro; as folhas e os avisos do app continuam por cima */
+  body.mod-tela-cheia { overflow: hidden; }
+  body.mod-tela-cheia #tab-modulo { position: fixed; inset: 0; z-index: 48; height: auto !important; background: #fff; }
+  body.mod-tela-cheia .telas-pausadas { display: none !important; }
+  body.mod-tela-cheia::before { display: none; }
   body.com-modulo .fab, body.com-modulo #nivel-aviso { display: none !important; }
   body.com-modulo #app { padding-bottom: 0; } /* o módulo ocupa a tela: a página não rola por baixo dele (12/11/2026) */
   .telas-pausadas .tp-chip.tp-mod { border-left: 4px solid var(--verde); }
@@ -6658,8 +6663,57 @@
     minimizar: function(id) { modMinimizar(id, true); },
     fechar: function(id) { modFechar(id); },
     // o login do módulo acabou: volta à senha do app e, depois dela, ao módulo
-    login: function(id) { try { history.replaceState(null, '', location.pathname + location.search + '#ir=' + encodeURIComponent(id)); } catch (e) {} location.reload(); }
+    login: function(id) { try { history.replaceState(null, '', location.pathname + location.search + '#ir=' + encodeURIComponent(id)); } catch (e) {} location.reload(); },
+    // tela cheia (23/11/2026): pedido pelo botão no alto do módulo; "avisar" recebe true/false quando muda
+    telaCheia: function(id, quer, avisar) { return modTelaCheia(id, !!quer, avisar); },
+    emTelaCheia: function(id) { return !!modCheia.id && modCheia.id === id; }
   };
+  // Tela cheia do módulo (pedido de 23/11/2026): o quadro do módulo cobre o app (some o menu do app). No navegador,
+  // também a tela cheia do aparelho (some a barra do navegador); no app Android novo, somem as barras do celular
+  // (função "Tela" do app). Sai pelo mesmo botão ou pelo Voltar; minimizar, fechar ou trocar de tela também sai.
+  var modCheia = { id: '', avisar: null, pularPop: false, ouvindo: false };
+  function barrasDoCelular(mostrar) {
+    var t = pluginNativo('Tela');
+    if (!t || !t.cheia) return false;
+    if (!mostrar && !modCheia.ouvindo && t.addListener) {
+      modCheia.ouvindo = true; // o Voltar do celular com a tela cheia: o app sai da tela cheia
+      try { t.addListener('saiu', function() { if (modCheia.id) modTelaCheia(modCheia.id, false); }); } catch (e) {}
+    }
+    t.cheia({ ativa: !mostrar }).catch(function() {});
+    return true;
+  }
+  function modTelaCheia(id, quer, avisar) {
+    if (quer) {
+      if (ui.modulo !== id || !modAbertos[id]) return false;
+      if (typeof avisar === 'function') modCheia.avisar = avisar;
+      if (modCheia.id === id) return true;
+      modCheia.id = id;
+      document.body.classList.add('mod-tela-cheia');
+      try { history.pushState({ levTelaCheia: id }, ''); } catch (e) {}
+      if (!(appNativo() && barrasDoCelular(false)) && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+        try { var pr = document.documentElement.requestFullscreen(); if (pr && pr.catch) pr.catch(function() {}); } catch (e) {}
+      }
+    } else {
+      if (!modCheia.id) return true;
+      var av = modCheia.avisar;
+      modCheia.id = ''; modCheia.avisar = null;
+      document.body.classList.remove('mod-tela-cheia');
+      if (appNativo()) barrasDoCelular(true);
+      if (document.fullscreenElement && document.exitFullscreen) { try { var px = document.exitFullscreen(); if (px && px.catch) px.catch(function() {}); } catch (e) {} }
+      if (history.state && history.state.levTelaCheia) { modCheia.pularPop = true; try { history.back(); } catch (e) { modCheia.pularPop = false; } }
+      if (av) { try { av(false); } catch (e) {} }
+    }
+    modAjustarAltura();
+    if (quer && modCheia.avisar) { try { modCheia.avisar(true); } catch (e) {} }
+    return true;
+  }
+  window.addEventListener('popstate', function() {
+    if (modCheia.pularPop) { modCheia.pularPop = false; return; }
+    if (modCheia.id && !(history.state && history.state.levTelaCheia)) modTelaCheia(modCheia.id, false);
+  });
+  document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement && modCheia.id && !appNativo()) modTelaCheia(modCheia.id, false);
+  });
   function modMostrar(id) {
     if (!modEmbutir() || !modulosDaSessao().some(function(m) { return m.id === id; })) { location.href = linkModulo(id); return; }
     if (!modAbertos[id]) {
@@ -6680,12 +6734,14 @@
   }
   function modMinimizar(id, aviso) {
     if (ui.modulo !== id) return;
+    if (modCheia.id === id) modTelaCheia(id, false);
     ui.modulo = '';
     applyTab();
     renderTelasPausadas();
     if (aviso) showToast(modNome(id) + ' minimizado: continua aberto. Volte pela barra Pausadas ou pelo menu.');
   }
   function modFechar(id) {
+    if (modCheia.id === id) modTelaCheia(id, false);
     var a = modAbertos[id];
     if (a && a.fr.parentNode) a.fr.parentNode.removeChild(a.fr);
     delete modAbertos[id];
@@ -8311,6 +8367,7 @@
     var permitidas = abasPermitidas();
     if (permitidas.indexOf(ui.tab) < 0) ui.tab = abaPadrao(permitidas);
     if (ui.modulo && !modAbertos[ui.modulo]) ui.modulo = '';
+    if (typeof modCheia === 'object' && modCheia && modCheia.id && modCheia.id !== ui.modulo) modTelaCheia(modCheia.id, false);
     if (modAbrirDepois && modEmbutir()) { var mp = modAbrirDepois; modAbrirDepois = ''; setTimeout(function() { modMostrar(mp); }, 0); }
     document.querySelectorAll('#admin-tabs .seg-btn[data-tab]').forEach(function(b) { b.classList.toggle('hidden', permitidas.indexOf(b.dataset.tab) < 0); });
     document.getElementById('admin-tabs').classList.toggle('tabs-3', permitidas.length === 3);

@@ -188,8 +188,77 @@ public class LeitorPlugin extends Plugin {
     }
 }
 ''')
+    # Tela (23/11/2026): tela cheia dos módulos — esconde as barras do celular; o Voltar sai da tela cheia (evento "saiu").
+    open(os.path.join(pasta_java, 'TelaPlugin.java'), 'w', encoding='utf-8').write('''package br.com.levissima.app;
+
+import android.view.Window;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
+import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
+
+@CapacitorPlugin(name = "Tela")
+public class TelaPlugin extends Plugin {
+    private OnBackPressedCallback voltar;
+
+    private void barras(boolean esconder) {
+        Window w = getActivity().getWindow();
+        WindowInsetsControllerCompat c = WindowCompat.getInsetsController(w, w.getDecorView());
+        if (esconder) {
+            c.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            c.hide(WindowInsetsCompat.Type.systemBars());
+        } else {
+            c.show(WindowInsetsCompat.Type.systemBars());
+        }
+    }
+
+    private void saiuPeloVoltar() {
+        barras(false);
+        if (voltar != null) {
+            voltar.remove();
+            voltar = null;
+        }
+        notifyListeners("saiu", new JSObject());
+    }
+
+    @PluginMethod
+    public void cheia(final PluginCall call) {
+        final boolean ativa = Boolean.TRUE.equals(call.getBoolean("ativa", Boolean.TRUE));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    barras(ativa);
+                    if (ativa && voltar == null) {
+                        voltar = new OnBackPressedCallback(true) {
+                            @Override
+                            public void handleOnBackPressed() {
+                                saiuPeloVoltar();
+                            }
+                        };
+                        getActivity().getOnBackPressedDispatcher().addCallback(getActivity(), voltar);
+                    } else if (!ativa && voltar != null) {
+                        voltar.remove();
+                        voltar = null;
+                    }
+                    call.resolve();
+                } catch (Exception e) {
+                    call.reject("Não foi possível mudar a tela.");
+                }
+            }
+        });
+    }
+}
+''')
     # Os plugins do próprio app são registrados na MainActivity (gerada de novo a cada versão).
-    PLUGINS = ['ImpressoraPlugin', 'LeitorPlugin']
+    PLUGINS = ['ImpressoraPlugin', 'LeitorPlugin', 'TelaPlugin']
     main = os.path.join(pasta_java, 'MainActivity.java')
     if os.path.exists(main):
         ma = open(main, encoding='utf-8').read()
@@ -202,4 +271,4 @@ public class LeitorPlugin extends Plugin {
                 ma = re.sub(r'(public class MainActivity extends BridgeActivity\s*\{)',
                             lambda mm: mm.group(1) + '\n    @Override\n    public void onCreate(android.os.Bundle savedInstanceState) {\n' + regs + '        super.onCreate(savedInstanceState);\n    }\n', ma, count=1)
             open(main, 'w', encoding='utf-8').write(ma)
-    print('Android: impressão direta (Impressora) e leitor de código de barras (Leitor) registrados')
+    print('Android: impressão direta (Impressora), leitor de código de barras (Leitor) e tela cheia (Tela) registrados')

@@ -371,7 +371,9 @@
     '#lev-barra .lb-sair{color:var(--lb-muted);font-weight:600}' +
     '#lev-barra .lb-min,#lev-barra .lb-fechar{font-weight:700;border:1px solid var(--lb-line)}' +
     '#lev-barra .lb-min{color:#702082}' +
-    '@media (max-width:560px){#lev-barra .lb-fechar span{display:none}#lev-barra .lb-min,#lev-barra .lb-fechar{padding:6px 10px}}' +
+    '#lev-barra .lb-cheia{font-weight:700;border:1px solid var(--lb-line)}' +
+    '#lev-barra .lb-cheia svg{display:block;flex:none}' +
+    '@media (max-width:560px){#lev-barra .lb-fechar span,#lev-barra .lb-cheia span{display:none}#lev-barra .lb-min,#lev-barra .lb-fechar,#lev-barra .lb-cheia{padding:6px 10px}}' +
     '@media (max-width:560px){#lev-barra .lb-quem{display:none}#lev-barra .lb-logo{height:20px}}' +
     '@media (prefers-color-scheme:dark){#lev-barra{--lb-bg:#0f1720;--lb-ink:#e3ebf5;--lb-muted:#93a4b8;--lb-line:#23303d;--lb-hover:#1a2531}' +
     '#lev-barra .lb-logo-cla{display:none}#lev-barra .lb-logo-esc{display:block}}' +
@@ -382,6 +384,65 @@
 
   function quandoPronto(fn) {
     if (document.body) fn(); else document.addEventListener('DOMContentLoaded', fn);
+  }
+
+  // ---------- tela cheia (23/11/2026) ----------
+  // Dentro do app: o app cobre tudo com o módulo (some o menu do app) e põe o aparelho em tela cheia. Página do módulo
+  // aberta sozinha (senha de setor, QR): a tela cheia do aparelho. Sai pelo mesmo botão ou pelo Voltar.
+  var ICONE_CHEIA = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg>';
+  var ICONE_SAIR_CHEIA = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5"/></svg>';
+  var cheiaBtn = null, cheiaLocal = false, cheiaPularPop = false, cheiaOuvindo = false;
+  function pluginDoApp(nome) { return appNativo() && window.Capacitor.Plugins ? window.Capacitor.Plugins[nome] : null; }
+  function mostrarCheia(ativa) {
+    if (!cheiaBtn) return;
+    cheiaBtn.innerHTML = ativa ? ICONE_SAIR_CHEIA + '<span>Sair da tela cheia</span>' : ICONE_CHEIA + '<span>Tela cheia</span>';
+    cheiaBtn.title = ativa ? 'Sair da tela cheia (ou toque em Voltar)' : 'Tela cheia: o módulo ocupa a tela toda';
+    cheiaBtn.setAttribute('aria-label', ativa ? 'Sair da tela cheia' : 'Tela cheia');
+    cheiaBtn.setAttribute('aria-pressed', ativa ? 'true' : 'false');
+  }
+  function cheiaAtiva() {
+    if (APP && APP.emTelaCheia) { try { return !!APP.emTelaCheia(MODULO); } catch (e) {} }
+    return cheiaLocal;
+  }
+  function telaCheiaLocal(quer) {
+    if (quer === cheiaLocal) return;
+    cheiaLocal = quer;
+    var t = pluginDoApp('Tela');
+    if (t && t.cheia) {
+      if (quer && !cheiaOuvindo && t.addListener) {
+        cheiaOuvindo = true;
+        try { t.addListener('saiu', function () { if (cheiaLocal) telaCheiaLocal(false); }); } catch (e) {}
+      }
+      t.cheia({ ativa: quer }).catch(function () {});
+    } else if (quer && document.documentElement.requestFullscreen && !document.fullscreenElement) {
+      try { var pr = document.documentElement.requestFullscreen(); if (pr && pr.catch) pr.catch(function () {}); } catch (e) {}
+    }
+    if (!quer && document.fullscreenElement && document.exitFullscreen) { try { var px = document.exitFullscreen(); if (px && px.catch) px.catch(function () {}); } catch (e) {} }
+    if (quer) { try { history.pushState({ levTelaCheia: MODULO }, ''); } catch (e) {} }
+    else if (history.state && history.state.levTelaCheia) { cheiaPularPop = true; try { history.back(); } catch (e) { cheiaPularPop = false; } }
+    mostrarCheia(quer);
+  }
+  if (!APP) {
+    window.addEventListener('popstate', function () {
+      if (cheiaPularPop) { cheiaPularPop = false; return; }
+      if (cheiaLocal && !(history.state && history.state.levTelaCheia)) telaCheiaLocal(false);
+    });
+    document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement && cheiaLocal && !pluginDoApp('Tela')) telaCheiaLocal(false); });
+  }
+  function alternarCheia() {
+    var quer = !cheiaAtiva();
+    if (APP && APP.telaCheia) {
+      try { if (APP.telaCheia(MODULO, quer, mostrarCheia) !== false) mostrarCheia(quer); return; } catch (e) {}
+    }
+    telaCheiaLocal(quer);
+  }
+  function botaoCheia() {
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'lb-cheia';
+    cheiaBtn = b;
+    mostrarCheia(cheiaAtiva());
+    b.addEventListener('click', alternarCheia);
+    return b;
   }
   function montarBarra() {
     quandoPronto(function () {
@@ -418,7 +479,7 @@
         fechar.innerHTML = '✕ <span>Fechar</span>';
         fechar.setAttribute('aria-label', 'Fechar ' + NOME_MODULO);
         fechar.addEventListener('click', function () { try { APP.fechar(MODULO); } catch (e) {} });
-        b.appendChild(a); b.appendChild(sep); b.appendChild(mod); b.appendChild(esp); b.appendChild(quem); b.appendChild(min); b.appendChild(fechar);
+        b.appendChild(a); b.appendChild(sep); b.appendChild(mod); b.appendChild(esp); b.appendChild(quem); b.appendChild(botaoCheia()); b.appendChild(min); b.appendChild(fechar);
         document.body.insertBefore(b, document.body.firstChild);
         return;
       }
@@ -428,7 +489,7 @@
         var fim = function () { location.replace(RAIZ + 'index.html'); };
         try { sb.auth.signOut({ scope: 'local' }).then(fim, fim); } catch (e) { fim(); }
       });
-      b.appendChild(a); b.appendChild(sep); b.appendChild(mod); b.appendChild(esp); b.appendChild(quem); b.appendChild(sair);
+      b.appendChild(a); b.appendChild(sep); b.appendChild(mod); b.appendChild(esp); b.appendChild(quem); b.appendChild(botaoCheia()); b.appendChild(sair);
       document.body.insertBefore(b, document.body.firstChild);
     });
   }
