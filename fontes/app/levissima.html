@@ -32160,6 +32160,12 @@
     return !!(m && CH_AREAS[area] && m[CH_AREAS[area].flag]);
   }
   function chMeu(c) { var r = chMeuRef(); return !!r && c.solicitante && c.solicitante.ref === r; }
+  // 23/11/2026: quem atende a área (ou abriu o chamado) altera o chamado mesmo com o acesso "só inclui" (o banco faz o mesmo, 0061)
+  function chAlteraChamado(col, id) {
+    if (col !== CH_COL || !session) return false;
+    var c = chamados.find(function(x) { return x.id === id; });
+    return !!c && (chAtende(c.area) || chMeu(c));
+  }
   function chDaArea(area) { return chamados.filter(function(c) { return c.area === area; }); }
   function chAberto(c) { return c.status === 'aberto' || c.status === 'atendimento' || c.status === 'aguardando'; }
   function loadLocalChamados() { try { chamados = JSON.parse(localStorage.getItem('levissima-chamados-v1') || '[]') || []; } catch (e) { chamados = []; } }
@@ -34253,7 +34259,7 @@
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },
         update: function(patch) {
-          var assina = ocSoAssinatura(col, patch) || ocDonoAltera(col, id, patch);
+          var assina = ocSoAssinatura(col, patch) || ocDonoAltera(col, id, patch) || chAlteraChamado(col, id);
           if (soInclui() && !assina) return recusaSoInclui();
           var bn = assina ? null : barrarNivel(col, id, 'update'); if (bn) return bn;
           return rpc('doc_atualizar', { p_colecao: col, p_id: id, p_dados: separar(patch).dados })
