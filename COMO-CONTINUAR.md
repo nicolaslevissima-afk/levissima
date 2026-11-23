@@ -163,7 +163,7 @@ Os módulos são páginas separadas (`www/modulos/*.html`). Por isso só funcion
 - Tabelas: `docs` (dados do app de cargas) e `modulo_docs` (dados dos módulos; chave `modulo, caminho, id`, dados em `dados jsonb`).
 - Acesso: a Edge Function **`acesso`** (v3, publicada **sem** verificação de JWT de propósito, porque ela mesma confere a senha) devolve um login do Supabase com `papel` e `modulos` no `app_metadata`. Ações: `entrar`, `conferir`, `definir`, `ajustar`, `remover`, `lista`.
 - Papéis: `mestre` (tudo), `equipe` (cargas e os módulos marcados), `motorista` (só as entregas dele), `setor` (só os módulos marcados; ref `setor:<id>`) e `representante` (Força de vendas: só os pedidos dele; ref `representante:<id>`). Cada módulo vale como `m` (usa) ou `m:gerir` (gerencia). As regras do banco (RLS, função `pode_modulo`) conferem isso em cada leitura e gravação.
-- Migrações em `supabase/migrations/` (0001 a 0063). Aplicadas até a 0062 (a 0054, a 0055 e a 0056 em 18/11/2026; da 0057 à 0060 em 19/11/2026; a 0061 e a 0062 em 23/11/2026). **A 0063 (Compras por setor) ainda precisa ser aplicada.** Detalhes em `supabase/README.md`.
+- Migrações em `supabase/migrations/` (0001 a 0063). Todas aplicadas (a 0054, a 0055 e a 0056 em 18/11/2026; da 0057 à 0060 em 19/11/2026; da 0061 à 0063 em 23/11/2026). Detalhes em `supabase/README.md`.
 - Dados copiados em 13/10/2026:
   - Manutenção: 62 equipamentos, 18 elementos e a configuração.
   - Estoque de garrafões: 13 movimentos e a configuração.
