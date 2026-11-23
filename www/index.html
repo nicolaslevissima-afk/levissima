@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="levissima-versao" content="5b3d976fd14f" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -70,6 +71,12 @@
     --st-delivered-bg: #9C98A8; --st-delivered-fg: #141219;
     --lv-s1: #64AEF0; --lv-s2: #5598E0; --lv-s3: #4A84CE; --lv-s4: #4271BB; --lv-p: #5FCB57; --lv-t: #C9D6E8;
   }
+  /* aviso de versão nova (23/11/2026) */
+  .versao-nova { position: fixed; left: 50%; transform: translateX(-50%); top: calc(10px + env(safe-area-inset-top, 0px)); z-index: 9000; width: min(560px, calc(100% - 24px));
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; background: var(--card); color: var(--ink);
+    border: 1px solid var(--line); border-left: 5px solid var(--roxo); box-shadow: 0 8px 24px rgba(0,0,0,.18); font-size: 0.9rem; }
+  .versao-nova span { flex: 1 1 220px; }
+  .versao-nova .btn { min-height: 38px; padding: 6px 14px; margin: 0; }
   /* faixa com as quatro cores da marca no alto de todas as telas */
   body::before { content: ''; position: fixed; top: 0; left: 0; right: 0; height: 4px; z-index: 40; pointer-events: none;
     background: linear-gradient(90deg, var(--verde) 0 25%, var(--roxo) 25% 50%, var(--azul) 50% 75%, var(--laranja) 75% 100%); }
@@ -34840,6 +34847,41 @@
     var dh = document.querySelector('.doc-hint');
     if (dh) dh.textContent = 'O arquivo abre o “compartilhar” do celular: salve em Arquivos, imprima ou envie direto.';
   }
+
+  // Versão nova (pedido de 23/11/2026): o app aberto no navegador confere a página publicada a cada 10 minutos e quando
+  // volta a ficar visível; se mudou, avisa no alto ("toque para atualizar"). No app das lojas os arquivos vêm no aplicativo.
+  (function() {
+    var meta = document.querySelector('meta[name="levissima-versao"]'), minha = meta ? meta.getAttribute('content') : '';
+    if (!minha || minha === 'VERSAO_DO_APP' || window.Capacitor || !/^https?:$/.test(location.protocol)) return;
+    var ultima = 0, adiadoAte = 0, mostrando = false;
+    function conferir() {
+      if (mostrando || Date.now() < adiadoAte || Date.now() - ultima < 60000) return;
+      ultima = Date.now();
+      fetch('index.html?v=' + Date.now(), { cache: 'no-store' }).then(function(r) { return r.ok ? r.text() : ''; }).then(function(txt) {
+        var m = /<meta name="levissima-versao" content="([0-9a-f]{6,40})"/.exec(txt || '');
+        if (m && m[1] !== minha) mostrar();
+      }).catch(function() {});
+    }
+    function mostrar() {
+      if (mostrando) return;
+      mostrando = true;
+      var d = document.createElement('div');
+      d.className = 'versao-nova'; d.setAttribute('role', 'status');
+      d.innerHTML = '<span>🔄 <b>Versão nova do LEVÍSSIMA.</b> Termine o que está digitando e toque para atualizar.</span>' +
+        '<button type="button" class="btn btn-primary" data-vn="agora">Atualizar</button><button type="button" class="btn btn-ghost" data-vn="depois">Depois</button>';
+      d.addEventListener('click', function(e) {
+        var b = e.target.closest('[data-vn]'); if (!b) return;
+        if (b.getAttribute('data-vn') === 'agora') { location.reload(); return; }
+        d.remove(); mostrando = false; adiadoAte = Date.now() + 30 * 60000;
+      });
+      document.body.appendChild(d);
+    }
+    window.LEV_VERSAO = { minha: minha, conferir: function() { ultima = 0; adiadoAte = 0; conferir(); } };
+    setInterval(conferir, 10 * 60000);
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') conferir(); });
+    window.addEventListener('focus', conferir);
+    setTimeout(conferir, 20000);
+  })();
 
   // App instalável (celular, tablet e notebook): guarda a tela do app para abrir rápido e funcionar com internet fraca.
   // No app das lojas (Android/iOS) os arquivos já vêm dentro do aplicativo.

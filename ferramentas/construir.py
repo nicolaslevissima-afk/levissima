@@ -28,6 +28,10 @@ def app_principal():
     assert bloco.count('"COLE_AQUI"') == 2, 'o fonte deve ficar com COLE_AQUI na configuração do Supabase'
     bloco = bloco.replace('url: "COLE_AQUI"', 'url: "' + URL + '"').replace('anonKey: "COLE_AQUI"', 'anonKey: "' + CHAVE + '"')
     s = s[:i0] + bloco + s[i1:]
+    # versão da página (23/11/2026): o app aberto compara com a publicada e avisa "versão nova: toque para atualizar"
+    import hashlib
+    assert s.count('content="VERSAO_DO_APP"') == 1, 'o fonte deve ter o meta levissima-versao com VERSAO_DO_APP'
+    s = s.replace('content="VERSAO_DO_APP"', 'content="' + hashlib.sha1(s.encode('utf-8')).hexdigest()[:12] + '"')
     destino = os.path.join(RAIZ, 'www', 'index.html')
     open(destino, 'w', encoding='utf-8').write(s)
     print('www/index.html ok', len(s))
