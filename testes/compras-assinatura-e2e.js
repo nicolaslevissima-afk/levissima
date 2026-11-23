@@ -14,7 +14,7 @@ function doc(b, col, id, data) { b.docs.set(col + '/' + id, { colecao: col, id, 
   const b = amb.banco.b;
   const U = Object.fromEntries(amb.USUARIOS.map((u) => [u.ref, u]));
   const agora = new Date().toISOString();
-  doc(b, 'equipe', 'equipe-angelica', { nome: 'Angélica', nomeCompleto: 'Angélica Souza', cargo: 'coordenador', area: 'Produção' });
+  doc(b, 'equipe', 'equipe-angelica', { nome: 'Angélica', nomeCompleto: 'Angélica Souza', cargo: 'coordenador', area: 'Produção', setores: 'Produção, Manutenção' });
   doc(b, 'equipe', 'equipe-andre', { nome: 'André', nomeCompleto: 'André Lima', cargo: 'diretor', area: 'Gestão' });
   doc(b, 'equipe', 'equipe-paulo', { nome: 'Paulo', nomeCompleto: 'Paulo Teste', area: 'Manutenção' });
   const itens = [{ descricao: 'Rolamento 6205', quantidade: 4, unidade: 'un', aplicacao: 'Esteira da linha 1' }];

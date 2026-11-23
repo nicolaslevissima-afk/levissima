@@ -82,8 +82,8 @@ fake.USUARIOS.push(
   conf(!/só inclui/.test(await toast(pag)), 'sem o aviso "só inclui" na entrega (' + (await toast(pag)).trim() + ')');
   await tentarCancelar(pag, 'oc12');
   conf(st('oc12').status === 'cancelada' && (st('oc12').cancelamento || {}).motivo === 'teste de cancelamento', 'quem pediu cancela o próprio pedido com "só inclui", com o motivo (aviso: ' + (await toast(pag)).trim() + ')');
-  await tentarCancelar(pag, 'oc15');
-  conf(st('oc15').status === 'pedido' && /só inclui/.test(await toast(pag)), 'pedido de outra pessoa: cancelar continua barrado com "só inclui" (aviso: ' + (await toast(pag)).trim() + ')');
+  // 23/11/2026 (0063): a gerente da Qualidade não vê mais os pedidos de outros setores esperando autorização
+  conf(!(await pag.$('[data-id="oc15"]')) && !(await pag.$('[data-id="oc14"]')), 'pedido de outra pessoa de outro setor (Manutenção) nem aparece para a gerente da Qualidade');
   await ctx.close();
 
   // ---------- Rita (compras, aba "só inclui"): a cotação vai direto para a diretoria ----------

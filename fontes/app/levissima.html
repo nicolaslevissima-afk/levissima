@@ -25092,9 +25092,10 @@
   // 8. Entregue: quem fez o pedido confere e confirma que recebeu.
   // Quem assina as etapas 2, 3, 3b, 4 a 7 (e a 8 no lugar de quem pediu) é escolhido por cargo em Cadastros ›
   // Compras: o que cada cargo faz (09/11/2026). Sem nada escolhido, vale o padrão (o de cima).
-  // Cada pessoa vê só os pedidos que fez ou em que assinou; compras e diretoria veem todos; coordenador, supervisor
-  // e gerente, os do setor deles; e todos veem a lista "Para receber" (o que foi comprado e está para chegar). A mesma
-  // regra vale no banco (0026). Coleção compras-ordens (só o escritório; só a senha mestre apaga). Cada etapa guarda
+  // Quem vê (23/11/2026, banco 0063): compras, quem aprova e a diretoria veem todos; supervisor, coordenador e gerente,
+  // os do setor deles (setores marcados ou, em branco, a área) e o que assinaram; os demais, só os pedidos que fizeram
+  // (a compra feita não aparece mais para todos: recebe quem pediu, o gestor do setor ou compras). Setor sem gestor
+  // fica com a diretoria e compras. Coleção compras-ordens (só o escritório; só a senha mestre apaga). Cada etapa guarda
   // quem assinou, quando e por qual acesso.
   var OC_COL = 'compras-ordens';
   var ordensCompra = [];
@@ -25253,27 +25254,31 @@
     return OC_ASSINATURAS.some(function(k) { var a = o[k]; return !!a && typeof a === 'object' && ((r && a.ref === r) || (e && a.id && a.id === e.m.id)); }) ||
       (!!e && !!e.m.id && (o.substituicoes || []).some(function(x) { return x.gestorId === e.m.id; })); // o que o substituto assinou no meu lugar
   }
+  // setores de quem autoriza, por extenso
+  function ocMeusSetoresTxt(m) {
+    var l = String(m.setores || '').split(/[,;\n]+/).map(function(x) { return x.trim(); }).filter(Boolean);
+    return l.length ? l.join(', ') : (m.area ? m.area : 'nenhum setor: preencha a área ou os setores em Cadastros › Equipe');
+  }
   function ocMinha(o) { var r = minhaRef(), e = ocEu(), p = o.pedido || {}; return !!((r && p.ref === r) || (e && p.id && p.id === e.m.id)); }
   // vê a ordem inteira (sem contar a lista "Para receber")
-  // regra do setor de quem autoriza (a mesma do banco): com setores marcados, as desses setores; em branco, as da área
-  // da pessoa e as que esperam autorização
+  // regra do setor de quem autoriza (a mesma do banco, 0063): com setores marcados, as desses setores; em branco, as
+  // da área da pessoa
   function ocSetorVisivel(m, o) {
     if (!ocPodeEtapaPropria(m, 'coord')) return false;
-    var l = String(m.setores || '').split(/[,;\n]+/).map(function(x) { return normNome(x); }).filter(Boolean);
-    return l.length ? l.indexOf(normNome(o.setor)) >= 0 : (o.status === 'pedido' || (!!o.setor && normNome(o.setor) === normNome(m.area)));
+    return coordenaSetor(m, o.setor);
   }
+  // etapas que não são de setor: quem faz vê as ordens que estão nelas
+  var OC_ETAPAS_FUNCAO = ['cotacao', 'justificativa', 'revisao', 'aprovacao', 'compra'];
   function ocVeCompleta(o) {
-    if (ocVeTudo() || ocAssinei(o)) return true;
+    if (ocVeTudo() || ocMinha(o)) return true;
     var e = ocEu();
     if (!e) return false;
-    if (ocSetorVisivel(e.m, o)) return true;
-    // quem faz a etapa em que a ordem está (Cadastros › Compras); a autorização segue a regra dos setores (acima)
+    // supervisor, coordenador e gerente: o setor deles e o que assinaram
+    if (ocPodeEtapaPropria(e.m, 'coord') && (ocSetorVisivel(e.m, o) || ocAssinei(o))) return true;
     var et = OC_ETAPA_DO_STATUS[o.status];
-    if (et && et !== 'coord' && ocPodeEtapaPropria(e.m, et)) return true;
-    // substituto: o que o gestor ausente veria pelo setor e pelas conferências, e os pedidos do próprio gestor (0047)
-    return ocSubstituidos(e.m).some(function(g) {
-      return (!!o.pedido && o.pedido.id === g.id) || ocSetorVisivel(g, o) || (!!et && et !== 'coord' && OC_SUB_ETAPAS.indexOf(et) >= 0 && ocPodeEtapaPropria(g, et));
-    });
+    if (et && OC_ETAPAS_FUNCAO.indexOf(et) >= 0 && ocPodeEtapaPropria(e.m, et)) return true;
+    // substituto: os pedidos do gestor ausente e os do setor dele (0063)
+    return ocSubstituidos(e.m).some(function(g) { return (!!o.pedido && o.pedido.id === g.id) || ocSetorVisivel(g, o); });
   }
   function ocVisiveis() { return ordensCompra.filter(ocVeCompleta); }
   // Alterar o pedido (04/11/2026): só enquanto espera a autorização do coordenador ou supervisor (antes da cotação).
@@ -25310,9 +25315,10 @@
   function ocValorEscolhido(o) { var c = o.cotacao; if (!c || !c.cotacoes) return null; var x = c.cotacoes[c.escolhida || 0]; return x || null; }
   function ocItensTexto(o) { return (o.itens || []).map(function(it) { return fmtMp(it.quantidade, it.unidade) + ' ' + it.descricao; }).join(' · '); }
   function ocQuem(a) { return a ? a.nome + (a.substituindo && a.substituindo.nome ? ' (no lugar de ' + ocNomeCurto(a.substituindo.nome) + ')' : '') + (a.semSenha ? ' (sem senha)' : '') + ' em ' + formatDateTimeBR(a.em) : ''; }
+  // setor de quem autoriza: os marcados em "Setores que autoriza" ou, em branco, a área da pessoa (23/11/2026)
   function coordenaSetor(m, setor) {
     var l = String(m.setores || '').split(/[,;\n]+/).map(function(x) { return normNome(x); }).filter(Boolean);
-    return !l.length || l.indexOf(normNome(setor)) >= 0;
+    return l.length ? l.indexOf(normNome(setor)) >= 0 : !!setor && normNome(setor) === normNome(m.area);
   }
   // substituto: assina no lugar de quem? (nada: assina por direito próprio, ou não pode)
   function ocNoLugarDe(m, etapa, o) {
@@ -25489,7 +25495,7 @@
     { k: 'cotacao', nome: 'Cotação', f: function(o) { return o.status === 'cotacao' || o.status === 'justificativa'; } },
     { k: 'aprovacao', nome: 'Diretoria', f: function(o) { return o.status === 'aprovacao'; } },
     { k: 'compra', nome: 'Comprar', f: function(o) { return o.status === 'compra'; } },
-    { k: 'comprado', nome: 'Para receber', f: function(o) { return o.status === 'comprado'; }, todos: true },
+    { k: 'comprado', nome: 'Para receber', f: function(o) { return o.status === 'comprado'; } },
     { k: 'recebido', nome: 'Conferência', f: function(o) { return o.status === 'recebido'; } },
     { k: 'conferido', nome: 'Entregar', f: function(o) { return o.status === 'conferido'; } },
     { k: 'fechada', nome: 'Entregues', f: function(o) { return o.status === 'fechada'; } },
@@ -25501,13 +25507,13 @@
     if (ui.tab === 'compras' && !document.hidden) novMarcarComprasVistas();
     var vis = ocVisiveis(), tudo = ocVeTudo();
     var n = function(s) { return vis.filter(function(o) { return o.status === s; }).length; };
-    var nReceber = ordensCompra.filter(function(o) { return o.status === 'comprado'; }).length;
+    var nReceber = n('comprado');
     var urg = ocAbertas().filter(function(o) { return o.urgencia === 'urgente'; }).length;
     var filtro = OC_FILTROS.find(function(f) { return f.k === ocUi.filtro; }) || OC_FILTROS[0];
     var base = filtro.todos ? ordensCompra : vis;
     var lista = base.filter(filtro.f).sort(function(a, b) { return (b.urgencia === 'urgente') - (a.urgencia === 'urgente') || (Number(b.numero) || 0) - (Number(a.numero) || 0); });
     box.innerHTML = '<p class="tagline">Ordem de compra com <b>assinatura em cada etapa</b>: 1 · pedido (qualquer pessoa) → 2 · <b>autorização</b> (' + escapeHtml(ocCargosEtapa('coord')) + ') → 3 · <b>cotação</b> (' + escapeHtml(ocQuemFaz('cotacao')) + ') → 4 · aprovação da <b>diretoria</b> (' + escapeHtml(ocNomesAprovacao()) + ') → 5 · <b>comprado</b> (' + escapeHtml(ocNomesCompra()) + ') → 6 · <b>recebido</b> (' + escapeHtml(ocCargosEtapa('recebimento')) + ', identificada) → 7 · <b>conferência</b> (' + escapeHtml(ocQuemFaz('conferencia')) + ') → 8 · <b>entregue</b> a quem pediu, que confirma. Até ir para a cotação, o pedido pode ser <b>editado</b>; dá para <b>cancelar</b> até a aprovação da diretoria. Quem faz cada etapa: Cadastros › Compras.</p>' +
-      (tudo ? '' : '<p class="hint oc-so-meus">Você vê os pedidos que fez ou em que assinou' + (ocEu() && ocPodeEtapa(ocEu().m, 'coord') ? ' e os do seu setor' : '') + ', e os que estão numa etapa que você assina. Em <b>Para receber</b> estão as compras que vão chegar.</p>') +
+      (tudo ? '' : '<p class="hint oc-so-meus">' + (ocEu() && ocPodeEtapa(ocEu().m, 'coord') ? 'Você vê os pedidos do seu setor (' + escapeHtml(ocMeusSetoresTxt(ocEu().m)) + '), os que fez e os que assinou.' : 'Você vê os pedidos que fez.') + ' Em <b>Para receber</b> estão as suas compras que vão chegar.</p>') +
       ocAusAvisosHtml() +
       '<div class="est-cards">' +
         supCard('c-entrada', tudo ? 'Pedido de compra' : 'Meus pedidos', fmtInt(ocAbertas().length), (ocAbertas().length === 1 ? 'ordem aberta' : 'ordens abertas') + (urg ? ' · <b>' + urg + (urg === 1 ? ' urgente' : ' urgentes') + '</b>' : ''), '<button type="button" class="btn btn-primary btn-sm" data-oc="novo">+ Novo pedido</button>') +
@@ -25937,7 +25943,7 @@
         '<div class="row-2"><label>Nº do pedido no fornecedor <span class="opt">(opcional)</span><input type="text" id="oc-cp-num" maxlength="30" autocomplete="off" /></label>' +
         '<label>Previsão de chegada<input type="date" id="oc-cp-prev" value="' + escapeHtml(v.prazo ? addDiasIso(todayIso(), Number(v.prazo)) : '') + '" /></label></div>' +
         '<label>Observação <span class="opt">(opcional)</span><input type="text" id="oc-cp-obs" maxlength="200" autocomplete="off" /></label>' +
-        '<p class="field-hint">Marca como comprado: ' + escapeHtml(ocNomesCompra()) + ' (Cadastros › Compras). Depois, a compra aparece em “Para receber” para todos.</p>' + ocAssinaComoHtml(),
+        '<p class="field-hint">Marca como comprado: ' + escapeHtml(ocNomesCompra()) + ' (Cadastros › Compras). Depois, a compra aparece em “Para receber” para quem pediu, o gestor do setor e compras.</p>' + ocAssinaComoHtml(),
       salvar: function() {
         var forn = gerVal('oc-cp-forn'), valor = ocValor(gerVal('oc-cp-valor'));
         if (!forn) return gerErro('Informe o fornecedor da compra.');
@@ -26097,7 +26103,7 @@
   function ocAusOQuePassa(g) {
     var l = [];
     if (!g) return '';
-    if (ocPodeEtapaPropria(g, 'coord')) l.push('autorizar os pedidos' + (String(g.setores || '').trim() ? ' de ' + String(g.setores).split(/[,;\n]+/).map(function(x) { return x.trim(); }).filter(Boolean).join(', ') : ' (todos os setores)'));
+    if (ocPodeEtapaPropria(g, 'coord')) l.push('autorizar os pedidos de ' + ocMeusSetoresTxt(g));
     if (ocPodeEtapaPropria(g, 'conferencia')) l.push('conferir o que chegou');
     if (ocPodeEtapaPropria(g, 'entrega')) l.push('confirmar a entrega no lugar de quem pediu');
     l.push('responder pelos pedidos que ' + ocNomeCurto(g.nome) + ' fez (conferir a cotação e confirmar a entrega)');
