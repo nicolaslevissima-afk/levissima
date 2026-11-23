@@ -15027,16 +15027,34 @@
   // "uniformes", caminhos funcionarios, treinamentos e nrTipos): um cadastro só para o RH e para o EPI.
   // O que é só do RH fica no campo "rh" do funcionário: { turno, lider, situacao, inicioExperiencia, ferias: { de, ate },
   // retorno, horario, efetivadoEm }. Os dados pessoais ficam só no banco (nunca no código).
-  var RH_TURNOS = [
-    { id: 'desc1', nome: 'Desc 1 (6x1)', horario: 'Seg 03:06–13:15 (refeição 07:00–08:00) · Ter a Sáb 05:20–13:15 (refeição 10:00–11:00)' },
-    { id: 'desc2', nome: 'Desc 2 (6x1)', horario: 'Seg a Sex 12:10–21:00 (refeição 18:00–19:00) · Sáb 13:10–18:00' },
-    { id: 'desc3', nome: 'Desc 3 (5x2)', horario: 'Seg a Qui 20:55–05:20 · Sex 18:42–05:20 (refeição 01:00–02:00)' },
-    { id: 'galao-dia', nome: 'Galão · turno dia', horario: '' },
-    { id: 'galao-noite', nome: 'Galão · turno noite', horario: '' },
-    { id: 'adm', nome: 'Administrativo', horario: '' },
+  // Turnos (23/11/2026): o RH é o cadastro dos turnos (mp-config/turnos, banco 0062): cada turno com as faixas de
+  // dias, entrada, saída e refeição. O PCP puxa daqui o horário dos turnos das linhas (a refeição não para a linha).
+  // Sem o documento no banco (modo local ou antes da 0062), valem os turnos que o RH já usava.
+  var TURNOS_RH_PADRAO = [
+    { id: 'desc1', nome: 'Desc 1 (6x1)', faixas: [{ dias: [1], entrada: '03:06', saida: '13:15', refeicaoDe: '07:00', refeicaoAte: '08:00' }, { dias: [2, 3, 4, 5, 6], entrada: '05:20', saida: '13:15', refeicaoDe: '10:00', refeicaoAte: '11:00' }] },
+    { id: 'desc2', nome: 'Desc 2 (6x1)', faixas: [{ dias: [1, 2, 3, 4, 5], entrada: '12:10', saida: '21:00', refeicaoDe: '18:00', refeicaoAte: '19:00' }, { dias: [6], entrada: '13:10', saida: '18:00' }] },
+    { id: 'desc3', nome: 'Desc 3 (5x2)', faixas: [{ dias: [1, 2, 3, 4], entrada: '20:55', saida: '05:20', refeicaoDe: '01:00', refeicaoAte: '02:00' }, { dias: [5], entrada: '18:42', saida: '05:20', refeicaoDe: '01:00', refeicaoAte: '02:00' }] },
+    { id: 'galao-dia', nome: 'Galão · turno dia', faixas: [{ dias: [1, 2, 3, 4, 5], entrada: '05:00', saida: '15:00' }] },
+    { id: 'galao-noite', nome: 'Galão · turno noite', faixas: [{ dias: [1, 2, 3, 4, 5], entrada: '11:00', saida: '21:00' }] },
+    { id: 'adm', nome: 'Administrativo', faixas: [] }
+  ];
+  var RH_TURNOS_FIXOS = [
     { id: 'especial', nome: 'Horário especial', horario: 'cada um com o seu horário' },
     { id: '', nome: 'Turno não informado', horario: '' }
   ];
+  function turnosRHDoc() { return (mp.config || []).find(function(x) { return x.id === 'turnos'; }) || null; }
+  function turnosRHCad() { var d = turnosRHDoc(); return d && Array.isArray(d.turnos) ? d.turnos : TURNOS_RH_PADRAO; }
+  function turnoRH(id) { return id ? turnosRHCad().find(function(t) { return t.id === id; }) || null : null; }
+  function faixaTemHorario(f) { return !!f && /^\d{2}:\d{2}$/.test(f.entrada || '') && /^\d{2}:\d{2}$/.test(f.saida || '') && f.entrada !== f.saida && Array.isArray(f.dias) && f.dias.length > 0; }
+  function diasTxtMaiusc(d) { var t = pcpDiasTxt(d); return t.charAt(0).toUpperCase() + t.slice(1); }
+  function turnoRHHorario(t, semRefeicao) {
+    return ((t && t.faixas) || []).filter(faixaTemHorario).map(function(f) {
+      return diasTxtMaiusc(f.dias) + ' ' + f.entrada + '–' + f.saida + (!semRefeicao && /^\d{2}:\d{2}$/.test(f.refeicaoDe || '') && /^\d{2}:\d{2}$/.test(f.refeicaoAte || '') ? ' (refeição ' + f.refeicaoDe + '–' + f.refeicaoAte + ')' : '');
+    }).join(' · ');
+  }
+  function rhTurnosLista() { return turnosRHCad().map(function(t) { return { id: t.id, nome: t.nome, horario: turnoRHHorario(t) }; }).concat(RH_TURNOS_FIXOS); }
+  // as faixas do turno do RH no formato do PCP (início, fim e dias)
+  function faixasPcpDoRH(t) { return ((t && t.faixas) || []).filter(faixaTemHorario).map(function(f) { return { inicio: f.entrada, fim: f.saida, dias: f.dias.map(Number) }; }); }
   var RH_SIT = {
     faltando: { nome: 'Não está vindo trabalhar', cls: 'neg' },
     dispensar: { nome: 'Dispensar', cls: 'neg' },
@@ -15083,8 +15101,103 @@
     d.setDate(Math.min(dia, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
     return agIso(d);
   }
-  function rhTurno(id) { return RH_TURNOS.find(function(t) { return t.id === (id || ''); }) || RH_TURNOS[RH_TURNOS.length - 1]; }
+  function rhTurno(id) {
+    var lista = rhTurnosLista(), t = lista.find(function(x) { return x.id === (id || ''); });
+    return t || (id ? { id: id, nome: 'Turno antigo (' + id + ')', horario: '' } : lista[lista.length - 1]);
+  }
   function rhInfo(f) { return f.rh || {}; }
+  function rhOrdemTurno(id) { var i = rhTurnosLista().findIndex(function(t) { return t.id === (id || ''); }); return i < 0 ? 999 : i; }
+  // linhas do PCP que usam o turno do RH
+  function turnoRHLinhas(id) { return phLinhas().filter(function(l) { return ((l && l.turnos) || []).some(function(t) { return t && typeof t === 'object' && t.rhId === id; }); }).map(function(l) { return l.nome; }); }
+  // o seletor de turno da ficha do funcionário sai do cadastro (o turno antigo que não existe mais continua aparecendo)
+  function rhPreencherTurnos(sel, atual) {
+    var lista = rhTurnosLista().slice();
+    if (atual && !lista.some(function(t) { return t.id === atual; })) lista.splice(lista.length - 2, 0, rhTurno(atual));
+    sel.innerHTML = lista.map(function(t) { return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.id ? t.nome : 'Não informado') + '</option>'; }).join('');
+  }
+  // Editar os turnos (aba RH, quem edita o RH): nome e faixas (dias, entrada, saída e refeição)
+  function rhAbrirTurnos() {
+    if (!rhPodeEditar()) return;
+    var lista = JSON.parse(JSON.stringify(turnosRHCad())).map(function(t) { t.faixas = (t.faixas || []).map(function(f) { return { dias: (f.dias || []).map(Number), entrada: f.entrada || '', saida: f.saida || '', refeicaoDe: f.refeicaoDe || '', refeicaoAte: f.refeicaoAte || '' }; }); t.existia = true; return t; });
+    function v(id) { var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; }
+    function ler() {
+      lista.forEach(function(t, i) {
+        if (!document.getElementById('tr-n-' + i)) return;
+        t.nome = v('tr-n-' + i).slice(0, 60);
+        t.faixas.forEach(function(f, k) {
+          f.entrada = v('tr-e-' + i + '-' + k); f.saida = v('tr-s-' + i + '-' + k);
+          f.refeicaoDe = v('tr-rd-' + i + '-' + k); f.refeicaoAte = v('tr-ra-' + i + '-' + k);
+          f.dias = []; for (var d = 0; d < 7; d++) { var c = document.getElementById('tr-d-' + i + '-' + k + '-' + d); if (c && c.checked) f.dias.push(d); }
+        });
+      });
+    }
+    function html() {
+      return '<p class="hint">Cada turno com os dias e os horários (um horário por grupo de dias, ex.: segunda diferente de terça a sábado). O PCP usa a entrada e a saída; a refeição fica só no RH (a linha continua rodando).</p>' +
+        lista.map(function(t, i) {
+          var usado = turnoRHLinhas(t.id);
+          return '<fieldset class="ph-grupo tr-turno"><legend>' + escapeHtml(t.nome || 'Turno novo') + '</legend>' +
+            '<label>Nome do turno <span class="req">*</span><input type="text" id="tr-n-' + i + '" maxlength="60" value="' + escapeHtml(t.nome || '') + '" autocomplete="off" /></label>' +
+            t.faixas.map(function(f, k) {
+              return '<div class="lp-turno tr-faixa"><div class="ph-chips lp-dias" role="group" aria-label="Dias">' + PCP_DIAS.map(function(dn, d) { return '<label class="ph-chip"><input type="checkbox" id="tr-d-' + i + '-' + k + '-' + d + '"' + (f.dias.indexOf(d) >= 0 ? ' checked' : '') + ' /> ' + dn + '</label>'; }).join('') + '</div>' +
+                '<div class="row-2"><label>Entrada<input type="time" id="tr-e-' + i + '-' + k + '" value="' + escapeHtml(f.entrada) + '" /></label><label>Saída<input type="time" id="tr-s-' + i + '-' + k + '" value="' + escapeHtml(f.saida) + '" /></label></div>' +
+                '<div class="row-2"><label>Refeição das <span class="opt">(opcional)</span><input type="time" id="tr-rd-' + i + '-' + k + '" value="' + escapeHtml(f.refeicaoDe) + '" /></label><label>às<input type="time" id="tr-ra-' + i + '-' + k + '" value="' + escapeHtml(f.refeicaoAte) + '" /></label></div>' +
+                '<button type="button" class="btn-text danger" data-ger="tr-faixa-x" data-i="' + i + '" data-k="' + k + '">Tirar estes dias</button></div>';
+            }).join('') + '<button type="button" class="btn-text" data-ger="tr-faixa" data-i="' + i + '">+ dias com outro horário</button>' +
+            (usado.length ? '<p class="field-hint">Usado no PCP: ' + escapeHtml(usado.join(', ')) + ' (para tirar o turno, tire primeiro da linha).</p>' : '<button type="button" class="btn-text danger" data-ger="tr-x" data-i="' + i + '">Tirar o turno</button>') +
+            '</fieldset>';
+        }).join('') + '<button type="button" class="btn btn-secondary btn-sm" data-ger="tr-novo">+ Turno</button>' +
+        '<p class="field-hint">A saída antes da entrada termina no dia seguinte (ex.: 20:55 às 05:20).</p>';
+    }
+    gerAbrir({
+      titulo: 'Turnos', botao: 'Salvar os turnos', html: html(),
+      acao: function(a, b) {
+        ler();
+        var i = Number(b.dataset.i);
+        if (a === 'tr-novo') lista.push({ id: '', nome: '', faixas: [{ dias: [1, 2, 3, 4, 5], entrada: '', saida: '', refeicaoDe: '', refeicaoAte: '' }] });
+        else if (a === 'tr-faixa') lista[i].faixas.push({ dias: [], entrada: '', saida: '', refeicaoDe: '', refeicaoAte: '' });
+        else if (a === 'tr-faixa-x') lista[i].faixas.splice(Number(b.dataset.k), 1);
+        else if (a === 'tr-x') { if (!turnoRHLinhas(lista[i].id).length) lista.splice(i, 1); }
+        else return;
+        document.getElementById('ger-form-body').innerHTML = html();
+      },
+      salvar: function() {
+        ler();
+        var nomes = {}, ids = {};
+        lista.forEach(function(t) { if (t.id) ids[t.id] = true; });
+        for (var i = 0; i < lista.length; i++) {
+          var t = lista[i];
+          if (!t.nome) return gerErro('Dê um nome para cada turno.');
+          if (nomes[normNome(t.nome)]) return gerErro('O turno ' + t.nome + ' está duas vezes.');
+          nomes[normNome(t.nome)] = true;
+          t.faixas = t.faixas.filter(function(f) { return f.entrada || f.saida || f.dias.length; });
+          for (var k = 0; k < t.faixas.length; k++) {
+            var f = t.faixas[k];
+            if (!hmOk(f.entrada) || !hmOk(f.saida)) return gerErro(t.nome + ': informe a entrada e a saída.');
+            if (f.entrada === f.saida) return gerErro(t.nome + ': a entrada e a saída não podem ser iguais.');
+            if (!f.dias.length) return gerErro(t.nome + ': marque os dias de cada horário.');
+            if (!!f.refeicaoDe !== !!f.refeicaoAte || (f.refeicaoDe && (!hmOk(f.refeicaoDe) || !hmOk(f.refeicaoAte)))) return gerErro(t.nome + ': informe o começo e o fim da refeição (ou deixe os dois vazios).');
+            for (var k2 = 0; k2 < k; k2++) if (t.faixas[k2].dias.some(function(d) { return f.dias.indexOf(d) >= 0; })) return gerErro(t.nome + ': o mesmo dia está em dois horários.');
+          }
+          if (!t.id) {
+            var base = String(t.nome).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30) || 'turno', id = base, n = 2;
+            while (ids[id] || id === 'especial') id = base + '-' + (n++);
+            t.id = id; ids[id] = true;
+          }
+        }
+        var turnos = lista.map(function(t) {
+          return { id: t.id, nome: t.nome, faixas: t.faixas.map(function(f) { var x = { dias: f.dias.slice().sort(), entrada: f.entrada, saida: f.saida }; if (f.refeicaoDe) { x.refeicaoDe = f.refeicaoDe; x.refeicaoAte = f.refeicaoAte; } return x; }) };
+        });
+        var doc = Object.assign({}, turnosRHDoc() || {}, { turnos: turnos, atualizadoEm: new Date().toISOString(), atualizadoPor: quemSessao() });
+        delete doc.id;
+        return mpGravar([{ op: 'set', col: MP_COL.config, id: 'turnos', data: doc }]).then(function() { showToast('Turnos salvos. O PCP já usa os horários novos.'); })
+          .catch(function(e) {
+            var m = String((e && (e.message || e.msg)) || '');
+            gerErro(/usado por uma linha/.test(m) ? 'Esse turno é usado por uma linha do PCP: tire da linha primeiro.' : /turnos:/.test(m) ? m.replace(/^.*turnos:\s*/, '') : 'Não foi possível salvar agora. Tente novamente.');
+            return false;
+          });
+      }
+    });
+  }
   function rhExperiencia(f) {
     var r = rhInfo(f);
     if (r.situacao !== 'experiencia' || !r.inicioExperiencia) return null;
@@ -15144,12 +15257,24 @@
     return '<button type="button" class="rh-linha" data-rh="abrir" data-id="' + escapeHtml(f.id) + '"><span class="rh-nome">' + escapeHtml(f.nome || '—') + '</span>' +
       '<span class="rh-sub">' + escapeHtml(sub) + '</span><span class="rh-chips">' + rhChips(f) + '</span></button>';
   }
+  // a lista dos turnos do RH (aparece mesmo antes do cadastro de funcionários carregar)
+  function renderRhTurnos(ativos) {
+    var box = document.getElementById('rh-turnos');
+    if (!box) return;
+    box.innerHTML = '<p class="hint">O PCP puxa daqui o horário dos turnos das linhas de produção (a refeição não para a linha).</p>' +
+      turnosRHCad().map(function(t) {
+        var n = ativos ? ativos.filter(function(f) { return (rhInfo(f).turno || '') === t.id; }).length : null, linhas = turnoRHLinhas(t.id);
+        return '<div class="driver-row"><span class="driver-name">' + escapeHtml(t.nome) + '<span class="driver-sub">' + escapeHtml(turnoRHHorario(t) || 'horário a definir') + '</span>' +
+          (linhas.length ? '<span class="driver-sub">PCP: ' + escapeHtml(linhas.join(', ')) + '</span>' : '') + '</span>' + (n === null ? '' : '<span class="count-chip" title="Funcionários ativos neste turno">' + n + '</span>') + '</div>';
+      }).join('') + (rhPodeEditar() ? '<button type="button" class="btn btn-secondary btn-sm" data-rh="turnos">Editar os turnos</button>' : '');
+  }
   function renderRH() {
     var sec = document.getElementById('rh-lista');
     if (!sec || !session) return;
     if (!ehMestreRH()) return;
     if (mode !== 'db') { sec.innerHTML = '<p class="empty-state">O RH precisa do banco do LEVÍSSIMA (Supabase).</p>'; return; }
     if (!rhDados.carregado) {
+      renderRhTurnos(null);
       sec.innerHTML = '<p class="empty-state">' + (rhDados.erro ? escapeHtml(rhDados.erro) : 'Carregando o cadastro…') + '</p>';
       document.getElementById('rh-cards').innerHTML = ''; document.getElementById('rh-alertas').classList.add('hidden');
       return;
@@ -15201,7 +15326,9 @@
     function poe(chave, titulo, sub, f) { if (!grupos[chave]) { grupos[chave] = { titulo: titulo, sub: sub, lista: [] }; ordem.push(chave); } grupos[chave].lista.push(f); }
     var porNome = function(a, b) { return String(a.nome).localeCompare(String(b.nome), 'pt-BR'); };
     if (rhUi.visao === 'turno') {
-      RH_TURNOS.forEach(function(t) { base.filter(function(f) { return (rhInfo(f).turno || '') === t.id; }).sort(porNome).forEach(function(f) { poe(t.id || 'sem', t.nome, t.horario, f); }); });
+      var listaT = rhTurnosLista();
+      base.forEach(function(f) { var id = rhInfo(f).turno || ''; if (!listaT.some(function(t) { return t.id === id; })) listaT.push(rhTurno(id)); });
+      listaT.forEach(function(t) { base.filter(function(f) { return (rhInfo(f).turno || '') === t.id; }).sort(porNome).forEach(function(f) { poe(t.id || 'sem', t.nome, t.horario, f); }); });
     } else if (rhUi.visao === 'situacao') {
       Object.keys(RH_SIT).forEach(function(s) { base.filter(function(f) { return (rhInfo(f).situacao || 'ativo') === s; }).sort(porNome).forEach(function(f) { poe(s, RH_SIT[s].nome, '', f); }); });
     } else {
@@ -15209,7 +15336,7 @@
       base.forEach(function(f) { sets[f.setor || 'Sem setor'] = 1; });
       Object.keys(sets).sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }).forEach(function(s) {
         base.filter(function(f) { return (f.setor || 'Sem setor') === s; })
-          .sort(function(a, b) { return String(a.funcao).localeCompare(String(b.funcao), 'pt-BR') || RH_TURNOS.indexOf(rhTurno(rhInfo(a).turno)) - RH_TURNOS.indexOf(rhTurno(rhInfo(b).turno)) || porNome(a, b); })
+          .sort(function(a, b) { return String(a.funcao).localeCompare(String(b.funcao), 'pt-BR') || rhOrdemTurno(rhInfo(a).turno) - rhOrdemTurno(rhInfo(b).turno) || porNome(a, b); })
           .forEach(function(f) { poe(s, s, '', f); });
       });
     }
@@ -15219,10 +15346,7 @@
         (g.sub ? '<p class="rh-grupo-sub">' + escapeHtml(g.sub) + '</p>' : '') +
         g.lista.map(function(f) { return rhLinha(f, rhUi.visao !== 'funcao'); }).join('') + '</section>';
     }).join('') : '<p class="empty-state">' + (rhUi.desligados ? 'Nenhum funcionário desligado.' : q ? 'Ninguém encontrado.' : 'Nenhum funcionário cadastrado.') + '</p>';
-    document.getElementById('rh-turnos').innerHTML = RH_TURNOS.filter(function(t) { return t.id && t.id !== 'especial'; }).map(function(t) {
-      var n = ativos.filter(function(f) { return (rhInfo(f).turno || '') === t.id; }).length;
-      return '<div class="driver-row"><span class="driver-name">' + escapeHtml(t.nome) + '<span class="driver-sub">' + escapeHtml(t.horario || 'horário a definir') + '</span></span><span class="count-chip">' + n + '</span></div>';
-    }).join('');
+    renderRhTurnos(ativos);
   }
   document.getElementById('tab-rh').addEventListener('click', function(e) {
     var b = e.target.closest('[data-rh], [data-visao]');
@@ -15230,6 +15354,7 @@
     if (b.dataset.visao) { rhUi.visao = b.dataset.visao; renderRH(); return; }
     var a = b.dataset.rh;
     if (a === 'abrir') abrirRhSheet(b.dataset.id);
+    else if (a === 'turnos') rhAbrirTurnos();
     else if (a === 'novo') { if (rhPodeEditar()) abrirRhSheet(null); }
     else if (a === 'atualizar') rhCarregar();
     else if (a === 'avisos') { rhUi.todosAvisos = !rhUi.todosAvisos; renderRH(); }
@@ -15251,6 +15376,7 @@
     document.getElementById('rh-sheet-title').textContent = f ? f.nome : 'Novo funcionário';
     setVal('f-rh-nome', f ? f.nome || '' : ''); setVal('f-rh-matricula', f ? f.matricula || '' : '');
     setVal('f-rh-setor', f ? f.setor || '' : ''); setVal('f-rh-funcao', f ? f.funcao || '' : '');
+    rhPreencherTurnos(document.getElementById('f-rh-turno'), r.turno || '');
     setVal('f-rh-turno', r.turno || ''); setVal('f-rh-horario', r.horario || '');
     document.getElementById('f-rh-lider').checked = !!r.lider;
     setVal('f-rh-situacao', r.situacao || 'ativo');
@@ -15443,7 +15569,7 @@
       db.collection(MP_COL[k]).onSnapshot(function(snap) {
         var docsMp = snap.docs.map(function(d) { return Object.assign({ id: d.id }, d.data()); });
         if (k === 'ordens') mpSepararOrdens(docsMp); else mp[k] = docsMp;
-        if (session) { renderProducao(); renderMateria(); atualizarMpSheet(); if (k === 'ordens') opAvisosAndamento(); }
+        if (session) { renderProducao(); renderMateria(); atualizarMpSheet(); if (k === 'ordens') opAvisosAndamento(); if (k === 'config' && ui.tab === 'rh') renderRH(); }
       }, function(err) { console.error(MP_COL[k], err); });
     });
   }
@@ -15805,16 +15931,36 @@
   // - OP concluída: a senha mestre e quem tem "Edita OP concluída" corrigem; o estoque e a matéria-prima acompanham.
   var PCP_DIAS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   var PCP_MOTIVOS_PAUSA = ['Refeição', 'Troca de turno', 'Setup', 'Manutenção', 'Falta de material', 'Qualidade', 'Outro'];
+  // turno da linha ligado ao RH (rhId, 23/11/2026): o horário vem do cadastro dos turnos do RH, em faixas (um horário
+  // por grupo de dias); a refeição não para a linha (pausa 0). Sem o cadastro, vale a cópia gravada pelo banco.
   function phTurnosDet(id) {
     var l = typeof id === 'object' ? id : phLinha(id);
-    return ((l && l.turnos) || []).map(function(t) { return typeof t === 'string' ? { nome: t } : (t || {}); }).filter(function(t) { return t.nome; });
+    return ((l && l.turnos) || []).map(function(t) { return typeof t === 'string' ? { nome: t } : (t || {}); }).filter(function(t) { return t.nome; }).map(function(t) {
+      if (!t.rhId) return t;
+      var r = turnoRH(t.rhId);
+      if (!r) return t;
+      var fx = faixasPcpDoRH(r), dias = [];
+      fx.forEach(function(f) { f.dias.forEach(function(d) { if (dias.indexOf(d) < 0) dias.push(d); }); });
+      return Object.assign({}, t, { faixas: fx, inicio: fx.length ? fx[0].inicio : '', fim: fx.length ? fx[0].fim : '', dias: dias.sort(), pausa: 0, pausas: [], rhNome: r.nome });
+    });
   }
-  function turnoTemHorario(t) { return !!t && /^\d{2}:\d{2}$/.test(t.inicio || '') && /^\d{2}:\d{2}$/.test(t.fim || '') && t.inicio !== t.fim && Array.isArray(t.dias) && t.dias.length > 0; }
+  // as faixas de horário do turno: as do RH ou, no turno próprio da linha, uma só
+  function turnoFaixas(t) { return t && Array.isArray(t.faixas) && t.faixas.length ? t.faixas : (t ? [t] : []); }
+  function faixaPcpOk(f) { return !!f && /^\d{2}:\d{2}$/.test(f.inicio || '') && /^\d{2}:\d{2}$/.test(f.fim || '') && f.inicio !== f.fim && Array.isArray(f.dias) && f.dias.length > 0; }
+  function turnoTemHorario(t) { return turnoFaixas(t).some(faixaPcpOk); }
+  function turnoHorarioTxt(t, comDias) {
+    var fx = turnoFaixas(t).filter(faixaPcpOk);
+    if (!fx.length) return '';
+    if (fx.length === 1 && !comDias) return fx[0].inicio + '–' + fx[0].fim;
+    return fx.map(function(f) { return pcpDiasTxt(f.dias) + ' ' + f.inicio + '–' + f.fim; }).join(', ');
+  }
   function pcpDiasTxt(d) {
     var s = (d || []).map(Number).filter(function(x) { return x >= 0 && x <= 6; }).sort(), k = s.join(',');
     if (k === '1,2,3,4,5') return 'seg a sex';
     if (k === '1,2,3,4,5,6') return 'seg a sáb';
     if (k === '0,1,2,3,4,5,6') return 'todos os dias';
+    // dias seguidos (3 ou mais): "ter a sáb", "seg a qui"
+    if (s.length >= 3 && s.every(function(x, i) { return i === 0 || x === s[i - 1] + 1; })) return PCP_DIAS[s[0]].toLowerCase() + ' a ' + PCP_DIAS[s[s.length - 1]].toLowerCase();
     return s.map(function(x) { return PCP_DIAS[x].toLowerCase(); }).join(', ');
   }
   function linhaUsaOp(l) { return !!l && l.op !== false && l.id !== 'retornavel'; }
@@ -16184,7 +16330,15 @@
   function maqIntervaloTxt(ini, fim) { return 'das ' + maqHoraTxt(ini) + ' às ' + maqHoraTxt(fim); }
   function maqQtd(q, u) { return q == null || q === '' ? '—' : fmtInt(Math.round(Number(q))) + (u ? ' ' + u : ''); }
   // turnos e dia operacional da linha da máquina (o tablet não lê a configuração das linhas: vem no contexto)
-  function maqTurnos() { var l = maq.ctx && maq.ctx.linha; return ((l && l.turnos) || []).filter(function(t) { return t && typeof t === 'object' && hmOk(t.inicio) && hmOk(t.fim); }); }
+  // turnos da linha no tablet, uma entrada por faixa de horário (os turnos do RH vêm com as faixas copiadas pelo banco)
+  function maqTurnos() {
+    var l = maq.ctx && maq.ctx.linha, out = [];
+    ((l && l.turnos) || []).forEach(function(t) {
+      if (!t || typeof t !== 'object') return;
+      (Array.isArray(t.faixas) && t.faixas.length ? t.faixas : [t]).forEach(function(f) { if (f && hmOk(f.inicio) && hmOk(f.fim)) out.push({ nome: t.nome, inicio: f.inicio, fim: f.fim, dias: f.dias || t.dias }); });
+    });
+    return out;
+  }
   function maqCorte() { var c = 0; maqTurnos().forEach(function(t) { if (pcpMin(t.fim) <= pcpMin(t.inicio)) { var m = pcpMin(t.fim); if (m > c && m <= 720) c = m; } }); return c; }
   function maqDia(ms) { return pcpIso(ms - maqCorte() * 60000); }
   function maqTurno(ms) {
@@ -16823,6 +16977,8 @@
     var m = meuMembro();
     return !!(m && m.configuraPcp);
   }
+  // turnos do RH que a linha ainda não usa (para incluir no editor da linha)
+  function pcpTurnosRHLivres(l) { return turnosRHCad().filter(function(r) { return !(l.turnos || []).some(function(t) { return t && t.rhId === r.id; }); }); }
   function pcpExcecoes(lid) { return (phCfgLinhas().excecoes || []).filter(function(e) { return e && e.de && (!(e.linhas || []).length || e.linhas.indexOf(lid) >= 0); }); }
   function pcpTurnosHorario(lid, sel) {
     var ts = phTurnosDet(lid).filter(turnoTemHorario);
@@ -16875,7 +17031,8 @@
     for (var dia = pcpAddDias(pcpIso(de), -1), n = 0; dia <= d1 && n < 400; dia = pcpAddDias(dia, 1), n++) {
       var dow = pcpDow(dia);
       var folga = exc.some(function(e) { return e.tipo === 'folga' && !(hmOk(e.inicio) && hmOk(e.fim)) && dia >= e.de && dia <= (e.ate || e.de); });
-      if (!folga) ts.forEach(function(t) {
+      if (!folga) ts.forEach(function(t0) { turnoFaixas(t0).filter(faixaPcpOk).forEach(function(fx) {
+        var t = fx === t0 ? t0 : Object.assign({}, fx, { pausa: 0, pausas: [] });
         if ((t.dias || []).map(Number).indexOf(dow) < 0) return;
         var ini = pcpMs(dia, t.inicio), fim = pcpMs(pcpMin(t.fim) <= pcpMin(t.inicio) ? pcpAddDias(dia, 1) : dia, t.fim), f = 1, pzs = [];
         var pz = (t.pausas || []).filter(function(p) { return p && hmOk(p.inicio) && hmOk(p.fim); });
@@ -16886,7 +17043,7 @@
         else { var dur = (fim - ini) / 60000, pausa = Math.min(Math.max(0, Number(t.pausa) || 0), dur - 1); f = (dur - pausa) / dur; }
         // a pausa com horário tira só o tempo deste turno (o turno que se sobrepõe continua trabalhando)
         pcpRecortar([{ ini: ini, fim: fim, f: f, dia: dia }], pzs, ini, fim).forEach(function(x) { brutos.push(x); });
-      });
+      }); });
       exc.forEach(function(e) {
         if (dia < e.de || dia > (e.ate || e.de) || !hmOk(e.inicio) || !hmOk(e.fim)) return;
         var a = pcpMs(dia, e.inicio), b = pcpMs(pcpMin(e.fim) <= pcpMin(e.inicio) ? pcpAddDias(dia, 1) : dia, e.fim);
@@ -16915,7 +17072,7 @@
   // dia operacional: o turno que passa da meia-noite pertence ao dia em que começa (corte = fim desse turno)
   function pcpCorte(lid) {
     var c = 0;
-    phTurnosDet(lid).filter(turnoTemHorario).forEach(function(t) { if (pcpMin(t.fim) <= pcpMin(t.inicio)) { var m = pcpMin(t.fim); if (m > c && m <= 720) c = m; } });
+    phTurnosDet(lid).forEach(function(t0) { turnoFaixas(t0).filter(faixaPcpOk).forEach(function(t) { if (pcpMin(t.fim) <= pcpMin(t.inicio)) { var m = pcpMin(t.fim); if (m > c && m <= 720) c = m; } }); });
     return c;
   }
   function pcpCorteHm(lid) { var c = pcpCorte(lid); return pad2(Math.floor(c / 60)) + ':' + pad2(c % 60); }
@@ -16928,13 +17085,13 @@
   // turno de agora pelo calendário (sugestão; o turno informado no lançamento é o que vale)
   function pcpTurnoAgora(lid, quando) {
     var t = quando || Date.now(), r = '', ini = -Infinity, hoje = pcpIso(t);
-    phTurnosDet(lid).filter(turnoTemHorario).forEach(function(x) {
+    phTurnosDet(lid).forEach(function(x0) { turnoFaixas(x0).filter(faixaPcpOk).forEach(function(x) {
       [pcpAddDias(hoje, -1), hoje].forEach(function(d) {
         if ((x.dias || []).map(Number).indexOf(pcpDow(d)) < 0) return;
         var a = pcpMs(d, x.inicio), b = pcpMs(pcpMin(x.fim) <= pcpMin(x.inicio) ? pcpAddDias(d, 1) : d, x.fim);
-        if (a <= t && t < b && a > ini) { ini = a; r = x.nome; }
+        if (a <= t && t < b && a > ini) { ini = a; r = x0.nome; }
       });
-    });
+    }); });
     return r;
   }
 
@@ -17200,7 +17357,7 @@
   function pcpLinhaResumoHtml(l) {
     var v = pcpCapLinha(l), com = phTurnosDet(l.id).filter(turnoTemHorario), nProd = Object.keys(l.capProd || {}).filter(function(k) { return Number(l.capProd[k]) > 0; }).length;
     return '<span class="pcp-linha-info">' + (v ? escapeHtml(fmtInt(v) + ' ' + linhaUnidade(l) + '/h') : nProd ? escapeHtml('capacidade por produto (' + nProd + ')') : '<span class="alerta">sem capacidade de planejamento</span>') + ' · ' +
-      (com.length ? escapeHtml(com.map(function(t) { return t.nome + ' ' + t.inicio + '–' + t.fim; }).join(' · ')) : '<span class="alerta">turnos sem horário</span>' + (pcpPodeConfigurar() ? ' <button type="button" class="btn-text" data-mp="ir-linhas">configurar</button>' : '')) + '</span>';
+      (com.length ? escapeHtml(com.map(function(t) { return t.nome + ' ' + turnoHorarioTxt(t); }).join(' · ')) : '<span class="alerta">turnos sem horário</span>' + (pcpPodeConfigurar() ? ' <button type="button" class="btn-text" data-mp="ir-linhas">configurar</button>' : '')) + '</span>';
   }
 
   // ---------- rascunho: gravar, descrever, confirmar e descartar ----------
@@ -17806,7 +17963,8 @@
     var d = per.de, ls = pcpLinhasVisiveis(plano), h = '<div class="pcp-dia-v">';
     ls.forEach(function(x) {
       var lista = (ocor.occ[x.id] || {})[d] || [], bl = x.l ? pcpBlocosDia(plano, x.id, d) : [];
-      var turnos = x.l ? phTurnosDet(x.id).filter(turnoTemHorario).filter(function(t) { return (t.dias || []).map(Number).indexOf(pcpDow(d)) >= 0; }) : [];
+      var turnos = [];
+      if (x.l) phTurnosDet(x.id).forEach(function(t) { turnoFaixas(t).filter(faixaPcpOk).forEach(function(f) { if ((f.dias || []).map(Number).indexOf(pcpDow(d)) >= 0) turnos.push({ nome: t.nome, inicio: f.inicio, fim: f.fim }); }); });
       h += '<section class="pcp-dia-l pcp-cel" data-linha="' + escapeHtml(x.id) + '" data-dia="' + d + '"><div class="pcp-dia-lc">' + pcpLinhaCabHtml(x) +
         (turnos.length ? '<small>' + escapeHtml(turnos.map(function(t) { return t.nome + ' ' + t.inicio + '–' + t.fim; }).join(' · ')) + '</small>' : x.l ? '<small>sem turno com horário neste dia</small>' : '') + '</div>' +
         (lista.length || bl.length ? bl.map(pcpBlocoHtml).join('') + lista.map(function(y) { return pcpCardHtml(y, ins, true); }).join('') : '<p class="field-hint">Nada programado.</p>') + '</section>';
@@ -18177,7 +18335,7 @@
     var box = document.getElementById('pcp-linhas');
     if (!box) return;
     var mestre = pcpPodeEditarLinhas(), cfg = pcpPodeConfigurar(), exc = phCfgLinhas().excecoes || [];
-    var h = '<p class="tagline">Cada linha com os <b>produtos</b> que roda (a OP só oferece esses), a <b>capacidade de planejamento</b> (separada da meta de desempenho) e os <b>turnos</b> com horário, dias e pausas. É daqui que sai a previsão de horários da programação.</p>';
+    var h = '<p class="tagline">Cada linha com os <b>produtos</b> que roda (a OP só oferece esses), a <b>capacidade de planejamento</b> (separada da meta de desempenho) e os <b>turnos</b>. O horário dos turnos vem do <b>cadastro do RH</b> (aba RH › Turnos). É daqui que sai a previsão de horários da programação.</p>';
     var pendCfg = pcpPendenciasCfg();
     h += '<section class="drivers-admin pcp-pendcfg" aria-label="Pendências de configuração"><div class="section-head"><h2 class="section-title">Pendências de configuração</h2><span class="count-chip">' + (pendCfg.length || '') + '</span></div>' +
       (pendCfg.length ? '<p class="hint">Sem isso o app não calcula a previsão dessas linhas (não inventa horário nem capacidade).</p>' + pendCfg.map(function(c) {
@@ -18209,8 +18367,10 @@
         (usa && ts.some(turnoTemHorario) ? '<div class="frete-sub">Disponível para produzir nesta semana: <b>' + escapeHtml(pcpDispSemana(l.id)) + '</b> <span class="field-hint">(união dos turnos, sem contar a troca de turno duas vezes)</span></div>' : '') +
         '<table class="resumo-table pcp-turnos"><caption class="field-hint" style="text-align:left">Escala das pessoas (turnos)</caption><thead><tr><th scope="col">Turno</th><th scope="col">Horário</th><th scope="col">Dias</th><th scope="col">Pausas</th></tr></thead><tbody>' +
         (ts.length ? ts.map(function(t) {
-          var ok = turnoTemHorario(t);
-          return '<tr><td>' + escapeHtml(t.nome) + '</td><td>' + (ok ? escapeHtml(t.inicio + ' às ' + t.fim) + (pcpMin(t.fim) <= pcpMin(t.inicio) ? ' <small>(termina no dia seguinte)</small>' : '') : '<span class="alerta">sem horário</span>') + '</td><td>' + escapeHtml(ok ? pcpDiasTxt(t.dias) : '—') + '</td><td>' + escapeHtml(pcpPausasTxt(t)) + '</td></tr>';
+          var ok = turnoTemHorario(t), fx = turnoFaixas(t).filter(faixaPcpOk);
+          var hor = fx.length > 1 ? escapeHtml(fx.map(function(f) { return pcpDiasTxt(f.dias) + ' ' + f.inicio + ' às ' + f.fim; }).join('; '))
+            : ok ? escapeHtml(fx[0].inicio + ' às ' + fx[0].fim) + (pcpMin(fx[0].fim) <= pcpMin(fx[0].inicio) ? ' <small>(termina no dia seguinte)</small>' : '') : '<span class="alerta">sem horário</span>';
+          return '<tr><td>' + escapeHtml(t.nome) + (t.rhId ? ' <small class="field-hint">(do RH' + (t.rhNome && normNome(t.rhNome) !== normNome(t.nome) ? ': ' + escapeHtml(t.rhNome) : '') + ')</small>' : '') + '</td><td>' + hor + '</td><td>' + escapeHtml(ok ? pcpDiasTxt(t.dias) : '—') + '</td><td>' + escapeHtml(t.rhId ? 'a refeição não para a linha' : pcpPausasTxt(t)) + '</td></tr>';
         }).join('') : '<tr><td colspan="4" class="field-hint">Nenhum turno cadastrado.</td></tr>') + '</tbody></table>' +
         (maqs.length ? '<div class="frete-sub">Máquinas com contador: ' + escapeHtml(maqs.map(function(m) { return m.nome + (m.producao ? ' (entra no estoque)' : ''); }).join(', ')) + '</div>' : '') + '</div>';
     }).join('');
@@ -18223,7 +18383,7 @@
     var todas = JSON.parse(JSON.stringify(phLinhas())), idx = todas.findIndex(function(x) { return x.id === lid; });
     var l = idx >= 0 ? todas[idx] : { id: '', nome: '', un: 'fardos', porHora: 0, turnos: [], produtos: [], maquinas: [] };
     var orig = idx >= 0 ? JSON.parse(JSON.stringify(todas[idx])) : null;
-    l.turnos = phTurnosDet(l).map(function(t) { return { nome: t.nome, inicio: t.inicio || '', fim: t.fim || '', dias: Array.isArray(t.dias) ? t.dias.map(Number) : [1, 2, 3, 4, 5, 6], pausa: Number(t.pausa) || 0, pausas: (t.pausas || []).map(function(p) { return { inicio: p.inicio || '', fim: p.fim || '' }; }), existia: true }; });
+    l.turnos = phTurnosDet(l).map(function(t) { return { nome: t.nome, rhId: t.rhId || '', inicio: t.rhId ? '' : t.inicio || '', fim: t.rhId ? '' : t.fim || '', dias: !t.rhId && Array.isArray(t.dias) ? t.dias.map(Number) : [1, 2, 3, 4, 5, 6], pausa: t.rhId ? 0 : Number(t.pausa) || 0, pausas: t.rhId ? [] : (t.pausas || []).map(function(p) { return { inicio: p.inicio || '', fim: p.fim || '' }; }), existia: true }; });
     l.maquinas = (l.maquinas || []).map(function(m) { return Object.assign({}, m); });
     l.produtos = (l.produtos || []).slice();
     l.capProd = Object.assign({}, l.capProd || {});
@@ -18243,6 +18403,9 @@
       document.querySelectorAll('#ger-form-body .lp-cap').forEach(function(inp) { var c = numCampo(inp.value); if (c && c > 0) l.capProd[inp.dataset.p] = Math.round(c); else delete l.capProd[inp.dataset.p]; });
       l.turnos.forEach(function(t, i) {
         if (mestre || !t.existia) t.nome = v('lp-tn-' + i).slice(0, 40);
+        var rs = document.getElementById('lp-trh-' + i);
+        if (rs) t.rhId = rs.value;
+        if (t.rhId || !document.getElementById('lp-ti-' + i)) return; // turno do RH: o horário vem do RH
         t.inicio = v('lp-ti-' + i); t.fim = v('lp-tf-' + i);
         var pz = numCampo(v('lp-tp-' + i)); t.pausa = pz && pz > 0 ? Math.round(pz) : 0;
         t.dias = []; for (var d = 0; d < 7; d++) { var c = document.getElementById('lp-td-' + i + '-' + d); if (c && c.checked) t.dias.push(d); }
@@ -18278,11 +18441,19 @@
         (mestre ? '<label>Produtos que roda <span class="opt">(um por linha, sem a marca; vazio = todos)</span><textarea id="lp-prod" rows="4" maxlength="800">' + escapeHtml(l.produtos.join('\n')) + '</textarea></label>' +
           '<p class="field-hint">No catálogo: ' + escapeHtml(nomesBase.join(', ')) + '.</p>' : '') +
         '<fieldset class="ph-grupo"><legend>Turnos e jornada</legend>' +
-          (temDesc || !l.turnos.length ? '<p class="field-hint">Turnos de referência, a confirmar (confira antes de salvar): ' + escapeHtml(PCP_TURNOS_INFORMADOS.map(function(x) { return x.nome + ' ' + x.inicio + '–' + x.fim; }).join(' · ')) + '. <button type="button" class="btn-text" data-ger="lp-desc">Preencher com esses horários</button></p>' : '') +
+          '<p class="field-hint">Escolha os turnos do <b>RH</b> (aba RH › Turnos): o horário vem de lá e acompanha quando o RH muda. A refeição não para a linha.</p>' +
+          (pcpTurnosRHLivres(l).length ? '<div class="lp-copiar"><label>Turno do RH<select id="lp-add-rh">' + pcpTurnosRHLivres(l).map(function(r) { return '<option value="' + escapeHtml(r.id) + '">' + escapeHtml(r.nome + (turnoRHHorario(r, true) ? ' · ' + turnoRHHorario(r, true) : ' · sem horário')) + '</option>'; }).join('') + '</select></label><button type="button" class="btn-text" data-ger="lp-turno-rh">+ incluir</button></div>' : '') +
+          ((temDesc || !l.turnos.length) && !l.turnos.some(function(t) { return t.rhId; }) ? '<p class="field-hint">Turnos de referência, a confirmar (confira antes de salvar): ' + escapeHtml(PCP_TURNOS_INFORMADOS.map(function(x) { return x.nome + ' ' + x.inicio + '–' + x.fim; }).join(' · ')) + '. <button type="button" class="btn-text" data-ger="lp-desc">Preencher com esses horários</button></p>' : '') +
           (l.turnos.length ? l.turnos.map(function(t, i) {
-            var travado = !mestre && t.existia;
-            return '<div class="lp-turno"><div class="row-2"><label>Turno <span class="req">*</span><input type="text" id="lp-tn-' + i + '" maxlength="40" value="' + escapeHtml(t.nome) + '" placeholder="Ex.: DESC 1" autocomplete="off"' + (travado ? ' disabled' : '') + ' /></label>' +
-              '<label>Pausa sem horário fixo <span class="opt">(min no turno)</span><input type="number" id="lp-tp-' + i + '" min="0" step="1" inputmode="numeric" value="' + escapeHtml(t.pausa ? String(t.pausa) : '') + '" placeholder="0" /></label></div>' +
+            var travado = !mestre && t.existia, rhT = t.rhId ? turnoRH(t.rhId) : null;
+            var selRh = '<label>Horário<select id="lp-trh-' + i + '"><option value="">próprio desta linha</option>' + turnosRHCad().map(function(r) { return '<option value="' + escapeHtml(r.id) + '"' + (r.id === t.rhId ? ' selected' : '') + '>do RH: ' + escapeHtml(r.nome) + '</option>'; }).join('') + '</select></label>';
+            if (t.rhId) {
+              return '<div class="lp-turno"><div class="row-2"><label>Turno <span class="req">*</span><input type="text" id="lp-tn-' + i + '" maxlength="40" value="' + escapeHtml(t.nome) + '" autocomplete="off"' + (travado ? ' disabled' : '') + ' /></label>' + selRh + '</div>' +
+                '<p class="field-hint lp-rh-hor">' + (rhT ? (turnoRHHorario(rhT, true) ? 'Horário do RH: <b>' + escapeHtml(turnoRHHorario(rhT, true)) + '</b>' : '<span class="alerta">o RH ainda não deu horário a este turno</span>') : '<span class="alerta">esse turno não existe mais no RH</span>') + '</p>' +
+                (travado ? '' : '<button type="button" class="btn-text danger" data-ger="lp-turno-x" data-i="' + i + '">Tirar o turno</button>') + '</div>';
+            }
+            return '<div class="lp-turno"><div class="row-2"><label>Turno <span class="req">*</span><input type="text" id="lp-tn-' + i + '" maxlength="40" value="' + escapeHtml(t.nome) + '" placeholder="Ex.: DESC 1" autocomplete="off"' + (travado ? ' disabled' : '') + ' /></label>' + selRh + '</div><div class="row-2">' +
+              '<label>Pausa sem horário fixo <span class="opt">(min no turno)</span><input type="number" id="lp-tp-' + i + '" min="0" step="1" inputmode="numeric" value="' + escapeHtml(t.pausa ? String(t.pausa) : '') + '" placeholder="0" /></label><span></span></div>' +
               '<div class="row-2"><label>Começa<input type="time" id="lp-ti-' + i + '" value="' + escapeHtml(t.inicio) + '" /></label><label>Termina<input type="time" id="lp-tf-' + i + '" value="' + escapeHtml(t.fim) + '" /></label></div>' +
               '<div class="ph-chips lp-dias" role="group" aria-label="Dias do turno">' + PCP_DIAS.map(function(dn, d) { return '<label class="ph-chip"><input type="checkbox" id="lp-td-' + i + '-' + d + '"' + (t.dias.indexOf(d) >= 0 ? ' checked' : '') + ' /> ' + dn + '</label>'; }).join('') + '</div>' +
               '<div class="lp-pausas">' + t.pausas.map(function(p, k) {
@@ -18314,9 +18485,23 @@
     }
     gerAbrir({
       titulo: l.id ? 'Linha · ' + l.nome : 'Nova linha', botao: 'Salvar', html: html(),
+      change: function(el) {
+        if (!/^lp-trh-/.test(el.id || '')) return;
+        ler();
+        var t = l.turnos[Number(el.id.slice(7))];
+        if (t && t.rhId && !t.nome) { var r0 = turnoRH(t.rhId); if (r0) t.nome = r0.nome.slice(0, 40); }
+        document.getElementById('ger-form-body').innerHTML = html();
+      },
       acao: function(a, b) {
         ler();
-        if (a === 'lp-turno') l.turnos.push({ nome: '', inicio: '', fim: '', dias: [1, 2, 3, 4, 5, 6], pausa: 0, pausas: [] });
+        if (a === 'lp-turno') l.turnos.push({ nome: '', rhId: '', inicio: '', fim: '', dias: [1, 2, 3, 4, 5, 6], pausa: 0, pausas: [] });
+        else if (a === 'lp-turno-rh') {
+          var rr = turnoRH(v('lp-add-rh'));
+          if (!rr) return;
+          var nm = rr.nome.slice(0, 40), nn = 2;
+          while (l.turnos.some(function(y) { return normNome(y.nome) === normNome(nm); })) nm = rr.nome.slice(0, 36) + ' ' + (nn++);
+          l.turnos.push({ nome: nm, rhId: rr.id, inicio: '', fim: '', dias: [1, 2, 3, 4, 5, 6], pausa: 0, pausas: [] });
+        }
         else if (a === 'lp-turno-x') { var tx = l.turnos[Number(b.dataset.i)]; if (tx && (mestre || !tx.existia)) l.turnos.splice(Number(b.dataset.i), 1); }
         else if (a === 'lp-pausa') l.turnos[Number(b.dataset.i)].pausas.push({ inicio: '', fim: '' });
         else if (a === 'lp-pausa-x') l.turnos[Number(b.dataset.i)].pausas.splice(Number(b.dataset.k), 1);
@@ -18324,8 +18509,9 @@
         else if (a === 'lp-copiar') {
           var de = phLinha(v('lp-copiar-de'));
           if (!de) return;
-          phTurnosDet(de.id).filter(turnoTemHorario).forEach(function(x) {
-            var cp = { inicio: x.inicio, fim: x.fim, dias: (x.dias || []).map(Number), pausa: Number(x.pausa) || 0, pausas: (x.pausas || []).map(function(p) { return { inicio: p.inicio || '', fim: p.fim || '' }; }) };
+          phTurnosDet(de.id).filter(function(x) { return x.rhId || turnoTemHorario(x); }).forEach(function(x) {
+            var cp = x.rhId ? { rhId: x.rhId, inicio: '', fim: '', dias: [1, 2, 3, 4, 5, 6], pausa: 0, pausas: [] }
+              : { rhId: '', inicio: x.inicio, fim: x.fim, dias: (x.dias || []).map(Number), pausa: Number(x.pausa) || 0, pausas: (x.pausas || []).map(function(p) { return { inicio: p.inicio || '', fim: p.fim || '' }; }) };
             var t = l.turnos.find(function(y) { return normNome(y.nome) === normNome(x.nome); });
             if (t) Object.assign(t, cp); else l.turnos.push(Object.assign({ nome: x.nome }, cp));
           });
@@ -18357,6 +18543,7 @@
           if (!t.nome) return gerErro('Dê um nome para cada turno.');
           if (nomesT[normNome(t.nome)]) return gerErro('O turno ' + t.nome + ' está duas vezes.');
           nomesT[normNome(t.nome)] = true;
+          if (t.rhId) { if (!turnoRH(t.rhId)) return gerErro(t.nome + ': esse turno não existe mais no RH; escolha outro.'); continue; }
           if (!!t.inicio !== !!t.fim) return gerErro(t.nome + ': informe quando começa e quando termina.');
           if (t.inicio && t.inicio === t.fim) return gerErro(t.nome + ': o início e o fim não podem ser iguais.');
           if (t.inicio && !t.dias.length) return gerErro(t.nome + ': marque os dias do turno.');
@@ -18389,6 +18576,7 @@
         l.maquinas.forEach(function(m) { delete m.confirmar; }); // o PCP conferiu as máquinas ao salvar
         var final = Object.assign({}, orig || {}, l);
         final.turnos = l.turnos.map(function(t) {
+          if (t.rhId) return { nome: t.nome, rhId: t.rhId }; // o banco grava a cópia do horário do RH (0062)
           if (!t.inicio) return { nome: t.nome };
           var x = { nome: t.nome, inicio: t.inicio, fim: t.fim, dias: t.dias, pausa: t.pausa };
           var pz = t.pausas.filter(function(p) { return hmOk(p.inicio) && hmOk(p.fim); });
@@ -18606,7 +18794,7 @@
             algum = true;
             var turnos = phTurnosDet(lid).filter(turnoTemHorario);
             if (y - 70 < M + 16) novaPagina();
-            faixaLinha(nome + (turnos.length ? '   ·   ' + turnos.map(function(t) { return t.nome + ' ' + t.inicio + '-' + t.fim; }).join('  ·  ') : ''));
+            faixaLinha(nome + (turnos.length ? '   ·   ' + turnos.map(function(t) { return t.nome + ' ' + turnoHorarioTxt(t).replace(/–/g, '-'); }).join('  ·  ') : ''));
             cabTabela();
             bl.forEach(function(b) {
               var mm = medir(['', '', ((PCP_BLOCOS[b.bloco] || {}).nome || 'Parada') + (b._nova ? ' (rascunho)' : ''), 'linha parada', '', pcpDataCurta(b.iniData) + ' ' + (b.iniHora || '') + ' -> ' + pcpDataCurta(b.fimData) + ' ' + (b.fimHora || ''), '', '', b.motivo || '']);
@@ -19046,7 +19234,7 @@
     h += '<fieldset class="ph-grupo"><legend>Turnos que vão produzir <span class="opt">(nenhum marcado = todos da linha)</span></legend>' +
       (ts.length ? '<div class="ph-chips">' + ts.map(function(t) {
         return '<label class="ph-chip"><input type="checkbox" class="mp-op-turno" value="' + escapeHtml(t.nome) + '"' + (st.turnos.indexOf(t.nome) >= 0 ? ' checked' : '') + ' /> ' + escapeHtml(t.nome) +
-          '<small>' + escapeHtml(turnoTemHorario(t) ? ' ' + t.inicio + '–' + t.fim : ' sem horário') + '</small></label>';
+          '<small>' + escapeHtml(turnoTemHorario(t) ? ' ' + turnoHorarioTxt(t) : ' sem horário') + '</small></label>';
       }).join('') + '</div>' : '<p class="field-hint">A linha não tem turnos cadastrados (PCP › Linhas e turnos).</p>') + '</fieldset>' +
       '<div id="mp-op-prev"></div>';
     var prods = produtosDaLinhaOp(st.linha), ids = prods.map(function(p) { return p.id; });
@@ -34442,6 +34630,7 @@
     var avisoNivelEm = 0;
     function barrarNivel(col, id, op) {
       if (col === 'mp-config' && id === 'linhas-producao' && op !== 'delete' && pcpPodeConfigurar()) return null; // "Configura o PCP" (12/11/2026) vale mesmo com a aba só para ver
+      if (col === 'mp-config' && id === 'turnos' && op !== 'delete' && rhPodeEditar()) return null; // cadastro dos turnos: quem edita o RH (23/11/2026)
       var nv = nivelDaAba(ui.tab);
       if (nv === 'edita' || (nv === 'inclui' && op === 'set' && !jaExiste(col, id))) return null;
       avisoNivelUltimo = Date.now();
