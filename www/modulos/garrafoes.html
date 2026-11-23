@@ -611,6 +611,23 @@ textarea{min-height:44px;resize:vertical}
     }).join('');
   }
   function precisaAssinatura(t) { return t === 'saida' || t === 'troca'; }
+  // venda e troca (23/11/2026): só as marcas com novos em estoque; se só uma tiver, ela já vem escolhida
+  function marcasComSaldo(C, m) { return marcas(m).filter(function (b) { return lotesDe(C, m, b, true).length > 0; }); }
+  function semNovosHtml() { return '<p class="aviso-troca">Sem garrafões novos de ' + esc(MODELOS[F.modelo].curto) + ' em estoque. Registre a entrada de novos (ou a contagem) antes.</p>'; }
+  function ajustarMarcasComSaldo(C) {
+    if (!F || (F.tipo !== 'saida' && F.tipo !== 'troca')) return;
+    var ok = marcasComSaldo(C, F.modelo);
+    if (F.tipo === 'saida') {
+      if (F.marca && ok.indexOf(F.marca) < 0) { F.marca = ''; F.saida = {}; }
+      if (!F.marca && ok.length === 1) F.marca = ok[0];
+      return;
+    }
+    F.novos.forEach(function (n) {
+      if (n.marca && ok.indexOf(n.marca) < 0) { n.marca = ''; n.lote = ''; }
+      if (!n.marca && ok.length === 1) n.marca = ok[0];
+      if (n.marca && !n.lote) { var sug = lotesDe(C, F.modelo, n.marca, true)[0]; if (sug) n.lote = sug.k; }
+    });
+  }
   function formHtml(C) {
     var t = F.tipo, h = '<h2>' + esc(TIPOS[t]) + ' · ' + esc(MODELOS[F.modelo].curto) + '</h2>', sub = '';
     if (t === 'entrada') sub = 'Novos recebidos: marca, lote (mês/ano), quantidade e a foto da nota tirada agora pela câmera.';
@@ -621,6 +638,7 @@ textarea{min-height:44px;resize:vertical}
     h += '<p class="sub">' + esc(sub) + '</p>';
     if (F.erro) h += '<div class="erro-caixa" role="alert">' + esc(F.erro) + '</div>';
     if (F.revisao) return h + revisaoHtml();
+    ajustarMarcasComSaldo(C);
     if (t === 'entrada') h += formEntrada(C);
     else if (t === 'saida') h += formSaida(C);
     else if (t === 'troca') h += formTroca(C);
@@ -664,7 +682,10 @@ textarea{min-height:44px;resize:vertical}
   }
   // ---- saída / venda ----
   function formSaida(C) {
-    var h = '<div class="campos">' + campoData() + campoCliente(C) + '<div class="campo largo">Marca' + seg('marca', marcas(F.modelo), F.marca) + '</div></div>';
+    var ok = marcasComSaldo(C, F.modelo);
+    if (!ok.length) return '<div class="campos">' + campoData() + campoCliente(C) + '</div>' + semNovosHtml();
+    var h = '<div class="campos">' + campoData() + campoCliente(C) + '<div class="campo largo">Marca' + seg('marca', ok, F.marca) +
+      (ok.length < marcas(F.modelo).length ? '<span class="dica">Só aparece a marca com novos em estoque.</span>' : '') + '</div></div>';
     if (!F.marca) return h + '<p class="nota">Escolha a marca para ver os lotes com saldo.</p>';
     var l = lotesDe(C, F.modelo, F.marca, true);
     if (!l.length) return h + '<p class="nota">Nenhum lote de ' + esc(F.marca) + ' com saldo em ' + esc(MODELOS[F.modelo].curto) + '.</p>';
@@ -686,9 +707,12 @@ textarea{min-height:44px;resize:vertical}
           (s.motivo === 'Outro' ? '<label class="desc">Descreva o motivo<input type="text" data-f="sucata.' + i + '.desc" value="' + esc(s.desc) + '" maxlength="120"></label>' : '') + '</div>';
       }).join('') +
       '<button type="button" class="mais-linha" data-act="mais" data-lista="sucata">+ Outro motivo</button></div>';
+    var ok = marcasComSaldo(C, F.modelo);
+    if (!ok.length) return h + '<div class="grupo"><h3>Novos entregues</h3>' + semNovosHtml() + '</div>';
     h += '<div class="grupo"><div class="grupo-topo"><h3>Novos entregues</h3><span class="soma" id="d-total-novos"></span></div><div id="d-sugestao"></div>' +
+      (ok.length < marcas(F.modelo).length ? '<p class="nota" style="margin-top:0">Só aparece a marca com novos em estoque (' + esc(ok.join(', ')) + ').</p>' : '') +
       F.novos.map(function (n, i) {
-        return '<div class="linha nov"><label>Marca<select data-f="novos.' + i + '.marca"><option value="">Escolha</option>' + marcas(F.modelo).map(function (b) { return '<option' + (n.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
+        return '<div class="linha nov"><label>Marca<select data-f="novos.' + i + '.marca">' + (ok.length > 1 ? '<option value="">Escolha</option>' : '') + ok.map(function (b) { return '<option' + (n.marca === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select></label>' +
           '<label class="lotesel">Lote<select data-f="novos.' + i + '.lote"' + (n.marca ? '' : ' disabled') + '>' + (n.marca ? opcoesLotes(C, n.marca, n.lote) : '<option value="">Escolha a marca</option>') + '</select></label>' +
           '<label>Quantidade<input type="number" data-f="novos.' + i + '.qtd" value="' + esc(n.qtd) + '" min="1" step="1" inputmode="numeric"></label>' +
           (F.novos.length > 1 ? '<button type="button" class="x" data-act="tirar" data-lista="novos" data-i="' + i + '" aria-label="Tirar esta linha">×</button>' : '<span></span>') + '</div>';

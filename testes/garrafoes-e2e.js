@@ -362,6 +362,23 @@ function contar(sql) { return Number(psql(BANCO, sql).saida); }
     await page.click('[data-act="modelo"][data-m="20LR"]');
     await page.waitForFunction(() => /20 L com rosca/.test(document.querySelector('#area-topo').textContent));
     ok((await page.$$eval('[data-act="abrir"]', (b) => b.map((x) => x.dataset.tipo))).join(',') === 'saida', '20 L com rosca no perfil Entregas: só venda');
+    // 23/11/2026: venda e troca só mostram as marcas com novos em estoque
+    await page.click('[data-act="abrir"][data-tipo="saida"]');
+    ok(/Sem garrafões novos de 20 L com rosca em estoque/.test(await page.textContent('#painel-form')) && await page.locator('[data-seg="marca"]').count() === 0, 'sem novos em estoque: a venda avisa e não mostra marcas');
+    await page.click('[data-act="fechar"]');
+    quem = 'conta'; const seed10 = rpc('garrafoes_registrar', { p: { id: 'op-TESTE10LMONT0001', tipo: 'entrada', modelo: '10L', data: hoje, linhas: [{ marca: 'Montico', fabricacao: '2026-10', qtd: 30 }], foto: JPG } }); quem = 'entrega';
+    ok(!seed10.erro, 'entrada de apoio no 10 L (só Montico)' + (seed10.erro ? ': ' + seed10.erro : ''));
+    await page.waitForTimeout(700);
+    await page.click('[data-act="modelo"][data-m="10L"]');
+    await page.waitForFunction(() => /Novos · 10 L</.test(document.querySelector('#area-topo').innerHTML));
+    await page.click('[data-act="abrir"][data-tipo="saida"]');
+    const segs10 = await page.$$eval('[data-seg="marca"]', (b) => b.map((x) => x.dataset.v + ':' + x.getAttribute('aria-pressed')));
+    ok(segs10.join(',') === 'Montico:true' && await page.locator('.tlotes tr.sug').count() === 1, 'venda: só a marca com estoque, já escolhida (' + segs10 + ')');
+    await page.click('[data-act="fechar"]');
+    await page.click('[data-act="abrir"][data-tipo="troca"]');
+    const opts10 = await page.$$eval('[data-f="novos.0.marca"] option', (o) => o.map((x) => x.textContent));
+    ok(opts10.join(',') === 'Montico' && await page.$eval('[data-f="novos.0.lote"]', (e) => e.value) === 'N|Montico|2026-10', 'troca: só a marca com estoque, já escolhida, com o lote sugerido (' + opts10 + ')');
+    await page.click('[data-act="fechar"]');
     const trocaR = rpc('garrafoes_registrar', { p: { id: 'op-TESTE20LR0000001', tipo: 'troca', modelo: '20LR', data: hoje, cliente: 'X', totalSucata: 5, linhas: [{ classe: 'sucata', motivo: 'Vencido', qtd: 5 }], assinatura: { imagem: PNG, resumo: 'x' } } });
     ok(trocaR.erro && /não tem troca nem sucata/.test(trocaR.erro), 'banco recusa troca no 20 L com rosca');
     await page.click('[data-act="modelo"][data-m="20L"]');
