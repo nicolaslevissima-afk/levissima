@@ -1598,8 +1598,12 @@ const Modal = {
     };
     m.close = () => Modal.close(m);
     wrap.addEventListener('mousedown', e => { m._down = e.target === wrap; });
+    const marcar = e => { if (e.isTrusted && e.target && e.target.setAttribute) e.target.setAttribute('data-mexeu', '1'); };
+    wrap.addEventListener('input', marcar, true); wrap.addEventListener('change', marcar, true);
     wrap.addEventListener('click', e => {
-      if (e.target === wrap && m._down && !o.persist) Modal.close(m);
+      if (e.target === wrap && m._down && !o.persist) {
+        if (m.querySelector('[data-mexeu]')) { if (typeof toast === 'function') toast('Para sair, toque em Fechar ou Cancelar. O que foi digitado continua aqui.'); } else Modal.close(m);
+      }
       else if (e.target.closest('[data-close]')) Modal.close(m);
     });
     $('#overlays').appendChild(wrap);

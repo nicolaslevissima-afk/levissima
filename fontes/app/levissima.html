@@ -34540,6 +34540,32 @@
     'estoque-sheet-overlay': {}, 'rh-sheet-overlay': {}, 'equipe-sheet-overlay': {}, 'sheet-overlay': {}
   };
   var telasPausadas = [];
+  // Tocar fora da caixa (pedido de 23/11/2026): se algo foi digitado ou escolhido, a tela é minimizada (barra
+  // "Pausadas") em vez de fechar e perder o que foi preenchido; sem nada preenchido, fecha como antes. Nas caixas
+  // que não minimizam (linha de frete, documento do motorista, representante, conferência, agenda), tocar fora não fecha.
+  var FORA_NAO_FECHA = ['fl-sheet-overlay', 'mdoc-sheet-overlay', 'repnovo-sheet-overlay', 'repsenha-sheet-overlay', 'conf-overlay', 'ag-sheet-overlay'];
+  // o que a pessoa digitou ou escolheu (eventos de verdade, não o preenchimento automático) marca o campo
+  function marcarMexeu(e) {
+    if (!e.isTrusted || !e.target || !e.target.closest || !e.target.closest('[id$="overlay"]')) return;
+    if (e.target.setAttribute) e.target.setAttribute('data-mexeu', '1');
+  }
+  document.addEventListener('input', marcarMexeu, true);
+  document.addEventListener('change', marcarMexeu, true);
+  function telaTemDigitado(ov) { return !!ov.querySelector('[data-mexeu]'); }
+  document.addEventListener('click', function(e) {
+    var ov = e.target;
+    if (!ov || !ov.id || !ov.classList || ov.classList.contains('hidden') || ov.classList.contains('tela-min')) return;
+    if (TELA_PAUSA[ov.id]) {
+      if (!telaTemDigitado(ov)) return; // nada preenchido: fecha como antes
+      e.stopPropagation(); e.preventDefault();
+      if (!telaPausar(ov.id)) showToast('Para sair, use Fechar (espere terminar de salvar).');
+      return;
+    }
+    if (FORA_NAO_FECHA.indexOf(ov.id) >= 0) {
+      e.stopPropagation(); e.preventDefault();
+      showToast('Para sair, toque em Fechar ou Cancelar. O que foi digitado continua aqui.');
+    }
+  }, true);
   function telaTitulo(ov) { var h = ov.querySelector('.sheet-header h2'); return (h && h.textContent.replace(/\s+/g, ' ').trim()) || 'Tela'; }
   function telaPausar(ovId, quieto) {
     var ov = document.getElementById(ovId), cfg = TELA_PAUSA[ovId];

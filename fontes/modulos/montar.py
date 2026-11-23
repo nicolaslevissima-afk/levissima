@@ -244,6 +244,15 @@ MODULOS = {
             ("'<span class=\"small muted\">A IA fica disponível ao usar o app pelo Claude com sua conta.</span>'", "''"),
             ("'Banco compartilhado: todos que usam este app pelo link do Claude veem os mesmos dados, ao vivo.'",
              "'Banco do LEVÍSSIMA: todos com acesso ao módulo Manutenção veem os mesmos dados, ao vivo.'"),
+            # 23/11/2026: tocar fora da janela com algo digitado não fecha (não perde o que foi preenchido)
+            ("      if (e.target === wrap && m._down && !o.persist) Modal.close(m);",
+             "      if (e.target === wrap && m._down && !o.persist) {\n"
+             "        if (m.querySelector('[data-mexeu]')) { if (typeof toast === 'function') toast('Para sair, toque em Fechar ou Cancelar. O que foi digitado continua aqui.'); } else Modal.close(m);\n"
+             "      }"),
+            ("    wrap.addEventListener('mousedown', e => { m._down = e.target === wrap; });",
+             "    wrap.addEventListener('mousedown', e => { m._down = e.target === wrap; });\n"
+             "    const marcar = e => { if (e.isTrusted && e.target && e.target.setAttribute) e.target.setAttribute('data-mexeu', '1'); };\n"
+             "    wrap.addEventListener('input', marcar, true); wrap.addEventListener('change', marcar, true);"),
         ] + TROCAS_MANUTENCAO_1710 + TROCAS_MANUTENCAO_FICHAS + TROCAS_MANUTENCAO_2110 + TROCAS_MANUTENCAO_1711,
         'inserir_antes': ('/* =====================================================================\n   Inicialização', ['manutencao-fichas.js', 'manutencao-extra.js']),
     },
