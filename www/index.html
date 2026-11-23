@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="levissima-versao" content="3eb9d13e4244" />
+<meta name="levissima-versao" content="228ae2530f48" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -3288,7 +3288,7 @@
       <p class="hint" id="conf-hint"></p>
       <div id="conf-leitura">
         <div class="conf-camera hidden" id="conf-camera"><video id="conf-video" playsinline muted autoplay></video><div class="conf-mira" aria-hidden="true"></div><div class="conf-flash" id="conf-flash"></div></div>
-        <div class="conf-cam-ctl"><button type="button" class="btn btn-secondary btn-sm" id="btn-conf-camera">Ligar câmera</button><span class="field-hint" id="conf-cam-status"></span></div>
+        <div class="conf-cam-ctl"><button type="button" class="btn btn-secondary btn-sm" id="btn-conf-camera">Ligar câmera</button><button type="button" class="btn btn-secondary btn-sm hidden" id="btn-conf-lanterna">Lanterna</button><span class="field-hint" id="conf-cam-status"></span></div>
         <div class="inline-form conf-manual"><input type="text" id="conf-codigo" autocomplete="off" inputmode="text" placeholder="Leitor de código de barras ou digite o código" aria-label="Código de barras" /><button type="button" class="btn-text" id="btn-conf-lancar">Lançar</button></div>
       </div>
       <div id="conf-aviso" aria-live="polite"></div>
@@ -14226,7 +14226,7 @@
   // A conferência é obrigatória para concluir o carregamento (16/10/2026) e só vale enquanto os paletes lidos
   // batem com os da carga: se a carga for editada depois (ou os paletes mudarem na conclusão), tem que refazer.
   var ZXING_URL = 'https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js';
-  var conf = { cargaId: null, rodada: 1, lidos: {}, log: [], pendente: null, stream: null, detector: null, zxing: null, loop: null, pausaAte: 0, ultimo: null };
+  var conf = { cargaId: null, rodada: 1, lidos: {}, log: [], pendente: null, stream: null, detector: null, loop: null, pausaAte: 0, ultimo: null, camId: 0, nativo: false, semNativo: false, lanterna: false };
   function chaveCodigo(c) {
     var s = String(c == null ? '' : c).replace(/\s+/g, '').toUpperCase();
     return /^\d+$/.test(s) ? s.replace(/^0+/, '') : s; // EAN-13 e UPC-A com o mesmo número
@@ -14428,57 +14428,211 @@
   var confirmarRefazer = false;
 
   // ----- câmera -----
+  // 23/11/2026: a câmera não lia (nenhuma conferência tinha sido feita pela câmera). Agora:
+  // · app Android: abre o leitor do Google (função "Leitor" do app, do Google Play Services) em tela cheia; lê um palete,
+  //   registra, apita e abre de novo para o próximo; "Voltar" encerra;
+  // · navegador (ou app antigo): o leitor do aparelho (BarcodeDetector) só quando ele lê EAN/ITF de verdade; senão — e
+  //   também quando ele passa uns segundos sem achar nada — o leitor do app (ZXing, cópia local em vendor/ ou da internet)
+  //   lê a faixa do meio da imagem; foco contínuo e lanterna quando o celular deixa;
+  // · confere o dígito verificador (EAN-13, DUN-14…) para descartar leitura pela metade e tira o código do produto da
+  //   etiqueta GS1 do palete ((01) ou (02)).
+  var ZXING_LOCAL = 'vendor/zxing.min.js';
   function camStatus(t) { var el = document.getElementById('conf-cam-status'); if (el) el.textContent = t || ''; }
-  function carregarZxing() {
-    if (window.ZXing) return Promise.resolve(window.ZXing);
+  function carregarScript(src) {
     return new Promise(function(ok, falha) {
       var s = document.createElement('script');
-      s.src = ZXING_URL; s.async = true;
+      s.src = src; s.async = true;
       s.onload = function() { window.ZXing ? ok(window.ZXing) : falha(new Error('zxing')); };
-      s.onerror = function() { falha(new Error('zxing')); };
+      s.onerror = function() { if (s.parentNode) s.parentNode.removeChild(s); falha(new Error('zxing')); };
       document.head.appendChild(s);
     });
   }
-  function aoLerDaCamera(valor) {
+  var zxingPromessa = null;
+  function carregarZxing() {
+    if (window.ZXing) return Promise.resolve(window.ZXing);
+    if (!zxingPromessa) {
+      zxingPromessa = carregarScript(ZXING_LOCAL).catch(function() { return carregarScript(ZXING_URL); })
+        .catch(function(e) { zxingPromessa = null; throw e; });
+    }
+    return zxingPromessa;
+  }
+  // GTIN (EAN-8, UPC-A, EAN-13, DUN-14): o último dígito confere os outros. Outro tipo de código passa sem conta.
+  function gtinValido(s) {
+    if (!/^\d+$/.test(s) || [8, 12, 13, 14].indexOf(s.length) < 0) return true;
+    var soma = 0;
+    for (var i = s.length - 2, k = 0; i >= 0; i--, k++) soma += Number(s.charAt(i)) * (k % 2 === 0 ? 3 : 1);
+    return (10 - soma % 10) % 10 === Number(s.charAt(s.length - 1));
+  }
+  function limparCodigoLido(v) {
+    v = String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f]/g, '').replace(/\s+/g, '');
+    var g = v.replace(/[()]/g, '').match(/^(?:00\d{18})?0[12](\d{14})/);
+    if (g && v.replace(/[()]/g, '').length > 14 && gtinValido(g[1])) v = g[1];
+    return v;
+  }
+  // devolve true quando o código foi aceito (passou na conta) e registrado
+  function aoLerDaCamera(valor, semPausa) {
     var agora = Date.now();
-    if (!valor || agora < conf.pausaAte) return;
+    var v = limparCodigoLido(valor);
+    if (!v || !gtinValido(v)) return false;
+    if (!semPausa && agora < conf.pausaAte) return false;
     conf.pausaAte = agora + 1600; // um palete por vez: espera o leitor sair do código
-    registrarLeitura(valor, false);
+    registrarLeitura(v, false);
+    return true;
+  }
+  function botaoCamera(ligada) {
+    var b = document.getElementById('btn-conf-camera');
+    if (b) b.textContent = ligada ? 'Desligar câmera' : 'Ligar câmera';
+  }
+  function leitorNativo() {
+    var C = window.Capacitor;
+    if (!appNativo() || !C || (C.getPlatform && C.getPlatform() !== 'android')) return null;
+    if (C.isPluginAvailable && !C.isPluginAvailable('Leitor')) return null;
+    var p = pluginNativo('Leitor');
+    return p && typeof p.ler === 'function' ? p : null;
+  }
+  function lerNativo(p, meu) {
+    if (!conf.cargaId || meu !== conf.camId) return;
+    camStatus('Leitor do Google aberto: aponte para o código de barras do palete. “Voltar” encerra.');
+    p.ler().then(function(r) {
+      if (!conf.cargaId || meu !== conf.camId) return;
+      var bruto = r && r.valor;
+      if (!aoLerDaCamera(bruto, true)) {
+        showToast('Leitura incompleta (' + String(bruto || '').slice(0, 30) + '). Leia de novo.');
+      } else if (conf.pendente) { // código que não é de nenhum produto: para aqui para a pessoa ver e decidir
+        pararCamera();
+        camStatus('Código não cadastrado: veja abaixo.');
+        return;
+      }
+      setTimeout(function() { lerNativo(p, meu); }, 900);
+    }).catch(function(e) {
+      if (meu !== conf.camId) return;
+      var msg = String((e && (e.code || e.message)) || '');
+      pararCamera();
+      if (/cancel/i.test(msg)) { camStatus('Leitor encerrado. Toque em “Ligar câmera” para continuar.'); return; }
+      console.warn('leitor do Google', e);
+      conf.semNativo = true; // neste celular, usa a câmera dentro do app
+      ligarCameraWeb();
+      camStatus('O leitor do Google não abriu neste celular: usando a câmera dentro do app.');
+    });
   }
   function ligarCamera() {
-    var video = document.getElementById('conf-video');
-    if (conf.stream || conf.zxing) { pararCamera(); return; }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camStatus('Este aparelho não libera a câmera para o app. Use o leitor ou digite o código.'); return; }
-    document.getElementById('btn-conf-camera').textContent = 'Desligar câmera';
-    document.getElementById('conf-camera').classList.remove('hidden');
-    camStatus('Ligando a câmera…');
-    var restricoes = { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false };
-    if ('BarcodeDetector' in window) {
-      navigator.mediaDevices.getUserMedia(restricoes).then(function(stream) {
-        conf.stream = stream; video.srcObject = stream;
-        return video.play().catch(function() {});
-      }).then(function() {
-        return window.BarcodeDetector.getSupportedFormats ? window.BarcodeDetector.getSupportedFormats() : [];
-      }).then(function(fmts) {
-        var quero = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'itf', 'code_39', 'qr_code', 'data_matrix'];
-        var usar = (fmts || []).filter(function(f) { return quero.indexOf(f) >= 0; });
-        conf.detector = new window.BarcodeDetector(usar.length ? { formats: usar } : undefined);
-        camStatus('Câmera ligada: aponte para o código de barras do palete.');
-        var ocupado = false;
-        conf.loop = setInterval(function() {
-          if (ocupado || !conf.detector || !conf.stream || video.readyState < 2) return;
-          ocupado = true;
-          conf.detector.detect(video).then(function(r) { ocupado = false; if (r && r.length) aoLerDaCamera(r[0].rawValue); })
-            .catch(function() { ocupado = false; });
-        }, 180);
-      }).catch(erroCamera);
+    if (conf.stream || conf.nativo) { pararCamera(); return; }
+    var p = conf.semNativo ? null : leitorNativo();
+    if (p) {
+      conf.camId = (conf.camId || 0) + 1;
+      conf.nativo = true;
+      botaoCamera(true);
+      lerNativo(p, conf.camId);
       return;
     }
-    carregarZxing().then(function(Z) {
-      var leitor = new Z.BrowserMultiFormatReader();
-      conf.zxing = leitor;
-      return leitor.decodeFromConstraints(restricoes, video, function(res) { if (res) aoLerDaCamera(res.getText ? res.getText() : res.text); });
-    }).then(function() { camStatus('Câmera ligada: aponte para o código de barras do palete.'); }).catch(erroCamera);
+    ligarCameraWeb();
+  }
+  function escolherDetector() {
+    if (!('BarcodeDetector' in window)) return Promise.resolve(null);
+    var BD = window.BarcodeDetector;
+    return Promise.resolve(BD.getSupportedFormats ? BD.getSupportedFormats() : []).then(function(fmts) {
+      var quero = ['itf', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'];
+      var usar = (fmts || []).filter(function(f) { return quero.indexOf(f) >= 0; });
+      if (usar.indexOf('itf') < 0 && usar.indexOf('ean_13') < 0) return null; // o aparelho não lê os códigos dos produtos
+      return new BD({ formats: usar });
+    }).catch(function() { return null; });
+  }
+  function ajustarCamera(stream) {
+    var t = stream.getVideoTracks ? stream.getVideoTracks()[0] : null;
+    var cap = {};
+    try { cap = (t && t.getCapabilities) ? t.getCapabilities() || {} : {}; } catch (e) { cap = {}; }
+    if (t && t.applyConstraints && cap.focusMode && cap.focusMode.indexOf('continuous') >= 0) t.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(function() {});
+    conf.lanterna = false;
+    var bt = document.getElementById('btn-conf-lanterna');
+    bt.textContent = 'Lanterna';
+    bt.classList.toggle('hidden', !cap.torch);
+  }
+  document.getElementById('btn-conf-lanterna').addEventListener('click', function() {
+    var t = conf.stream && conf.stream.getVideoTracks ? conf.stream.getVideoTracks()[0] : null, bt = this;
+    if (!t || !t.applyConstraints) return;
+    var quer = !conf.lanterna;
+    t.applyConstraints({ advanced: [{ torch: quer }] }).then(function() {
+      conf.lanterna = quer; bt.textContent = quer ? 'Apagar lanterna' : 'Lanterna';
+    }).catch(function() { showToast('Este celular não deixou acender a lanterna.'); });
+  });
+  // Leitor do app (ZXing): a faixa do meio da imagem, em tons de cinza, com os formatos dos produtos
+  var zxLeitor = null;
+  function lerZxing(video) {
+    var Z = window.ZXing;
+    if (!Z || !Z.MultiFormatReader) return null;
+    if (!zxLeitor) {
+      var F = Z.BarcodeFormat, H = Z.DecodeHintType, dicas = new Map();
+      dicas.set(H.POSSIBLE_FORMATS, [F.ITF, F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.CODE_128]);
+      dicas.set(H.TRY_HARDER, true);
+      dicas.set(H.ALLOWED_LENGTHS, [14]);
+      var r = new Z.MultiFormatReader();
+      r.setHints(dicas);
+      zxLeitor = { r: r, cv: document.createElement('canvas') };
+    }
+    var vw = video.videoWidth, vh = video.videoHeight;
+    if (!vw || !vh) return null;
+    var cw = Math.round(vw * 0.86), ch = Math.round(vh * 0.44), esc = Math.min(1, 1280 / cw);
+    var w = Math.max(1, Math.round(cw * esc)), h = Math.max(1, Math.round(ch * esc)), cv = zxLeitor.cv;
+    if (cv.width !== w) cv.width = w;
+    if (cv.height !== h) cv.height = h;
+    var ctx = cv.getContext('2d', { willReadFrequently: true });
+    try {
+      ctx.drawImage(video, Math.round((vw - cw) / 2), Math.round((vh - ch) / 2), cw, ch, 0, 0, w, h);
+      var px = ctx.getImageData(0, 0, w, h).data, lum = new Uint8ClampedArray(w * h);
+      for (var i = 0, j = 0; j < lum.length; i += 4, j++) lum[j] = (px[i] * 77 + px[i + 1] * 150 + px[i + 2] * 29) >> 8;
+      var res = zxLeitor.r.decodeWithState(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.RGBLuminanceSource(lum, w, h))));
+      return res ? (res.getText ? res.getText() : res.text) : null;
+    } catch (e) {
+      return null; // nenhum código nesta imagem
+    } finally {
+      try { zxLeitor.r.reset(); } catch (e2) {}
+    }
+  }
+  function iniciarLeitura(video, meu) {
+    var ocupado = false, ultZx = 0, inicio = Date.now(), avisouSemLeitor = false;
+    conf.semAchar = Date.now(); conf.errosDet = 0;
+    conf.loop = setInterval(function() {
+      if (meu !== conf.camId || !conf.stream) return;
+      if (!conf.detector && !window.ZXing && !avisouSemLeitor && Date.now() - inicio > 8000) {
+        avisouSemLeitor = true;
+        camStatus('Sem internet para carregar o leitor do app: use o leitor de código de barras ou digite o código.');
+      }
+      if (ocupado || video.readyState < 2 || !video.videoWidth) return;
+      ocupado = true;
+      var det = conf.detector;
+      var nativo = det ? det.detect(video).then(function(r) { conf.errosDet = 0; return r && r.length ? r[0].rawValue : null; })
+        .catch(function() { if (++conf.errosDet > 8) conf.detector = null; return null; }) : Promise.resolve(null);
+      nativo.then(function(v) {
+        var agora = Date.now();
+        if (!v && window.ZXing && (!conf.detector || agora - conf.semAchar > 2500) && agora - ultZx > 320) { ultZx = agora; v = lerZxing(video); }
+        if (v && meu === conf.camId) { conf.semAchar = Date.now(); aoLerDaCamera(v); }
+      }).catch(function(e) { console.warn('leitura', e); }).then(function() { ocupado = false; });
+    }, 160);
+  }
+  function ligarCameraWeb() {
+    var video = document.getElementById('conf-video');
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camStatus('Este aparelho não libera a câmera para o app. Use o leitor ou digite o código.'); return; }
+    conf.camId = (conf.camId || 0) + 1;
+    var meu = conf.camId;
+    botaoCamera(true);
+    document.getElementById('conf-camera').classList.remove('hidden');
+    camStatus('Ligando a câmera…');
+    carregarZxing().catch(function() {}); // já vai buscando o leitor do app
+    var restricoes = { video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false };
+    navigator.mediaDevices.getUserMedia(restricoes).then(function(stream) {
+      if (meu !== conf.camId) { stream.getTracks().forEach(function(t) { try { t.stop(); } catch (e) {} }); return; }
+      conf.stream = stream; video.srcObject = stream;
+      ajustarCamera(stream);
+      return video.play().catch(function() {});
+    }).then(function() {
+      if (meu !== conf.camId || !conf.stream) return null;
+      return escolherDetector();
+    }).then(function(det) {
+      if (meu !== conf.camId || !conf.stream) return;
+      conf.detector = det || null;
+      camStatus('Câmera ligada: ponha o código de barras do palete dentro do quadro.');
+      iniciarLeitura(video, meu);
+    }).catch(function(e) { if (meu === conf.camId) erroCamera(e); });
   }
   function erroCamera(e) {
     console.warn('câmera', e);
@@ -14486,14 +14640,16 @@
     camStatus(e && e.name === 'NotAllowedError' ? 'A câmera foi bloqueada. Libere a câmera do LEVÍSSIMA nas configurações do celular.' : 'Não foi possível ligar a câmera. Use o leitor ou digite o código.');
   }
   function pararCamera() {
+    conf.camId = (conf.camId || 0) + 1; // invalida leituras e aberturas em andamento
+    conf.nativo = false;
     if (conf.loop) { clearInterval(conf.loop); conf.loop = null; }
-    if (conf.zxing) { try { conf.zxing.reset(); } catch (e) {} conf.zxing = null; }
     if (conf.stream) { conf.stream.getTracks().forEach(function(t) { try { t.stop(); } catch (e) {} }); conf.stream = null; }
-    conf.detector = null;
+    conf.detector = null; conf.lanterna = false;
     var v = document.getElementById('conf-video');
     if (v) { try { v.srcObject = null; } catch (e) {} }
-    var b = document.getElementById('btn-conf-camera');
-    if (b) b.textContent = 'Ligar câmera';
+    botaoCamera(false);
+    var bt = document.getElementById('btn-conf-lanterna');
+    if (bt) bt.classList.add('hidden');
     var cam = document.getElementById('conf-camera');
     if (cam) cam.classList.add('hidden');
     camStatus('');

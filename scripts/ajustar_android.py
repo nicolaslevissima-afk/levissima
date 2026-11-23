@@ -41,7 +41,18 @@ gradle = 'android/app/build.gradle'
 g = open(gradle, encoding='utf-8').read()
 g = re.sub(r'versionCode\s+\d+', 'versionCode %d' % run, g)
 g = re.sub(r'versionName\s+"[^"]*"', 'versionName "1.0.%d"' % run, g)
+# Leitor de código de barras do Google (23/11/2026): conferência do carregamento pelo Google Play Services.
+LEITOR_DEP = "implementation 'com.google.android.gms:play-services-code-scanner:16.1.0'"
+if 'play-services-code-scanner' not in g:
+    g, n = re.subn(r'(\ndependencies\s*\{)', r'\1\n    ' + LEITOR_DEP, g, count=1)
+    if not n:
+        g += '\ndependencies {\n    ' + LEITOR_DEP + '\n}\n'
 open(gradle, 'w', encoding='utf-8').write(g)
+# o módulo do leitor já vem baixado com o app (não espera o primeiro uso)
+m = open(manifest, encoding='utf-8').read()
+if 'com.google.mlkit.vision.DEPENDENCIES' not in m:
+    m = m.replace('</application>', '    <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="barcode_ui" />\n    </application>', 1)
+    open(manifest, 'w', encoding='utf-8').write(m)
 print('Android ajustado: versão 1.0.%d (código %d), permissões de localização' % (run, run))
 
 # Impressão direta (04/11/2026): o app manda o PDF para a impressão do Android (PrintManager), sem baixar o arquivo.
@@ -137,20 +148,58 @@ public class ImpressoraPlugin extends Plugin {
     }
 }
 ''')
+    # Leitor (23/11/2026): abre o leitor de código de barras do Google (tela cheia) e devolve o código lido.
+    open(os.path.join(pasta_java, 'LeitorPlugin.java'), 'w', encoding='utf-8').write('''package br.com.levissima.app;
+
+import com.getcapacitor.JSObject;
+import com.getcapacitor.Plugin;
+import com.getcapacitor.PluginCall;
+import com.getcapacitor.PluginMethod;
+import com.getcapacitor.annotation.CapacitorPlugin;
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
+
+@CapacitorPlugin(name = "Leitor")
+public class LeitorPlugin extends Plugin {
+
+    @PluginMethod
+    public void ler(final PluginCall call) {
+        try {
+            GmsBarcodeScannerOptions opcoes = new GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(Barcode.FORMAT_ITF, Barcode.FORMAT_EAN_13, Barcode.FORMAT_EAN_8,
+                    Barcode.FORMAT_UPC_A, Barcode.FORMAT_UPC_E, Barcode.FORMAT_CODE_128)
+                .enableAutoZoom()
+                .build();
+            GmsBarcodeScanner leitor = GmsBarcodeScanning.getClient(getActivity(), opcoes);
+            leitor.startScan()
+                .addOnSuccessListener(codigo -> {
+                    JSObject r = new JSObject();
+                    r.put("valor", codigo.getRawValue());
+                    r.put("formato", codigo.getFormat());
+                    call.resolve(r);
+                })
+                .addOnCanceledListener(() -> call.reject("Leitura cancelada.", "CANCELADO"))
+                .addOnFailureListener(e -> call.reject(e.getMessage() == null ? "O leitor não abriu." : e.getMessage(), "FALHA"));
+        } catch (Exception e) {
+            call.reject("O leitor não abriu.", "FALHA");
+        }
+    }
+}
+''')
+    # Os plugins do próprio app são registrados na MainActivity (gerada de novo a cada versão).
+    PLUGINS = ['ImpressoraPlugin', 'LeitorPlugin']
     main = os.path.join(pasta_java, 'MainActivity.java')
     if os.path.exists(main):
         ma = open(main, encoding='utf-8').read()
-        if 'ImpressoraPlugin' not in ma:
-            ma = re.sub(r'public class MainActivity extends BridgeActivity\s*\{\s*\}',
-                        'public class MainActivity extends BridgeActivity {\n'
-                        '    @Override\n'
-                        '    public void onCreate(android.os.Bundle savedInstanceState) {\n'
-                        '        registerPlugin(ImpressoraPlugin.class);\n'
-                        '        super.onCreate(savedInstanceState);\n'
-                        '    }\n'
-                        '}', ma)
-            if 'ImpressoraPlugin' not in ma:
+        faltam = [x for x in PLUGINS if x + '.class' not in ma]
+        if faltam:
+            regs = ''.join('        registerPlugin(%s.class);\n' % x for x in faltam)
+            if 'public void onCreate' in ma:
+                ma = re.sub(r'(public void onCreate\([^)]*\)\s*\{\n)', lambda mm: mm.group(1) + regs, ma, count=1)
+            else:
                 ma = re.sub(r'(public class MainActivity extends BridgeActivity\s*\{)',
-                            r'\1\n    @Override\n    public void onCreate(android.os.Bundle savedInstanceState) {\n        registerPlugin(ImpressoraPlugin.class);\n        super.onCreate(savedInstanceState);\n    }\n', ma, count=1)
+                            lambda mm: mm.group(1) + '\n    @Override\n    public void onCreate(android.os.Bundle savedInstanceState) {\n' + regs + '        super.onCreate(savedInstanceState);\n    }\n', ma, count=1)
             open(main, 'w', encoding='utf-8').write(ma)
-    print('Android: impressão direta (Impressora) registrada')
+    print('Android: impressão direta (Impressora) e leitor de código de barras (Leitor) registrados')

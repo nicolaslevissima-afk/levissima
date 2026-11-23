@@ -24,6 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Leitor de código de barras do app (ZXing, cópia local)
+        continue-on-error: true
+        run: mkdir -p www/vendor && curl -fsSL --retry 3 https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js -o www/vendor/zxing.min.js
       - uses: actions/upload-pages-artifact@v3
         with:
           path: www

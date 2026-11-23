@@ -40,6 +40,9 @@ jobs:
           set_or_add NSPhotoLibraryUsageDescription "O LEVÍSSIMA abre fotos e arquivos que você escolher, como a nota fiscal."
           set_or_add NSMicrophoneUsageDescription "O LEVÍSSIMA usa o microfone só quando você toca em Áudio, para gravar um recado nas Solicitações."
           set_or_add CFBundleDisplayName "LEVÍSSIMA"
+      - name: Leitor de código de barras do app (ZXing, cópia local)
+        continue-on-error: true
+        run: mkdir -p www/vendor && curl -fsSL --retry 3 https://cdn.jsdelivr.net/npm/@zxing/library@0.20.0/umd/index.min.js -o www/vendor/zxing.min.js
       - name: Copiar o app para o projeto
         run: npx cap sync ios
       - name: Conferir que compila (sem assinatura)
