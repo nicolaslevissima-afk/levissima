@@ -3524,6 +3524,11 @@
         </label>
       </div>
 
+      <label>Carregado em <span class="opt">(concluindo depois que a carga saiu? informe quando ela saiu)</span>
+        <input type="datetime-local" id="cgc-carregado-em" />
+        <span class="field-hint">O estoque desconta a carga nesse horário (importa quando houve contagem do estoque no meio).</span>
+      </label>
+
       <label id="cgc-conferente-pin-label">Senha do conferente <span class="req">*</span>
         <input type="password" id="cgc-conferente-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" />
         <span class="field-hint" id="cgc-conferente-hint">Digite a sua senha de 4 números: o seu nome aparece sozinho.</span>
@@ -5134,6 +5139,8 @@
     }, 0);
   }
   // Estoque do produto: última contagem + entradas depois dela − cargas carregadas depois dela.
+  // 23/11/2026: vale o momento em que aconteceu, quando foi informado — a produção lançada depois (efetivoEm) e a
+  // carga concluída no app depois de sair (carregadoEm) —, para uma contagem no meio não contar duas vezes.
   // Produto que nunca teve contagem nem entrada: sem controle de estoque (null).
   function estoqueDe(pid, ref) {
     var movs = estoqueMovs.filter(function(m) { return m.produtoId === pid; });
@@ -5143,9 +5150,9 @@
     var desde = contagem ? String(contagem.em || '') : '';
     var qtd = contagem ? (Number(contagem.quantidade) || 0) : 0;
     // lançamento estimado (aguardando a confirmação do PCP, 03/11/2026) ainda não está no estoque
-    movs.forEach(function(m) { if (m.tipo === 'entrada' && !m.pendente && (!desde || String(m.em || '') > desde)) qtd += Number(m.quantidade) || 0; });
+    movs.forEach(function(m) { if (m.tipo === 'entrada' && !m.pendente && (!desde || String(m.efetivoEm || m.em || '') > desde)) qtd += Number(m.quantidade) || 0; });
     cargas.forEach(function(c) {
-      if (c.status === 'concluida' && (!desde || String(c.concluidoEm || '') > desde)) qtd -= quantidadeNaCarga(c, pid);
+      if (c.status === 'concluida' && (!desde || String(c.carregadoEm || c.concluidoEm || '') > desde)) qtd -= quantidadeNaCarga(c, pid);
     });
     var reservado = reservadoDe(pid, ref || null);
     return { estoque: qtd, reservado: reservado, disponivel: qtd - reservado, contagem: contagem || null };
@@ -10725,6 +10732,7 @@
     var st = editorStateFromCarga(carga);
     cgcEditor.setState(st.clientes.length ? st.clientes : [newCgCliente()], st.extras);
     document.getElementById('cgc-conferente').value = carga.conferente || '';
+    (function() { var d = new Date(), el = document.getElementById('cgc-carregado-em'); el.max = ''; el.value = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + 'T' + pad2(d.getHours()) + ':' + pad2(d.getMinutes()); el.defaultValue = el.value; })();
     prepararConferente();
     document.getElementById('carga-conclude-error').classList.add('hidden');
     concludeSubmitting = false;
@@ -10875,6 +10883,12 @@
       if (vfc !== null && vfc > 100000) { errEl.textContent = 'Confira o valor do frete.'; errEl.classList.remove('hidden'); return; }
       if (vfc !== null) freteComb = { valor: Math.round(vfc * 100) / 100, por: quemSessao(), em: new Date().toISOString() };
     }
+    var carregadoEm = '', ceTxt = document.getElementById('cgc-carregado-em').value;
+    if (ceTxt) {
+      var ceMs = new Date(ceTxt).getTime();
+      if (!isFinite(ceMs) || ceMs > Date.now() + 5 * 60000 || ceMs < Date.now() - 60 * 86400000) { errEl.textContent = 'Confira a data e a hora em que a carga saiu (não pode ser depois de agora).'; errEl.classList.remove('hidden'); return; }
+      if (Date.now() - ceMs > 20 * 60000) carregadoEm = new Date(ceMs).toISOString();
+    }
     errEl.classList.add('hidden');
 
     var original = Object.assign({}, findCarga(cargaConcludeId) || {});
@@ -10889,6 +10903,7 @@
       concluidoEm: new Date().toISOString()
     });
     if (freteComb) rec.freteCombinado = freteComb;
+    if (carregadoEm) rec.carregadoEm = carregadoEm; else delete rec.carregadoEm;
     if (mudancas.length) rec.alteracoesCarregamento = (original.alteracoesCarregamento || []).concat([{ em: new Date().toISOString(), por: conferente, motivo: motivoAlt, mudancas: mudancas }]);
     var devSel = document.getElementById('cgc-devolucao-anterior');
     if (devSel && original.entregaAnterior) {
@@ -15286,11 +15301,11 @@
       q += (m.tipo === 'entrada' ? 1 : -1) * (Number(m.quantidade) || 0);
     });
     mp.ordens.forEach(function(o) {
-      if (o.status !== 'concluida' || !depois(o.concluidoEm)) return;
+      if (o.status !== 'concluida' || !depois(o.efetivoEm || o.concluidoEm)) return;
       (o.consumo || []).forEach(function(x) { if (x.insumoId === id) { tem = true; q -= Number(x.qtd) || 0; } });
     });
     mp.fechamentos.forEach(function(f) {
-      if (!depois(f.criadoEm)) return;
+      if (!depois(f.efetivoEm || f.criadoEm)) return;
       (f.consumo || []).forEach(function(x) { if (x.insumoId === id) { tem = true; q -= Number(x.qtd) || 0; } });
     });
     return tem ? arred3(q) : null;
