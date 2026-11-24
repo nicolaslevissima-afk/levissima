@@ -88,6 +88,16 @@ function criarBanco() {
   }
   // mesmas regras das funções do banco (0019, 0023, 0025, 0027)
   const RPC = {
+    // liberar a carga sem leitura e sem fotos (0016): senha mestre ou o acesso com "liberar_carga"
+    carga_excecao: (p, eu) => {
+      const u = USUARIOS.find((x) => x.ref === eu.ref) || {};
+      if (!(eu.papel === 'mestre' || (eu.papel === 'equipe' && (u.modulos || []).indexOf('liberar_carga') >= 0))) return erro('permissao');
+      const a = b.docs.get('cargas/' + p.p_carga);
+      if (!a) return erro('nao_encontrada');
+      const exc = p.p_acao === 'liberar' ? { semConferencia: true, por: u.nome || eu.ref, motivo: p.p_motivo, em: new Date().toISOString() } : null;
+      const novo = Object.assign({}, a.data); if (exc) novo.excecao = exc; else delete novo.excecao;
+      return { data: gravarDoc('cargas', p.p_carga, novo) };
+    },
     doc_gravar: (p) => ({ data: docSet({ colecao: p.p_colecao, id: p.p_id, dados: p.p_dados, mesclar: p.p_mesclar, uniao: p.p_uniao }) }),
     doc_atualizar: (p) => { const a = b.docs.get(p.p_colecao + '/' + p.p_id); return { data: gravarDoc(p.p_colecao, p.p_id, mesclarCaminhos(a ? a.data : {}, p.p_dados)) }; },
     docs_lote: (p) => ({ data: (p.p_ops || []).map((o) => {
