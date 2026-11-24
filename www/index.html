@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="levissima-versao" content="b676d7b0c348" />
+<meta name="levissima-versao" content="e54d36ef6384" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -7065,16 +7065,16 @@
           : '<button type="button" class="btn btn-secondary btn-sm" data-action="ordem-carga" data-id="' + id + '">Ordem de carregamento</button>')
       : semMotorista(c)
         ? '<button type="button" class="btn btn-primary btn-sm" data-action="edit-carga" data-id="' + id + '">Definir motorista</button>'
-      : c.numeroPager
+      // 24/11/2026: conclui sem o pager (o pager continua como opção ao lado, para medir a espera no pátio)
+      : c.numeroPager || key !== 'futura'
         ? '<button type="button" class="btn btn-primary btn-sm" data-action="concluir-carga" data-id="' + id + '">Concluir carregamento</button>'
-        : key === 'futura'
-          ? '<button type="button" class="btn btn-secondary btn-sm" data-action="detalhes" data-id="' + id + '">Ver detalhes</button>'
-          : '<button type="button" class="btn btn-primary btn-sm" data-action="pager-entregar" data-id="' + id + '">Entregar pager</button>';
+        : '<button type="button" class="btn btn-secondary btn-sm" data-action="detalhes" data-id="' + id + '">Ver detalhes</button>';
     if (!done && !liberadaCarga(c)) {
       // pedido da força de vendas: antes de carregar, ok do financeiro e da logística
       main = '<button type="button" class="btn btn-primary btn-sm" data-action="' + (!c.financeiroOk ? 'fin-ok' : 'log-ok') + '" data-id="' + id + '">' + (!c.financeiroOk ? 'Ok do financeiro' : 'Ok da logística') + '</button>';
     }
     var detalhesLink = (!done && !c.numeroPager && key === 'futura') ? '' : '<button type="button" class="btn-text" data-action="detalhes" data-id="' + id + '">Detalhes</button>';
+    if (!done && !c.numeroPager && key !== 'futura' && !semMotorista(c) && liberadaCarga(c)) detalhesLink = '<button type="button" class="btn-text" data-action="pager-entregar" data-id="' + id + '">Entregar pager</button>' + detalhesLink;
     return '<article class="carga-card ' + st.cls + '" data-id="' + id + '">' + head +
       '<div class="carga-card-body">' +
         '<div class="carga-top"><span class="carga-driver-name' + (semMotorista(c) ? ' a-definir' : '') + '">' + (c.retira ? '🚚 ' : '') + escapeHtml(quemLevaTexto(c)) + '</span>' + pager + '</div>' +
