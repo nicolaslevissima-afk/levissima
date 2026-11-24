@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="levissima-versao" content="122b657a1752" />
+<meta name="levissima-versao" content="b676d7b0c348" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -3538,6 +3538,7 @@
         <input type="password" id="cgc-conferente-pin" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" />
         <span class="field-hint" id="cgc-conferente-hint">Digite a sua senha de 4 números: o seu nome aparece sozinho.</span>
       </label>
+      <p class="field-hint ok hidden" id="cgc-conferente-eu"></p>
       <label id="cgc-conferente-nome-label">Conferente <span class="req">*</span>
         <input type="text" id="cgc-conferente" autocomplete="off" />
         <span class="field-hint">Para conferir com senha, cadastre os conferentes em Cadastros › Equipe com senha.</span>
@@ -7040,7 +7041,8 @@
       : '';
     var fat = c.faturamentoOk
       ? '<div class="fat-badge ok">✓ ok de ' + escapeHtml(nomePessoa(c.faturamentoPor) || '—') + '</div>'
-      : '<button type="button" class="fat-badge pend" data-action="fat-ok" data-id="' + id + '">○ Sem ok do faturamento<span class="fat-badge-cta">Dar ok</span></button>';
+      : veBotaoFuncao('faturamento') ? '<button type="button" class="fat-badge pend" data-action="fat-ok" data-id="' + id + '">○ Sem ok do faturamento<span class="fat-badge-cta">Dar ok</span></button>'
+      : '<div class="fat-badge pend">○ Sem ok do faturamento</div>';
     var fv = fvCardHtml(c, id);
     var ent = done ? entregasResumo(c) : null;
     var viagemInfo = '';
@@ -7127,8 +7129,8 @@
     }
     info += c.faturamentoOk
       ? row('Faturamento', escapeHtml('ok de ' + (nomePessoa(c.faturamentoPor) || '—') + (c.faturamentoEm ? ' em ' + formatDateTimeBR(c.faturamentoEm) : '')) +
-          '<button type="button" class="btn-text" data-action="fat-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
-      : row('Faturamento', 'aguardando ok<button type="button" class="btn-text" data-action="fat-ok" data-id="' + id + '">Dar ok</button>');
+          (veBotaoFuncao('faturamento') ? '<button type="button" class="btn-text" data-action="fat-desfazer" data-id="' + id + '">Desfazer</button>' : ''), 'ok')
+      : row('Faturamento', 'aguardando ok' + (veBotaoFuncao('faturamento') ? '<button type="button" class="btn-text" data-action="fat-ok" data-id="' + id + '">Dar ok</button>' : ''));
     if (!done && aceiteEstado(c)) {
       var ae = aceiteEstado(c);
       info += row('Aceite do motorista', escapeHtml(aceiteTexto(c)) + (ae !== 'aceito' ? '<button type="button" class="btn-text" data-action="aceite-registrar" data-id="' + id + '">Registrar resposta (telefone)</button>' : ''), ae === 'aceito' ? 'ok' : 'ask');
@@ -7635,7 +7637,35 @@
     if (!cabe) return 'Essa senha não é de quem ' + quem + '.';
     return '';
   }
+  // Cargas (24/11/2026): quem entrou com o próprio acesso (pessoa da equipe ligada ao login) e tem a função assina com
+  // o nome dela, sem a senha de 4 números (opts.direto). Acesso compartilhado (sem pessoa ligada) e a senha mestre
+  // continuam com a senha; quem entrou com o próprio acesso e não tem a função passa a senha para quem tem.
+  function euDoAcesso() {
+    if (!session) return null;
+    var r = minhaRef();
+    if (r.indexOf('escritorio:') !== 0) return null;
+    var id = r.slice(11);
+    return equipe.find(function(x) { return x.id === id; }) || null;
+  }
+  function euPodeFuncao(funcao, permite) { var m = euDoAcesso(); return m && (permite ? permite(m) : !!m[funcao]) ? m : null; }
+  // os botões de ok aparecem para quem tem a função; acesso compartilhado e senha mestre: sempre (assinam com a senha)
+  function veBotaoFuncao(funcao) {
+    if (!session) return false;
+    if (session.role === 'admin') return true;
+    var m = euDoAcesso();
+    return !m || !!m[funcao];
+  }
+  var assinarDiretoAte = 0;
   function openPinDialog(opts) {
+    if (opts.direto) {
+      var euD = euPodeFuncao(opts.funcao, opts.permite);
+      if (euD) {
+        if (Date.now() < assinarDiretoAte) return; // dois toques seguidos: assina uma vez só
+        assinarDiretoAte = Date.now() + 1500;
+        try { opts.onOk(euD); } catch (e) { console.error('assinar', e); }
+        return;
+      }
+    }
     pinCtx = opts;
     document.getElementById('pin-title').textContent = opts.titulo;
     document.getElementById('pin-hint').textContent = opts.hint;
@@ -7727,7 +7757,7 @@
   }
   function darOkFaturamento(id) {
     openPinDialog({
-      titulo: 'Ok do faturamento', funcao: 'faturamento', funcaoTexto: 'dá o ok do faturamento', semCadastro: FAT_SEM_CADASTRO,
+      direto: true, titulo: 'Ok do faturamento', funcao: 'faturamento', funcaoTexto: 'dá o ok do faturamento', semCadastro: FAT_SEM_CADASTRO,
       hint: 'Digite a sua senha de 4 números. O seu nome aparece sozinho no ok.',
       onOk: function(m) {
         setCargaFields(id, { faturamentoOk: true, faturamentoPor: m.nome, faturamentoPorId: m.id, faturamentoEm: new Date().toISOString() })
@@ -7738,7 +7768,7 @@
   }
   function desfazerOkFaturamento(id) {
     openPinDialog({
-      titulo: 'Desfazer o ok do faturamento', funcao: 'faturamento', funcaoTexto: 'dá o ok do faturamento', semCadastro: FAT_SEM_CADASTRO,
+      direto: true, titulo: 'Desfazer o ok do faturamento', funcao: 'faturamento', funcaoTexto: 'dá o ok do faturamento', semCadastro: FAT_SEM_CADASTRO,
       hint: 'Para desfazer, digite a senha de alguém do faturamento.',
       onOk: function(m) {
         setCargaFields(id, { faturamentoOk: false, faturamentoPor: '', faturamentoPorId: '', faturamentoEm: '' })
@@ -10877,6 +10907,17 @@
   function prepararConferente() {
     var porSenha = membrosCom('conferente').length > 0;
     cgcConferente = null;
+    // quem entrou com o próprio acesso e é conferente conclui com o nome dele, sem a senha (24/11/2026)
+    var euC = euPodeFuncao('conferente'), euBox = document.getElementById('cgc-conferente-eu');
+    euBox.classList.toggle('hidden', !euC);
+    euBox.textContent = euC ? '✓ Conferente: ' + euC.nome + ' (o seu acesso)' : '';
+    if (euC) {
+      cgcConferente = { id: euC.id, nome: euC.nome };
+      document.getElementById('cgc-conferente-pin-label').classList.add('hidden');
+      document.getElementById('cgc-conferente-nome-label').classList.add('hidden');
+      document.getElementById('cgc-conferente-pin').value = '';
+      return;
+    }
     document.getElementById('cgc-conferente-pin-label').classList.toggle('hidden', !porSenha);
     document.getElementById('cgc-conferente-nome-label').classList.toggle('hidden', porSenha);
     var pin = document.getElementById('cgc-conferente-pin');
@@ -12781,7 +12822,7 @@
   }
   function aprovarFrete(id, depois) {
     openPinDialog({
-      funcao: 'aprovaFrete', funcaoTexto: 'aprova frete com valor editado',
+      direto: true, funcao: 'aprovaFrete', funcaoTexto: 'aprova frete com valor editado',
       titulo: 'Aprovar frete com valor editado', hint: 'Só quem aprova fretes (Nicolas): digite a sua senha de 4 números.',
       semCadastro: 'Ninguém cadastrado para aprovar. Em Cadastros › Equipe, marque "Aprova frete com valor editado" na pessoa do Nicolas.',
       onOk: function(m) { salvarFrete(id, { aprovacao: 'aprovado', aprovadoEm: new Date().toISOString(), aprovadoPor: m.nome }).then(depois).catch(falhaSalvar); }
@@ -13547,14 +13588,14 @@
   }
   function darOkFinanceiro(id) {
     openPinDialog({
-      titulo: 'Ok do financeiro', funcao: 'financeiro', funcaoTexto: 'dá o ok do financeiro', semCadastro: FIN_SEM_CADASTRO,
+      direto: true, titulo: 'Ok do financeiro', funcao: 'financeiro', funcaoTexto: 'dá o ok do financeiro', semCadastro: FIN_SEM_CADASTRO,
       hint: 'Pedido da força de vendas: digite a sua senha de 4 números para liberar pelo financeiro.',
       onOk: function(m) { gravarOk(id, { financeiroOk: true, financeiroPor: m.nome, financeiroPorId: m.id, financeiroEm: new Date().toISOString() }, 'Ok do financeiro: ' + m.nome + '.'); }
     });
   }
   function desfazerOkFinanceiro(id) {
     openPinDialog({
-      titulo: 'Desfazer o ok do financeiro', funcao: 'financeiro', funcaoTexto: 'dá o ok do financeiro', semCadastro: FIN_SEM_CADASTRO,
+      direto: true, titulo: 'Desfazer o ok do financeiro', funcao: 'financeiro', funcaoTexto: 'dá o ok do financeiro', semCadastro: FIN_SEM_CADASTRO,
       hint: 'Para desfazer, digite a senha de alguém do financeiro.',
       onOk: function(m) { gravarOk(id, { financeiroOk: false, financeiroPor: '', financeiroPorId: '', financeiroEm: '' }, 'Ok do financeiro desfeito por ' + m.nome + '.'); }
     });
@@ -13567,14 +13608,14 @@
       return;
     }
     openPinDialog({
-      titulo: 'Ok da logística', funcao: 'logistica', funcaoTexto: 'programa a logística', semCadastro: LOG_SEM_CADASTRO,
+      direto: true, titulo: 'Ok da logística', funcao: 'logistica', funcaoTexto: 'programa a logística', semCadastro: LOG_SEM_CADASTRO,
       hint: 'Confira motorista, data e hora da carga e digite a sua senha de 4 números.',
       onOk: function(m) { gravarOk(id, { logisticaOk: true, logisticaPor: m.nome, logisticaPorId: m.id, logisticaEm: new Date().toISOString() }, 'Ok da logística: ' + m.nome + '.'); }
     });
   }
   function desfazerOkLogistica(id) {
     openPinDialog({
-      titulo: 'Desfazer o ok da logística', funcao: 'logistica', funcaoTexto: 'programa a logística', semCadastro: LOG_SEM_CADASTRO,
+      direto: true, titulo: 'Desfazer o ok da logística', funcao: 'logistica', funcaoTexto: 'programa a logística', semCadastro: LOG_SEM_CADASTRO,
       hint: 'Para desfazer, digite a senha de alguém da logística.',
       onOk: function(m) { gravarOk(id, { logisticaOk: false, logisticaPor: '', logisticaPorId: '', logisticaEm: '' }, 'Ok da logística desfeito por ' + m.nome + '.'); }
     });
@@ -13585,20 +13626,20 @@
     return '<div class="fv-tag">Força de vendas · ' + escapeHtml(c.representanteNome || '—') + '</div>' +
       (c.financeiroOk
         ? '<div class="fat-badge ok">✓ financeiro: ' + escapeHtml(nomePessoa(c.financeiroPor) || '—') + '</div>'
-        : '<button type="button" class="fat-badge pend" data-action="fin-ok" data-id="' + id + '">○ Sem ok do financeiro<span class="fat-badge-cta">Dar ok</span></button>') +
+        : veBotaoFuncao('financeiro') ? '<button type="button" class="fat-badge pend" data-action="fin-ok" data-id="' + id + '">○ Sem ok do financeiro<span class="fat-badge-cta">Dar ok</span></button>' : '<div class="fat-badge pend">○ Sem ok do financeiro</div>') +
       (c.logisticaOk
         ? '<div class="fat-badge ok">✓ logística: ' + escapeHtml(nomePessoa(c.logisticaPor) || '—') + '</div>'
-        : '<button type="button" class="fat-badge pend" data-action="log-ok" data-id="' + id + '">○ Sem ok da logística<span class="fat-badge-cta">Dar ok</span></button>');
+        : veBotaoFuncao('logistica') ? '<button type="button" class="fat-badge pend" data-action="log-ok" data-id="' + id + '">○ Sem ok da logística<span class="fat-badge-cta">Dar ok</span></button>' : '<div class="fat-badge pend">○ Sem ok da logística</div>');
   }
   function fvDetailRows(c, id, row) {
     if (!pedidoRep(c)) return '';
     return row('Força de vendas', escapeHtml(c.representanteNome || '—')) +
       (c.financeiroOk
-        ? row('Financeiro', escapeHtml('ok de ' + (nomePessoa(c.financeiroPor) || '—') + (c.financeiroEm ? ' em ' + formatDateTimeBR(c.financeiroEm) : '')) + '<button type="button" class="btn-text" data-action="fin-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
-        : row('Financeiro', 'aguardando ok<button type="button" class="btn-text" data-action="fin-ok" data-id="' + id + '">Dar ok</button>', 'ask')) +
+        ? row('Financeiro', escapeHtml('ok de ' + (nomePessoa(c.financeiroPor) || '—') + (c.financeiroEm ? ' em ' + formatDateTimeBR(c.financeiroEm) : '')) + (veBotaoFuncao('financeiro') ? '<button type="button" class="btn-text" data-action="fin-desfazer" data-id="' + id + '">Desfazer</button>' : ''), 'ok')
+        : row('Financeiro', 'aguardando ok' + (veBotaoFuncao('financeiro') ? '<button type="button" class="btn-text" data-action="fin-ok" data-id="' + id + '">Dar ok</button>' : ''), 'ask')) +
       (c.logisticaOk
-        ? row('Logística', escapeHtml('ok de ' + (nomePessoa(c.logisticaPor) || '—') + (c.logisticaEm ? ' em ' + formatDateTimeBR(c.logisticaEm) : '')) + '<button type="button" class="btn-text" data-action="log-desfazer" data-id="' + id + '">Desfazer</button>', 'ok')
-        : row('Logística', 'aguardando ok<button type="button" class="btn-text" data-action="log-ok" data-id="' + id + '">Dar ok</button>', 'ask'));
+        ? row('Logística', escapeHtml('ok de ' + (nomePessoa(c.logisticaPor) || '—') + (c.logisticaEm ? ' em ' + formatDateTimeBR(c.logisticaEm) : '')) + (veBotaoFuncao('logistica') ? '<button type="button" class="btn-text" data-action="log-desfazer" data-id="' + id + '">Desfazer</button>' : ''), 'ok')
+        : row('Logística', 'aguardando ok' + (veBotaoFuncao('logistica') ? '<button type="button" class="btn-text" data-action="log-ok" data-id="' + id + '">Dar ok</button>' : ''), 'ask'));
   }
   function pedidosRepPendentes() { return cargas.filter(function(c) { return pedidoRep(c) && c.status !== 'concluida' && !liberadaCarga(c); }); }
   function renderFvBanner() {
@@ -14471,7 +14512,7 @@
     conf.confirmarDivergencia = false;
     if (membrosCom('conferente').length) {
       openPinDialog({
-        titulo: 'Conferência', funcao: 'conferente', funcaoTexto: 'confere o carregamento',
+        direto: true, titulo: 'Conferência', funcao: 'conferente', funcaoTexto: 'confere o carregamento',
         semCadastro: 'Ninguém da conferência está cadastrado. Cadastre em Cadastros › Equipe com senha.',
         hint: 'Digite a sua senha de 4 números: o seu nome fica na conferência.',
         onOk: function(m) { gravarRodada({ id: m.id, nome: m.nome }); }
