@@ -1,0 +1,21 @@
+# Confere o leitor de código de barras do app (ZXing) com a biblioteca de verdade.
+name: Leitor de código de barras
+
+on:
+  push:
+    branches: [main]
+    paths: ['testes/leitor-zxing.js', '.github/workflows/leitor.yml', 'fontes/app/**']
+  workflow_dispatch:
+
+jobs:
+  leitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Bibliotecas do teste
+        run: mkdir -p /tmp/leitor && cd /tmp/leitor && npm init -y >/dev/null && npm i --no-audit --no-fund @zxing/library@0.20.0 bwip-js@4 pngjs@7
+      - name: Ler os códigos dos produtos
+        run: NODE_PATH=/tmp/leitor/node_modules node testes/leitor-zxing.js
