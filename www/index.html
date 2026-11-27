@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="levissima-versao" content="da7e35807e83" />
+<meta name="levissima-versao" content="784d9043edc1" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -2144,6 +2144,50 @@
   .mod-nivel:last-of-type { border-bottom: 0; }
   .mod-nivel select { width: auto; min-width: 140px; }
   .acesso-sub { margin: 18px 0 6px; font-size: 0.875rem; font-weight: 700; }
+  /* Painel de permissões (26/11/2026) */
+  .pp-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin: 8px 0 10px; }
+  .pp-card { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--card); }
+  .pp-card b { display: block; font-family: var(--font-mono); font-size: 1.35rem; }
+  .pp-card span { font-size: 0.75rem; color: var(--muted); }
+  .pp-card.alerta { border-color: var(--laranja); }
+  .pp-alertas { border: 1px solid var(--laranja); border-radius: 12px; padding: 8px 12px; margin: 0 0 10px; font-size: 0.8125rem; background: var(--card); }
+  .pp-alertas.pp-sens { border-color: var(--line); }
+  .pp-alertas summary { cursor: pointer; font-weight: 700; }
+  .pp-alertas ul { margin: 6px 0 2px; padding-left: 18px; }
+  .pp-alertas li { margin: 4px 0; }
+  .pp-filtros { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0; }
+  .pp-filtros input[type=search] { flex: 2 1 180px; min-width: 0; }
+  .pp-filtros select { flex: 1 1 140px; min-width: 0; }
+  .pp-grupos { display: flex; gap: 6px; overflow-x: auto; padding: 2px 0 8px; }
+  .pp-grupos .est-loc { white-space: nowrap; flex: 0 0 auto; }
+  .pp-mat { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+  .pp-mat table { border-collapse: separate; border-spacing: 0; font-size: 0.8125rem; }
+  .pp-mat th, .pp-mat td { border-bottom: 1px solid var(--line); padding: 0; text-align: center; vertical-align: middle; }
+  .pp-mat .g0 { border-left: 1px solid var(--line); }
+  .pp-mat th.pp-g { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); padding: 7px 8px; text-align: left; white-space: nowrap; border-left: 1px solid var(--line); }
+  .pp-h { display: block; width: 100%; min-width: 58px; max-width: 96px; padding: 6px 5px; background: none; border: 0; font: inherit; font-size: 0.6875rem; font-weight: 700; color: var(--ink); cursor: pointer; line-height: 1.2; }
+  .pp-h small { display: block; font-family: var(--font-mono); font-weight: 600; color: var(--muted); margin-top: 2px; }
+  .pp-h small.zero { color: var(--danger); }
+  .pp-sens { color: var(--danger); font-weight: 800; }
+  .pp-mat .pp-nome { position: sticky; left: 0; z-index: 1; background: var(--card); text-align: left; border-right: 1px solid var(--line); }
+  .pp-mat thead .pp-nome { z-index: 2; vertical-align: bottom; }
+  .pp-pessoa { display: block; width: 150px; padding: 6px 8px; background: none; border: 0; font: inherit; text-align: left; color: var(--ink); cursor: pointer; }
+  .pp-pessoa b { display: block; font-size: 0.8125rem; line-height: 1.25; }
+  .pp-pessoa small { display: block; font-size: 0.6875rem; color: var(--muted); line-height: 1.3; }
+  .pp-pessoa small.app { color: var(--verde-texto); }
+  @media (min-width: 700px) { .pp-pessoa { width: 210px; } }
+  .pp-c { display: block; width: 100%; min-width: 44px; min-height: 40px; background: none; border: 0; font-family: var(--font-mono); font-size: 0.875rem; font-weight: 700; cursor: pointer; color: var(--muted); }
+  .pp-c:hover, .pp-c:focus-visible { background: rgba(var(--teal-rgb), 0.08); }
+  .pp-c.E, .pp-l.E { color: var(--verde-texto); } .pp-c.I, .pp-l.I { color: var(--laranja-texto); } .pp-c.V, .pp-l.V { color: var(--wood); }
+  .pp-c.G, .pp-l.G { color: var(--teal); } .pp-c.U, .pp-c.S, .pp-l.U { color: var(--ink); }
+  .pp-c.cargo { font-style: italic; font-weight: 500; color: var(--muted); }
+  .pp-c.nao { color: var(--line); font-weight: 400; } .pp-c.sem, .pp-l.sem { color: var(--muted); opacity: 0.55; }
+  .pp-leg { font-size: 0.75rem; color: var(--muted); margin: 8px 0; line-height: 1.5; }
+  .pp-tipo { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+  .pp-alertas details summary { font-weight: 400; }
+  .pp-quem { margin: 4px 0 8px; padding-left: 18px; font-size: 0.875rem; }
+  .pp-quem li { margin: 3px 0; }
+  .pp-vazio { font-size: 0.8125rem; color: var(--danger); }
   .driver-confirm { padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 0.8125rem; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
   /* ---- fretes, página do motorista e documentos ---- */
@@ -2695,6 +2739,11 @@
   </div>
 
   <div class="tab-panel hidden" id="tab-cadastros">
+    <section class="drivers-admin hidden" id="perm-admin">
+      <div class="section-head"><h2 class="section-title">Painel de permissões</h2></div>
+      <p class="hint">Quem pode o quê no app: cada pessoa da equipe (linhas) e cada função do sistema (colunas), tirado do perfil da pessoa (Equipe com senha) e do acesso ao app dela. Muda aqui mesmo ou no perfil; toda mudança fica no histórico.</p>
+      <div id="perm-painel"></div>
+    </section>
     <section class="drivers-admin" id="mural-admin">
       <div class="section-head"><h2 class="section-title">Recados em destaque</h2></div>
       <p class="hint">Aparecem no alto do app, assim que a pessoa entra. Cada recado vale para <b>todos os acessos</b> (escritório, motoristas, força de vendas e setores da fábrica) ou só para as <b>pessoas que você escolher</b> — quem não está na lista não vê.</p>
@@ -6223,7 +6272,11 @@
     else if (a === 'setor-remover-confirmar') {
       var refR = b.dataset.ref;
       confirmRemoverSetor = null;
-      chamarAcesso({ acao: 'remover', ref: refR }).then(function() { acessoInfo = null; renderAcessoAdmin(); showToast('Senha removida.'); })
+      var setR = ((acessoInfo && acessoInfo.setores) || []).find(function(x) { return x.ref === refR; });
+      chamarAcesso({ acao: 'remover', ref: refR }).then(function() {
+        permRegistrar({ pessoaRef: refR, pessoa: setR ? setR.nome : refR, origem: 'acesso', mudancas: [{ f: 'Acesso', de: 'Tem', para: 'removido' }] });
+        acessoInfo = null; renderAcessoAdmin(); showToast('Senha removida.');
+      })
         .catch(function(err) { console.error('remover setor', err); renderAcessoAdmin(); showToast('Não foi possível remover agora. Tente de novo.'); });
     }
     else if (a === 'acesso-equipe-confirmar') {
@@ -6368,9 +6421,12 @@
     else if (senha) corpo = { acao: 'definir', ref: setorEdit.ref, nome: nome, senha: senha, modulos: modulos };
     else corpo = { acao: 'ajustar', ref: setorEdit.ref, nome: nome, modulos: modulos };
     var btn = document.getElementById('btn-setor-submit');
+    var modsAntes = modo === 'equipe' ? ((acessoInfo && acessoInfo.equipeModulos) || []) : modo === 'novo' ? [] : ((((acessoInfo && acessoInfo.setores) || []).find(function(x) { return x.ref === setorEdit.ref; }) || {}).modulos || []);
     btn.disabled = true;
     chamarAcesso(corpo).then(function() {
       btn.disabled = false;
+      permRegistrar({ pessoaRef: corpo.ref, pessoa: modo === 'equipe' ? 'Senha da equipe do escritório' : nome, origem: 'acesso',
+        mudancas: (modo === 'novo' ? [{ f: 'Acesso', de: '—', para: 'criado' }] : senha ? [{ f: 'Senha', de: '—', para: 'trocada' }] : []).concat(permDifModulos(modsAntes, modulos)) });
       closeSetorForm();
       acessoInfo = null;
       renderAcessoAdmin();
@@ -8467,7 +8523,7 @@
     ui.tab = abasPermitidas().indexOf(t) >= 0 ? t : abaPadrao(abasPermitidas());
     savePref(LOCAL_TAB_KEY, ui.tab);
     applyTab();
-    if (ui.tab === 'cadastros') { renderSeguranca(); renderOcPermAdmin(); }
+    if (ui.tab === 'cadastros') { renderSeguranca(); renderOcPermAdmin(); renderPermPainel(); }
     window.scrollTo(0, 0);
   }
   ui.tab = 'inicio'; // toda vez que o app abre, começa no Início (pedido de 21/10/2026)
@@ -27780,6 +27836,7 @@
 
   // ---------- faturamento: cadastro de quem dá o ok (somente no modo escritório) ----------
   function renderEquipeAdmin() {
+    renderPermPainel();
     var list = document.getElementById('equipe-list');
     var sorted = equipe.slice().sort(function(a, b) { return (a.nomeCompleto || a.nome || '').localeCompare(b.nomeCompleto || b.nome || '', 'pt-BR'); });
     if (gereAcessos() && !acessoInfo && !acessoBuscando) carregarAcessoInfo();
@@ -27941,13 +27998,18 @@
       confirmDeleteMembro = null; renderEquipeAdmin();
     } else if (action === 'confirm-remove-membro') {
       confirmDeleteMembro = null;
-      var axr = acessoDoMembro(equipe.find(function(x) { return x.id === id; }));
+      var mxr = equipe.find(function(x) { return x.id === id; }), axr = acessoDoMembro(mxr);
       deleteMembro(id).then(function() {
+        if (mxr) permRegistrar({ pessoaId: id, pessoa: permNome(mxr), origem: 'perfil', mudancas: [{ f: 'Cadastro na equipe', de: 'Tem', para: 'removido' }].concat(axr ? [{ f: 'Acesso ao app', de: 'Tem', para: 'removido' }] : []) });
         if (axr) return chamarAcesso({ acao: 'remover', ref: axr.ref }).then(function() { acessoInfo = null; renderEquipeAdmin(); renderAcessoAdmin(); });
       }).catch(function(err) { console.error('remove membro error', err); });
     } else if (action === 'acesso-orfao-remover') {
       if (btn.dataset.ok !== '1') { btn.dataset.ok = '1'; btn.textContent = 'Confirmar: remover'; return; }
-      chamarAcesso({ acao: 'remover', ref: btn.dataset.ref }).then(function() { acessoInfo = null; renderEquipeAdmin(); renderAcessoAdmin(); showToast('Acesso removido.'); })
+      var orfN = ((acessoInfo && acessoInfo.escritorio) || []).find(function(x) { return x.ref === btn.dataset.ref; });
+      chamarAcesso({ acao: 'remover', ref: btn.dataset.ref }).then(function() {
+        permRegistrar({ pessoaRef: btn.dataset.ref, pessoa: orfN ? orfN.nome : btn.dataset.ref, origem: 'perfil', mudancas: [{ f: 'Acesso ao app (sem cadastro na equipe)', de: 'Tem', para: 'removido' }] });
+        acessoInfo = null; renderEquipeAdmin(); renderAcessoAdmin(); showToast('Acesso removido.');
+      })
         .catch(function(err) { console.error('remover acesso', err); showToast('Não foi possível remover agora.'); });
     }
   });
@@ -27988,6 +28050,7 @@
     if (!cargo && !area && !temAcesso && !fat && !conf && !fin && !logi && !gest && !qualid && !aprovF && !coordS && !comprasS && !aprovC) return fail('Escolha o cargo, marque o que essa pessoa faz ou dê o acesso ao app.');
     if (equipe.some(function(m) { return m.id !== editingMembroId && normNome(m.nomeCompleto || m.nome) === normNome(nome); })) return fail('Já existe alguém com esse nome.');
     err.classList.add('hidden');
+    var permAxAntes = acessoDoMembro(membroAtual), permAntes = membroAtual ? permFoto(membroAtual, permAxAntes) : null; // histórico de permissões
     Promise.resolve().then(function() {
       var patch = { faturamento: fat, conferente: conf, financeiro: fin, logistica: logi, gestao: gest, qualidade: qualid, aprovaFrete: aprovF,
         coordenador: coordS, setores: setoresS, compras: comprasS, aprovaCompra: aprovC, cargo: cargo, area: area,
@@ -28002,9 +28065,15 @@
         // pessoa nova já gravada: se o PIN der erro, salvar de novo edita (não duplica)
         if (idSalvo) editingMembroId = idSalvo;
         // a senha de 4 números vai para o servidor (Duas pessoas com a mesma senha: não daria para saber de quem é o ok.)
+        var mDep = Object.assign({}, membroAtual || {}, patch, { nomeCompleto: nome });
         return (pin ? definirPinMembro(idSalvo, pin) : Promise.resolve('')).then(function(erroPin) {
-          if (erroPin) { fail(erroPin); return false; }
-          return salvarAcessoMembro(idSalvo, nome, acesso, fail);
+          if (erroPin) { fail(erroPin); permDoPerfil(idSalvo, permAntes, mDep, permAxAntes); return false; }
+          return salvarAcessoMembro(idSalvo, nome, acesso, fail).then(function(okA) {
+            var mudouAcesso = okA !== false && acesso && (acesso.senha || permAxAntes);
+            permDoPerfil(idSalvo, permAntes, mDep, mudouAcesso ? { ref: 'escritorio:' + idSalvo, modulos: acesso.modulos } : permAxAntes,
+              mudouAcesso && acesso.senha && permAxAntes ? [{ f: 'Senha de acesso ao app', de: '—', para: 'trocada' }] : []);
+            return okA;
+          });
         });
       }).then(function(okAcesso) { if (okAcesso !== false) closeEquipeForm(); });
     }).catch(function(e2) {
@@ -28937,6 +29006,7 @@
     chamarAcesso({ acao: 'remover', ref: x.ref }).then(function() {
       b.disabled = false;
       showToast('Acesso ao app de ' + m.nome + ' removido.');
+      permRegistrar({ pessoaId: m.id, pessoa: permNome(m), origem: 'perfil', mudancas: [{ f: 'Acesso ao app', de: 'Tem', para: 'removido' }] });
       acessoInfo = null; acessoFormPendente = true; carregarAcessoInfo();
     }).catch(function(e) { b.disabled = false; console.error('remover acesso', e); showToast('Não foi possível remover agora.'); });
   });
@@ -28948,6 +29018,438 @@
       return '<div class="driver-row"><span class="driver-name">' + escapeHtml(x.nome) + '<span class="func-chip app">acesso ao app sem cadastro na equipe</span></span>' +
         '<button class="btn-text danger" data-action="acesso-orfao-remover" data-ref="' + escapeHtml(x.ref) + '">Remover acesso</button></div>';
     }).join('');
+  }
+
+
+  // =====================================================================================================
+  // PAINEL DE PERMISSÕES (pedido de 26/11/2026): em Cadastros, uma tabela com as pessoas da equipe nas linhas e as
+  // funções do sistema nas colunas (abas e o nível, abas da senha mestre, abas pelo perfil, módulos da fábrica,
+  // assinaturas, Compras, Produção e PCP, laboratório, chamados e avisos, permissões especiais), tirada do perfil de
+  // cada pessoa e do acesso ao app dela; o que vem do cargo ou de outra função aparece em itálico ("pelo cargo").
+  // Tocar numa célula muda ali mesmo (com confirmação); tocar no nome abre o perfil; tocar no título da coluna mostra
+  // quem tem. Embaixo: os outros acessos (senha mestre, senha da equipe, diretoria, tablets e setores, motoristas e
+  // força de vendas), os alertas (funções sem ninguém, permissões sensíveis, acessos parados, acesso sem cadastro), o
+  // histórico das mudanças (coleção permissoes-historico: só a senha mestre lê e grava, ninguém altera nem apaga —
+  // migração 0064; o perfil e os acessos de setor também registram) e as planilhas. Só a senha mestre vê e muda.
+  var PERM_HIST_COL = 'permissoes-historico';
+  function permData(iso) { var d = new Date(iso); if (!iso || isNaN(d.getTime())) return ''; var z = function(n) { return (n < 10 ? '0' : '') + n; }; return formatDateBR(d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate())); }
+  var permUi = { grupo: '', busca: '', area: '', soApp: false, histAberto: false, hist: null, histCarregando: false, histFim: false, montado: false };
+  var PERM_GRUPOS = [['abas', 'Abas do escritório'], ['abasM', 'Abas da senha mestre'], ['perfil', 'Abas pelo perfil'], ['mods', 'Módulos da fábrica'], ['assina', 'Assinaturas'],
+    ['compras', 'Compras'], ['producao', 'Produção e PCP'], ['lab', 'Laboratório e documentos'], ['outros', 'Chamados e avisos'], ['esp', 'Permissões especiais']];
+  var PERM_CURTO = { paletes: 'Paletes', producao: 'Produção e PCP', materia: 'Matéria-prima', trocas: 'Trocas' };
+  var PERM_ABA_DESC = { cargas: 'Lançar, alterar e acompanhar as cargas', paletes: 'Paletes e chapatex dos clientes', estoque: 'Estoque da fábrica e a produção hora a hora',
+    producao: 'Ordens de produção, PCP e indicadores', materia: 'Matéria-prima e insumos', agenda: 'Agenda de recebimentos', salas: 'Reserva de salas', qualidade: 'Inspeções, laboratório e documentos',
+    metas: 'Metas e indicadores', compras: 'Pedidos de compra', trocas: 'Trocas e devoluções', fretes: 'A pagar por motorista e transportadora, tabela de fretes e relatórios', rh: 'Funcionários, experiência e NRs' };
+  function permCargoEtapa(etapa) {
+    return function(m) {
+      var sem = Object.assign({}, m, { coordenador: false, compras: false, aprovaCompra: false });
+      if (ocPodeEtapaPropria(sem, etapa)) return 'pelo cargo ' + (cargoNome(m.cargo) || 'sem cargo') + ' (Cadastros › Compras)';
+      return ocPodeEtapaPropria(m, etapa) ? 'por outra marca de Compras (Cadastros › Compras)' : '';
+    };
+  }
+  // [campo, grupo, título curto, nome, descrição, sensível, de onde mais vem]
+  var PERM_MARCAS = [
+    ['veOrganograma', 'perfil', 'Organograma', 'Vê a aba Organograma', 'Onde está na empresa: quem está acima e abaixo'],
+    ['veBrindes', 'perfil', 'Brindes', 'Vê a aba Brindes e presentes', 'Ideias e aprovação de brindes'],
+    ['veMarketing', 'perfil', 'Marketing', 'Vê a aba Material de marketing', 'Para quem tem o acesso com abas escolhidas (a senha da equipe já vê)'],
+    ['veVendas', 'perfil', 'Vendas', 'Vê o painel de Vendas', 'Vendas por cliente e produto, comparativos e preços de referência', true],
+    ['veAntecipacoes', 'perfil', 'Antecipações', 'Vê a aba Antecipações de compras', 'Insumos faturados antes da entrega', false, function(m) { return m.compras ? 'por ser de Compras' : m.aprovaCompra ? 'por aprovar compras' : ''; }],
+    ['veProdExternas', 'perfil', 'Produções externas', 'Vê a aba Produções externas', 'Fontes de fora, CD Renan e fretes das fontes'],
+    ['faturamento', 'assina', 'Faturamento', 'Dá o ok do faturamento', 'Ok do faturamento nas cargas'],
+    ['conferente', 'assina', 'Conferente', 'Confere o carregamento (expedição)', 'Conferência por código de barras e conclusão do carregamento'],
+    ['financeiro', 'assina', 'Financeiro', 'Dá o ok do financeiro', 'Pedidos da força de vendas'],
+    ['logistica', 'assina', 'Logística', 'Programa a logística dos caminhões', 'Ok da logística'],
+    ['gestao', 'assina', 'Gestão', 'Diretoria / gestão', 'Reserva a sala Levíssima Protein'],
+    ['qualidade', 'assina', 'Qualidade', 'Qualidade', 'Assina inspeções, checklists de linha e análises'],
+    ['aprovaFrete', 'assina', 'Aprova frete', 'Aprova frete com valor editado', 'Frete diferente da tabela', true],
+    ['coordenador', 'compras', 'Autoriza pedidos', 'Autoriza pedidos de compra antes da cotação', 'Dos setores marcados no perfil (em branco: os da área)', false, permCargoEtapa('coord')],
+    ['compras', 'compras', 'Cotações', 'Assistente de compras (faz as cotações)', 'Lança as cotações e marca como comprado', false, permCargoEtapa('cotacao')],
+    ['aprovaCompra', 'compras', 'Aprova compras', 'Aprova compras na etapa final', 'Aprovação da diretoria', true, permCargoEtapa('aprovacao')],
+    ['veLancProducao', 'producao', 'Lançamentos', 'Vê e corrige os lançamentos da produção', 'Produção › Lançamentos'],
+    ['confirmaProducao', 'producao', 'Confirma produção', 'Confirma a produção (PCP)', 'O apontado entra no estoque e conclui a OP (precisa da aba Produção em Edita)'],
+    ['configuraPcp', 'producao', 'Configura PCP', 'Configura o PCP', 'Turnos, dias, pausas, exceções do calendário e capacidade'],
+    ['editaOpConcluida', 'producao', 'Edita OP concluída', 'Edita OP concluída', 'Corrige a OP depois de concluída (estoque e matéria-prima acompanham)', true],
+    ['labValida', 'lab', 'Valida resultados', 'Laboratório: valida resultados', 'Não valida o que ela mesma lançou ou corrigiu', false, function(m) { return m.labGerencia ? 'pela Gerência da Qualidade' : m.labRT ? 'por ser a Responsável Técnica' : ''; }],
+    ['labGerencia', 'lab', 'Gerência', 'Gerência da Qualidade no laboratório', 'Valida, altera o plano e decide o lote'],
+    ['labRT', 'lab', 'Resp. Técnica', 'Responsável Técnica', 'Valida, altera o plano e decide o lote'],
+    ['gestorDocumentos', 'lab', 'Aprova documentos', 'Revisa e aprova documentos da qualidade', 'POPs, Manual de BPF e licenças (nunca a versão que ela mesma elaborou)'],
+    ['atendeTi', 'outros', 'Atende TI', 'Atende os chamados de TI', 'Vê a fila da aba TI, assume e resolve'],
+    ['atendePredial', 'outros', 'Atende predial', 'Atende a manutenção predial', 'Vê a fila da aba Manutenção predial', false, function(m, l) { return l && nivelDe(l, 'manutencao') === 'gerir' ? 'por gerenciar o módulo Manutenção' : ''; }],
+    ['aprovaCliente', 'outros', 'Aprova cliente', 'Aprova cliente novo da força de vendas', 'Análise junto com o financeiro'],
+    ['alertaEstoque', 'outros', 'Alerta de estoque', 'Recebe o alerta de falta de estoque', 'No Início: cargas dos próximos 2 dias que o estoque não cobre']
+  ];
+  var PERM_ESP = [['liberar_carga', 'Libera carga', 'Libera carga sem leitura e sem fotos', 'Conclui o carregamento sem a leitura do código de barras e sem as fotos do caminhão', true],
+    ['canhotos', 'Canhotos', 'Canhotos e fotos do caminhão', 'Aba Canhotos: confere as fotos dos canhotos e do caminhão'],
+    ['lider_producao', 'Só lança produção', 'Líder de produção (só lança a produção)', 'Entra direto no lançamento da produção hora a hora e não vê o resto do app']];
+  var permColsCache = null;
+  function permColunas() {
+    if (permColsCache) return permColsCache;
+    var c = [];
+    ABAS_EQUIPE.forEach(function(a) { c.push({ id: 'aba:' + a[0], aba: a[0], grupo: 'abas', tipo: 'aba', curto: PERM_CURTO[a[0]] || a[1], nome: 'Aba ' + a[1], desc: PERM_ABA_DESC[a[0]] || '' }); });
+    ABAS_OPCIONAIS.forEach(function(a) { c.push({ id: 'aba:' + a[0], aba: a[0], grupo: 'abasM', tipo: 'abaM', curto: a[1], nome: 'Aba ' + a[1], desc: PERM_ABA_DESC[a[0]] || '', sens: true }); });
+    PERM_MARCAS.filter(function(x) { return x[1] === 'perfil'; }).forEach(function(x) { c.push(permColMarca(x)); });
+    MODULOS_FABRICA.forEach(function(m) { c.push({ id: 'mod:' + m.id, mod: m.id, grupo: 'mods', tipo: 'mod', curto: m.curto, nome: 'Módulo ' + m.nome, desc: m.desc }); });
+    PERM_MARCAS.filter(function(x) { return x[1] !== 'perfil'; }).forEach(function(x) { c.push(permColMarca(x)); });
+    c.push({ id: 'linha', grupo: 'producao', tipo: 'linha', curto: 'Líder da linha', nome: 'Líder de produção da linha', desc: 'Linha e turno em que é líder (muda no perfil)' });
+    PERM_ESP.forEach(function(p) { c.push({ id: 'esp:' + p[0], esp: p[0], grupo: 'esp', tipo: 'esp', curto: p[1], nome: p[2], desc: p[3], sens: !!p[4] }); });
+    var ordem = PERM_GRUPOS.map(function(g) { return g[0]; });
+    permColsCache = c.map(function(x, i) { x.i = i; return x; }).sort(function(a, b) { return ordem.indexOf(a.grupo) - ordem.indexOf(b.grupo) || a.i - b.i; });
+    return permColsCache;
+  }
+  function permColMarca(x) { return { id: 'm:' + x[0], campo: x[0], grupo: x[1], tipo: 'marca', curto: x[2], nome: x[3], desc: x[4], sens: !!x[5], deriva: x[6] || null }; }
+  function permCol(id) { return permColunas().find(function(c) { return c.id === id; }) || null; }
+  var PERM_TXT = { E: 'Edita', I: 'Só inclui', V: 'Só vê', U: 'Usa', G: 'Gerencia', S: 'Sim' };
+  // valor de uma pessoa numa coluna: { v: E|I|V|U|G|S|'', fonte: 'pelo cargo…' (vem de outra regra), semApp, lider, txt }
+  function permValor(m, x, l, c) {
+    var r = { v: '', fonte: '', semApp: false, lider: false, txt: '' };
+    if (c.tipo === 'aba' || c.tipo === 'abaM' || c.tipo === 'mod' || c.tipo === 'esp') {
+      if (!x) { r.semApp = true; return r; }
+      var lider = l.indexOf('lider_producao') >= 0;
+      if (c.tipo === 'aba' || c.tipo === 'abaM') {
+        if (lider) r.lider = true;
+        if (l.indexOf('aba:' + c.aba) >= 0) r.v = l.indexOf('ver:' + c.aba) >= 0 ? 'V' : l.indexOf('inclui:' + c.aba) >= 0 && c.tipo === 'aba' ? 'I' : 'E';
+      } else if (c.tipo === 'mod') { var n = nivelDe(l, c.mod); r.v = n === 'gerir' ? 'G' : n ? 'U' : ''; if (lider) r.lider = true; }
+      else r.v = l.indexOf(c.esp) >= 0 ? 'S' : '';
+    } else if (c.tipo === 'marca') {
+      if (m[c.campo]) r.v = 'S';
+      else if (c.deriva) { var f = c.deriva(m, l); if (f) { r.v = 'S'; r.fonte = f; } }
+    } else if (c.tipo === 'linha' && m.linhaProducao) {
+      r.v = 'S'; r.txt = phLinhaNome(m.linhaProducao) + (phTurnoDe(m.linhaProducao, m.turnoProducao) ? ' · ' + phTurnoDe(m.linhaProducao, m.turnoProducao) : '');
+    }
+    r.txt = r.txt || (r.v ? PERM_TXT[r.v] : '');
+    return r;
+  }
+  function permPessoas() {
+    return equipe.slice().sort(function(a, b) { return String(a.nomeCompleto || a.nome || '').localeCompare(String(b.nomeCompleto || b.nome || ''), 'pt-BR'); }).map(function(m) {
+      var x = acessoDoMembro(m), t = x && acessoInfo && acessoInfo.todas ? acessoInfo.todas.find(function(y) { return y.ref === x.ref; }) : null;
+      return { m: m, x: x, l: x ? modulosEfetivos(x) : null, uso: t ? t.aparelhoUsadoEm : null, aparelhos: t ? t.aparelhos : 0 };
+    });
+  }
+  function permNome(m) { return m.nomeCompleto || m.nome || ''; }
+  function permStatusApp(p) {
+    if (p.x) return 'app' + (p.x.em ? ' desde ' + permData(p.x.em) : '') + (p.aparelhos ? ' · ' + p.aparelhos + (p.aparelhos === 1 ? ' aparelho' : ' aparelhos') : '') + (p.uso ? ' · usou ' + permData(p.uso) : ' · ainda não usou');
+    return membroTemPin(p.m) ? 'só a senha de 4 números' : 'sem senha';
+  }
+  function permParado(uso, em) {
+    var lim = new Date(Date.now() - 60 * 864e5).toISOString();
+    return uso ? uso < lim : (!em || String(em) < new Date(Date.now() - 7 * 864e5).toISOString());
+  }
+  function permAlertas(pess) {
+    var cols = permColunas(), sem = [], sens = [];
+    cols.forEach(function(c) {
+      var quem = pess.filter(function(p) { return permValor(p.m, p.x, p.l, c).v; });
+      if (!quem.length && c.tipo === 'marca' && c.grupo !== 'perfil') sem.push(c.nome);
+      if (c.sens && quem.length) sens.push({ c: c, nomes: quem.map(function(p) { return primeiroNome(permNome(p.m)) + (permValor(p.m, p.x, p.l, c).fonte ? ' (pelo cargo)' : ''); }) });
+    });
+    var parados = pess.filter(function(p) { return p.x && permParado(p.uso, p.x.em); }).map(function(p) { return permNome(p.m) + (p.uso ? ' (usou ' + permData(p.uso) + ')' : ' (nunca usou)'); });
+    ((acessoInfo && acessoInfo.setores) || []).forEach(function(s) { var t = (acessoInfo.todas || []).find(function(y) { return y.ref === s.ref; }); if (permParado(t && t.aparelhoUsadoEm, s.em)) parados.push(s.nome + ' (tablet/setor' + (t && t.aparelhoUsadoEm ? ', usou ' + permData(t.aparelhoUsadoEm) : ', nunca usou') + ')'); });
+    var orfaos = ((acessoInfo && acessoInfo.escritorio) || []).filter(function(x) { return !equipe.some(function(m) { return x.ref === 'escritorio:' + m.id; }); }).map(function(x) { return x.nome; });
+    return { sem: sem, sens: sens, parados: parados, orfaos: orfaos, n: (sem.length ? 1 : 0) + (parados.length ? 1 : 0) + (orfaos.length ? 1 : 0) };
+  }
+  function permFiltrados(pess, semBusca) {
+    var q = semBusca ? '' : buscaNorm(permUi.busca);
+    return pess.filter(function(p) {
+      if (permUi.soApp && !p.x) return false;
+      if (permUi.area && (p.m.area || '') !== permUi.area) return false;
+      return !q || buscaNorm([permNome(p.m), p.m.nome, cargoNome(p.m.cargo), p.m.area].join(' ')).indexOf(q) !== -1;
+    });
+  }
+  function permColsVisiveis() {
+    var q = buscaNorm(permUi.busca), cols = permColunas().filter(function(c) { return !permUi.grupo || c.grupo === permUi.grupo; });
+    // a busca também acha a função: com ela, mostra só as colunas que batem (e todas as pessoas)
+    var porFuncao = q ? cols.filter(function(c) { return buscaNorm(c.nome + ' ' + c.curto).indexOf(q) !== -1; }) : [];
+    return { cols: porFuncao.length ? porFuncao : cols, porFuncao: porFuncao.length > 0 };
+  }
+  function renderPermPainel() {
+    var el = document.getElementById('perm-painel');
+    if (!el) return;
+    var sec = document.getElementById('perm-admin');
+    if (!gereAcessos()) { if (sec) sec.classList.add('hidden'); el.innerHTML = ''; permUi.montado = false; return; }
+    if (sec) sec.classList.remove('hidden');
+    if (!acessoInfo) { if (!acessoBuscando) carregarAcessoInfo(); el.innerHTML = '<p class="field-hint">Conferindo os acessos…</p>'; permUi.montado = false; return; }
+    if (acessoInfo.erro) { el.innerHTML = '<p class="form-error">Não foi possível conferir os acessos agora. Tente de novo em instantes.</p>'; permUi.montado = false; return; }
+    if (!permUi.montado) {
+      var areas = [];
+      equipe.forEach(function(m) { if (m.area && areas.indexOf(m.area) < 0) areas.push(m.area); });
+      areas.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); });
+      el.innerHTML = '<div id="pp-topo"></div>' +
+        '<div class="pp-filtros"><input type="search" id="pp-busca" placeholder="Buscar pessoa ou função" autocomplete="off" value="' + escapeHtml(permUi.busca) + '" aria-label="Buscar pessoa ou função" />' +
+        '<select id="pp-area" aria-label="Área"><option value="">Todas as áreas</option>' + areas.map(function(a) { return '<option' + (a === permUi.area ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select>' +
+        '<label class="check-row"><input type="checkbox" id="pp-so-app"' + (permUi.soApp ? ' checked' : '') + ' /> Só quem tem acesso ao app</label></div>' +
+        '<div class="pp-grupos" role="group" aria-label="Colunas"><button type="button" class="est-loc" data-pp="grupo" data-g="">Todas as colunas</button>' +
+          PERM_GRUPOS.map(function(g) { return '<button type="button" class="est-loc" data-pp="grupo" data-g="' + g[0] + '">' + escapeHtml(g[1]) + '</button>'; }).join('') + '</div>' +
+        '<div id="pp-tabela"></div>' +
+        '<p class="pp-leg"><b class="pp-l E">E</b> = edita · <b class="pp-l I">I</b> = só inclui · <b class="pp-l V">V</b> = só vê · <b class="pp-l U">U</b> = usa · <b class="pp-l G">G</b> = gerencia · <b>✓</b> = tem · <i>✓ em itálico</i> = vem do cargo ou de outra função · <b class="pp-l sem">·</b> = sem acesso ao app · — = não tem. ' +
+          'Toque numa célula para mudar, no nome para abrir o perfil e no título da coluna para ver quem tem. Abas, módulos e permissões especiais valem no próximo login da pessoa; as marcas do perfil valem na hora.</p>' +
+        '<div class="px-acoes"><button type="button" class="btn btn-secondary btn-sm" data-pp="csv">Baixar planilha</button></div>' +
+        '<h3 class="acesso-sub">Outros acessos</h3><div id="pp-outros"></div>' +
+        '<h3 class="acesso-sub">Histórico de mudanças</h3><div id="pp-hist"></div>';
+      permUi.montado = true;
+    }
+    var pess = permPessoas();
+    permRenderTopo(pess);
+    permRenderTabela(pess);
+    permRenderOutros();
+    permRenderHist();
+    Array.prototype.forEach.call(el.querySelectorAll('[data-pp="grupo"]'), function(b) { var on = b.dataset.g === permUi.grupo; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+  }
+  function permRenderTopo(pess) {
+    var box = document.getElementById('pp-topo');
+    if (!box) return;
+    var comApp = pess.filter(function(p) { return p.x; }).length, soPin = pess.filter(function(p) { return !p.x && membroTemPin(p.m); }).length;
+    var setores = (acessoInfo.setores || []).length, al = permAlertas(pess);
+    var li = [];
+    if (al.sem.length) li.push('<li><details><summary><b>Funções sem ninguém (' + al.sem.length + ')</b> — assinaturas, Compras, Produção, laboratório e chamados que ninguém da equipe faz</summary>' + escapeHtml(al.sem.join(', ')) + '.</details></li>');
+    if (al.parados.length) li.push('<li><b>Acessos parados (sem uso há mais de 60 dias ou nunca usados):</b> ' + escapeHtml(al.parados.join(', ')) + '. Se a pessoa não usa mais, remova o acesso no perfil.</li>');
+    if (al.orfaos.length) li.push('<li><b>Acesso ao app sem cadastro na equipe:</b> ' + escapeHtml(al.orfaos.join(', ')) + ' (remova em Equipe com senha).</li>');
+    var sensHtml = al.sens.map(function(s) { return '<li><b>' + escapeHtml(s.c.nome) + ':</b> ' + escapeHtml(s.nomes.join(', ')) + '</li>'; }).join('');
+    box.innerHTML = '<div class="pp-cards">' +
+      '<div class="pp-card"><b>' + comApp + '</b><span>pessoas com acesso ao app</span></div>' +
+      '<div class="pp-card"><b>' + soPin + '</b><span>só com a senha de 4 números</span></div>' +
+      '<div class="pp-card"><b>' + setores + '</b><span>tablets e acessos de setor</span></div>' +
+      '<div class="pp-card' + (al.n ? ' alerta' : '') + '"><b>' + li.length + '</b><span>' + (li.length === 1 ? 'alerta' : 'alertas') + '</span></div></div>' +
+      (li.length ? '<details class="pp-alertas" open><summary>Alertas</summary><ul>' + li.join('') + '</ul></details>' : '<p class="pcp-ok">✓ Nenhum alerta: todas as funções têm alguém e nenhum acesso está parado.</p>') +
+      (sensHtml ? '<details class="pp-alertas pp-sens"><summary>Quem tem permissões sensíveis</summary><ul>' + sensHtml + '</ul></details>' : '');
+  }
+  function permCelula(p, c) {
+    var r = permValor(p.m, p.x, p.l, c);
+    var cls = r.semApp ? 'sem' : r.v || 'nao', t = r.semApp ? '·' : r.v === 'S' ? '✓' : r.v || '—';
+    var tit = permNome(p.m) + ' · ' + c.nome + ': ' + (r.semApp ? 'sem acesso ao app' : r.v ? r.txt + (r.fonte ? ' (' + r.fonte + ')' : '') : 'não tem') + (r.lider ? ' · líder de produção' : '');
+    return '<td><button type="button" class="pp-c ' + cls + (r.fonte ? ' cargo' : '') + '" data-pp="cel" data-id="' + escapeHtml(p.m.id) + '" data-col="' + escapeHtml(c.id) + '" title="' + escapeHtml(tit) + '" aria-label="' + escapeHtml(tit) + '">' + t + '</button></td>';
+  }
+  function permRenderTabela(pess) {
+    var box = document.getElementById('pp-tabela');
+    if (!box) return;
+    var vis = permColsVisiveis(), cols = vis.cols, lista = permFiltrados(pess, vis.porFuncao);
+    if (!equipe.length) { box.innerHTML = '<p class="empty-state">Ninguém cadastrado em Equipe com senha.</p>'; return; }
+    if (!lista.length) { box.innerHTML = '<p class="empty-state">Ninguém encontrado com esse filtro.</p>'; return; }
+    var grupos = [];
+    cols.forEach(function(c) { var g = grupos[grupos.length - 1]; if (g && g.k === c.grupo) g.n++; else grupos.push({ k: c.grupo, n: 1 }); });
+    var nomeG = function(k) { var g = PERM_GRUPOS.find(function(x) { return x[0] === k; }); return g ? g[1] : k; };
+    var cont = function(c) { return pess.filter(function(p) { return permValor(p.m, p.x, p.l, c).v; }).length; };
+    box.innerHTML = (vis.porFuncao ? '<p class="field-hint">Mostrando as funções que batem com a busca.</p>' : '') +
+      '<div class="pp-mat"><table><thead><tr><th class="pp-nome pp-g" rowspan="2">Pessoa</th>' + grupos.map(function(g) { return '<th class="pp-g" colspan="' + g.n + '">' + escapeHtml(nomeG(g.k)) + '</th>'; }).join('') + '</tr><tr>' +
+      cols.map(function(c, i) {
+        var n = cont(c), novoG = i === 0 || cols[i - 1].grupo !== c.grupo;
+        return '<th class="pp-hc' + (novoG ? ' g0' : '') + '"><button type="button" class="pp-h" data-pp="col" data-col="' + escapeHtml(c.id) + '">' + escapeHtml(c.curto) + (c.sens ? ' <span class="pp-sens" title="permissão sensível">!</span>' : '') + '<small class="' + (n ? '' : 'zero') + '">' + n + '</small></button></th>';
+      }).join('') + '</tr></thead><tbody>' +
+      lista.map(function(p) {
+        return '<tr><td class="pp-nome"><button type="button" class="pp-pessoa" data-pp="pessoa" data-id="' + escapeHtml(p.m.id) + '"><b>' + escapeHtml(permNome(p.m)) + '</b><small>' + escapeHtml([cargoNome(p.m.cargo), p.m.area].filter(Boolean).join(' · ') || 'sem cargo') + '</small><small class="' + (p.x ? 'app' : '') + '">' + escapeHtml(permStatusApp(p)) + '</small></button></td>' +
+          cols.map(function(c, i) { var h = permCelula(p, c); return i === 0 || cols[i - 1].grupo !== c.grupo ? h.replace('<td>', '<td class="g0">') : h; }).join('') + '</tr>';
+      }).join('') + '</tbody></table></div>';
+  }
+  function permResumoModulos(l, semAbas) {
+    var abas = semAbas ? [] : ABAS_EQUIPE.concat(ABAS_OPCIONAIS).filter(function(a) { return l.indexOf('abas') < 0 ? ABAS_EQUIPE.indexOf(a) >= 0 : l.indexOf('aba:' + a[0]) >= 0; })
+      .map(function(a) { return a[1] + (l.indexOf('ver:' + a[0]) >= 0 ? ' (só vê)' : l.indexOf('inclui:' + a[0]) >= 0 ? ' (só inclui)' : ''); });
+    var mods = MODULOS_FABRICA.map(function(m) { var n = nivelDe(l, m.id); return n ? m.curto + (n === 'gerir' ? ' (gerencia)' : '') : ''; }).filter(Boolean);
+    return [abas.length ? 'Abas: ' + abas.join(', ') : '', mods.length ? 'Módulos: ' + mods.join(', ') : '', l.indexOf('lider_producao') >= 0 ? 'Tela da máquina / lançamento da produção' : ''].filter(Boolean).join(' · ') || 'Nada marcado';
+  }
+  function permOutros() {
+    var info = acessoInfo || {}, todas = info.todas || [], l = [];
+    var uso = function(ref) { var t = todas.find(function(y) { return y.ref === ref; }); return t && t.aparelhoUsadoEm ? permData(t.aparelhoUsadoEm) + (t.aparelhos ? ' · ' + t.aparelhos + (t.aparelhos === 1 ? ' aparelho' : ' aparelhos') : '') : 'sem registro'; };
+    l.push({ nome: 'Senha mestre (Nicolas)', tipo: 'Senha mestre', abre: 'Tudo. Cadastros, Pesquisas e Segurança só com ela.', uso: uso('mestre') });
+    (info.diretoria || []).forEach(function(d) { l.push({ nome: d.nome, tipo: 'Diretoria', abre: 'Vê tudo como a senha mestre, mas só inclui (não altera nem apaga)' + (d.biometria ? '; entra com o rosto' : ''), uso: uso(d.ref) }); });
+    l.push({ nome: 'Senha da equipe do escritório', tipo: 'Compartilhada', abre: info.equipe ? permResumoModulos(info.equipeModulos || []) + ' (todas em Edita)' : 'Ainda não criada', uso: info.equipe ? uso('equipe') : '—' });
+    (info.setores || []).forEach(function(s) { l.push({ nome: s.nome, tipo: /^setor:maq-/.test(s.ref) ? 'Tablet de máquina' : 'Tablet / setor', abre: permResumoModulos(s.modulos || [], true), uso: uso(s.ref) }); });
+    var mot = todas.filter(function(t) { return /^motorista:/.test(t.ref); }).length, reps = Object.keys(info.reps || {}).length;
+    l.push({ nome: mot + (mot === 1 ? ' motorista' : ' motoristas') + ' com senha', tipo: 'Motoristas', abre: 'Cada um vê só as entregas dele', uso: '—' });
+    l.push({ nome: reps + (reps === 1 ? ' representante' : ' representantes') + ' com senha', tipo: 'Força de vendas', abre: 'Cada um vê só os clientes e pedidos dele', uso: '—' });
+    return l;
+  }
+  function permRenderOutros() {
+    var box = document.getElementById('pp-outros');
+    if (!box) return;
+    box.innerHTML = permOutros().map(function(o) {
+      return '<div class="frete-item pp-outro"><div class="frete-top"><span><b>' + escapeHtml(o.nome) + '</b></span><span class="pp-tipo">' + escapeHtml(o.tipo) + '</span></div>' +
+        '<div class="frete-sub">' + escapeHtml(o.abre) + '</div>' + (o.uso !== '—' ? '<div class="frete-sub">último uso: ' + escapeHtml(o.uso) + '</div>' : '') + '</div>';
+    }).join('') + '<p class="field-hint">Para mudar a senha da equipe, os tablets e os setores, use <b>Acesso ao app</b>; motoristas e força de vendas, nos cadastros deles.</p>';
+  }
+  // ----- mudar pela célula -----
+  function permAbrirPerfil(id) {
+    var m = equipe.find(function(x) { return x.id === id; });
+    if (m) { gerFechar(); openEquipeForm('reset', m); }
+  }
+  function permOpcoes(c) {
+    if (c.tipo === 'aba') return [['', 'Não tem'], ['E', 'Edita'], ['I', 'Só inclui'], ['V', 'Só vê']];
+    if (c.tipo === 'abaM') return [['', 'Não tem'], ['E', 'Edita'], ['V', 'Só vê']];
+    if (c.tipo === 'mod') return [['', 'Não usa'], ['U', 'Usa'], ['G', 'Gerencia']];
+    return [['', 'Não'], ['S', 'Sim']];
+  }
+  function permAbrirCelula(id, colId) {
+    var m = equipe.find(function(x) { return x.id === id; }), c = permCol(colId);
+    if (!m || !c) return;
+    var p = permPessoas().find(function(y) { return y.m.id === id; }), r = permValor(m, p.x, p.l, c);
+    var tit = primeiroNome(permNome(m)) + ' · ' + c.nome;
+    var topo = '<p class="hint">' + escapeHtml(c.desc || '') + '</p>';
+    if (c.tipo === 'linha') {
+      return gerAbrir({ titulo: tit, html: topo + '<p>' + (r.v ? 'Líder da linha <b>' + escapeHtml(r.txt) + '</b>.' : 'Não é líder de nenhuma linha.') + '</p><p class="field-hint">A linha e o turno mudam no perfil.</p>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-ger="perfil">Abrir o perfil</button>', acao: function(k) { if (k === 'perfil') permAbrirPerfil(id); } });
+    }
+    if (r.semApp) {
+      return gerAbrir({ titulo: tit, html: topo + '<p>' + escapeHtml(primeiroNome(permNome(m))) + ' ainda não tem acesso ao app (entra só com a senha de 4 números, para assinar). Abas, módulos e permissões especiais precisam do acesso: crie a senha no perfil.</p>' +
+        '<button type="button" class="btn btn-primary btn-sm" data-ger="perfil">Abrir o perfil</button>', acao: function(k) { if (k === 'perfil') permAbrirPerfil(id); } });
+    }
+    var trava = r.lider && c.tipo !== 'esp' ? '<p class="frete-sub alerta">' + escapeHtml(primeiroNome(permNome(m))) + ' entra como <b>líder de produção</b> (só lança a produção). Para liberar abas e módulos, desmarque antes “Só lança produção” nas Permissões especiais.</p>' : '';
+    if (trava) return gerAbrir({ titulo: tit, html: topo + trava });
+    var atual = r.fonte ? '' : r.v, ops = permOpcoes(c);
+    var html = topo + (r.fonte ? '<p class="frete-sub">Já tem ' + escapeHtml(r.fonte) + '. Marcar aqui deixa a marca no perfil também; desmarcar não tira o que vem do cargo.</p>' : '') +
+      '<fieldset class="ph-grupo"><legend>' + escapeHtml(primeiroNome(permNome(m))) + '</legend><div class="ph-chips">' + ops.map(function(o) {
+        return '<label class="ph-chip"><input type="radio" name="pp-op" value="' + o[0] + '"' + (o[0] === atual ? ' checked' : '') + ' /> ' + escapeHtml(o[1]) + '</label>';
+      }).join('') + '</div></fieldset>' +
+      (c.esp === 'lider_producao' ? '<p class="frete-sub alerta">Marcando, a pessoa passa a ver só o lançamento da produção: as outras abas, módulos e permissões especiais do acesso saem.</p>' : '') +
+      (c.sens ? '<p class="frete-sub alerta">Permissão sensível: confira se é isso mesmo.</p>' : '') +
+      (c.tipo === 'marca' ? '<p class="field-hint">Vale na hora.</p>' : '<p class="field-hint">Vale no próximo login da pessoa.</p>') +
+      '<button type="button" class="btn-text" data-ger="perfil">Abrir o perfil</button>';
+    gerAbrir({
+      titulo: tit, botao: 'Salvar', html: html,
+      acao: function(k) { if (k === 'perfil') permAbrirPerfil(id); },
+      salvar: function() {
+        var sel = document.querySelector('#ger-form-body input[name="pp-op"]:checked'), novo = sel ? sel.value : atual;
+        if (novo === atual) return true;
+        return permAplicar(p, c, novo, atual).then(function() { showToast(c.nome + ' de ' + primeiroNome(permNome(m)) + ': ' + (novo ? permOpcoes(c).find(function(o) { return o[0] === novo; })[1] : 'tirado') + '.'); });
+      }
+    });
+  }
+  function permNovosModulos(l, c, novo) {
+    var out;
+    if (c.tipo === 'aba' || c.tipo === 'abaM') {
+      out = l.filter(function(k) { return k !== 'aba:' + c.aba && k !== 'ver:' + c.aba && k !== 'inclui:' + c.aba; });
+      if (novo) { out.push('aba:' + c.aba); if (novo === 'V') out.push('ver:' + c.aba); if (novo === 'I') out.push('inclui:' + c.aba); }
+    } else if (c.tipo === 'mod') {
+      out = l.filter(function(k) { return k !== c.mod && k !== c.mod + ':gerir'; });
+      if (novo) out.push(novo === 'G' ? c.mod + ':gerir' : c.mod);
+    } else if (c.esp === 'lider_producao' && novo) out = ['abas', 'aba:estoque', 'inclui:estoque', 'lider_producao'];
+    else { out = l.filter(function(k) { return k !== c.esp; }); if (novo) out.push(c.esp); }
+    if (out.indexOf('abas') < 0) out.unshift('abas');
+    return out;
+  }
+  function permAplicar(p, c, novo, atual) {
+    var m = p.m, txt = function(v) { return v ? (permOpcoes(c).find(function(o) { return o[0] === v; }) || [v, v])[1] : '—'; };
+    var reg = function() { return permRegistrar({ pessoaId: m.id, pessoa: permNome(m), origem: 'painel', mudancas: [{ f: c.nome, de: txt(atual), para: txt(novo) }] }); };
+    if (c.tipo === 'marca') {
+      var patch = {}; patch[c.campo] = novo === 'S';
+      return saveMembro(m.id, patch).then(reg);
+    }
+    var x = p.x, l = permNovosModulos(p.l, c, novo);
+    return chamarAcesso({ acao: 'ajustar', ref: x.ref, nome: x.nome || permNome(m), modulos: l }).then(function() {
+      x.modulos = l; // a tabela já mostra; a lista do servidor é conferida de novo em seguida
+      renderPermPainel(); renderEquipeAdmin();
+      return reg();
+    }).then(function() { if (!acessoBuscando) carregarAcessoInfo(); });
+  }
+  // ----- histórico -----
+  function permRegistrar(r) {
+    if (mode !== 'db' || !db || !r.mudancas || !r.mudancas.length) return Promise.resolve();
+    var id = 'ph' + String(Date.now()).padStart(15, '0') + '-' + uid().slice(-6).replace(/[^A-Za-z0-9]/g, 'x');
+    var d = Object.assign({ em: new Date().toISOString(), por: quemSessao(), porRef: minhaRef() }, r);
+    return db.collection(PERM_HIST_COL).doc(id).set(d).then(function() {
+      if (permUi.hist) { permUi.hist.unshift(Object.assign({ id: id }, d)); permRenderHist(); }
+    }).catch(function(e) { console.error('historico de permissões', e); });
+  }
+  // o que a pessoa tem direto (sem o que vem do cargo), para comparar antes e depois de salvar o perfil
+  function permFoto(m, x) {
+    var l = x ? modulosEfetivos(x) : null, f = {};
+    permColunas().forEach(function(c) { var r = permValor(m || {}, x, l, c); f[c.nome] = r.semApp || r.fonte ? '' : r.v ? r.txt : ''; });
+    f['Cargo'] = cargoNome((m || {}).cargo) || ''; f['Área'] = (m || {}).area || ''; f['Setores que autoriza'] = (m || {}).setores || '';
+    f['Acesso ao app'] = x ? 'Tem' : '';
+    return f;
+  }
+  function permDiferencas(a, b) {
+    var out = [];
+    Object.keys(b).forEach(function(k) { var de = (a && a[k]) || '', para = b[k] || ''; if (de !== para) out.push({ f: k, de: de || '—', para: para || '—' }); });
+    return out;
+  }
+  function permDoPerfil(id, antes, mDepois, xDepois, extra) {
+    var dif = permDiferencas(antes, permFoto(mDepois, xDepois)).concat(extra || []);
+    if (dif.length) permRegistrar({ pessoaId: id, pessoa: permNome(mDepois), origem: 'perfil', mudancas: dif });
+  }
+  function permCarregarHist(mais) {
+    if (mode !== 'db' || !sbCliente || permUi.histCarregando) return;
+    permUi.histCarregando = true;
+    var q = sbCliente.from('docs').select('id,data').eq('colecao', PERM_HIST_COL).order('id', { ascending: false }).limit(200);
+    q.then(function(r) {
+      permUi.histCarregando = false;
+      if (r.error) throw r.error;
+      permUi.hist = (r.data || []).map(function(x) { return Object.assign({ id: x.id }, x.data || {}); });
+      permUi.histFim = (r.data || []).length < 200;
+      permRenderHist();
+    }).catch(function(e) { permUi.histCarregando = false; console.error('historico de permissões', e); var b = document.getElementById('pp-hist'); if (b) b.innerHTML = '<p class="form-error">Não foi possível abrir o histórico agora.</p>'; });
+  }
+  var PERM_ORIGEM = { painel: 'pelo painel', perfil: 'pelo perfil', acesso: 'em Acesso ao app' };
+  function permRenderHist() {
+    var box = document.getElementById('pp-hist');
+    if (!box) return;
+    if (!permUi.histAberto) { box.innerHTML = '<p class="field-hint">Cada mudança de permissão fica registrada (quem mudou, o quê, de quem e quando), daqui em diante.</p><button type="button" class="btn btn-secondary btn-sm" data-pp="hist">Ver o histórico</button>'; return; }
+    if (!permUi.hist) { box.innerHTML = '<p class="field-hint">Carregando…</p>'; if (!permUi.histCarregando) permCarregarHist(); return; }
+    var q = buscaNorm(permUi.busca);
+    var l = permUi.hist.filter(function(h) { return !q || buscaNorm([h.pessoa, h.por, (h.mudancas || []).map(function(x) { return x.f; }).join(' ')].join(' ')).indexOf(q) !== -1; });
+    box.innerHTML = (l.length ? l.slice(0, 200).map(function(h) {
+      return '<div class="frete-item pp-h-item"><div class="frete-top"><span><b>' + escapeHtml(h.pessoa || '—') + '</b> · ' + escapeHtml(formatDateTimeBR(h.em)) + '</span></div>' +
+        '<div class="frete-sub">' + (h.mudancas || []).map(function(x) { return escapeHtml(x.f) + ': ' + escapeHtml(x.de) + ' → <b>' + escapeHtml(x.para) + '</b>'; }).join('<br>') + '</div>' +
+        '<div class="frete-sub">por ' + escapeHtml(h.por || '—') + ' ' + escapeHtml(PERM_ORIGEM[h.origem] || '') + '</div></div>';
+    }).join('') : '<p class="empty-state">' + (permUi.hist.length ? 'Nada no histórico com essa busca.' : 'Nenhuma mudança registrada ainda.') + '</p>') +
+      '<div class="px-acoes"><button type="button" class="btn-text" data-pp="hist-csv">Baixar planilha do histórico</button><button type="button" class="btn-text" data-pp="hist-fechar">Fechar o histórico</button></div>';
+  }
+  // ----- planilhas -----
+  function permCsv(linhas, nome) {
+    var esc = function(x) { var s = String(x == null ? '' : x); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    triggerDownload(new Blob(['﻿' + linhas.map(function(l) { return l.map(esc).join(';'); }).join('\r\n')], { type: 'text/csv;charset=utf-8' }), nome);
+  }
+  function permExportar() {
+    var cols = permColunas(), l = [['Pessoa', 'Cargo', 'Área', 'Acesso ao app'].concat(cols.map(function(c) { return c.nome; }))];
+    permPessoas().forEach(function(p) {
+      l.push([permNome(p.m), cargoNome(p.m.cargo), p.m.area || '', permStatusApp(p)].concat(cols.map(function(c) {
+        var r = permValor(p.m, p.x, p.l, c);
+        return r.semApp ? 'sem acesso ao app' : r.v ? r.txt + (r.fonte ? ' (' + r.fonte + ')' : '') : '';
+      })));
+    });
+    l.push([]); l.push(['Outros acessos', 'Tipo', 'O que abre', 'Último uso']);
+    permOutros().forEach(function(o) { l.push([o.nome, o.tipo, o.abre, o.uso]); });
+    permCsv(l, 'levissima-permissoes-' + todayIso() + '.csv');
+  }
+  function permExportarHist() {
+    var l = [['Data', 'Pessoa', 'Função', 'De', 'Para', 'Quem mudou', 'Onde']];
+    (permUi.hist || []).forEach(function(h) { (h.mudancas || []).forEach(function(x) { l.push([formatDateTimeBR(h.em), h.pessoa, x.f, x.de, x.para, h.por, PERM_ORIGEM[h.origem] || '']); }); });
+    permCsv(l, 'levissima-historico-permissoes-' + todayIso() + '.csv');
+  }
+  function permAbrirColuna(colId) {
+    var c = permCol(colId);
+    if (!c) return;
+    var pess = permPessoas(), tem = [], nao = 0, semApp = 0;
+    pess.forEach(function(p) { var r = permValor(p.m, p.x, p.l, c); if (r.v) tem.push({ p: p, r: r }); else if (r.semApp) semApp++; else nao++; });
+    gerAbrir({ titulo: c.nome, html: '<p class="hint">' + escapeHtml(c.desc || '') + (c.sens ? ' <b>Permissão sensível.</b>' : '') + '</p>' +
+      '<h3 class="q-plano-t">Quem tem (' + tem.length + ')</h3>' + (tem.length ? '<ul class="pp-quem">' + tem.map(function(t) {
+        return '<li><button type="button" class="btn-text" data-ger="cel" data-id="' + escapeHtml(t.p.m.id) + '">' + escapeHtml(permNome(t.p.m)) + '</button> — ' + escapeHtml(t.r.txt + (t.r.fonte ? ' (' + t.r.fonte + ')' : '')) + '</li>';
+      }).join('') + '</ul>' : '<p class="pp-vazio">Ninguém tem esta função.</p>') +
+      '<p class="field-hint">' + nao + (nao === 1 ? ' pessoa não tem' : ' pessoas não têm') + (semApp && (c.tipo === 'aba' || c.tipo === 'abaM' || c.tipo === 'mod' || c.tipo === 'esp') ? ' · ' + semApp + ' sem acesso ao app' : '') + '. Para dar a alguém, toque na célula da pessoa na tabela.</p>',
+      acao: function(k, b) { if (k === 'cel') permAbrirCelula(b.dataset.id, colId); } });
+  }
+  document.getElementById('perm-painel').addEventListener('click', function(e) {
+    var b = e.target.closest('[data-pp]');
+    if (!b) return;
+    var k = b.dataset.pp;
+    if (k === 'cel') permAbrirCelula(b.dataset.id, b.dataset.col);
+    else if (k === 'pessoa') permAbrirPerfil(b.dataset.id);
+    else if (k === 'col') permAbrirColuna(b.dataset.col);
+    else if (k === 'grupo') { permUi.grupo = b.dataset.g; renderPermPainel(); }
+    else if (k === 'csv') permExportar();
+    else if (k === 'hist') { permUi.histAberto = true; permUi.hist = null; permRenderHist(); }
+    else if (k === 'hist-fechar') { permUi.histAberto = false; permRenderHist(); }
+    else if (k === 'hist-csv') permExportarHist();
+  });
+  document.getElementById('perm-painel').addEventListener('input', function(e) {
+    if (e.target.id !== 'pp-busca') return;
+    permUi.busca = e.target.value;
+    var pess = permPessoas();
+    permRenderTabela(pess); permRenderHist();
+  });
+  document.getElementById('perm-painel').addEventListener('change', function(e) {
+    if (e.target.id === 'pp-area') { permUi.area = e.target.value; permRenderTabela(permPessoas()); }
+    else if (e.target.id === 'pp-so-app') { permUi.soApp = e.target.checked; permRenderTabela(permPessoas()); }
+  });
+  function permDifModulos(a, b) {
+    var t = function(n) { return n === 'gerir' ? 'Gerencia' : n ? 'Usa' : '—'; };
+    return MODULOS_FABRICA.map(function(m) { var na = nivelDe(a, m.id), nb = nivelDe(b, m.id); return na !== nb ? { f: 'Módulo ' + m.nome, de: t(na), para: t(nb) } : null; }).filter(Boolean);
   }
 
   // =====================================================================================================

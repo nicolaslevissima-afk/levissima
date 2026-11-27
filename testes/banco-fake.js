@@ -163,7 +163,17 @@ function criarBanco() {
       if (args.nome !== 'acesso') return erro('interno');
       const body = args.body || {};
       if (body.acao === 'entrar') { const u = USUARIOS.find((x) => x.senha === body.senha); return u ? { data: { access_token: tokenDe(u), refresh_token: 'r-' + u.ref } } : erro('senha'); }
-      if (body.acao === 'lista') return { data: { senhas: USUARIOS.filter((u) => u.papel !== 'motorista').map((u) => ({ ref: u.ref, nome: u.nome, papel: u.papel, modulos: u.modulos || [] })) } };
+      if (body.acao === 'lista') return { data: { senhas: USUARIOS.filter((u) => u.papel !== 'motorista').map((u) => ({ ref: u.ref, nome: u.nome, papel: u.papel, modulos: u.modulos || [], atualizado_em: u.em || null, aparelhos: u.aparelhos || 0, aparelhoUsadoEm: u.usadoEm || null })) } };
+      // ajustar (só a senha mestre): troca os módulos do acesso, como a função de verdade (vale no próximo login)
+      if (body.acao === 'ajustar') {
+        const eu = quem(args.token);
+        if (eu.papel !== 'mestre') return erro('permissao');
+        const u = USUARIOS.find((x) => x.ref === body.ref);
+        if (!u) return erro('nao_encontrado');
+        u.modulos = Array.isArray(body.modulos) ? body.modulos.slice() : []; if (body.nome) u.nome = body.nome;
+        b.log.push({ em: Date.now(), acesso: 'ajustar', ref: body.ref, modulos: u.modulos });
+        return { data: { ok: true } };
+      }
       return erro('interno');
     }
     const eu = quem(args.token);
