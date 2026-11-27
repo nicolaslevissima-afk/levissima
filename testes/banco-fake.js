@@ -98,6 +98,16 @@ function criarBanco() {
       const novo = Object.assign({}, a.data); if (exc) novo.excecao = exc; else delete novo.excecao;
       return { data: gravarDoc('cargas', p.p_carga, novo) };
     },
+    // preferências do próprio acesso (0047 e 0065): ordem das abas e novidades vistas
+    preferencia_gravar: (p, eu) => {
+      if (!chatPode(eu)) return erro('permissao');
+      if (['abas', 'novidades'].indexOf(p.p_chave) < 0) return erro('chave');
+      b.prefs = b.prefs || new Map();
+      const a = b.prefs.get(eu.ref) || { dono: eu.ref, dados: {} };
+      const dados = Object.assign({}, a.dados); if (p.p_valor == null) delete dados[p.p_chave]; else dados[p.p_chave] = copia(p.p_valor);
+      const novo = { dono: eu.ref, dados, atualizado_em: new Date().toISOString() }; b.prefs.set(eu.ref, novo);
+      return { data: copia(novo) };
+    },
     doc_gravar: (p) => ({ data: docSet({ colecao: p.p_colecao, id: p.p_id, dados: p.p_dados, mesclar: p.p_mesclar, uniao: p.p_uniao }) }),
     doc_atualizar: (p) => { const a = b.docs.get(p.p_colecao + '/' + p.p_id); return { data: gravarDoc(p.p_colecao, p.p_id, mesclarCaminhos(a ? a.data : {}, p.p_dados)) }; },
     docs_lote: (p) => ({ data: (p.p_ops || []).map((o) => {
@@ -184,6 +194,7 @@ function criarBanco() {
       let rows;
       if (q.table === 'docs') rows = Array.from(b.docs.values());
       else if (q.table === 'chat_msgs') rows = b.chat.filter((m) => chatPode(eu) && (m.de === eu.ref || m.para === eu.ref));
+      else if (q.table === 'preferencias') rows = Array.from((b.prefs || new Map()).values()).filter((r) => r.dono === eu.ref);
       else rows = [];
       q.filtros.forEach(([c, v]) => { rows = rows.filter((r) => r[c] === v); });
       if (q.op === 'delete') { rows.forEach((r) => { if (q.table === 'docs') { b.docs.delete(r.colecao + '/' + r.id); eventos('docs', 'DELETE', null, r); } }); return { data: null }; }

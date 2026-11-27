@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="levissima-versao" content="784d9043edc1" />
+<meta name="levissima-versao" content="3d9fb1513463" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -20761,16 +20761,31 @@
   }
   function qNovoId() { return 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function qProximaNc() { return qual.nc.reduce(function(m, x) { return Math.max(m, Number(x.numero) || 0); }, 0) + 1; }
+  // "precisa ser da Qualidade": acesso que não é a senha mestre/diretoria, com alguém marcado como Qualidade na equipe
   function qPorSenha() { return !!session && session.role !== 'admin' && membrosCom('qualidade').length > 0; }
-  // Assinatura do registro: senha de 4 números de quem é da Qualidade (ou o nome do responsável).
+  // Qualidade sem a senha de 4 números (27/11/2026): quem é da Qualidade assina com o próprio acesso (um toque, sem
+  // senha); quem não é não salva (o botão de salvar some e o aviso diz por quê). Senha mestre e diretoria: como antes.
+  var Q_SO_QUALIDADE = 'Só quem é da Qualidade (marcado em Cadastros › Equipe) salva este registro, com o próprio acesso.';
+  function qEuQualidade() { return euPodeFuncao('qualidade'); }
+  function qPodeSalvar() { return !qPorSenha() || !!qEuQualidade(); }
+  function qAssinanteHtml() {
+    var eu = qEuQualidade();
+    return eu ? '<p class="hint">Fica assinado por <b>' + escapeHtml(eu.nome) + '</b> (o seu acesso).</p>' : '<p class="form-error" data-q-sem-qual="1">' + Q_SO_QUALIDADE + '</p>';
+  }
+  // aviso na caixa que estiver aberta (a do formulário da Qualidade ou a caixa geral)
+  function qNega(msg) {
+    var ger = document.getElementById('ger-sheet-overlay'), qs = document.getElementById('q-sheet-overlay');
+    if (ger && !ger.classList.contains('hidden')) gerErro(msg); else if (qs && !qs.classList.contains('hidden')) qErro(msg); else showToast(msg);
+  }
+  var qAssinarAte = 0;
+  // Assinatura do registro: quem é da Qualidade, pelo próprio acesso (ou o nome do responsável, sem ninguém marcado)
   function qAssinar(nomeDigitado, acao, feito) {
     if (!qPorSenha()) { feito({ nome: nomeDigitado || (session && session.role === 'admin' ? 'Senha mestre' : 'Equipe'), id: '' }); return; }
-    openPinDialog({
-      funcao: 'qualidade', funcaoTexto: 'é da Qualidade',
-      titulo: 'Qualidade · ' + acao, hint: 'Assine com a sua senha de 4 números.',
-      semCadastro: 'Ninguém marcado como Qualidade em Cadastros › Equipe.',
-      onOk: function(m) { feito({ nome: m.nome, id: m.id }); }
-    });
+    var eu = qEuQualidade();
+    if (!eu) { qNega(Q_SO_QUALIDADE); return; }
+    if (Date.now() < qAssinarAte) return; // dois toques seguidos: salva uma vez só
+    qAssinarAte = Date.now() + 1500;
+    feito({ nome: eu.nome, id: eu.id });
   }
   function qHoraAgora() { var n = new Date(); return String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }
   function qDiasDesde(iso) { if (!iso) return Infinity; return Math.round((Date.parse(todayIso() + 'T12:00:00') - Date.parse(String(iso).slice(0, 10) + 'T12:00:00')) / 86400000); }
@@ -20930,7 +20945,7 @@
   // Registro (coleção lab-registros): rotina, identificação (produto + data de produção + linha = lote; ou ponto,
   // colaborador, cabeçote), coleta, motivo (rotina ou extraordinária), resultados por parâmetro com o critério usado
   // gravado junto (mudar o plano depois não muda a avaliação antiga), situação, lançamento e validação. Quem lança
-  // não valida (outra pessoa com "Laboratório: valida", Gerência ou RT, pela senha de 4 números). Resultado já
+  // não valida (outra pessoa com "Laboratório: valida", Gerência ou RT, pelo próprio acesso). Resultado já
   // lançado só muda com o motivo, fica no histórico (valor antigo e novo) e volta a pedir validação; o banco recusa
   // alteração sem histórico (migração 0049). Resultado fora do critério não bloqueia lote sozinho: no produto, o
   // parâmetro legal fora indica a retenção prevista no POP (item IV) e a decisão formal fica registrada no lote.
@@ -21147,8 +21162,8 @@
   function labAssinarGestor(titulo, feito) {
     if (session && session.role === 'admin') { feito({ nome: quemSessao() || 'Senha mestre', id: '' }); return; }
     var eu = labEu();
-    openPinDialog({ permite: labGestorM, funcaoTexto: 'é da Gerência da Qualidade ou Responsável Técnica', titulo: titulo, hint: 'Gerência da Qualidade ou Responsável Técnica: assine com a senha de 4 números.',
-      semCadastro: 'Ninguém marcado como Gerência da Qualidade ou Responsável Técnica em Cadastros › Equipe.', eu: labGestorM(eu) ? eu : null, onOk: function(m) { feito({ nome: m.nome, id: m.id }); } });
+    if (labGestorM(eu)) { feito({ nome: eu.nome, id: eu.id }); return; }
+    qNega('Só a Gerência da Qualidade ou a Responsável Técnica (marcadas em Cadastros › Equipe), com o próprio acesso.');
   }
 
   // ----- pendências do plano de amostragem -----
@@ -21420,7 +21435,7 @@
       (reg ? '<label>Data da conclusão<input type="date" id="lab-concl" value="' + escapeHtml(reg.conclusao || '') + '" /></label><label id="lab-corr-l">Motivo da correção <span class="opt">(obrigatório se mudar resultado já lançado)</span><input type="text" id="lab-corr" maxlength="200" autocomplete="off" /></label>' :
         '<label>Observações <span class="opt">(opcional)</span><input type="text" id="lab-obs" maxlength="300" autocomplete="off" /></label>' +
         '<label>Documento ou evidência <span class="opt">(opcional: PDF ou foto)</span><input type="file" id="lab-arq" accept="application/pdf,image/*" /></label>') +
-      (!temSenha ? '<label>Responsável pelo lançamento <span class="req">*</span><input type="text" id="lab-resp" maxlength="60" autocomplete="off" /></label>' : '<p class="hint">Ao salvar, assine com a sua senha de 4 números (Qualidade).</p>');
+      (!temSenha ? '<label>Responsável pelo lançamento <span class="req">*</span><input type="text" id="lab-resp" maxlength="60" autocomplete="off" /></label>' : qPorSenha() ? qAssinanteHtml() : '<p class="hint">Fica assinado como ' + escapeHtml(quemSessao() || 'senha mestre') + '.</p>');
     gerAbrir({
       titulo: reg ? 'Resultados · ' + rot.nome : rot.nome,
       botao: 'Salvar',
@@ -21568,7 +21583,7 @@
         '<label>Responsável pela avaliação<input type="text" id="labx-aval" maxlength="60" autocomplete="off" /></label>' +
         '<label>Observações e tratativas<input type="text" id="lab-obs" maxlength="300" autocomplete="off" /></label>' +
         '<label>Laudo (PDF ou foto)<input type="file" id="lab-arq" accept="application/pdf,image/*" /></label>' +
-        (!temSenha ? '<label>Responsável pelo lançamento <span class="req">*</span><input type="text" id="lab-resp" maxlength="60" autocomplete="off" /></label>' : '<p class="hint">Ao salvar, assine com a sua senha de 4 números (Qualidade).</p>'),
+        (!temSenha ? '<label>Responsável pelo lançamento <span class="req">*</span><input type="text" id="lab-resp" maxlength="60" autocomplete="off" /></label>' : qPorSenha() ? qAssinanteHtml() : '<p class="hint">Fica assinado como ' + escapeHtml(quemSessao() || 'senha mestre') + '.</p>'),
       change: function(t) { if (t.id === 'lab-ponto') document.getElementById('labx-ponto-txt').classList.toggle('hidden', t.value !== '__outro'); },
       acao: function(k, b) { if (k !== 'labx-c') return; document.querySelectorAll('#ger-form-body [data-ger="labx-c"]').forEach(function(x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); }); },
       salvar: function() {
@@ -21698,16 +21713,14 @@
   }
   function labValidar(r) {
     var excl = labQuemLancou(r), permite = function(m) { return labPodeValidarM(m) && excl.indexOf(m.id) < 0; }, eu = labEu();
-    if (!equipe.some(function(m) { return permite(m) && membroTemPin(m); }) && !(eu && permite(eu))) {
-      gerErro(equipe.some(labPodeValidarM) ? 'Quem lançou ou corrigiu este resultado não pode validá-lo, e não há outra pessoa que valide com senha cadastrada.' : 'Ninguém marcado para validar em Cadastros › Equipe (Laboratório: valida, Gerência da Qualidade ou Responsável Técnica).');
-      return;
-    }
-    openPinDialog({ permite: permite, funcaoTexto: 'valida resultados do laboratório (e não lançou este)', titulo: 'Validar · ' + labTitulo(r), hint: 'Quem valida confere os resultados e assina com a senha de 4 números. Quem lançou não valida.',
-      semCadastro: 'Ninguém que possa validar este registro.', eu: eu && permite(eu) ? eu : null,
-      onOk: function(m) {
-        var d = labSemId(r); d.validacao = { por: m.nome, porId: m.id, em: new Date().toISOString() }; d._por = m.nome; labHist(d, 'validou');
-        labGravar('reg', r.id, d).then(function() { showToast('Resultado validado.'); gerFechar(); }).catch(function(err) { console.error('validar', err); showToast('Não foi possível validar agora.'); });
-      } });
+    var validar = function(m) {
+      var d = labSemId(r); d.validacao = { por: m.nome, porId: m.id, em: new Date().toISOString() }; d._por = m.nome; labHist(d, 'validou');
+      labGravar('reg', r.id, d).then(function() { showToast('Resultado validado.'); gerFechar(); }).catch(function(err) { console.error('validar', err); showToast('Não foi possível validar agora.'); });
+    };
+    // sem a senha de 4 números (27/11/2026): valida quem pode, com o próprio acesso
+    if (eu && permite(eu)) { if (Date.now() < qAssinarAte) return; qAssinarAte = Date.now() + 1500; validar(eu); return; }
+    qNega(eu && labPodeValidarM(eu) ? 'Quem lançou ou corrigiu este resultado não pode validá-lo: outra pessoa que valida precisa entrar com o próprio acesso.'
+      : equipe.some(labPodeValidarM) ? 'Só quem valida resultados do laboratório (marcado em Cadastros › Equipe) valida, com o próprio acesso.' : 'Ninguém marcado para validar em Cadastros › Equipe (Laboratório: valida, Gerência da Qualidade ou Responsável Técnica).');
   }
   function labDecidirLote(r) {
     gerAbrir({
@@ -22014,7 +22027,7 @@
     if (nivelDaAba('qualidade') === 'ver') return false;
     var e = ocEu();
     if (e) return !!e.m.gestorDocumentos;
-    return qdGerentes().length > 0; // senha da equipe: assina com a senha de 4 números de quem aprova
+    return false; // sem o acesso de uma pessoa da equipe não assina (sem a senha de 4 números desde 27/11/2026)
   }
   // quem elabora: quem tem a aba Qualidade e não só visualiza
   function qdPodeElaborar() { if (!session) return false; if (session.role === 'admin') return true; return nivelDaAba('qualidade') !== 'ver'; }
@@ -22023,42 +22036,34 @@
   function qdAssinar(titulo, feito, excluir) {
     excluir = excluir || [];
     var e = ocEu(), agora = new Date().toISOString();
-    var pin = function(hint) {
-      openPinDialog({
-        permite: function(m) { return !!m.gestorDocumentos && excluir.indexOf('eq-' + m.id) < 0; }, funcaoTexto: excluir.length ? 'revisa e aprova documentos e não elaborou esta versão' : 'revisa e aprova documentos da qualidade', titulo: titulo,
-        hint: hint || 'Assine com a senha de 4 números de quem revisa e aprova documentos.',
-        semCadastro: 'Ninguém marcado como “Revisa e aprova documentos da qualidade” em Cadastros › Equipe' + (excluir.length ? ' além de quem elaborou esta versão.' : '.'),
-        onOk: function(m) { feito(qdAssDe(m)); }
-      });
-    };
-    var outra = 'Você elaborou esta versão: quem revisa e aprova precisa ser outra pessoa (a senha de 4 números dela).';
+    // sem a senha de 4 números (27/11/2026): quem revisa e aprova assina com o próprio acesso
+    var nega = function(msg) { qNega(msg || 'Só quem revisa e aprova documentos da qualidade (marcado em Cadastros › Equipe) assina, com o próprio acesso.'); };
+    var outra = 'Você elaborou esta versão: quem revisa e aprova precisa ser outra pessoa, com o próprio acesso.';
     if (session && session.role === 'admin' && !e) {
       var pa = { nome: quemSessao(), id: '', ref: minhaRef(), em: agora };
-      if (excluir.indexOf(qdChave(pa)) < 0) feito(pa); else pin(outra);
+      if (excluir.indexOf(qdChave(pa)) < 0) feito(pa); else nega(outra);
       return;
     }
     if (e && (e.m.gestorDocumentos || session.role === 'admin')) {
       var pe = { nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef(), em: agora };
-      if (excluir.indexOf(qdChave(pe)) < 0) feito(pe); else pin(outra);
+      if (excluir.indexOf(qdChave(pe)) < 0) feito(pe); else nega(outra);
       return;
     }
-    pin();
+    nega();
   }
   // assinatura de quem elabora (qualquer pessoa da equipe; quem entrou com o próprio acesso assina com um toque)
   function qdAssinarElaborador(titulo, feito) {
     var e = ocEu(), agora = new Date().toISOString();
     if (e) { feito({ nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef(), em: agora }); return; }
     if (session && session.role === 'admin') { feito({ nome: quemSessao(), id: '', ref: minhaRef(), em: agora }); return; }
-    openPinDialog({ permite: function() { return true; }, funcaoTexto: 'está na equipe', titulo: titulo, hint: 'Quem assina: digite a sua senha de 4 números.',
-      semCadastro: 'Ninguém com senha de 4 números em Cadastros › Equipe.', onOk: function(m) { feito(qdAssDe(m)); } });
+    qNega('Entre com o seu próprio acesso para assinar.');
   }
-  // leitura: quem leu, pelo próprio acesso (um toque) ou pela senha de 4 números de quem leu
+  // leitura: quem leu, pelo próprio acesso (um toque)
   function qdAssinarLeitura(feito) {
     var e = ocEu();
     if (e) { feito({ nome: e.m.nomeCompleto || e.m.nome, id: e.m.id, ref: minhaRef() }); return; }
     if (session && session.role === 'admin') { feito({ nome: quemSessao(), id: '', ref: minhaRef() }); return; }
-    openPinDialog({ permite: function() { return true; }, funcaoTexto: 'está na equipe', titulo: 'Li e entendi', hint: 'Quem leu: digite a sua senha de 4 números.',
-      semCadastro: 'Ninguém com senha de 4 números em Cadastros › Equipe.', onOk: function(m) { feito({ nome: m.nomeCompleto || m.nome, id: m.id, ref: minhaRef() }); } });
+    qNega('Entre com o seu próprio acesso para confirmar a leitura.');
   }
   // ----- distribuição e leitura -----
   function qdChaveLeitor(p) { return p.id ? 'eq-' + p.id : 'r-' + String(p.ref || p.nome || '').replace(/[^A-Za-z0-9_-]/g, '_'); }
@@ -22829,7 +22834,7 @@
         (lista.length ? '<div class="qd-checks qd-presenca">' + lista.map(function(f) { var t = tr[f.id];
           return '<label class="check"><input type="checkbox" class="qd-pr-f" value="' + escapeHtml(f.id) + '" data-nome="' + escapeHtml(f.nome) + '" data-funcao="' + escapeHtml(f.funcao || '') + '"' + (t ? ' checked disabled' : '') + ' /> ' + escapeHtml(f.nome) + ' <small>' + escapeHtml((f.funcao || '') + (t ? ' · já treinado em ' + formatDateBR(t.data) : '')) + '</small></label>'; }).join('') + '</div>'
           : '<p class="empty-state">Nenhum funcionário ativo com essas funções no RH.</p>') +
-        '<p class="hint">Quem deu o treinamento assina (o próprio acesso ou a senha de 4 números).</p>';
+        '<p class="hint">Quem deu o treinamento assina com o próprio acesso.</p>';
       qdPergunta(id, 'Lista de presença · ' + d.codigo, html, 'Assinar e registrar', function() {
         var sel = Array.prototype.filter.call(document.querySelectorAll('#q-form-body .qd-pr-f'), function(x) { return x.checked && !x.disabled; }), data = g('qd-pr-data');
         if (!sel.length) { qErro('Marque quem participou.'); return null; }
@@ -23303,7 +23308,7 @@
     document.getElementById('q-sheet-title').textContent = titulo;
     document.getElementById('q-form-body').innerHTML = corpo;
     var b = document.getElementById('btn-q-submit');
-    b.textContent = botao || 'Salvar'; b.classList.toggle('hidden', botao === false); b.disabled = false;
+    b.textContent = botao || 'Salvar'; b.classList.toggle('hidden', botao === false || corpo.indexOf('data-q-sem-qual') >= 0); b.disabled = false;
     document.getElementById('q-form-error').classList.add('hidden');
     document.getElementById('q-sheet-overlay').classList.remove('hidden');
     document.getElementById('q-form-body').scrollTop = 0;
@@ -23311,7 +23316,7 @@
   function qFechar() { document.getElementById('q-sheet-overlay').classList.add('hidden'); qUi.sheet = null; }
   function qErro(msg) { var e = document.getElementById('q-form-error'); e.textContent = msg; e.classList.remove('hidden'); }
   function qRespHtml() {
-    return qPorSenha() ? '<p class="hint">Ao salvar, assine com a sua senha de 4 números (Qualidade).</p>'
+    return qPorSenha() ? qAssinanteHtml()
       : '<label>Responsável <span class="req">*</span><input type="text" id="q-resp" maxlength="60" autocomplete="off" /></label>';
   }
   function qItemHtml(it, i) {
@@ -23850,7 +23855,7 @@
     document.getElementById('ger-form-body').innerHTML = cfg.html;
     carregarFotosCanhoto(document.getElementById('ger-form-body'));
     var b = document.getElementById('btn-ger-submit');
-    b.textContent = cfg.botao || 'Salvar'; b.disabled = false; b.classList.toggle('hidden', !cfg.salvar);
+    b.textContent = cfg.botao || 'Salvar'; b.disabled = false; b.classList.toggle('hidden', !cfg.salvar || String(cfg.html || '').indexOf('data-q-sem-qual') >= 0);
     document.getElementById('ger-form-error').classList.add('hidden');
     document.getElementById('ger-sheet-overlay').classList.remove('hidden');
     document.querySelector('#ger-sheet-overlay .sheet').scrollTop = 0;
@@ -30801,7 +30806,7 @@
       '<p class="driver-sub">Recebido por <b>' + escapeHtml(t.recebidoPor || '—') + '</b>' + (t.nf ? ' · NF ' + escapeHtml(t.nf) : '') + (t.motivo ? ' · ' + escapeHtml(t.motivo) : '') + '</p>' +
       ((t.fotos || []).length ? '<div class="troca-fotos">' + t.fotos.map(function(f, i) { return '<img data-cn-foto="' + escapeHtml(f) + '" data-cn-bucket="trocas" alt="Foto ' + (i + 1) + ' da ' + (t.tipo === 'troca' ? 'troca' : 'devolução') + ' nº ' + escapeHtml(String(t.numero || '')) + '" />'; }).join('') + '</div>' : '<p class="driver-sub">Sem fotos.</p>') +
       (!pend ? '<p class="troca-destino"><b>Destino:</b> ' + escapeHtml(destinoNome(d.tipo)) + (d.obs ? ' — ' + escapeHtml(d.obs) : '') + '<span class="driver-sub">Qualidade: ' + escapeHtml(nomePessoa(d.por) || '—') + (d.em ? ' · ' + escapeHtml(horaMsg(d.em)) : '') + '</span></p>' : '') +
-      '<div class="troca-acoes"><button type="button" class="btn ' + (pend ? 'btn-primary' : 'btn-secondary') + ' btn-sm" data-troca="destino" data-id="' + escapeHtml(t.id) + '">' + (pend ? 'Anotar o destino (Qualidade)' : 'Corrigir o destino') + '</button></div>' +
+      ((session && session.role === 'admin') || qEuQualidade() ? '<div class="troca-acoes"><button type="button" class="btn ' + (pend ? 'btn-primary' : 'btn-secondary') + ' btn-sm" data-troca="destino" data-id="' + escapeHtml(t.id) + '">' + (pend ? 'Anotar o destino (Qualidade)' : 'Corrigir o destino') + '</button></div>' : '') +
       '</article>';
   }
   function renderTrocas() {
@@ -30956,7 +30961,7 @@
       html: '<p class="hint"><b>' + escapeHtml(t.cliente || '') + '</b> · ' + escapeHtml(itensTrocaTexto(t)) + '</p>' +
         '<label>Destino do produto <span class="req">*</span><select id="trd-tipo"><option value="">— escolha —</option>' + TROCA_DESTINOS.map(function(x) { return '<option value="' + x[0] + '"' + (x[0] === d.tipo ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select></label>' +
         '<label>Observação da Qualidade <span class="opt">(obrigatória para descarte e “outro”)</span><textarea id="trd-obs" rows="3" maxlength="300">' + escapeHtml(d.obs || '') + '</textarea></label>' +
-        '<p class="field-hint">' + (session && session.role === 'admin' ? 'Fica assinado no seu nome.' : 'Quem é da Qualidade assina com a senha de 4 números.') + '</p>',
+        '<p class="field-hint">' + (session && session.role === 'admin' ? 'Fica assinado no seu nome.' : qEuQualidade() ? 'Fica assinado por ' + escapeHtml(qEuQualidade().nome) + ' (o seu acesso).' : 'Só quem é da Qualidade (marcado em Cadastros › Equipe) anota o destino, com o próprio acesso.') + '</p>',
       salvar: function() {
         var tipo = document.getElementById('trd-tipo').value, obs = gerVal('trd-obs');
         if (!tipo) return gerErro('Escolha o destino.');
@@ -30969,11 +30974,9 @@
             .catch(function(e) { console.error('destino', e); gerErro(e && e.codigo === 'so_inclui' ? 'Seu acesso só inclui: não altera nem apaga.' : 'Não foi possível salvar agora.'); });
         }
         if (session && session.role === 'admin') { gravar({ nome: quemSessao(), id: '' }); return false; }
-        openPinDialog({
-          funcao: 'qualidade', funcaoTexto: 'é da Qualidade', titulo: 'Qualidade · destino da troca', hint: 'Assine com a sua senha de 4 números.',
-          semCadastro: 'Ninguém marcado como Qualidade em Cadastros › Equipe com senha.',
-          onOk: function(m) { gravar({ nome: m.nome, id: m.id }); }
-        });
+        var euQ = qEuQualidade(); // sem a senha de 4 números (27/11/2026)
+        if (!euQ) return gerErro('Só quem é da Qualidade (marcado em Cadastros › Equipe) anota o destino, com o próprio acesso.');
+        gravar({ nome: euQ.nome, id: euQ.id });
         return false;
       }
     });
@@ -34495,10 +34498,55 @@
     l = l.concat(cnNovidades());
     return l;
   }
+  // Novidades já vistas (27/11/2026): tocar numa novidade leva ao lugar e, na próxima volta ao Início, ela não aparece
+  // mais — em todos os aparelhos da pessoa (preferências da conta, chave "novidades", migração 0065) e neste aparelho.
+  // O código é o do texto da novidade: se acontecer algo novo (outra mensagem, outro pedido, outra etapa), o texto
+  // muda e ela volta a aparecer. Guarda até 200, dos últimos 60 dias.
+  function novChave(x) { var t = (x.ir || '') + '|' + (x.txt || ''), h = 5381; for (var i = 0; i < t.length; i++) h = ((h << 5) + h + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  function novVistasChaveLocal(ref) { return 'levissima-novidades-vistas-' + (ref || 'x'); }
+  function novLimpar(v) {
+    var lim = new Date(Date.now() - 60 * 864e5).toISOString(), o = {};
+    Object.keys(v || {}).filter(function(k) { return /^[a-z0-9]{1,16}$/.test(k) && typeof v[k] === 'string' && v[k].length <= 30 && v[k] >= lim; })
+      .sort(function(a, b) { return v[b].localeCompare(v[a]); }).slice(0, 200).forEach(function(k) { o[k] = v[k]; });
+    return o;
+  }
+  function novVistas() {
+    var st = novVistas.st || (novVistas.st = { de: null, v: {}, buscadoEm: 0 }), ref = (session && minhaRef()) || '';
+    if (st.de !== ref) {
+      st.de = ref; st.buscadoEm = 0;
+      try { st.v = novLimpar(JSON.parse(loadPref(novVistasChaveLocal(ref), '{}'))); } catch (e) { st.v = {}; }
+    }
+    return st;
+  }
+  // traz da conta o que foi visto nos outros aparelhos (no máximo a cada minuto)
+  function novBuscarVistas() {
+    var st = novVistas(), ref = st.de;
+    if (!ref || !comunicacaoLigada() || !sbCliente || Date.now() - st.buscadoEm < 60000) return;
+    st.buscadoEm = Date.now();
+    sbCliente.from('preferencias').select('dados').eq('dono', ref).maybeSingle().then(function(r) {
+      if (st.de !== ref || !r || r.error) return;
+      var srv = (r.data && r.data.dados && r.data.dados.novidades) || {}, antes = JSON.stringify(st.v);
+      Object.keys(srv).forEach(function(k) { if (typeof srv[k] === 'string' && (!st.v[k] || srv[k] > st.v[k])) st.v[k] = srv[k]; });
+      st.v = novLimpar(st.v);
+      if (JSON.stringify(st.v) === antes) return;
+      savePref(novVistasChaveLocal(ref), JSON.stringify(st.v));
+      if (ui.tab === 'inicio') renderNovidadesInicio();
+    }, function(e) { console.error('preferencias', e); });
+  }
+  function novMarcarVista(x) {
+    var st = novVistas();
+    if (!st.de) return;
+    st.v[novChave(x)] = new Date().toISOString();
+    st.v = novLimpar(st.v);
+    savePref(novVistasChaveLocal(st.de), JSON.stringify(st.v));
+    if (comunicacaoLigada() && db && db.rpc) db.rpc('preferencia_gravar', { p_chave: 'novidades', p_valor: st.v }).catch(function(e) { console.error('preferencias', e); });
+  }
   function renderNovidadesInicio() {
     var el = document.getElementById('ini-novidades');
     if (!el) return;
-    var l = session ? novidadesDoUsuario() : [];
+    var vistas = novVistas().v;
+    var l = session ? novidadesDoUsuario().filter(function(x) { return !vistas[novChave(x)]; }) : [];
+    if (session) novBuscarVistas();
     novUi.itens = l;
     el.innerHTML = l.length ? '<section class="ini-nov" aria-label="Novidades para você"><div class="ini-nov-t"><b>🔔 Novidades para você</b><span>' + l.length + '</span></div><ul>' +
       l.slice(0, 8).map(function(x, i) { return '<li><button type="button" class="ini-nov-it" data-nov="' + i + '"><span class="ini-nov-ico" aria-hidden="true">' + x.ico + '</span><span class="ini-nov-txt">' + escapeHtml(x.txt) + '</span><span class="ini-ir" aria-hidden="true">›</span></button></li>'; }).join('') +
@@ -34509,6 +34557,7 @@
     if (!b) return;
     var x = novUi.itens[Number(b.dataset.nov)];
     if (!x) return;
+    novMarcarVista(x); // leva ao lugar e, na próxima volta ao Início, não aparece mais
     if (x.chat) chat.aberta = x.chat;
     if (x.sol) chat.solAberta = x.sol;
     if (x.ir === 'compras' && x.filtro) ocUi.filtro = x.filtro;
@@ -36124,6 +36173,19 @@
       if ('itens' in patch || 'setor' in patch || 'urgencia' in patch || 'obs' in patch) return String((patch.edicao && patch.edicao.motivo) || '').trim().length >= 3;
       return false;
     }
+    // Compras (27/11/2026, solicitação 29): quem autoriza o pedido (coordenador, supervisor ou gerente do setor, o
+    // substituto, Compras e a diretoria) altera o pedido que espera a autorização mesmo com a aba Compras "só inclui",
+    // sempre com o motivo. Não cancela, não muda o status, quem pediu, o número nem a data. O banco faz o mesmo (0065).
+    function ocEtapaAltera(col, id, patch) {
+      if (col !== 'compras-ordens' || !patch || !session || session.role !== 'equipe' || nivelDaAba(ui.tab) === 'ver') return false;
+      var o = cache[col] && cache[col][id];
+      if (!o || o.status !== 'pedido') return false;
+      if (Object.keys(patch).some(function(k) { return ['status', 'pedido', 'numero', 'criadoEm', 'cancelamento', 'canceladaEm', 'canceladaPor'].indexOf(k.split('.')[0]) >= 0; })) return false;
+      if (!('itens' in patch || 'setor' in patch || 'urgencia' in patch || 'obs' in patch)) return false;
+      if (String((patch.edicao && patch.edicao.motivo) || '').trim().length < 3) return false;
+      var e = ocEu(), oc = ocPorId(id) || Object.assign({ id: id }, o);
+      return !!(e && (ocVeTudo() || ocAutoriza(e.m, oc)));
+    }
     function docRef(col, id) {
       id = id || novoId();
       return {
@@ -36142,7 +36204,7 @@
             .then(function(novo) { aplicar(col, id, novo || {}); });
         },
         update: function(patch) {
-          var assina = ocSoAssinatura(col, patch) || ocDonoAltera(col, id, patch) || chAlteraChamado(col, id);
+          var assina = ocSoAssinatura(col, patch) || ocDonoAltera(col, id, patch) || ocEtapaAltera(col, id, patch) || chAlteraChamado(col, id);
           if (soInclui() && !assina) return recusaSoInclui();
           var bn = assina ? null : barrarNivel(col, id, 'update'); if (bn) return bn;
           return rpc('doc_atualizar', { p_colecao: col, p_id: id, p_dados: separar(patch).dados })
