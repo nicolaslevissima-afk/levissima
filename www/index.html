@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="levissima-versao" content="14399cce2107" />
+<meta name="levissima-versao" content="da7e35807e83" />
 <meta name="color-scheme" content="light dark" />
 <title>LEVÍSSIMA</title>
 <meta name="description" content="Cargas e entregas, manutenção, checklist de empilhadeiras, uniformes e EPI e estoque de garrafões da Levíssima" />
@@ -1444,6 +1444,10 @@
   .px-acoes { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px; }
   .px-fontes { margin: 0 0 10px; }
   .px-fontes .seg-btn { flex: 1 1 160px; }
+  .px-fontes .seg-btn small { display: block; font-size: 0.6875rem; font-weight: 400; opacity: 0.8; }
+  .cd-outros { margin: 6px 0; }
+  .cd-outros summary { cursor: pointer; font-size: 0.8125rem; font-weight: 600; color: var(--teal); padding: 4px 0; }
+  .cd-periodo { margin: 0 0 6px; }
   .px-n { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: var(--laranja); color: #1C2A2E; font-size: 0.6875rem; }
   .px-areas { margin: 4px 0 14px; }
   .px-mov.cancelado .px-mov-t { text-decoration: line-through; }
@@ -31597,6 +31601,8 @@
   // por fardo ficam em "Ajustes" de cada fonte (sem número cadastrado, o app não desconta nada sozinho).
   // Coleções prodext-config, prodext-movs, prodext-cobrancas e prodext-laudos; arquivos no bucket "compras-docs"
   // (producoes-externas/<fonte>/...). Quem vê: senha mestre, diretoria e "Vê a aba Produções externas" (migração 0048).
+  // 26/11/2026: o CD Renan (Bragança Paulista) entra como mais um botão ao lado das fontes, e os fretes das fontes
+  // (por palete, para cada cidade) ficam em "Fretes" (ver "CD Renan" mais abaixo).
   var PX_COL = { cfg: 'prodext-config', mov: 'prodext-movs', cob: 'prodext-cobrancas', lau: 'prodext-laudos' };
   var pxd = { cfg: [], mov: [], cob: [], lau: [] };
   var pxUi = { fonte: 'atibaia', area: 'estoque' };
@@ -31684,6 +31690,11 @@
         var q = qtdOrigemItem(it, fid), pp = q ? pxProdutoDaCarga(cfg, it.produtoId) : null;
         if (pp) { var k = 'p:' + pp.id + '|fonte'; s[k] = arred3((s[k] || 0) - q); }
       }); });
+    });
+    // entradas no CD que vieram desta fonte (26/11/2026): saem do estoque na fonte
+    pxd.mov.forEach(function(m) {
+      if (m.cancelado || m.tipo !== 'cd-entrada' || m.origem !== fid) return;
+      (m.itens || []).forEach(function(i) { var k = i.item + '|fonte'; s[k] = arred3((s[k] || 0) - (Number(i.qtd) || 0)); });
     });
     return s;
   }
@@ -31781,15 +31792,21 @@
     var box = document.getElementById('px-conteudo');
     if (!box || !session || ui.tab !== 'prodexternas') return;
     if (!podeVerProdExt()) { box.innerHTML = '<p class="empty-state">Sem acesso a esta aba.</p>'; return; }
-    if (!PX_FONTES.some(function(f) { return f.id === pxUi.fonte; })) pxUi.fonte = PX_FONTES[0].id;
-    var fid = pxUi.fonte, cfg = pxCfg(fid), s = pxSaldos(fid), ed = pxPodeEditar(), al = pxAlertasFonte(fid);
+    if (!PX_FONTES.some(function(f) { return f.id === pxUi.fonte; }) && !pxEhCd(pxUi.fonte)) pxUi.fonte = PX_FONTES[0].id;
+    var fid = pxUi.fonte, pendFr = pxFretesLancados().filter(pxFretePendente).length;
+    var seletor = '<div class="segmented px-fontes" role="group" aria-label="Fonte ou CD">' + PX_FONTES.map(function(f) {
+      var a = pxAlertasFonte(f.id), n = a.vencidos + a.conferir, on = f.id === fid;
+      return '<button type="button" class="seg-btn' + (on ? ' active' : '') + '" data-px="fonte" data-f="' + f.id + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + escapeHtml(pxCfg(f.id).nome) + (n ? ' <b class="px-n">' + n + '</b>' : '') + '</button>';
+    }).concat(PX_CDS.map(function(c) {
+      var on = c.id === fid;
+      return '<button type="button" class="seg-btn px-cd' + (on ? ' active' : '') + '" data-px="fonte" data-f="' + c.id + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + escapeHtml(c.nome) + (pendFr ? ' <b class="px-n" title="fretes sem valor">' + pendFr + '</b>' : '') + '<small>' + escapeHtml(c.cidade) + '</small></button>';
+    })).join('') + '</div>';
+    if (pxEhCd(fid)) { box.innerHTML = cdRender(fid, seletor); return; }
+    var cfg = pxCfg(fid), s = pxSaldos(fid), ed = pxPodeEditar(), al = pxAlertasFonte(fid);
     var prods = pxAtivos(cfg.produtos), naFonte = 0, naUnid = 0;
     prods.forEach(function(p) { naFonte += pxS(s, 'p:' + p.id, 'fonte'); naUnid += pxS(s, 'p:' + p.id, 'unidade'); });
     var aPagar = pxCobs(fid).filter(function(c) { return c.status !== 'pago' && c.status !== 'cancelada'; }).reduce(function(t, c) { return t + (Number(c.valorNota) || pxCobTotal(c)); }, 0);
-    var h = '<div class="segmented px-fontes" role="group" aria-label="Fonte">' + PX_FONTES.map(function(f) {
-      var a = pxAlertasFonte(f.id), n = a.vencidos + a.conferir, on = f.id === fid;
-      return '<button type="button" class="seg-btn' + (on ? ' active' : '') + '" data-px="fonte" data-f="' + f.id + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + escapeHtml(pxCfg(f.id).nome) + (n ? ' <b class="px-n">' + n + '</b>' : '') + '</button>';
-    }).join('') + '</div>';
+    var h = seletor;
     h += '<p class="tagline">' + escapeHtml(cfg.nome) + (cfg.marca ? ' · itens ' + escapeHtml(cfg.marca) : '') + '. Estoque na fonte e na nossa unidade, insumos que enviamos, cobranças conferidas e laudos.' + (ed ? ' <button type="button" class="btn-text" data-px="ajustes">Ajustes da fonte</button>' : '') + '</p>';
     h += '<div class="est-cards px-cards">' +
       supCardF('', 'Na fonte', pxQ(naFonte), 'fardos produzidos ainda lá', '', 'data-px="area" data-f="estoque"', pxUi.area === 'estoque') +
@@ -31797,11 +31814,11 @@
       supCardF('c-futuro' + (al.conferir ? ' alerta' : ''), 'Cobranças', al.conferir ? al.conferir + ' para conferir' : 'em dia', aPagar ? fmtBRL(aPagar) + ' a pagar' : 'nada a pagar', '', 'data-px="area" data-f="cob"', pxUi.area === 'cob') +
       supCardF('c-futuro' + (al.vencidos || al.vencendo ? ' alerta' : ''), 'Laudos', al.vencidos ? al.vencidos + ' vencido' + (al.vencidos > 1 ? 's' : '') : al.vencendo ? al.vencendo + ' vencendo' : 'em dia', al.vencidos && al.vencendo ? al.vencendo + ' vencendo em 30 dias' : 'o mais recente de cada tipo', '', 'data-px="area" data-f="laudos"', pxUi.area === 'laudos') +
       '</div>';
-    h += '<nav class="segmented q-areas px-areas" aria-label="Áreas da produção externa">' + [['estoque', 'Estoque'], ['insumos', 'Insumos enviados'], ['cob', 'Cobranças e saldos'], ['laudos', 'Laudos'], ['lanc', 'Lançamentos']].map(function(a) {
+    h += '<nav class="segmented q-areas px-areas" aria-label="Áreas da produção externa">' + [['estoque', 'Estoque'], ['insumos', 'Insumos enviados'], ['cob', 'Cobranças e saldos'], ['fretes', 'Fretes'], ['laudos', 'Laudos'], ['lanc', 'Lançamentos']].map(function(a) {
       var on = a[0] === pxUi.area;
       return '<button type="button" class="seg-btn' + (on ? ' active' : '') + '" data-px="area" data-f="' + a[0] + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + a[1] + '</button>';
     }).join('') + '</nav>';
-    var f = { estoque: pxHtmlEstoque, insumos: pxHtmlInsumos, cob: pxHtmlCob, laudos: pxHtmlLaudos, lanc: pxHtmlLanc }[pxUi.area] || pxHtmlEstoque;
+    var f = { estoque: pxHtmlEstoque, insumos: pxHtmlInsumos, cob: pxHtmlCob, fretes: function(fid, cfg, s, ed) { return pxHtmlFretes(ed, fid); }, laudos: pxHtmlLaudos, lanc: pxHtmlLanc }[pxUi.area] || pxHtmlEstoque;
     h += f(fid, cfg, s, ed);
     box.innerHTML = h;
   }
@@ -31824,6 +31841,7 @@
     h += '<p class="hint">A produção entra no estoque da fonte; a transferência leva da fonte para a nossa unidade; saída e perda tiram do local escolhido; a contagem acerta o saldo pelo que foi contado. Este estoque é separado do estoque da fábrica (aba Estoque).</p>';
     h += pxUltimos(fid, cfg, 'p', 6);
     h += pxHtmlCargasFonte(fid, cfg);
+    h += pxHtmlCdDaFonte(fid, cfg);
     return h;
   }
   function pxHtmlInsumos(fid, cfg, s, ed) {
@@ -31847,11 +31865,12 @@
   function pxMovHtml(m, cfg, ed) {
     var t = PX_MOV[m.tipo] || { curto: m.tipo }, local = m.local === 'unidade' ? ' · na nossa unidade' : m.local === 'fonte' && (m.tipo === 'saida' || m.tipo === 'perda' || m.tipo === 'contagem') ? ' · na fonte' : '';
     var consumo = (m.consumo || []).filter(function(c) { return Number(c.qtd) > 0; }).map(function(c) { return pxQ(c.qtd, pxUnItem(cfg, c.item)) + ' ' + pxNomeItem(cfg, c.item); }).join(', ');
-    return '<div class="frete-item px-mov' + (m.cancelado ? ' cancelado' : '') + '"><div class="frete-top"><span class="px-mov-t"><b>' + escapeHtml(t.curto) + '</b>' + escapeHtml(local) + ' · ' + escapeHtml(formatDateBR(m.data)) + '</span>' + (m.cancelado ? '<span class="chip-est">Cancelado</span>' : '') + '</div>' +
+    return '<div class="frete-item px-mov' + (m.cancelado ? ' cancelado' : '') + '"><div class="frete-top"><span class="px-mov-t"><b>' + escapeHtml(t.curto) + '</b>' + escapeHtml(local) + ' · ' + escapeHtml(formatDateBR(m.data)) + '</span>' + (m.cancelado ? '<span class="chip-est">Cancelado</span>' : m.frete && pxFretePendente(m) ? '<span class="chip-est confirmar">frete sem valor</span>' : '') + '</div>' +
       '<div class="frete-sub">' + escapeHtml(pxMovResumo(m, cfg) || '—') + '</div>' +
       (consumo ? '<div class="frete-sub">insumos usados: ' + escapeHtml(consumo) + '</div>' : '') +
+      (m.frete || m.freteiro ? '<div class="frete-sub">' + escapeHtml([m.freteiro && m.freteiro.nome ? 'freteiro ' + m.freteiro.nome : '', m.placa ? 'placa ' + m.placa : '', m.frete ? pxFreteTxt(m.frete) : ''].filter(Boolean).join(' · ')) + '</div>' : '') +
       '<div class="frete-sub">' + escapeHtml([m.nf ? 'NF/romaneio ' + m.nf : '', m.lote ? 'lote ' + m.lote : '', m.destino, m.motivo, m.obs, 'por ' + (m.por || '—')].filter(Boolean).join(' · ')) + '</div>' +
-      (m.cancelado ? '<div class="frete-sub alerta">cancelado por ' + escapeHtml(m.canceladoPor || '—') + ': ' + escapeHtml(m.motivoCancel || '') + '</div>' : ed ? '<div class="frete-acoes"><button type="button" class="btn-text danger" data-px="mov-cancelar" data-id="' + escapeHtml(m.id) + '">Cancelar lançamento</button></div>' : '') + '</div>';
+      (m.cancelado ? '<div class="frete-sub alerta">cancelado por ' + escapeHtml(m.canceladoPor || '—') + ': ' + escapeHtml(m.motivoCancel || '') + '</div>' : ed ? '<div class="frete-acoes">' + (m.frete && pxFretePendente(m) ? '<button type="button" class="btn-text" data-px="frete-valor" data-id="' + escapeHtml(m.id) + '"><b>Informar o frete</b></button>' : '') + '<button type="button" class="btn-text danger" data-px="mov-cancelar" data-id="' + escapeHtml(m.id) + '">Cancelar lançamento</button></div>' : '') + '</div>';
   }
   function pxOrdemMov(a, b) { return String(b.data || '').localeCompare(String(a.data || '')) || String(b.em || '').localeCompare(String(a.em || '')); }
   function pxUltimos(fid, cfg, tipoItens, n) {
@@ -31924,7 +31943,7 @@
         '<label>NF ou romaneio <span class="opt">(opcional)</span><input type="text" id="pxm-nf" maxlength="40" autocomplete="off" /></label>') + '</div>' +
       '<h3 class="q-plano-t">' + (contagem ? 'Contado' : t.itens === 'p' ? 'Quantidade (fardos)' : 'Quantidade') + '</h3><div id="pxm-itens">' + linhas('fonte') + '</div>' +
       (tipo === 'producao' ? '<h3 class="q-plano-t">Insumos usados <span class="opt">(descontam do saldo na fonte)</span></h3><div id="pxm-cons"></div>' : '') +
-      (tipo === 'saida' ? '<label>Destino <span class="opt">(cliente, carga)</span><input type="text" id="pxm-destino" maxlength="100" autocomplete="off" /></label>' : '') +
+      (tipo === 'saida' ? '<label>Destino <span class="opt">(cliente, carga)</span><input type="text" id="pxm-destino" maxlength="100" autocomplete="off" /></label>' + pxSaidaFreteHtml(fid) : '') +
       (tipo === 'perda' || tipo === 'consumo' ? '<label>Motivo <span class="req">*</span><input type="text" id="pxm-motivo" maxlength="150" autocomplete="off" /></label>' : '') +
       '<label>Observações <span class="opt">(opcional)</span><input type="text" id="pxm-obs" maxlength="200" autocomplete="off" /></label>';
     var renderCons = function() {
@@ -31945,9 +31964,16 @@
     gerAbrir({
       titulo: t.nome, botao: 'Salvar',
       html: html,
-      depois: function() { renderCons(); },
-      input: function(el) { if (tipo === 'producao' && el.classList.contains('pxm-q')) renderCons(); },
-      change: function(el) { if (el.id === 'pxm-local' && contagem) document.getElementById('pxm-itens').innerHTML = linhas(el.value); },
+      depois: function() { renderCons(); if (tipo === 'saida') pxFreteAtualizar(fid, 0); },
+      input: function(el) {
+        if (tipo === 'producao' && el.classList.contains('pxm-q')) renderCons();
+        if (tipo === 'saida' && (el.id === 'pxf-cidade' || el.id === 'pxf-valor' || el.id === 'pxm-paletes')) { if (el.id === 'pxf-valor') el.dataset.mexeu = '1'; pxFreteAtualizar(fid, cdLerInt('pxm-paletes')); }
+      },
+      change: function(el) {
+        if (el.id === 'pxm-local' && contagem) document.getElementById('pxm-itens').innerHTML = linhas(el.value);
+        if (el.id === 'pxm-local' && tipo === 'saida') { var fb = document.getElementById('pxm-frete-box'); if (fb) fb.classList.toggle('hidden', el.value !== 'fonte'); }
+        if (tipo === 'saida') cdFreteiroTrocou('pxm', el);
+      },
       salvar: function() {
         var data = gerVal('pxm-data'), local = temLocal ? gerVal('pxm-local') : (t.itens === 'i' ? 'fonte' : ''), efeitos = [], lidos = [], erro = '';
         if (!data) return gerErro('Informe a data.');
@@ -31986,8 +32012,15 @@
           consumo.push({ item: inp.dataset.item, qtd: arred3(q) });
           efeitos.push({ item: inp.dataset.item, local: 'fonte', qtd: -arred3(q) });
         });
+        var fx = tipo === 'saida' && local === 'fonte' ? pxSaidaFreteLer(fid) : {};
+        if (fx.erro) return gerErro(fx.erro);
         var dados = { fonteId: fid, tipo: tipo, data: data, local: local, itens: lidos, consumo: consumo, efeitos: efeitos, nf: gerVal('pxm-nf'), lote: gerVal('pxm-lote'), destino: gerVal('pxm-destino'), motivo: gerVal('pxm-motivo'), obs: gerVal('pxm-obs'), por: quemSessao(), porRef: minhaRef(), em: new Date().toISOString() };
-        return pxGravar('mov', 'pm' + uid(), dados).then(function() { showToast('Lançamento salvo: ' + t.curto.toLowerCase() + '.'); });
+        if (fx.freteiro) dados.freteiro = fx.freteiro;
+        if (fx.placa) dados.placa = fx.placa;
+        if (fx.frete) dados.frete = fx.frete;
+        return pxGravar('mov', 'pm' + uid(), dados).then(function() {
+          if (fx.guardar) return pxFreteGuardar(fid, fx.frete.cidade, fx.frete.valorPalete).catch(function(e) { console.error('fretes', e); });
+        }).then(function() { showToast('Lançamento salvo: ' + t.curto.toLowerCase() + (fx.frete && !fx.frete.valorPalete ? '. O frete ficou sem valor: informe em Fretes.' : '.')); });
       }
     });
   }
@@ -32180,11 +32213,13 @@
   function pxExportarMovs() {
     var fid = pxUi.fonte, cfg = pxCfg(fid), esc = function(x) { var s = String(x == null ? '' : x); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
     var num = function(v) { return v == null || v === '' ? '' : String(Math.round(Number(v) * 1000) / 1000).replace('.', ','); };
-    var l = [['Fonte', 'Data', 'Lançamento', 'Item', 'Quantidade', 'Unidade', 'Local', 'NF/romaneio', 'Lote', 'Destino/motivo', 'Por', 'Situação'].join(';')];
+    var l = [['Fonte', 'Data', 'Lançamento', 'Item', 'Quantidade', 'Unidade', 'Local', 'NF/romaneio', 'Lote', 'Destino/motivo', 'Freteiro', 'Cidade do frete', 'Paletes', 'Frete por palete (R$)', 'Frete (R$)', 'Por', 'Situação'].join(';')];
     pxMovs(fid).slice().sort(pxOrdemMov).forEach(function(m) {
       var t = (PX_MOV[m.tipo] || {}).curto || m.tipo;
-      (m.itens || []).concat((m.consumo || []).map(function(c) { return Object.assign({ consumo: true }, c); })).forEach(function(i) {
-        l.push([cfg.nome, formatDateBR(m.data), i.consumo ? t + ' (insumo usado)' : t, pxNomeItem(cfg, i.item), num(i.qtd), pxUnItem(cfg, i.item), m.local === 'unidade' ? 'nossa unidade' : m.local === 'fonte' ? 'fonte' : m.tipo === 'transferencia' ? 'fonte → unidade' : '', m.nf, m.lote, m.destino || m.motivo, m.por, m.cancelado ? 'cancelado: ' + (m.motivoCancel || '') : ''].map(esc).join(';'));
+      (m.itens || []).concat((m.consumo || []).map(function(c) { return Object.assign({ consumo: true }, c); })).forEach(function(i, idx) {
+        var fr = idx ? null : m.frete;
+        l.push([cfg.nome, formatDateBR(m.data), i.consumo ? t + ' (insumo usado)' : t, pxNomeItem(cfg, i.item), num(i.qtd), pxUnItem(cfg, i.item), m.local === 'unidade' ? 'nossa unidade' : m.local === 'fonte' ? 'fonte' : m.tipo === 'transferencia' ? 'fonte → unidade' : '', m.nf, m.lote, m.destino || m.motivo,
+          idx ? '' : (m.freteiro && m.freteiro.nome) || '', fr ? fr.cidade : '', fr ? num(fr.paletes) : '', fr ? num(fr.valorPalete) : '', fr ? (pxFretePendente(m) ? 'sem valor' : num(fr.total)) : '', m.por, m.cancelado ? 'cancelado: ' + (m.motivoCancel || '') : ''].map(esc).join(';'));
       });
     });
     triggerDownload(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-producao-externa-' + fid + '-' + todayIso() + '.csv');
@@ -32199,12 +32234,742 @@
     });
     triggerDownload(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'levissima-cobrancas-' + fid + '-' + todayIso() + '.csv');
   }
+  // ----- CD Renan (pedido de 26/11/2026) -----
+  // Estoque das cargas guardadas num centro de distribuição de fora (CD Renan, em Bragança Paulista): entra das fontes
+  // (Atibaia e Pedra Bela) e da nossa fábrica e sai para os clientes. O estoque de cada produto, em fardos, fica separado
+  // pela origem; cada carregamento (entrada ou saída) guarda o freteiro e os paletes e chapas que saíram e entraram no CD,
+  // e o saldo de cada freteiro sai daí (positivo: o freteiro está com paletes do CD; negativo: deixou paletes no CD).
+  // A entrada que vem de uma fonte baixa do estoque da fonte e leva o frete por palete da fonte até a cidade do CD (a
+  // tabela de fretes das fontes vai sendo preenchida conforme os lançamentos; sem valor, o frete fica pendente).
+  // Lançamentos em prodext-movs (fonteId do CD, tipos cd-*), com os efeitos gravados como nas fontes; nada é apagado
+  // (cancelar com motivo). A tabela de fretes das fontes fica em prodext-config/fretes.
+  var PX_CDS = [{ id: 'cd-renan', nome: 'CD Renan', cidade: 'Bragança Paulista' }];
+  var CD_MOV = {
+    'cd-entrada': { nome: 'Entrada no CD', curto: 'Entrada' },
+    'cd-saida': { nome: 'Saída para cliente', curto: 'Saída' },
+    'cd-perda': { nome: 'Perda ou avaria no CD', curto: 'Perda' },
+    'cd-contagem': { nome: 'Contagem do CD', curto: 'Contagem' },
+    'cd-paletes': { nome: 'Acerto de paletes e chapas', curto: 'Acerto de paletes' }
+  };
+  var cdUi = { area: 'estoque', de: '', ate: '', relat: 'produtos' };
+  function pxEhCd(id) { return PX_CDS.some(function(c) { return c.id === id; }); }
+  function cdDe(id) { return PX_CDS.find(function(c) { return c.id === id; }) || PX_CDS[0]; }
+  function cdOrigens() { return PX_FONTES.map(function(f) { return { id: f.id, nome: pxCfg(f.id).nome }; }).concat([{ id: 'fabrica', nome: 'Nossa fábrica' }]); }
+  function cdOrigemNome(id) { var o = cdOrigens().find(function(x) { return x.id === id; }); return o ? o.nome : id; }
+  function cdOrigemCurta(id) { return id === 'fabrica' ? 'Fábrica' : cdOrigemNome(id).replace(/^Fonte\s+/i, ''); }
+  // produtos que cada origem manda: os da fonte (p:<id>) ou os do cadastro da fábrica (f:<id>)
+  function cdItensOrigem(origem) {
+    if (origem === 'fabrica') return produtosOrdenados().map(function(p) { return { item: 'f:' + p.id, nome: p.nome, un: unidadeDe(p) }; });
+    return pxAtivos(pxCfg(origem).produtos).map(function(p) { return { item: 'p:' + p.id, nome: p.nome, un: p.unidade || 'fardos' }; });
+  }
+  function cdNomeItem(origem, item) {
+    if (String(item).indexOf('f:') === 0) { var p = findProduto(item.slice(2)); return p ? p.nome : item.slice(2); }
+    return pxNomeItem(pxCfg(origem), item);
+  }
+  function cdUnItem(origem, item) {
+    if (String(item).indexOf('f:') === 0) { var p = findProduto(item.slice(2)); return p ? unidadeDe(p) : 'fardos'; }
+    return pxUnItem(pxCfg(origem), item) || 'fardos';
+  }
+  function cdMovs(cid) { return pxd.mov.filter(function(m) { return m.fonteId === cid && CD_MOV[m.tipo]; }); }
+  function cdChaveFr(f) { return f ? (f.id ? 'm:' + f.id : 'n:' + normNome(f.nome || '')) : ''; }
+  // saldos: estoque "e|origem|item"; paletes e chapas no CD "pal|cd" e "cha|cd"; com cada freteiro "pal|fr:<chave>"
+  function cdSaldos(cid, ate) {
+    var s = {};
+    cdMovs(cid).forEach(function(m) {
+      if (m.cancelado || (ate && String(m.data || '') > ate)) return;
+      (m.efeitos || []).forEach(function(e) { s[e.k] = arred3((s[e.k] || 0) + (Number(e.qtd) || 0)); });
+    });
+    return s;
+  }
+  function cdEstoque(s) { // [{ k, origem, item, nome, qtd }]
+    return Object.keys(s).filter(function(k) { return k.indexOf('e|') === 0; }).map(function(k) {
+      var p = k.split('|');
+      return { k: k, origem: p[1], item: p[2], nome: cdNomeItem(p[1], p[2]), un: cdUnItem(p[1], p[2]), qtd: s[k] };
+    }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR') || a.origem.localeCompare(b.origem); });
+  }
+  function cdNomesFr(cid) {
+    var n = {};
+    cdMovs(cid).forEach(function(m) { if (m.freteiro && m.freteiro.nome) n[cdChaveFr(m.freteiro)] = m.freteiro.nome; });
+    return n;
+  }
+  function cdFreteiros(cid, s) { // [{ chave, nome, pal, cha }]
+    var nomes = cdNomesFr(cid), por = {};
+    Object.keys(s).forEach(function(k) {
+      var m = /^(pal|cha)\|fr:(.+)$/.exec(k);
+      if (!m) return;
+      var x = por[m[2]] = por[m[2]] || { chave: m[2], nome: nomes[m[2]] || m[2].replace(/^[mn]:/, ''), pal: 0, cha: 0 };
+      x[m[1]] = s[k];
+    });
+    return Object.keys(por).map(function(k) { return por[k]; }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); });
+  }
+
+  // ----- fretes saindo das fontes: por palete, para cada cidade -----
+  function pxFretesDoc() { return pxd.cfg.find(function(x) { return x.id === 'fretes'; }) || null; }
+  function pxFreteChave(fonteId, cidade) { return fonteId + '|' + normNome(cidade); }
+  function pxFreteValor(fonteId, cidade) {
+    var d = pxFretesDoc(), v = d && d.valores ? d.valores[pxFreteChave(fonteId, cidade)] : null;
+    return v && Number(v.valor) > 0 ? Number(v.valor) : null;
+  }
+  function pxFreteGuardar(fonteId, cidade, valor) {
+    var d = pxFretesDoc() || {}, vals = Object.assign({}, d.valores || {});
+    vals[pxFreteChave(fonteId, cidade)] = { fonteId: fonteId, cidade: cidade, valor: Math.round(valor * 100) / 100, em: new Date().toISOString(), por: quemSessao() };
+    return pxGravar('cfg', 'fretes', { valores: vals, atualizadoEm: new Date().toISOString(), atualizadoPor: quemSessao() });
+  }
+  function pxFreteCidades() {
+    var l = [];
+    var d = pxFretesDoc();
+    Object.keys((d && d.valores) || {}).forEach(function(k) { var c = d.valores[k].cidade; if (c && l.indexOf(c) < 0) l.push(c); });
+    pxd.mov.forEach(function(m) { var c = m.frete && m.frete.cidade; if (c && l.indexOf(c) < 0) l.push(c); });
+    PX_CDS.forEach(function(c) { if (l.indexOf(c.cidade) < 0) l.push(c.cidade); });
+    return l.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); });
+  }
+  // fretes lançados (entradas no CD vindas de fonte e saídas das fontes), com o valor por palete ou pendentes
+  function pxFretesLancados() {
+    return pxd.mov.filter(function(m) { return !m.cancelado && m.frete && m.frete.fonteId; });
+  }
+  function pxFretePendente(m) { return !!(m.frete && !(Number(m.frete.valorPalete) > 0)); }
+  function pxFreteCampos(fonteId, cidade, fixa) {
+    var v = cidade ? pxFreteValor(fonteId, cidade) : null;
+    return '<fieldset class="ph-grupo"><legend>Frete saindo da ' + escapeHtml(pxCfg(fonteId).nome) + ' <span class="opt">(por palete)</span></legend>' +
+      (fixa ? '<p class="hint" style="margin-top:0">Destino: <b>' + escapeHtml(cidade) + '</b></p><input type="hidden" id="pxf-cidade" value="' + escapeHtml(cidade) + '" />'
+        : '<label>Cidade de destino <span class="req">*</span><input type="text" id="pxf-cidade" maxlength="60" list="pxf-cidades" autocomplete="off" value="' + escapeHtml(cidade || '') + '" /></label>' +
+          '<datalist id="pxf-cidades">' + pxFreteCidades().map(function(c) { return '<option value="' + escapeHtml(c) + '"></option>'; }).join('') + '</datalist>') +
+      '<div class="row-2"><label>Valor por palete (R$)<input type="number" id="pxf-valor" min="0" step="0.01" inputmode="decimal" value="' + (v != null ? v : '') + '" /></label><span class="field-hint" id="pxf-total" style="align-self:end"></span></div>' +
+      '<p class="field-hint" id="pxf-aviso"></p>' +
+      '<label class="check-row"><input type="checkbox" id="pxf-guardar"' + (v == null ? ' checked' : '') + ' /> Guardar como o valor desta cidade (as próximas já vêm preenchidas)</label></fieldset>';
+  }
+  function pxFreteAtualizar(fonteId, paletes) {
+    var cidEl = document.getElementById('pxf-cidade');
+    if (!cidEl) return;
+    var cid = String(cidEl.value || '').trim(), vEl = document.getElementById('pxf-valor'), tab = cid ? pxFreteValor(fonteId, cid) : null;
+    if (vEl && !vEl.dataset.mexeu) vEl.value = tab != null ? tab : '';
+    var v = vEl ? numCampo(vEl.value) : null, av = document.getElementById('pxf-aviso'), tot = document.getElementById('pxf-total');
+    if (av) av.textContent = !cid ? '' : tab == null ? 'Ainda sem valor combinado de ' + pxCfg(fonteId).nome + ' para ' + cid + ': informe o valor por palete. Sem o valor, o frete fica pendente para informar depois (em Fretes).'
+      : 'Valor combinado: ' + fmtBRL(tab) + ' por palete.' + (v != null && Math.abs(v - tab) > 0.004 ? ' Este frete está diferente do combinado.' : '');
+    if (tot) tot.textContent = v > 0 && paletes > 0 ? 'Frete: ' + fmtBRL(v * paletes) + ' (' + paletes + (paletes === 1 ? ' palete)' : ' paletes)') : paletes > 0 ? '' : 'informe os paletes';
+  }
+  function pxFreteLer(fonteId, paletes) {
+    var cid = gerVal('pxf-cidade'), v = numCampo(gerVal('pxf-valor'));
+    if (!cid) return { erro: 'Informe a cidade de destino do frete.' };
+    if (v != null && v < 0) return { erro: 'Confira o valor do frete.' };
+    var ok = v > 0;
+    return { frete: { fonteId: fonteId, cidade: cid, paletes: paletes, valorPalete: ok ? Math.round(v * 100) / 100 : null, total: ok ? Math.round(v * paletes * 100) / 100 : null },
+      guardar: ok && !!(document.getElementById('pxf-guardar') || {}).checked && pxFreteValor(fonteId, cid) !== Math.round(v * 100) / 100 };
+  }
+
+  // ----- campos comuns dos carregamentos -----
+  function cdFreteiroCampos(pref, atual, opcional) {
+    var lista = (motoristas || []).slice().sort(function(a, b) { return String(a.nome || '').localeCompare(String(b.nome || ''), 'pt-BR'); });
+    var cad = atual && atual.id && lista.some(function(m) { return m.id === atual.id; }), outro = atual && !cad && atual.nome;
+    return '<div class="row-2"><label>Freteiro ' + (opcional ? '<span class="opt">(se tiver)</span>' : '<span class="req">*</span>') + '<select id="' + pref + '-fr"><option value="">' + (opcional ? 'sem freteiro' : 'escolha') + '</option>' +
+      lista.map(function(m) { return '<option value="' + escapeHtml(m.id) + '"' + (cad && m.id === atual.id ? ' selected' : '') + '>' + escapeHtml(m.nome) + (transportadoraDe(m) ? ' · ' + escapeHtml(transportadoraDe(m).nome) : '') + '</option>'; }).join('') +
+      '<option value="_outro"' + (outro ? ' selected' : '') + '>Outro (escrever o nome)</option></select></label>' +
+      '<label>Placa <span class="opt">(opcional)</span><input type="text" id="' + pref + '-placa" maxlength="10" autocomplete="off" /></label></div>' +
+      '<label id="' + pref + '-fr-outro-l" class="' + (outro ? '' : 'hidden') + '">Nome do freteiro<input type="text" id="' + pref + '-fr-outro" maxlength="60" value="' + escapeHtml(outro ? atual.nome : '') + '" autocomplete="off" /></label>';
+  }
+  function cdFreteiroTrocou(pref, el) {
+    if (el.id !== pref + '-fr') return false;
+    var l = document.getElementById(pref + '-fr-outro-l');
+    if (l) l.classList.toggle('hidden', el.value !== '_outro');
+    return true;
+  }
+  function cdLerFreteiro(pref) {
+    var v = gerVal(pref + '-fr');
+    if (v === '_outro') { var n = gerVal(pref + '-fr-outro').replace(/\s+/g, ' ').trim(); return n ? { id: '', nome: n.slice(0, 60) } : null; }
+    var m = (motoristas || []).find(function(x) { return x.id === v; });
+    return m ? { id: m.id, nome: m.nome } : null;
+  }
+  // paletes e chapas: "a" = com a carga, "b" = vazios na volta
+  function cdPaletesCampos(tipo) {
+    var t = tipo === 'cd-entrada' ? ['que chegaram com a carga', 'vazios que o freteiro levou'] : ['que saíram com a carga', 'vazios que voltaram'];
+    var inp = function(id, rot) { return '<label>' + rot + '<input type="number" id="' + id + '" min="0" step="1" inputmode="numeric" placeholder="0" /></label>'; };
+    return '<h3 class="q-plano-t">Paletes e chapas</h3><div class="row-2">' + inp('cdm-pal-a', 'Paletes ' + t[0]) + inp('cdm-pal-b', 'Paletes ' + t[1]) + '</div>' +
+      '<div class="row-2">' + inp('cdm-cha-a', 'Chapas ' + t[0]) + inp('cdm-cha-b', 'Chapas ' + t[1]) + '</div>';
+  }
+  function cdLerInt(id) { var n = numCampo(gerVal(id)); return n === null ? 0 : n; }
+  function cdEfeitosPaletes(efeitos, fr, entrouPal, saiuPal, entrouCha, saiuCha) {
+    var k = cdChaveFr(fr);
+    if (entrouPal - saiuPal) efeitos.push({ k: 'pal|cd', qtd: entrouPal - saiuPal });
+    if (entrouCha - saiuCha) efeitos.push({ k: 'cha|cd', qtd: entrouCha - saiuCha });
+    if (k && saiuPal - entrouPal) efeitos.push({ k: 'pal|fr:' + k, qtd: saiuPal - entrouPal });
+    if (k && saiuCha - entrouCha) efeitos.push({ k: 'cha|fr:' + k, qtd: saiuCha - entrouCha });
+  }
+  function cdDadosBase(cid, tipo, extra) {
+    return Object.assign({ fonteId: cid, tipo: tipo, por: quemSessao(), porRef: minhaRef(), em: new Date().toISOString() }, extra);
+  }
+  function cdClientesConhecidos() {
+    var l = [];
+    cargas.forEach(function(c) { cargaClienteNomes(c).forEach(function(n) { if (n && l.indexOf(n) < 0) l.push(n); }); });
+    pxd.mov.forEach(function(m) { if (m.tipo === 'cd-saida' && m.cliente && l.indexOf(m.cliente) < 0) l.push(m.cliente); });
+    return l.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }).slice(0, 400);
+  }
+  function cdCidadesConhecidas() {
+    var l = pxFreteCidades();
+    cargas.forEach(function(c) { (c.clientes || []).forEach(function(cl) { var d = String(cl.destino || '').trim(); if (d && l.indexOf(d) < 0) l.push(d); }); });
+    pxd.mov.forEach(function(m) { if (m.cidade && l.indexOf(m.cidade) < 0) l.push(m.cidade); });
+    return l.sort(function(a, b) { return a.localeCompare(b, 'pt-BR'); }).slice(0, 400);
+  }
+
+  // ----- entrada no CD -----
+  function cdAbrirEntrada(cid) {
+    var cd = cdDe(cid), st = { origem: PX_FONTES[0].id, cargaId: '', passou: false };
+    var usadas = {};
+    cdMovs(cid).forEach(function(m) { if (m.cargaId && !m.cancelado) usadas[m.cargaId] = true; });
+    var limite = new Date(Date.now() - 30 * 864e5).toISOString();
+    var cargasFab = cargas.filter(function(c) { return c.status === 'concluida' && String(c.concluidoEm || '') >= limite && !usadas[c.id]; })
+      .sort(function(a, b) { return String(b.concluidoEm || '').localeCompare(String(a.concluidoEm || '')); }).slice(0, 40);
+    function itensHtml() {
+      var s = st.origem === 'fabrica' ? null : pxSaldos(st.origem);
+      return cdItensOrigem(st.origem).map(function(x) {
+        var info = s ? 'na fonte: ' + pxQ(pxS(s, x.item, 'fonte')) + ' ' + x.un : x.un;
+        return '<div class="q-param"><span>' + escapeHtml(x.nome) + '<small>' + escapeHtml(info) + '</small></span><input type="number" class="cdm-q" data-item="' + escapeHtml(x.item) + '" min="0" step="1" inputmode="numeric" aria-label="' + escapeHtml(x.nome) + '" /></div>';
+      }).join('');
+    }
+    function extraHtml() {
+      if (st.origem === 'fabrica') {
+        return (cargasFab.length ? '<label>Puxar de uma carga da fábrica <span class="opt">(preenche produtos, paletes, chapas e freteiro)</span><select id="cdm-carga"><option value="">não, vou digitar</option>' +
+          cargasFab.map(function(c) { return '<option value="' + escapeHtml(c.id) + '">' + escapeHtml(formatDateBR(String(c.concluidoEm || '').slice(0, 10)) + ' · ' + (c.motorista || 'sem motorista') + ' · ' + (cargaClientesResumo(c) || '—') + ' · ' + (c.totalPaletes || 0) + ' pal') + '</option>'; }).join('') + '</select></label>' : '') +
+          '<p class="field-hint">A saída da fábrica continua sendo a carga da aba Cargas (ela baixa o estoque da fábrica); aqui fica a chegada no CD.</p>';
+      }
+      return pxFreteCampos(st.origem, cd.cidade, true);
+    }
+    var html = '<p class="hint">Carga que chegou ao <b>' + escapeHtml(cd.nome) + '</b> (' + escapeHtml(cd.cidade) + '): entra no estoque do CD separada pela origem.</p>' +
+      '<div class="row-2"><label>Data <span class="req">*</span><input type="date" id="cdm-data" value="' + todayIso() + '" /></label>' +
+      '<label>De onde veio <span class="req">*</span><select id="cdm-origem">' + cdOrigens().map(function(o) { return '<option value="' + escapeHtml(o.id) + '">' + escapeHtml(o.nome) + '</option>'; }).join('') + '</select></label></div>' +
+      '<div id="cdm-extra-topo">' + (st.origem === 'fabrica' ? extraHtml() : '') + '</div>' +
+      cdFreteiroCampos('cdm') +
+      '<label>NF ou romaneio <span class="opt">(opcional)</span><input type="text" id="cdm-nf" maxlength="40" autocomplete="off" /></label>' +
+      '<h3 class="q-plano-t">Fardos que chegaram</h3><div id="cdm-itens">' + itensHtml() + '</div>' +
+      cdPaletesCampos('cd-entrada') +
+      '<div id="cdm-frete">' + (st.origem !== 'fabrica' ? extraHtml() : '') + '</div>' +
+      '<label>Observações <span class="opt">(opcional)</span><input type="text" id="cdm-obs" maxlength="200" autocomplete="off" /></label>';
+    function trocarOrigem() {
+      document.getElementById('cdm-itens').innerHTML = itensHtml();
+      document.getElementById('cdm-extra-topo').innerHTML = st.origem === 'fabrica' ? extraHtml() : '';
+      document.getElementById('cdm-frete').innerHTML = st.origem !== 'fabrica' ? extraHtml() : '';
+      st.cargaId = ''; st.passou = false;
+      pxFreteAtualizar(st.origem, cdLerInt('cdm-pal-a'));
+    }
+    function puxarCarga(id) {
+      var c = cargas.find(function(x) { return x.id === id; });
+      st.cargaId = c ? c.id : '';
+      if (!c) return;
+      var q = {};
+      (c.clientes || []).forEach(function(cl) { (cl.itens || []).forEach(function(it) { if (it.produtoId) q[it.produtoId] = (q[it.produtoId] || 0) + (Number(it.quantidade) || 0); }); });
+      document.querySelectorAll('#cdm-itens .cdm-q').forEach(function(inp) { var v = q[inp.dataset.item.slice(2)]; inp.value = v ? String(v) : ''; });
+      var pa = document.getElementById('cdm-pal-a'), ca = document.getElementById('cdm-cha-a');
+      if (pa) pa.value = c.totalPaletes ? String(c.totalPaletes) : '';
+      if (ca) ca.value = c.totalChapatex ? String(c.totalChapatex) : '';
+      var m = (motoristas || []).find(function(x) { return normNome(x.nome) === normNome(c.motorista || ''); }), sel = document.getElementById('cdm-fr');
+      if (sel) {
+        if (m) sel.value = m.id;
+        else if (c.motorista) { sel.value = '_outro'; document.getElementById('cdm-fr-outro').value = c.motorista; }
+        cdFreteiroTrocou('cdm', sel);
+      }
+    }
+    gerAbrir({
+      titulo: 'Entrada no ' + cd.nome, botao: 'Salvar a entrada', html: html,
+      depois: function() { pxFreteAtualizar(st.origem, 0); },
+      change: function(el) {
+        if (el.id === 'cdm-origem') { st.origem = el.value; trocarOrigem(); return; }
+        if (el.id === 'cdm-carga') { puxarCarga(el.value); pxFreteAtualizar(st.origem, cdLerInt('cdm-pal-a')); return; }
+        cdFreteiroTrocou('cdm', el);
+      },
+      input: function(el) {
+        if (el.id === 'pxf-valor') el.dataset.mexeu = '1';
+        if (el.id === 'pxf-valor' || el.id === 'cdm-pal-a') pxFreteAtualizar(st.origem, cdLerInt('cdm-pal-a'));
+      },
+      salvar: function() {
+        var data = gerVal('cdm-data'), origem = st.origem, fr = cdLerFreteiro('cdm'), itens = [], efeitos = [], erro = '', excede = [];
+        if (!data) return gerErro('Informe a data.');
+        if (data > todayIso()) return gerErro('A data ficou no futuro.');
+        if (!fr) return gerErro('Escolha o freteiro (ou “Outro” e escreva o nome).');
+        var sf = origem === 'fabrica' ? null : pxSaldos(origem);
+        document.querySelectorAll('#cdm-itens .cdm-q').forEach(function(inp) {
+          if (erro) return;
+          var q = numCampo(inp.value), item = inp.dataset.item;
+          if (q === null || q === 0) return;
+          if (q < 0 || Math.round(q) !== q) { erro = 'Confira a quantidade de “' + cdNomeItem(origem, item) + '” (fardos inteiros).'; return; }
+          itens.push({ item: item, qtd: q });
+          efeitos.push({ k: 'e|' + origem + '|' + item, qtd: q });
+          if (sf && q > pxS(sf, item, 'fonte') + 0.0005) excede.push(cdNomeItem(origem, item) + ' (na fonte: ' + pxQ(pxS(sf, item, 'fonte')) + ')');
+        });
+        if (erro) return gerErro(erro);
+        if (!itens.length) return gerErro('Informe os fardos de ao menos um produto.');
+        var pa = cdLerInt('cdm-pal-a'), pb = cdLerInt('cdm-pal-b'), ca = cdLerInt('cdm-cha-a'), cb = cdLerInt('cdm-cha-b');
+        if ([pa, pb, ca, cb].some(function(n) { return n < 0 || Math.round(n) !== n; })) return gerErro('Confira os paletes e as chapas (números inteiros).');
+        if (excede.length && !st.passou) { st.passou = true; return gerErro('Mais do que o estoque da fonte: ' + excede.join(', ') + '. Confira ou toque em “Salvar a entrada” de novo para lançar assim mesmo (o estoque da fonte fica negativo até a produção ou a contagem).'); }
+        cdEfeitosPaletes(efeitos, fr, pa, pb, ca, cb);
+        var frete = null, guardar = false;
+        if (origem !== 'fabrica') {
+          var fl = pxFreteLer(origem, pa);
+          if (fl.erro) return gerErro(fl.erro);
+          frete = fl.frete; guardar = fl.guardar;
+        }
+        var dados = cdDadosBase(cid, 'cd-entrada', { data: data, origem: origem, freteiro: fr, placa: gerVal('cdm-placa').toUpperCase(), nf: gerVal('cdm-nf'), itens: itens,
+          paletes: { entrou: pa, saiu: pb }, chapas: { entrou: ca, saiu: cb }, frete: frete, cargaId: st.cargaId || '', obs: gerVal('cdm-obs'), efeitos: efeitos });
+        if (!frete) delete dados.frete;
+        return pxGravar('mov', 'cd' + uid(), dados).then(function() {
+          if (guardar) return pxFreteGuardar(origem, frete.cidade, frete.valorPalete).catch(function(e) { console.error('fretes', e); });
+        }).then(function() { showToast('Entrada no ' + cd.nome + ' salva' + (frete && !frete.valorPalete ? ': o frete ficou pendente (informe o valor em Fretes).' : '.')); });
+      }
+    });
+  }
+
+  // ----- saída do CD para cliente -----
+  function cdLinhasEstoqueHtml(s, cls, comZero) {
+    var l = cdEstoque(s).filter(function(x) { return comZero || x.qtd > 0; });
+    if (!l.length) return '<p class="empty-state">O CD está sem estoque. Lance uma entrada ou uma contagem.</p>';
+    return l.map(function(x) {
+      return '<div class="q-param"><span>' + escapeHtml(x.nome) + '<small>' + escapeHtml(cdOrigemCurta(x.origem) + ' · no CD: ' + pxQ(x.qtd) + ' ' + x.un) + '</small></span><input type="number" class="' + cls + '" data-k="' + escapeHtml(x.k) + '" min="0" step="1" inputmode="numeric" aria-label="' + escapeHtml(x.nome + ' (' + cdOrigemCurta(x.origem) + ')') + '" /></div>';
+    }).join('');
+  }
+  function cdAbrirSaida(cid) {
+    var cd = cdDe(cid), s = cdSaldos(cid);
+    var html = '<p class="hint">Carregamento que saiu do <b>' + escapeHtml(cd.nome) + '</b> para um cliente: baixa do estoque do CD, da origem escolhida.</p>' +
+      '<div class="row-2"><label>Data <span class="req">*</span><input type="date" id="cdm-data" value="' + todayIso() + '" /></label>' +
+      '<label>NF <span class="opt">(opcional)</span><input type="text" id="cdm-nf" maxlength="40" autocomplete="off" /></label></div>' +
+      '<div class="row-2"><label>Cliente <span class="req">*</span><input type="text" id="cdm-cliente" maxlength="100" list="cdm-clientes" autocomplete="off" /></label>' +
+      '<label>Cidade <span class="opt">(destino)</span><input type="text" id="cdm-cidade" maxlength="60" list="cdm-cidades" autocomplete="off" /></label></div>' +
+      '<datalist id="cdm-clientes">' + cdClientesConhecidos().map(function(c) { return '<option value="' + escapeHtml(c) + '"></option>'; }).join('') + '</datalist>' +
+      '<datalist id="cdm-cidades">' + cdCidadesConhecidas().map(function(c) { return '<option value="' + escapeHtml(c) + '"></option>'; }).join('') + '</datalist>' +
+      cdFreteiroCampos('cdm', null, true) +
+      '<h3 class="q-plano-t">Fardos que saíram</h3><div id="cdm-itens">' + cdLinhasEstoqueHtml(s, 'cdm-q') + '</div>' +
+      cdPaletesCampos('cd-saida') +
+      '<label>Observações <span class="opt">(opcional)</span><input type="text" id="cdm-obs" maxlength="200" autocomplete="off" /></label>';
+    gerAbrir({
+      titulo: 'Saída do ' + cd.nome, botao: 'Salvar a saída', html: html,
+      change: function(el) { cdFreteiroTrocou('cdm', el); },
+      salvar: function() {
+        var data = gerVal('cdm-data'), cliente = gerVal('cdm-cliente').replace(/\s+/g, ' ').trim(), fr = cdLerFreteiro('cdm'), itens = [], efeitos = [], erro = '';
+        if (!data) return gerErro('Informe a data.');
+        if (data > todayIso()) return gerErro('A data ficou no futuro.');
+        if (!cliente) return gerErro('Informe o cliente.');
+        if (gerVal('cdm-fr') === '_outro' && !fr) return gerErro('Escreva o nome do freteiro.');
+        document.querySelectorAll('#cdm-itens .cdm-q').forEach(function(inp) {
+          if (erro) return;
+          var q = numCampo(inp.value), k = inp.dataset.k, p = k.split('|');
+          if (q === null || q === 0) return;
+          if (q < 0 || Math.round(q) !== q) { erro = 'Confira a quantidade (fardos inteiros).'; return; }
+          var tem = s[k] || 0;
+          if (q > tem + 0.0005) { erro = '“' + cdNomeItem(p[1], p[2]) + '” (' + cdOrigemCurta(p[1]) + '): no CD há ' + pxQ(tem) + '. Lance a entrada ou a contagem antes.'; return; }
+          itens.push({ origem: p[1], item: p[2], qtd: q });
+          efeitos.push({ k: k, qtd: -q });
+        });
+        if (erro) return gerErro(erro);
+        if (!itens.length) return gerErro('Informe os fardos de ao menos um produto.');
+        var pa = cdLerInt('cdm-pal-a'), pb = cdLerInt('cdm-pal-b'), ca = cdLerInt('cdm-cha-a'), cb = cdLerInt('cdm-cha-b');
+        if ([pa, pb, ca, cb].some(function(n) { return n < 0 || Math.round(n) !== n; })) return gerErro('Confira os paletes e as chapas (números inteiros).');
+        if (!fr && (pa || pb || ca || cb)) return gerErro('Com paletes ou chapas, escolha o freteiro (para o saldo de paletes).');
+        cdEfeitosPaletes(efeitos, fr, pb, pa, cb, ca);
+        var dados = cdDadosBase(cid, 'cd-saida', { data: data, cliente: cliente, cidade: gerVal('cdm-cidade'), freteiro: fr, placa: gerVal('cdm-placa').toUpperCase(), nf: gerVal('cdm-nf'), itens: itens,
+          paletes: { saiu: pa, entrou: pb }, chapas: { saiu: ca, entrou: cb }, obs: gerVal('cdm-obs'), efeitos: efeitos });
+        return pxGravar('mov', 'cd' + uid(), dados).then(function() { showToast('Saída do ' + cd.nome + ' salva.'); });
+      }
+    });
+  }
+  function cdAbrirPerda(cid) {
+    var cd = cdDe(cid), s = cdSaldos(cid);
+    gerAbrir({
+      titulo: 'Perda ou avaria · ' + cd.nome, botao: 'Salvar',
+      html: '<p class="hint">Fardos perdidos ou avariados no CD.</p><label>Data <span class="req">*</span><input type="date" id="cdm-data" value="' + todayIso() + '" /></label>' +
+        '<div id="cdm-itens">' + cdLinhasEstoqueHtml(s, 'cdm-q') + '</div><label>Motivo <span class="req">*</span><input type="text" id="cdm-motivo" maxlength="150" autocomplete="off" /></label>',
+      salvar: function() {
+        var data = gerVal('cdm-data'), motivo = gerVal('cdm-motivo'), itens = [], efeitos = [], erro = '';
+        if (!data || data > todayIso()) return gerErro('Confira a data.');
+        if (!motivo) return gerErro('Informe o motivo.');
+        document.querySelectorAll('#cdm-itens .cdm-q').forEach(function(inp) {
+          if (erro) return;
+          var q = numCampo(inp.value), k = inp.dataset.k, p = k.split('|');
+          if (q === null || q === 0) return;
+          if (q < 0 || Math.round(q) !== q || q > (s[k] || 0) + 0.0005) { erro = 'Confira a quantidade de “' + cdNomeItem(p[1], p[2]) + '”.'; return; }
+          itens.push({ origem: p[1], item: p[2], qtd: q }); efeitos.push({ k: k, qtd: -q });
+        });
+        if (erro) return gerErro(erro);
+        if (!itens.length) return gerErro('Informe ao menos uma quantidade.');
+        return pxGravar('mov', 'cd' + uid(), cdDadosBase(cid, 'cd-perda', { data: data, itens: itens, motivo: motivo, efeitos: efeitos })).then(function() { showToast('Perda lançada.'); });
+      }
+    });
+  }
+  function cdAbrirContagem(cid) {
+    var cd = cdDe(cid), s = cdSaldos(cid), ja = {};
+    cdEstoque(s).forEach(function(x) { ja[x.k] = true; });
+    var outros = [];
+    cdOrigens().forEach(function(o) { cdItensOrigem(o.id).forEach(function(x) { var k = 'e|' + o.id + '|' + x.item; if (!ja[k]) outros.push({ k: k, origem: o.id, nome: x.nome }); }); });
+    var linha = function(k, nome, origem, atual) {
+      return '<div class="q-param"><span>' + escapeHtml(nome) + '<small>' + escapeHtml(cdOrigemCurta(origem) + ' · no app: ' + pxQ(atual)) + '</small></span><input type="number" class="cdm-c" data-k="' + escapeHtml(k) + '" min="0" step="1" inputmode="numeric" placeholder="' + escapeHtml(String(atual)) + '" aria-label="' + escapeHtml(nome) + '" /></div>';
+    };
+    gerAbrir({
+      titulo: 'Contagem · ' + cd.nome, botao: 'Salvar a contagem',
+      html: '<p class="hint">Informe o que foi contado no CD (vazio: não contado). O saldo passa a ser o número contado.</p><label>Data <span class="req">*</span><input type="date" id="cdm-data" value="' + todayIso() + '" /></label>' +
+        '<h3 class="q-plano-t">Fardos</h3>' + cdEstoque(s).map(function(x) { return linha(x.k, x.nome, x.origem, x.qtd); }).join('') +
+        (outros.length ? '<details class="cd-outros"><summary>Outros produtos (' + outros.length + ')</summary>' + outros.map(function(x) { return linha(x.k, x.nome, x.origem, 0); }).join('') + '</details>' : '') +
+        '<h3 class="q-plano-t">Paletes e chapas no CD</h3><div class="row-2"><label>Paletes <small>(no app: ' + pxQ(s['pal|cd'] || 0) + ')</small><input type="number" id="cdm-cont-pal" min="0" step="1" inputmode="numeric" /></label>' +
+        '<label>Chapas <small>(no app: ' + pxQ(s['cha|cd'] || 0) + ')</small><input type="number" id="cdm-cont-cha" min="0" step="1" inputmode="numeric" /></label></div>' +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="cdm-obs" maxlength="200" autocomplete="off" /></label>',
+      salvar: function() {
+        var data = gerVal('cdm-data'), lidos = [], efeitos = [], erro = '';
+        if (!data || data > todayIso()) return gerErro('Confira a data.');
+        document.querySelectorAll('#ger-form-body .cdm-c').forEach(function(inp) {
+          if (erro || inp.value === '') return;
+          var q = numCampo(inp.value), k = inp.dataset.k, p = k.split('|');
+          if (q === null || q < 0 || Math.round(q) !== q) { erro = 'Contagem inválida.'; return; }
+          var antes = s[k] || 0;
+          lidos.push({ origem: p[1], item: p[2], qtd: q, antes: antes });
+          if (q - antes) efeitos.push({ k: k, qtd: arred3(q - antes) });
+        });
+        if (erro) return gerErro(erro);
+        [['cdm-cont-pal', 'pal|cd'], ['cdm-cont-cha', 'cha|cd']].forEach(function(x) {
+          var v = gerVal(x[0]); if (v === '') return;
+          var q = numCampo(v), antes = s[x[1]] || 0;
+          if (q === null || q < 0) { erro = 'Confira os paletes e as chapas.'; return; }
+          lidos.push({ k: x[1], qtd: q, antes: antes });
+          if (q - antes) efeitos.push({ k: x[1], qtd: arred3(q - antes) });
+        });
+        if (erro) return gerErro(erro);
+        if (!lidos.length) return gerErro('Informe ao menos uma contagem.');
+        return pxGravar('mov', 'cd' + uid(), cdDadosBase(cid, 'cd-contagem', { data: data, itens: lidos, obs: gerVal('cdm-obs'), efeitos: efeitos })).then(function() { showToast('Contagem do ' + cd.nome + ' salva.'); });
+      }
+    });
+  }
+  function cdAbrirAcerto(cid, chave) {
+    var cd = cdDe(cid), s = cdSaldos(cid), atual = null;
+    if (chave) { var f = cdFreteiros(cid, s).find(function(x) { return x.chave === chave; }); if (f) atual = chave.indexOf('m:') === 0 ? { id: chave.slice(2), nome: f.nome } : { id: '', nome: f.nome }; }
+    gerAbrir({
+      titulo: 'Acerto de paletes e chapas · ' + cd.nome, botao: 'Salvar o acerto',
+      html: '<p class="hint">Paletes e chapas que o freteiro devolveu ao CD ou levou do CD sem carga (ex.: trouxe os vazios dos clientes).</p>' +
+        '<label>Data <span class="req">*</span><input type="date" id="cdm-data" value="' + todayIso() + '" /></label>' + cdFreteiroCampos('cdm', atual) +
+        '<div class="row-2"><label>Paletes que ele devolveu ao CD<input type="number" id="cdm-dev-pal" min="0" step="1" inputmode="numeric" placeholder="0" /></label><label>Paletes que ele levou do CD<input type="number" id="cdm-lev-pal" min="0" step="1" inputmode="numeric" placeholder="0" /></label></div>' +
+        '<div class="row-2"><label>Chapas que ele devolveu ao CD<input type="number" id="cdm-dev-cha" min="0" step="1" inputmode="numeric" placeholder="0" /></label><label>Chapas que ele levou do CD<input type="number" id="cdm-lev-cha" min="0" step="1" inputmode="numeric" placeholder="0" /></label></div>' +
+        '<label>Observações <span class="opt">(opcional)</span><input type="text" id="cdm-obs" maxlength="200" autocomplete="off" /></label>',
+      change: function(el) { cdFreteiroTrocou('cdm', el); },
+      salvar: function() {
+        var data = gerVal('cdm-data'), fr = cdLerFreteiro('cdm'), efeitos = [];
+        if (!data || data > todayIso()) return gerErro('Confira a data.');
+        if (!fr) return gerErro('Escolha o freteiro.');
+        var dp = cdLerInt('cdm-dev-pal'), lp = cdLerInt('cdm-lev-pal'), dc = cdLerInt('cdm-dev-cha'), lc = cdLerInt('cdm-lev-cha');
+        if ([dp, lp, dc, lc].some(function(n) { return n < 0 || Math.round(n) !== n; })) return gerErro('Confira os números (inteiros).');
+        if (!dp && !lp && !dc && !lc) return gerErro('Informe ao menos um número.');
+        cdEfeitosPaletes(efeitos, fr, dp, lp, dc, lc);
+        return pxGravar('mov', 'cd' + uid(), cdDadosBase(cid, 'cd-paletes', { data: data, freteiro: fr, paletes: { entrou: dp, saiu: lp }, chapas: { entrou: dc, saiu: lc }, obs: gerVal('cdm-obs'), efeitos: efeitos }))
+          .then(function() { showToast('Acerto de paletes salvo.'); });
+      }
+    });
+  }
+  // valor do frete que ficou pendente
+  function pxAbrirFreteValor(m) {
+    var f = m.frete || {}, tab = pxFreteValor(f.fonteId, f.cidade);
+    gerAbrir({
+      titulo: 'Valor do frete', botao: 'Salvar o valor',
+      html: '<p class="hint">' + escapeHtml(pxCfg(f.fonteId).nome + ' → ' + f.cidade + ' · ' + formatDateBR(m.data) + ' · ' + ((m.freteiro && m.freteiro.nome) || 'sem freteiro') + ' · ' + (f.paletes || 0) + ' paletes') + '</p>' +
+        '<label>Valor por palete (R$) <span class="req">*</span><input type="number" id="pxf-valor" min="0" step="0.01" inputmode="decimal" value="' + (tab != null ? tab : '') + '" /></label>' +
+        '<label class="check-row"><input type="checkbox" id="pxf-guardar"' + (tab == null ? ' checked' : '') + ' /> Guardar como o valor de ' + escapeHtml(f.cidade) + ' (as próximas já vêm preenchidas)</label>',
+      salvar: function() {
+        var v = numCampo(gerVal('pxf-valor'));
+        if (!(v > 0)) return gerErro('Informe o valor por palete.');
+        v = Math.round(v * 100) / 100;
+        var d = pxSemId(m);
+        d.frete = Object.assign({}, f, { valorPalete: v, total: Math.round(v * (Number(f.paletes) || 0) * 100) / 100, valorEm: new Date().toISOString(), valorPor: quemSessao() });
+        var guardar = !!(document.getElementById('pxf-guardar') || {}).checked;
+        return pxGravar('mov', m.id, d).then(function() { if (guardar) return pxFreteGuardar(f.fonteId, f.cidade, v).catch(function(e) { console.error('fretes', e); }); }).then(function() { showToast('Valor do frete salvo.'); });
+      }
+    });
+  }
+  function pxAbrirFreteTabela(chave, fonteSel) {
+    var d = pxFretesDoc(), atual = chave && d && d.valores ? d.valores[chave] : null;
+    gerAbrir({
+      titulo: atual ? 'Frete · ' + pxCfg(atual.fonteId).nome + ' → ' + atual.cidade : 'Novo valor de frete', botao: 'Salvar',
+      html: '<div class="row-2"><label>Fonte<select id="pxt-fonte"' + (atual ? ' disabled' : '') + '>' + PX_FONTES.map(function(f) { return '<option value="' + f.id + '"' + ((atual ? atual.fonteId === f.id : fonteSel === f.id) ? ' selected' : '') + '>' + escapeHtml(pxCfg(f.id).nome) + '</option>'; }).join('') + '</select></label>' +
+        '<label>Cidade <span class="req">*</span><input type="text" id="pxt-cidade" maxlength="60" list="pxt-cidades" autocomplete="off" value="' + escapeHtml(atual ? atual.cidade : '') + '"' + (atual ? ' disabled' : '') + ' /></label></div>' +
+        '<datalist id="pxt-cidades">' + cdCidadesConhecidas().map(function(c) { return '<option value="' + escapeHtml(c) + '"></option>'; }).join('') + '</datalist>' +
+        '<label>Valor por palete (R$) <span class="req">*</span><input type="number" id="pxt-valor" min="0" step="0.01" inputmode="decimal" value="' + (atual ? atual.valor : '') + '" /></label>' +
+        '<p class="field-hint">O valor vale para os próximos lançamentos; os fretes já lançados continuam com o valor da época.</p>',
+      salvar: function() {
+        var fonteId = atual ? atual.fonteId : gerVal('pxt-fonte'), cid = atual ? atual.cidade : gerVal('pxt-cidade').replace(/\s+/g, ' ').trim(), v = numCampo(gerVal('pxt-valor'));
+        if (!cid) return gerErro('Informe a cidade.');
+        if (!(v > 0)) return gerErro('Informe o valor por palete.');
+        return pxFreteGuardar(fonteId, cid, v).then(function() { showToast('Valor do frete guardado.'); });
+      }
+    });
+  }
+
+  // ----- tela do CD -----
+  function cdMovResumo(m) {
+    if (m.tipo === 'cd-contagem') return (m.itens || []).map(function(i) { return i.k ? 'contou ' + pxQ(i.qtd) + (i.k === 'pal|cd' ? ' paletes' : ' chapas') : 'contou ' + pxQ(i.qtd) + ' ' + cdNomeItem(i.origem, i.item) + ' (' + cdOrigemCurta(i.origem) + ')'; }).join(' · ');
+    if (m.tipo === 'cd-paletes') return '';
+    return (m.itens || []).map(function(i) { var o = i.origem || m.origem; return pxQ(i.qtd) + ' ' + cdNomeItem(o, i.item) + (m.tipo === 'cd-entrada' ? '' : ' (' + cdOrigemCurta(o) + ')'); }).join(' · ');
+  }
+  function cdPaletesTxt(m) {
+    var p = m.paletes || {}, c = m.chapas || {}, l = [];
+    if (m.tipo === 'cd-entrada') { if (p.entrou || c.entrou) l.push('chegaram ' + (p.entrou || 0) + ' pal e ' + (c.entrou || 0) + ' chapas'); if (p.saiu || c.saiu) l.push('levou de volta ' + (p.saiu || 0) + ' pal e ' + (c.saiu || 0) + ' chapas'); }
+    else if (m.tipo === 'cd-saida') { if (p.saiu || c.saiu) l.push('saíram ' + (p.saiu || 0) + ' pal e ' + (c.saiu || 0) + ' chapas'); if (p.entrou || c.entrou) l.push('voltaram ' + (p.entrou || 0) + ' pal e ' + (c.entrou || 0) + ' chapas'); }
+    else if (m.tipo === 'cd-paletes') { if (p.entrou || c.entrou) l.push('devolveu ' + (p.entrou || 0) + ' pal e ' + (c.entrou || 0) + ' chapas'); if (p.saiu || c.saiu) l.push('levou ' + (p.saiu || 0) + ' pal e ' + (c.saiu || 0) + ' chapas'); }
+    return l.join(' · ');
+  }
+  function pxFreteTxt(f) {
+    if (!f) return '';
+    return 'frete ' + pxCfg(f.fonteId).nome.replace(/^Fonte\s+/i, '') + ' → ' + f.cidade + ': ' + (Number(f.valorPalete) > 0 ? (f.paletes || 0) + ' pal × ' + fmtBRL(f.valorPalete) + ' = ' + fmtBRL(f.total) : 'valor pendente');
+  }
+  function cdMovHtml(m, ed) {
+    var t = CD_MOV[m.tipo] || { curto: m.tipo };
+    var tit = t.curto + (m.tipo === 'cd-entrada' ? ' de ' + cdOrigemNome(m.origem) : m.tipo === 'cd-saida' ? ' para ' + (m.cliente || '—') + (m.cidade ? ' (' + m.cidade + ')' : '') : '');
+    return '<div class="frete-item px-mov' + (m.cancelado ? ' cancelado' : '') + '"><div class="frete-top"><span class="px-mov-t"><b>' + escapeHtml(tit) + '</b> · ' + escapeHtml(formatDateBR(m.data)) + '</span>' +
+      (m.cancelado ? '<span class="chip-est">Cancelado</span>' : m.frete && pxFretePendente(m) ? '<span class="chip-est confirmar">frete sem valor</span>' : '') + '</div>' +
+      (cdMovResumo(m) ? '<div class="frete-sub">' + escapeHtml(cdMovResumo(m)) + '</div>' : '') +
+      (cdPaletesTxt(m) ? '<div class="frete-sub">' + escapeHtml(cdPaletesTxt(m)) + '</div>' : '') +
+      (m.frete ? '<div class="frete-sub">' + escapeHtml(pxFreteTxt(m.frete)) + '</div>' : '') +
+      '<div class="frete-sub">' + escapeHtml([m.freteiro && m.freteiro.nome ? 'freteiro ' + m.freteiro.nome : '', m.placa ? 'placa ' + m.placa : '', m.nf ? 'NF ' + m.nf : '', m.cargaId ? 'carga da fábrica' : '', m.motivo, m.obs, 'por ' + (m.por || '—')].filter(Boolean).join(' · ')) + '</div>' +
+      (m.cancelado ? '<div class="frete-sub alerta">cancelado por ' + escapeHtml(m.canceladoPor || '—') + ': ' + escapeHtml(m.motivoCancel || '') + '</div>'
+        : ed ? '<div class="frete-acoes">' + (m.frete && pxFretePendente(m) ? '<button type="button" class="btn-text" data-px="frete-valor" data-id="' + escapeHtml(m.id) + '"><b>Informar o frete</b></button>' : '') + '<button type="button" class="btn-text danger" data-px="mov-cancelar" data-id="' + escapeHtml(m.id) + '">Cancelar lançamento</button></div>' : '') + '</div>';
+  }
+  function cdLista(cid, filtro, n, vazio) {
+    var l = cdMovs(cid).filter(filtro).sort(pxOrdemMov), ed = pxPodeEditar();
+    if (!l.length) return '<p class="empty-state">' + (vazio || 'Nenhum lançamento ainda.') + '</p>';
+    return l.slice(0, n || 9999).map(function(m) { return cdMovHtml(m, ed); }).join('') + (n && l.length > n ? '<button type="button" class="btn-text" data-px="cd-area" data-f="lanc">Ver todos os lançamentos (' + l.length + ')</button>' : '');
+  }
+  function cdTabelaEstoque(s) {
+    var origens = cdOrigens(), por = {}, nomes = [];
+    cdEstoque(s).forEach(function(x) {
+      var n = normNome(x.nome);
+      if (!por[n]) { por[n] = { nome: x.nome, un: x.un, q: {} }; nomes.push(n); }
+      por[n].q[x.origem] = (por[n].q[x.origem] || 0) + x.qtd;
+    });
+    var tot = {}, totG = 0;
+    var linhas = nomes.filter(function(n) { return Object.keys(por[n].q).some(function(o) { return por[n].q[o]; }); }).map(function(n) {
+      var r = por[n], t = 0;
+      var cel = origens.map(function(o) { var q = r.q[o.id] || 0; t += q; tot[o.id] = (tot[o.id] || 0) + q; return '<td' + (q < 0 ? ' class="neg"' : '') + '>' + (q ? pxQ(q) : '—') + '</td>'; }).join('');
+      totG += t;
+      return '<tr><td>' + escapeHtml(r.nome) + '</td>' + cel + '<td><b>' + pxQ(t) + '</b></td></tr>';
+    });
+    if (!linhas.length) return '<p class="empty-state">O CD está sem estoque. Lance a primeira entrada (ou uma contagem).</p>';
+    return pxTabela(['Produto (fardos)'].concat(origens.map(function(o) { return escapeHtml(cdOrigemCurta(o.id)); })).concat(['Total']), linhas,
+      '<tr><td>Total</td>' + origens.map(function(o) { return '<td>' + pxQ(tot[o.id] || 0) + '</td>'; }).join('') + '<td>' + pxQ(totG) + '</td></tr>');
+  }
+  function cdHtmlEstoque(cid, s, ed) {
+    return (ed ? '<div class="px-acoes"><button type="button" class="btn btn-primary btn-sm" data-px="cd-entrada">+ Entrada no CD</button><button type="button" class="btn btn-primary btn-sm" data-px="cd-saida">Saída para cliente</button>' +
+      '<button type="button" class="btn btn-secondary btn-sm" data-px="cd-perda">Perda</button><button type="button" class="btn-text" data-px="cd-contagem">Contagem</button></div>' : '') +
+      cdTabelaEstoque(s) +
+      '<div class="an-lin"><span>Paletes no CD</span><b>' + pxQ(s['pal|cd'] || 0) + '</b></div><div class="an-lin"><span>Chapas no CD</span><b>' + pxQ(s['cha|cd'] || 0) + '</b></div>' +
+      '<p class="hint">A entrada soma no estoque do CD pela origem (a que vem de uma fonte baixa do estoque da fonte); a saída para cliente baixa da origem escolhida; a contagem acerta o saldo pelo que foi contado. Este estoque é separado do da fábrica.</p>' +
+      '<h3 class="q-plano-t">Últimos carregamentos</h3>' + cdLista(cid, function(m) { return m.tipo === 'cd-entrada' || m.tipo === 'cd-saida'; }, 6);
+  }
+  function cdHtmlPaletes(cid, s, ed) {
+    var fr = cdFreteiros(cid, s).filter(function(f) { return f.pal || f.cha; }), ult = {};
+    cdMovs(cid).forEach(function(m) { if (m.cancelado || !m.freteiro) return; var k = cdChaveFr(m.freteiro); if (!ult[k] || String(m.data) > String(ult[k])) ult[k] = m.data; });
+    var linhas = fr.map(function(f) {
+      return '<tr><td>' + escapeHtml(f.nome) + (ult[f.chave] ? '<small class="an-sub">último carregamento ' + escapeHtml(formatDateBR(ult[f.chave])) + '</small>' : '') + '</td><td' + (f.pal > 0 ? ' class="neg"' : '') + '>' + pxQ(f.pal) + '</td><td' + (f.cha > 0 ? ' class="neg"' : '') + '>' + pxQ(f.cha) + '</td>' +
+        (ed ? '<td><button type="button" class="btn-text" data-px="cd-acerto" data-ch="' + escapeHtml(f.chave) + '">Acertar</button></td>' : '<td></td>') + '</tr>';
+    });
+    var tp = fr.reduce(function(a, f) { return a + (f.pal > 0 ? f.pal : 0); }, 0), tc = fr.reduce(function(a, f) { return a + (f.cha > 0 ? f.cha : 0); }, 0);
+    return (ed ? '<div class="px-acoes"><button type="button" class="btn btn-primary btn-sm" data-px="cd-acerto">+ Acerto de paletes e chapas</button><button type="button" class="btn-text" data-px="cd-csv" data-f="paletes">Baixar planilha</button></div>' : '') +
+      '<div class="an-lin"><span>No CD</span><b>' + pxQ(s['pal|cd'] || 0) + ' paletes · ' + pxQ(s['cha|cd'] || 0) + ' chapas</b></div>' +
+      '<div class="an-lin"><span>Com os freteiros</span><b>' + pxQ(tp) + ' paletes · ' + pxQ(tc) + ' chapas</b></div>' +
+      (linhas.length ? pxTabela(['Freteiro', 'Paletes', 'Chapas', ''], linhas) : '<p class="empty-state">Nenhum freteiro com saldo de paletes ou chapas.</p>') +
+      '<p class="hint">Saldo positivo: o freteiro está com paletes (ou chapas) do CD — levou mais do que trouxe. Negativo: o CD está com paletes dele — trouxe mais do que levou. Cada entrada e saída conta os paletes e chapas que saíram e entraram com ele; o acerto registra a devolução ou a retirada sem carga.</p>' +
+      '<h3 class="q-plano-t">Últimos acertos</h3>' + cdLista(cid, function(m) { return m.tipo === 'cd-paletes'; }, 6, 'Nenhum acerto ainda.');
+  }
+  function pxHtmlFretes(ed, fid) {
+    var pend = pxFretesLancados().filter(function(m) { return pxFretePendente(m) && (!fid || m.frete.fonteId === fid); }).sort(pxOrdemMov);
+    var d = pxFretesDoc(), vals = Object.keys((d && d.valores) || {}).map(function(k) { return Object.assign({ chave: k }, d.valores[k]); })
+      .filter(function(v) { return !fid || v.fonteId === fid; }).sort(function(a, b) { return String(a.fonteId).localeCompare(String(b.fonteId)) || String(a.cidade).localeCompare(String(b.cidade), 'pt-BR'); });
+    var h = '<p class="hint">Frete dos carregamentos que saem das fontes externas, <b>por palete</b>, para cada cidade. Os valores vão sendo combinados conforme os lançamentos: o app pergunta o valor em cada um e guarda para os próximos.</p>';
+    h += '<h3 class="q-plano-t">Fretes sem valor (' + pend.length + ')</h3>' + (pend.length ? pend.map(function(m) {
+      var f = m.frete;
+      return '<div class="frete-item est-confirmar"><div class="frete-top"><span><b>' + escapeHtml(pxCfg(f.fonteId).nome.replace(/^Fonte\s+/i, '') + ' → ' + f.cidade) + '</b> · ' + escapeHtml(formatDateBR(m.data)) + '</span><span class="chip-est confirmar">sem valor</span></div>' +
+        '<div class="frete-sub">' + escapeHtml([(f.paletes || 0) + ' paletes', m.freteiro && m.freteiro.nome ? 'freteiro ' + m.freteiro.nome : '', m.tipo === 'cd-entrada' ? 'entrada no CD' : 'saída da fonte'].filter(Boolean).join(' · ')) + '</div>' +
+        (ed ? '<div class="frete-acoes"><button type="button" class="btn-text" data-px="frete-valor" data-id="' + escapeHtml(m.id) + '"><b>Informar o valor</b></button></div>' : '') + '</div>';
+    }).join('') : '<p class="pcp-ok">✓ Todos os fretes lançados têm valor.</p>');
+    h += '<h3 class="q-plano-t">Valores combinados (por palete)</h3>' + (vals.length ? pxTabela(['Fonte', 'Cidade', 'Por palete', ''], vals.map(function(v) {
+      return '<tr><td>' + escapeHtml(pxCfg(v.fonteId).nome) + '</td><td>' + escapeHtml(v.cidade) + '</td><td>' + escapeHtml(fmtBRL(v.valor)) + '</td><td>' + (ed ? '<button type="button" class="btn-text" data-px="frete-tab" data-ch="' + escapeHtml(v.chave) + '">Alterar</button>' : '') + '</td></tr>';
+    })) : '<p class="empty-state">Nenhum valor combinado ainda: o primeiro lançamento de cada cidade pergunta o valor.</p>') +
+      '<div class="px-acoes">' + (ed ? '<button type="button" class="btn btn-secondary btn-sm" data-px="frete-tab"' + (fid ? ' data-f="' + escapeHtml(fid) + '"' : '') + '>+ Valor de uma cidade</button>' : '') + '<button type="button" class="btn-text" data-px="cd-csv" data-f="fretes">Baixar planilha dos fretes</button></div>';
+    return h + pxHtmlFretesPeriodo(fid);
+  }
+  // relatórios do CD: produtos (saldo inicial, entradas, saídas, perdas, ajustes, saldo final), freteiros, clientes e carregamentos
+  function cdPeriodo() {
+    var hoje = todayIso();
+    if (!cdUi.de) cdUi.de = hoje.slice(0, 8) + '01';
+    if (!cdUi.ate) cdUi.ate = hoje;
+    return { de: cdUi.de, ate: cdUi.ate };
+  }
+  function cdDiaAntes(iso) { var d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() - 1); return d.toISOString().slice(0, 10); }
+  function cdRelatorio(cid) {
+    var per = cdPeriodo(), ini = cdSaldos(cid, cdDiaAntes(per.de)), fim = cdSaldos(cid, per.ate);
+    var movs = cdMovs(cid).filter(function(m) { return !m.cancelado && m.data >= per.de && m.data <= per.ate; });
+    var prod = {};
+    var linhaDe = function(k) { if (!prod[k]) { var p = k.split('|'); prod[k] = { k: k, origem: p[1], item: p[2], nome: cdNomeItem(p[1], p[2]), ini: ini[k] || 0, ent: 0, sai: 0, per: 0, aj: 0, fim: fim[k] || 0 }; } return prod[k]; };
+    Object.keys(ini).concat(Object.keys(fim)).forEach(function(k) { if (k.indexOf('e|') === 0) linhaDe(k); });
+    var fr = {}, cli = {};
+    movs.forEach(function(m) {
+      (m.efeitos || []).forEach(function(e) {
+        if (e.k.indexOf('e|') !== 0) return;
+        var r = linhaDe(e.k), q = Number(e.qtd) || 0;
+        if (m.tipo === 'cd-entrada') r.ent += q; else if (m.tipo === 'cd-saida') r.sai -= q; else if (m.tipo === 'cd-perda') r.per -= q; else r.aj += q;
+      });
+      if (m.freteiro && (m.tipo === 'cd-entrada' || m.tipo === 'cd-saida' || m.tipo === 'cd-paletes')) {
+        var k = cdChaveFr(m.freteiro), x = fr[k] = fr[k] || { nome: m.freteiro.nome, entradas: 0, saidas: 0, fardos: 0, palSaiu: 0, palEntrou: 0, chaSaiu: 0, chaEntrou: 0, frete: 0 };
+        if (m.tipo === 'cd-entrada') x.entradas++; if (m.tipo === 'cd-saida') x.saidas++;
+        (m.itens || []).forEach(function(i) { x.fardos += Number(i.qtd) || 0; });
+        var p = m.paletes || {}, c = m.chapas || {};
+        x.palSaiu += Number(p.saiu) || 0; x.palEntrou += Number(p.entrou) || 0; x.chaSaiu += Number(c.saiu) || 0; x.chaEntrou += Number(c.entrou) || 0;
+        if (m.frete && Number(m.frete.total) > 0) x.frete += Number(m.frete.total);
+      }
+      if (m.tipo === 'cd-saida') {
+        var ck = normNome(m.cliente || '—'), y = cli[ck] = cli[ck] || { nome: m.cliente || '—', cidade: m.cidade || '', cargas: 0, fardos: 0, porProd: {} };
+        y.cargas++;
+        (m.itens || []).forEach(function(i) { var n = cdNomeItem(i.origem, i.item); y.fardos += Number(i.qtd) || 0; y.porProd[n] = (y.porProd[n] || 0) + (Number(i.qtd) || 0); });
+      }
+    });
+    return { per: per, prod: Object.keys(prod).map(function(k) { return prod[k]; }).filter(function(r) { return r.ini || r.ent || r.sai || r.per || r.aj || r.fim; }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR') || a.origem.localeCompare(b.origem); }),
+      fr: Object.keys(fr).map(function(k) { return fr[k]; }).sort(function(a, b) { return a.nome.localeCompare(b.nome, 'pt-BR'); }),
+      cli: Object.keys(cli).map(function(k) { return cli[k]; }).sort(function(a, b) { return b.fardos - a.fardos; }), movs: movs.sort(pxOrdemMov) };
+  }
+  function cdHtmlRelatorios(cid) {
+    var r = cdRelatorio(cid), sub = cdUi.relat;
+    var h = '<div class="cd-periodo row-2"><label>De<input type="date" id="cd-de" value="' + r.per.de + '" /></label><label>Até<input type="date" id="cd-ate" value="' + r.per.ate + '" /></label></div>' +
+      '<div class="est-loc-chips" role="group" aria-label="Período">' + [['mes', 'Este mês'], ['mes-ant', 'Mês passado'], ['7', '7 dias'], ['30', '30 dias'], ['tudo', 'Tudo']].map(function(p) { return '<button type="button" class="est-loc" data-px="cd-per" data-f="' + p[0] + '">' + p[1] + '</button>'; }).join('') + '</div>' +
+      '<nav class="segmented q-areas" aria-label="Relatório">' + [['produtos', 'Produtos'], ['freteiros', 'Freteiros'], ['clientes', 'Clientes'], ['carregamentos', 'Carregamentos']].map(function(a) {
+        return '<button type="button" class="seg-btn' + (a[0] === sub ? ' active' : '') + '" data-px="cd-relat" data-f="' + a[0] + '" aria-pressed="' + (a[0] === sub ? 'true' : 'false') + '">' + a[1] + '</button>';
+      }).join('') + '</nav>';
+    if (sub === 'freteiros') {
+      h += r.fr.length ? pxTabela(['Freteiro', 'Entradas', 'Saídas', 'Fardos', 'Paletes saíram do CD', 'Paletes entraram no CD', 'Chapas saíram do CD', 'Chapas entraram no CD', 'Frete das fontes'], r.fr.map(function(x) {
+        return '<tr><td>' + escapeHtml(x.nome) + '</td><td>' + x.entradas + '</td><td>' + x.saidas + '</td><td>' + pxQ(x.fardos) + '</td><td>' + pxQ(x.palSaiu) + '</td><td>' + pxQ(x.palEntrou) + '</td><td>' + pxQ(x.chaSaiu) + '</td><td>' + pxQ(x.chaEntrou) + '</td><td>' + (x.frete ? escapeHtml(fmtBRL(x.frete)) : '—') + '</td></tr>';
+      })) : '<p class="empty-state">Nenhum carregamento com freteiro no período.</p>';
+    } else if (sub === 'clientes') {
+      h += r.cli.length ? pxTabela(['Cliente', 'Cidade', 'Carregamentos', 'Fardos', 'Produtos'], r.cli.map(function(x) {
+        return '<tr><td>' + escapeHtml(x.nome) + '</td><td>' + escapeHtml(x.cidade) + '</td><td>' + x.cargas + '</td><td>' + pxQ(x.fardos) + '</td><td>' + escapeHtml(Object.keys(x.porProd).map(function(n) { return pxQ(x.porProd[n]) + ' ' + n; }).join(', ')) + '</td></tr>';
+      })) : '<p class="empty-state">Nenhuma saída para cliente no período.</p>';
+    } else if (sub === 'carregamentos') {
+      var l = r.movs.filter(function(m) { return m.tipo === 'cd-entrada' || m.tipo === 'cd-saida'; });
+      h += l.length ? l.map(function(m) { return cdMovHtml(m, false); }).join('') : '<p class="empty-state">Nenhum carregamento no período.</p>';
+    } else {
+      var t = { ini: 0, ent: 0, sai: 0, per: 0, aj: 0, fim: 0 };
+      var linhas = r.prod.map(function(x) {
+        ['ini', 'ent', 'sai', 'per', 'aj', 'fim'].forEach(function(c) { t[c] += x[c]; });
+        return '<tr><td>' + escapeHtml(x.nome) + '<small class="an-sub">' + escapeHtml(cdOrigemNome(x.origem)) + '</small></td><td>' + pxQ(x.ini) + '</td><td>' + pxQ(x.ent) + '</td><td>' + pxQ(x.sai) + '</td><td>' + pxQ(x.per) + '</td><td>' + (x.aj > 0 ? '+' : '') + pxQ(x.aj) + '</td><td><b>' + pxQ(x.fim) + '</b></td></tr>';
+      });
+      h += linhas.length ? pxTabela(['Produto (fardos)', 'Saldo inicial', 'Entradas', 'Saídas', 'Perdas', 'Contagem (ajuste)', 'Saldo final'], linhas,
+        '<tr><td>Total</td><td>' + pxQ(t.ini) + '</td><td>' + pxQ(t.ent) + '</td><td>' + pxQ(t.sai) + '</td><td>' + pxQ(t.per) + '</td><td>' + pxQ(t.aj) + '</td><td>' + pxQ(t.fim) + '</td></tr>') : '<p class="empty-state">Sem movimento no período.</p>';
+    }
+    return h + '<div class="px-acoes"><button type="button" class="btn btn-secondary btn-sm" data-px="cd-csv" data-f="' + sub + '">Baixar planilha</button></div>';
+  }
+  function cdExportar(cid, tipo) {
+    var cd = cdDe(cid), esc = function(x) { var s = String(x == null ? '' : x); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+    var num = function(v) { return v == null || v === '' ? '' : String(Math.round(Number(v) * 100) / 100).replace('.', ','); };
+    var l = [], r = cdRelatorio(cid), nome = 'levissima-' + cid + '-' + tipo + '-' + todayIso() + '.csv';
+    if (tipo === 'produtos') {
+      l.push(['Produto', 'Origem', 'Saldo inicial', 'Entradas', 'Saídas', 'Perdas', 'Contagem (ajuste)', 'Saldo final', 'De', 'Até'].join(';'));
+      r.prod.forEach(function(x) { l.push([x.nome, cdOrigemNome(x.origem), num(x.ini), num(x.ent), num(x.sai), num(x.per), num(x.aj), num(x.fim), formatDateBR(r.per.de), formatDateBR(r.per.ate)].map(esc).join(';')); });
+    } else if (tipo === 'freteiros') {
+      l.push(['Freteiro', 'Entradas', 'Saídas', 'Fardos', 'Paletes saíram do CD', 'Paletes entraram no CD', 'Chapas saíram do CD', 'Chapas entraram no CD', 'Frete das fontes (R$)'].join(';'));
+      r.fr.forEach(function(x) { l.push([x.nome, x.entradas, x.saidas, num(x.fardos), num(x.palSaiu), num(x.palEntrou), num(x.chaSaiu), num(x.chaEntrou), num(x.frete)].map(esc).join(';')); });
+    } else if (tipo === 'clientes') {
+      l.push(['Cliente', 'Cidade', 'Carregamentos', 'Fardos', 'Produtos'].join(';'));
+      r.cli.forEach(function(x) { l.push([x.nome, x.cidade, x.cargas, num(x.fardos), Object.keys(x.porProd).map(function(n) { return num(x.porProd[n]) + ' ' + n; }).join(', ')].map(esc).join(';')); });
+    } else if (tipo === 'paletes') {
+      var s = cdSaldos(cid);
+      l.push(['Freteiro', 'Paletes (saldo)', 'Chapas (saldo)'].join(';'));
+      cdFreteiros(cid, s).forEach(function(f) { l.push([f.nome, num(f.pal), num(f.cha)].map(esc).join(';')); });
+      l.push(['No CD', num(s['pal|cd'] || 0), num(s['cha|cd'] || 0)].map(esc).join(';'));
+    } else if (tipo === 'fretes') {
+      l.push(['Data', 'Fonte', 'Cidade', 'Freteiro', 'Paletes', 'Valor por palete', 'Total', 'Lançamento', 'Situação'].join(';'));
+      pxFretesLancados().slice().sort(pxOrdemMov).forEach(function(m) { var f = m.frete; l.push([formatDateBR(m.data), pxCfg(f.fonteId).nome, f.cidade, (m.freteiro && m.freteiro.nome) || '', num(f.paletes), num(f.valorPalete), num(f.total), m.tipo === 'cd-entrada' ? 'entrada no ' + cd.nome : 'saída da fonte', pxFretePendente(m) ? 'sem valor' : ''].map(esc).join(';')); });
+    } else {
+      l.push(['Data', 'Lançamento', 'Origem', 'Produto', 'Fardos', 'Cliente', 'Cidade', 'Freteiro', 'Placa', 'NF', 'Paletes saíram do CD', 'Paletes entraram no CD', 'Chapas saíram do CD', 'Chapas entraram no CD', 'Frete (R$)', 'Por', 'Situação'].join(';'));
+      cdMovs(cid).slice().sort(pxOrdemMov).forEach(function(m) {
+        var p = m.paletes || {}, c = m.chapas || {}, t = (CD_MOV[m.tipo] || {}).curto || m.tipo, its = (m.itens || []).length ? m.itens : [{}];
+        its.forEach(function(i, idx) {
+          var o = i.origem || m.origem || '';
+          l.push([formatDateBR(m.data), t, o ? cdOrigemNome(o) : '', i.item ? cdNomeItem(o, i.item) : i.k ? (i.k === 'pal|cd' ? 'paletes no CD' : 'chapas no CD') : '', num(i.qtd), m.cliente, m.cidade, (m.freteiro && m.freteiro.nome) || '', m.placa, m.nf,
+            idx ? '' : num(p.saiu), idx ? '' : num(p.entrou), idx ? '' : num(c.saiu), idx ? '' : num(c.entrou), idx || !m.frete ? '' : num(m.frete.total), m.por, m.cancelado ? 'cancelado: ' + (m.motivoCancel || '') : ''].map(esc).join(';'));
+        });
+      });
+      nome = 'levissima-' + cid + '-lancamentos-' + todayIso() + '.csv';
+    }
+    triggerDownload(new Blob(['﻿' + l.join('\r\n')], { type: 'text/csv;charset=utf-8' }), nome);
+  }
+  function cdRender(cid, seletor) {
+    var cd = cdDe(cid), s = cdSaldos(cid), ed = pxPodeEditar(), est = cdEstoque(s), total = est.reduce(function(a, x) { return a + x.qtd; }, 0);
+    var frs = cdFreteiros(cid, s), comFr = frs.reduce(function(a, f) { return a + (f.pal > 0 ? f.pal : 0); }, 0), pend = pxFretesLancados().filter(pxFretePendente).length;
+    var mes = todayIso().slice(0, 7), mm = cdMovs(cid).filter(function(m) { return !m.cancelado && String(m.data || '').slice(0, 7) === mes; });
+    var fardosMes = function(tipo) { return mm.filter(function(m) { return m.tipo === tipo; }).reduce(function(a, m) { return a + (m.itens || []).reduce(function(b, i) { return b + (Number(i.qtd) || 0); }, 0); }, 0); };
+    var h = seletor + '<p class="tagline">' + escapeHtml(cd.nome) + ' · ' + escapeHtml(cd.cidade) + '. Estoque das cargas guardadas no CD, por produto e por origem (fontes e fábrica), com os carregamentos, os paletes e chapas de cada freteiro e os fretes das fontes.</p>';
+    h += '<div class="est-cards px-cards">' +
+      supCardF('', 'No CD', pxQ(total), 'fardos guardados', '', 'data-px="cd-area" data-f="estoque"', cdUi.area === 'estoque') +
+      supCardF('c-saldo', 'Este mês', pxQ(fardosMes('cd-entrada')) + ' / ' + pxQ(fardosMes('cd-saida')), 'fardos entraram / saíram', '', 'data-px="cd-area" data-f="relatorios"', cdUi.area === 'relatorios') +
+      supCardF('c-futuro' + (comFr ? ' alerta' : ''), 'Paletes', pxQ(s['pal|cd'] || 0) + ' no CD', comFr ? pxQ(comFr) + ' com freteiros' : 'nenhum com freteiro', '', 'data-px="cd-area" data-f="paletes"', cdUi.area === 'paletes') +
+      supCardF('c-futuro' + (pend ? ' alerta' : ''), 'Fretes das fontes', pend ? pend + ' sem valor' : 'em dia', 'por palete, por cidade', '', 'data-px="cd-area" data-f="fretes"', cdUi.area === 'fretes') +
+      '</div>';
+    h += '<nav class="segmented q-areas px-areas" aria-label="Áreas do CD">' + [['estoque', 'Estoque'], ['entradas', 'Entradas'], ['saidas', 'Saídas'], ['paletes', 'Paletes'], ['fretes', 'Fretes'], ['relatorios', 'Relatórios'], ['lanc', 'Lançamentos']].map(function(a) {
+      var on = a[0] === cdUi.area;
+      return '<button type="button" class="seg-btn' + (on ? ' active' : '') + '" data-px="cd-area" data-f="' + a[0] + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + a[1] + '</button>';
+    }).join('') + '</nav>';
+    if (cdUi.area === 'entradas') h += (ed ? '<div class="px-acoes"><button type="button" class="btn btn-primary btn-sm" data-px="cd-entrada">+ Entrada no CD</button></div>' : '') + cdLista(cid, function(m) { return m.tipo === 'cd-entrada'; }, 0, 'Nenhuma entrada ainda.');
+    else if (cdUi.area === 'saidas') h += (ed ? '<div class="px-acoes"><button type="button" class="btn btn-primary btn-sm" data-px="cd-saida">+ Saída para cliente</button></div>' : '') + cdLista(cid, function(m) { return m.tipo === 'cd-saida'; }, 0, 'Nenhuma saída ainda.');
+    else if (cdUi.area === 'paletes') h += cdHtmlPaletes(cid, s, ed);
+    else if (cdUi.area === 'fretes') h += pxHtmlFretes(ed);
+    else if (cdUi.area === 'relatorios') h += cdHtmlRelatorios(cid);
+    else if (cdUi.area === 'lanc') h += '<div class="q-topo"><span class="hint">' + cdMovs(cid).length + ' lançamentos do CD.</span><button type="button" class="btn btn-secondary btn-sm" data-px="cd-csv" data-f="lanc">Baixar planilha</button></div>' + cdLista(cid, function() { return true; }, 0);
+    else h += cdHtmlEstoque(cid, s, ed);
+    return h;
+  }
+  // na tela da fonte: o que foi para o CD
+  function pxHtmlCdDaFonte(fid, cfg) {
+    var l = pxd.mov.filter(function(m) { return pxEhCd(m.fonteId) && m.tipo === 'cd-entrada' && m.origem === fid; }).sort(pxOrdemMov);
+    if (!l.length) return '';
+    return '<h3 class="q-plano-t">Enviado para o CD</h3>' + l.slice(0, 6).map(function(m) {
+      return '<div class="frete-item' + (m.cancelado ? ' cancelado' : '') + '"><b>' + escapeHtml(cdDe(m.fonteId).nome) + '</b> · ' + escapeHtml(formatDateBR(m.data)) + '<div class="frete-sub">' + escapeHtml((m.itens || []).map(function(i) { return pxQ(i.qtd) + ' ' + pxNomeItem(cfg, i.item); }).join(' · ')) + '</div>' +
+        '<div class="frete-sub">' + escapeHtml([m.freteiro && m.freteiro.nome ? 'freteiro ' + m.freteiro.nome : '', m.frete ? pxFreteTxt(m.frete) : '', m.cancelado ? 'cancelado' : ''].filter(Boolean).join(' · ')) + '</div></div>';
+    }).join('');
+  }
+  // fretes do mês (e do mês passado): por fonte e cidade, e por freteiro
+  function pxHtmlFretesPeriodo(fid) {
+    var hoje = todayIso(), mes = hoje.slice(0, 7), d = new Date(hoje.slice(0, 8) + '01T12:00:00Z');
+    d.setUTCMonth(d.getUTCMonth() - 1);
+    var mesAnt = d.toISOString().slice(0, 7);
+    var bloco = function(ym, titulo) {
+      var l = pxFretesLancados().filter(function(m) { return String(m.data || '').slice(0, 7) === ym && (!fid || m.frete.fonteId === fid); });
+      if (!l.length) return '<h3 class="q-plano-t">' + titulo + '</h3><p class="empty-state">Nenhum frete lançado.</p>';
+      var porCid = {}, porFr = {}, tot = 0, pal = 0, pend = 0;
+      l.forEach(function(m) {
+        var f = m.frete, k = f.fonteId + '|' + normNome(f.cidade), v = Number(f.total) || 0, p = Number(f.paletes) || 0;
+        var c = porCid[k] = porCid[k] || { nome: pxCfg(f.fonteId).nome.replace(/^Fonte\s+/i, '') + ' → ' + f.cidade, n: 0, pal: 0, tot: 0, pend: 0 };
+        c.n++; c.pal += p; c.tot += v; if (pxFretePendente(m)) { c.pend++; pend++; }
+        var nf = (m.freteiro && m.freteiro.nome) || 'sem freteiro', kf = normNome(nf), x = porFr[kf] = porFr[kf] || { nome: nf, n: 0, pal: 0, tot: 0 };
+        x.n++; x.pal += p; x.tot += v; tot += v; pal += p;
+      });
+      var ord = function(o) { return Object.keys(o).map(function(k) { return o[k]; }).sort(function(a, b) { return b.tot - a.tot || a.nome.localeCompare(b.nome, 'pt-BR'); }); };
+      return '<h3 class="q-plano-t">' + titulo + ': ' + escapeHtml(fmtBRL(tot)) + ' · ' + pxQ(pal) + ' paletes' + (pend ? ' · ' + pend + ' sem valor' : '') + '</h3>' +
+        pxTabela(['Fonte → cidade', 'Fretes', 'Paletes', 'Valor', 'Sem valor'], ord(porCid).map(function(c) { return '<tr><td>' + escapeHtml(c.nome) + '</td><td>' + c.n + '</td><td>' + pxQ(c.pal) + '</td><td>' + escapeHtml(fmtBRL(c.tot)) + '</td><td>' + (c.pend || '—') + '</td></tr>'; })) +
+        pxTabela(['Freteiro', 'Fretes', 'Paletes', 'Valor'], ord(porFr).map(function(x) { return '<tr><td>' + escapeHtml(x.nome) + '</td><td>' + x.n + '</td><td>' + pxQ(x.pal) + '</td><td>' + escapeHtml(fmtBRL(x.tot)) + '</td></tr>'; }));
+    };
+    return bloco(mes, 'Fretes deste mês') + bloco(mesAnt, 'Fretes do mês passado');
+  }
+  // saída da fonte com frete (fonte → cidade do cliente)
+  function pxSaidaFreteHtml(fid) {
+    return '<div id="pxm-frete-box"><h3 class="q-plano-t">Frete saindo da fonte <span class="opt">(cidade em branco: frete que não é nosso)</span></h3>' +
+      cdFreteiroCampos('pxm', null, true) +
+      '<label>Paletes carregados<input type="number" id="pxm-paletes" min="0" step="1" inputmode="numeric" placeholder="0" /></label>' +
+      pxFreteCampos(fid, '', false).replace('Cidade de destino <span class="req">*</span>', 'Cidade de destino') + '</div>';
+  }
+  function pxSaidaFreteLer(fid) {
+    var box = document.getElementById('pxm-frete-box');
+    if (!box || box.classList.contains('hidden')) return {};
+    var fr = cdLerFreteiro('pxm'), pal = cdLerInt('pxm-paletes'), cid = gerVal('pxf-cidade');
+    if (gerVal('pxm-fr') === '_outro' && !fr) return { erro: 'Escreva o nome do freteiro.' };
+    if (pal < 0 || Math.round(pal) !== pal) return { erro: 'Confira os paletes (número inteiro).' };
+    if (!cid) return { freteiro: fr, placa: gerVal('pxm-placa').toUpperCase() };
+    if (!pal) return { erro: 'Informe quantos paletes saíram (o frete é por palete).' };
+    var fl = pxFreteLer(fid, pal);
+    if (fl.erro) return fl;
+    return { freteiro: fr, placa: gerVal('pxm-placa').toUpperCase(), frete: fl.frete, guardar: fl.guardar };
+  }
   function renderTabProdExtBadge() {
     var b = document.querySelector('#admin-tabs .seg-btn[data-tab="prodexternas"]');
     if (!b) return;
     var n = 0;
-    if (session && podeVerProdExt()) PX_FONTES.forEach(function(f) { var a = pxAlertasFonte(f.id); n += a.vencidos + a.conferir; });
-    seloAba(b, n, 'Produções externas: cobranças para conferir e laudos vencidos');
+    if (session && podeVerProdExt()) { PX_FONTES.forEach(function(f) { var a = pxAlertasFonte(f.id); n += a.vencidos + a.conferir; }); n += pxFretesLancados().filter(pxFretePendente).length; }
+    seloAba(b, n, 'Produções externas: cobranças para conferir, laudos vencidos e fretes sem valor');
   }
   function pxTileInicio() {
     var conf = 0, venc = 0, naFonte = 0, naUnid = 0;
@@ -32213,7 +32978,8 @@
       conf += a.conferir; venc += a.vencidos;
       pxAtivos(cfg.produtos).forEach(function(p) { naFonte += pxS(s, 'p:' + p.id, 'fonte'); naUnid += pxS(s, 'p:' + p.id, 'unidade'); });
     });
-    return { tab: 'prodexternas', t: 'Produções externas', v: conf, u: conf === 1 ? 'cobrança para conferir' : 'cobranças para conferir', s: (venc ? venc + (venc === 1 ? ' laudo vencido · ' : ' laudos vencidos · ') : '') + fmtMp(naFonte, '') + ' fardos nas fontes · ' + fmtMp(naUnid, '') + ' na unidade', alerta: conf > 0 || venc > 0 };
+    var noCd = PX_CDS.reduce(function(a, c) { return a + cdEstoque(cdSaldos(c.id)).reduce(function(b, x) { return b + x.qtd; }, 0); }, 0), pendFr = pxFretesLancados().filter(pxFretePendente).length;
+    return { tab: 'prodexternas', t: 'Produções externas', v: conf, u: conf === 1 ? 'cobrança para conferir' : 'cobranças para conferir', s: (venc ? venc + (venc === 1 ? ' laudo vencido · ' : ' laudos vencidos · ') : '') + (pendFr ? pendFr + (pendFr === 1 ? ' frete sem valor · ' : ' fretes sem valor · ') : '') + fmtMp(naFonte, '') + ' fardos nas fontes · ' + fmtMp(naUnid, '') + ' na unidade' + (noCd ? ' · ' + fmtMp(noCd, '') + ' no CD' : ''), alerta: conf > 0 || venc > 0 };
   }
   document.getElementById('tab-prodexternas').addEventListener('click', function(e) {
     var b = e.target.closest('[data-px]');
@@ -32221,6 +32987,24 @@
     var k = b.dataset.px;
     if (k === 'fonte') { pxUi.fonte = b.dataset.f; renderProdExt(); }
     else if (k === 'area') { pxUi.area = b.dataset.f; renderProdExt(); }
+    else if (k === 'cd-area') { cdUi.area = b.dataset.f; renderProdExt(); }
+    else if (k === 'cd-relat') { cdUi.relat = b.dataset.f; renderProdExt(); }
+    else if (k === 'cd-per') {
+      var hj = todayIso(), dd = function(n) { return new Date(Date.parse(hj + 'T12:00:00Z') - n * 864e5).toISOString().slice(0, 10); };
+      if (b.dataset.f === 'mes') { cdUi.de = hj.slice(0, 8) + '01'; cdUi.ate = hj; }
+      else if (b.dataset.f === 'mes-ant') { var ini = new Date(hj.slice(0, 8) + '01T12:00:00Z'); ini.setUTCMonth(ini.getUTCMonth() - 1); cdUi.de = ini.toISOString().slice(0, 10); cdUi.ate = cdDiaAntes(hj.slice(0, 8) + '01'); }
+      else if (b.dataset.f === 'tudo') { cdUi.de = cdMovs(pxUi.fonte).reduce(function(a, m) { return m.data && m.data < a ? m.data : a; }, hj); cdUi.ate = hj; }
+      else { cdUi.de = dd(Number(b.dataset.f) - 1); cdUi.ate = hj; }
+      renderProdExt();
+    }
+    else if (k === 'cd-entrada') cdAbrirEntrada(pxUi.fonte);
+    else if (k === 'cd-saida') cdAbrirSaida(pxUi.fonte);
+    else if (k === 'cd-perda') cdAbrirPerda(pxUi.fonte);
+    else if (k === 'cd-contagem') cdAbrirContagem(pxUi.fonte);
+    else if (k === 'cd-acerto') cdAbrirAcerto(pxEhCd(pxUi.fonte) ? pxUi.fonte : PX_CDS[0].id, b.dataset.ch || '');
+    else if (k === 'cd-csv') cdExportar(pxEhCd(pxUi.fonte) ? pxUi.fonte : PX_CDS[0].id, b.dataset.f);
+    else if (k === 'frete-valor') { var mf = pxd.mov.find(function(x) { return x.id === b.dataset.id; }); if (mf && mf.frete) pxAbrirFreteValor(mf); }
+    else if (k === 'frete-tab') pxAbrirFreteTabela(b.dataset.ch || '', b.dataset.f || '');
     else if (k === 'mov') pxAbrirMov(b.dataset.tipo);
     else if (k === 'ajustes') pxAbrirAjustes();
     else if (k === 'cob-nova') pxAbrirCob();
@@ -32238,6 +33022,15 @@
       var m = pxd.mov.find(function(x) { return x.id === b.dataset.id; });
       if (m) pxPedirMotivo('Cancelar o lançamento', 'O lançamento deixa de contar nos saldos e fica registrado com o motivo.', 'Cancelar o lançamento', function(mo) { var d = pxSemId(m); d.cancelado = true; d.motivoCancel = mo; d.canceladoPor = quemSessao(); d.canceladoEm = new Date().toISOString(); return pxGravar('mov', m.id, d).then(function() { showToast('Lançamento cancelado.'); }); });
     }
+  });
+  document.getElementById('tab-prodexternas').addEventListener('change', function(e) {
+    var id = e.target.id;
+    if (id !== 'cd-de' && id !== 'cd-ate') return;
+    var v = e.target.value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return;
+    if (id === 'cd-de') cdUi.de = v; else cdUi.ate = v;
+    if (cdUi.de > cdUi.ate) { if (id === 'cd-de') cdUi.ate = v; else cdUi.de = v; }
+    renderProdExt();
   });
 
   // =====================================================================================================
